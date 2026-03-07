@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RazorpayModal } from "@/components/razorpay-modal";
-import { ShoppingCart, Minus, Plus, Trash2, ArrowRight, ShoppingBag } from "lucide-react";
+import { ShoppingCart, Minus, Plus, Trash2, ArrowRight, ShoppingBag, Package } from "lucide-react";
 
 function formatPrice(amount: number): string {
   return new Intl.NumberFormat("en-IN", {
@@ -37,6 +37,13 @@ function CartItemRow({ item }: { item: CartItem }) {
   return (
     <div className="flex flex-col gap-3 py-4" data-testid={`cart-item-${item.productId}`}>
       <div className="flex items-start justify-between gap-2">
+        <div className="w-14 h-14 rounded-xl overflow-hidden border border-border/50 flex-shrink-0 bg-muted/20 flex items-center justify-center">
+          {item.image ? (
+            <img src={item.image} alt={item.productName} className="w-full h-full object-cover" />
+          ) : (
+            <Package className="w-6 h-6 text-muted-foreground/30" />
+          )}
+        </div>
         <div className="flex-1 min-w-0">
           <h4 className="text-sm font-medium leading-tight truncate" data-testid={`text-cart-item-name-${item.productId}`}>
             {item.productName}

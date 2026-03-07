@@ -129,6 +129,7 @@ export default function ProductPage() {
         size: selectedSize,
         addons: selectedAddons,
       },
+      image: product.images?.[0],
     }, quantity);
   };
 
@@ -137,9 +138,10 @@ export default function ProductPage() {
     setShowRazorpay(true);
   };
 
-  const imageDots = product.configOptions?.colors?.length
-    ? product.configOptions.colors.length
-    : 3;
+  const productImages = product.images || [];
+  const imageDots = productImages.length > 0
+    ? productImages.length
+    : (product.configOptions?.colors?.length || 3);
 
   return (
     <div className="min-h-screen bg-background">
@@ -164,13 +166,22 @@ export default function ProductPage() {
             <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
               <div className="space-y-4">
                 <div className="aspect-square bg-card rounded-3xl border border-border/50 flex items-center justify-center relative overflow-hidden" data-testid="container-product-image">
-                  <div className="text-center p-12">
-                    <div className="w-28 h-28 mx-auto mb-6 rounded-3xl bg-primary/8 flex items-center justify-center">
-                      <Package className="w-14 h-14 text-primary/30" />
+                  {productImages.length > 0 ? (
+                    <img
+                      src={productImages[activeImageIdx] || productImages[0]}
+                      alt={`${product.name} - Image ${activeImageIdx + 1}`}
+                      className="w-full h-full object-cover"
+                      data-testid="img-product-main"
+                    />
+                  ) : (
+                    <div className="text-center p-12">
+                      <div className="w-28 h-28 mx-auto mb-6 rounded-3xl bg-primary/8 flex items-center justify-center">
+                        <Package className="w-14 h-14 text-primary/30" />
+                      </div>
+                      <p className="text-sm text-muted-foreground/50 font-medium">Product Image</p>
+                      <p className="text-xs text-muted-foreground/30 mt-1">{product.name}</p>
                     </div>
-                    <p className="text-sm text-muted-foreground/50 font-medium">Product Image</p>
-                    <p className="text-xs text-muted-foreground/30 mt-1">{product.name}</p>
-                  </div>
+                  )}
                   {selectedColor && (
                     <div
                       className="absolute bottom-4 right-4 w-8 h-8 rounded-full border-2 border-white shadow-md"
@@ -179,20 +190,39 @@ export default function ProductPage() {
                     />
                   )}
                 </div>
-                <div className="flex items-center justify-center gap-2">
-                  {Array.from({ length: imageDots }).map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActiveImageIdx(i)}
-                      className={`w-2.5 h-2.5 rounded-full transition-all ${
-                        activeImageIdx === i
-                          ? "bg-primary scale-110"
-                          : "bg-border hover:bg-muted-foreground/40"
-                      }`}
-                      data-testid={`button-image-dot-${i}`}
-                    />
-                  ))}
-                </div>
+                {productImages.length > 1 ? (
+                  <div className="flex items-center justify-center gap-2">
+                    {productImages.map((img, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setActiveImageIdx(i)}
+                        className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-all ${
+                          activeImageIdx === i
+                            ? "border-primary ring-1 ring-primary/30"
+                            : "border-border/50 hover:border-primary/30"
+                        }`}
+                        data-testid={`button-image-thumb-${i}`}
+                      >
+                        <img src={img} alt={`${product.name} thumbnail ${i + 1}`} className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-2">
+                    {Array.from({ length: imageDots }).map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setActiveImageIdx(i)}
+                        className={`w-2.5 h-2.5 rounded-full transition-all ${
+                          activeImageIdx === i
+                            ? "bg-primary scale-110"
+                            : "bg-border hover:bg-muted-foreground/40"
+                        }`}
+                        data-testid={`button-image-dot-${i}`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="lg:sticky lg:top-24 lg:self-start space-y-6">

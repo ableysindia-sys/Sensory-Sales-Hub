@@ -31,7 +31,7 @@ Premium Apple-style B2B/B2C hybrid e-commerce platform for Abley's Rehab, a prof
 - `shared/routes.ts` - API contract with Zod validation
 - `server/routes.ts` - Express API routes
 - `server/storage.ts` - Database storage layer
-- `client/src/lib/catalogue-data.ts` - Full product catalogue with basePrice, configOptions (colors, materials, sizes, addons), formatPrice(), calculateProductPrice()
+- `client/src/lib/catalogue-data.ts` - Full product catalogue with basePrice, configOptions (colors, materials, sizes, addons), images (Shopify CDN URLs for ~20 matching products), formatPrice(), calculateProductPrice()
 - `client/src/lib/shopping-cart.ts` - Zustand B2C cart store (cartKey-based identity, GST 18%, localStorage persist)
 - `client/src/lib/enquiry-cart.tsx` - B2B enquiry cart context with localStorage persistence
 - `client/src/pages/` - Home, Category, Product, EnquiryCart, OrderConfirmation, SensoryRoomBuilder
@@ -57,6 +57,7 @@ Premium Apple-style B2B/B2C hybrid e-commerce platform for Abley's Rehab, a prof
 Swings (7), Ballpool (2), Mats (5), Movement & Balance (8), Climbing (3), ADL Kit (3), Therapy Balls (4), Deep Pressure (4), Visual (6)
 
 ## E-Commerce Features
+- **Real Product Images**: ~20 products pull real images from ableys.in Shopify store (CDN URLs), with image gallery and thumbnails on product pages; remaining products show styled placeholder icons
 - **Product Configurator**: Color swatches, material variants, size options, add-on checkboxes with dynamic price calculation
 - **Shopping Cart**: Zustand store with cartKey-based item identity (supports multiple configs of same product), quantity controls, GST (18%) calculation
 - **Cart Drawer**: Slide-out sheet from right, line items with config details, subtotal/GST/total

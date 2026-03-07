@@ -21,13 +21,23 @@ export function ProductCard({ product }: ProductCardProps) {
       className="group bg-card rounded-3xl border border-border/50 overflow-hidden hover:border-primary/20 hover:shadow-xl hover:shadow-primary/[0.04] transition-all duration-500 flex flex-col"
       data-testid={`product-card-${product.id}`}
     >
-      <div className="aspect-[4/3] bg-muted/20 flex items-center justify-center border-b border-border/20 group-hover:bg-muted/30 transition-colors duration-500">
-        <div className="text-center p-6">
-          <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-primary/[0.06] border border-primary/[0.08] flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-            <Package className="w-7 h-7 text-primary/30 group-hover:text-primary/50 transition-colors" />
+      <div className="aspect-[4/3] bg-muted/20 flex items-center justify-center border-b border-border/20 group-hover:bg-muted/30 transition-colors duration-500 overflow-hidden">
+        {product.images && product.images.length > 0 ? (
+          <img
+            src={product.images[0]}
+            alt={product.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+            data-testid={`img-product-${product.id}`}
+          />
+        ) : (
+          <div className="text-center p-6">
+            <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-primary/[0.06] border border-primary/[0.08] flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+              <Package className="w-7 h-7 text-primary/30 group-hover:text-primary/50 transition-colors" />
+            </div>
+            <p className="text-xs text-muted-foreground/40 font-medium">Product Image</p>
           </div>
-          <p className="text-xs text-muted-foreground/40 font-medium">Product Image</p>
-        </div>
+        )}
       </div>
 
       <div className="p-5 flex flex-col flex-1">
@@ -64,6 +74,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 category: category?.title || "",
                 unitPrice: product.basePrice,
                 config: { addons: [] },
+                image: product.images?.[0],
               })}
               data-testid={`button-add-cart-${product.id}`}
             >

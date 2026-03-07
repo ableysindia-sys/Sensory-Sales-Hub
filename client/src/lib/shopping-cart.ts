@@ -16,6 +16,7 @@ export interface CartItem {
   quantity: number;
   unitPrice: number;
   config: CartItemConfig;
+  image?: string;
 }
 
 function generateCartKey(productId: string, config: CartItemConfig): string {
