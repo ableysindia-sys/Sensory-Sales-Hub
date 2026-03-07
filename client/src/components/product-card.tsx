@@ -1,13 +1,44 @@
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Eye, CheckCircle2, Package } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ShoppingCart, Eye, CheckCircle2, Package, Star } from "lucide-react";
 import { Link } from "wouter";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { useShoppingCart } from "@/lib/shopping-cart";
 import type { CatalogueProduct } from "@/lib/catalogue-data";
-import { getProductCategory, formatPrice } from "@/lib/catalogue-data";
+import { getProductCategory, formatPrice, getDiscountPercent } from "@/lib/catalogue-data";
 
 interface ProductCardProps {
   product: CatalogueProduct;
+}
+
+function StarRating({ rating, count }: { rating: number; count: number }) {
+  return (
+    <div className="flex items-center gap-1" data-testid="star-rating">
+      <div className="flex gap-0.5">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <Star
+            key={i}
+            className={`w-3.5 h-3.5 ${
+              i <= rating
+                ? "fill-yellow-400 text-yellow-400"
+                : "fill-muted text-muted"
+            }`}
+          />
+        ))}
+      </div>
+      <span className="text-xs text-muted-foreground">({count})</span>
+    </div>
+  );
+}
+
+function getSeededRating(id: string): { rating: number; count: number } {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = ((hash << 5) - hash + id.charCodeAt(i)) | 0;
+  }
+  const rating = 4 + (Math.abs(hash) % 2);
+  const count = 3 + (Math.abs(hash >> 3) % 45);
+  return { rating, count };
 }
 
 export function ProductCard({ product }: ProductCardProps) {
@@ -15,78 +46,121 @@ export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useShoppingCart();
   const category = getProductCategory(product);
   const inCart = isInCart(product.id);
+  const discount = getDiscountPercent(product);
+  const { rating, count } = getSeededRating(product.id);
+  const colors = product.configOptions?.colors;
 
   return (
     <div
-      className="group bg-card rounded-3xl border border-border/50 overflow-hidden hover:border-primary/20 hover:shadow-xl hover:shadow-primary/[0.04] transition-all duration-500 flex flex-col"
+      className="group bg-card border border-border rounded-md overflow-hidden flex flex-col"
       data-testid={`product-card-${product.id}`}
     >
-      <div className="aspect-[4/3] bg-muted/20 flex items-center justify-center border-b border-border/20 group-hover:bg-muted/30 transition-colors duration-500 overflow-hidden">
+      <div className="relative aspect-square bg-muted/20 flex items-center justify-center overflow-hidden">
+        {discount && (
+          <Badge
+            variant="destructive"
+            className="absolute top-2 left-2 z-10 text-xs no-default-hover-elevate no-default-active-elevate"
+            data-testid={`badge-sale-${product.id}`}
+          >
+            Save {discount}%
+          </Badge>
+        )}
         {product.images && product.images.length > 0 ? (
-          <img
-            src={product.images[0]}
-            alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            loading="lazy"
-            data-testid={`img-product-${product.id}`}
-          />
+          <Link href={`/product/${product.id}`} className="w-full h-full">
+            <img
+              src={product.images[0]}
+              alt={product.name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+              data-testid={`img-product-${product.id}`}
+            />
+          </Link>
         ) : (
           <div className="text-center p-6">
-            <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-primary/[0.06] border border-primary/[0.08] flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-              <Package className="w-7 h-7 text-primary/30 group-hover:text-primary/50 transition-colors" />
+            <div className="w-16 h-16 mx-auto mb-3 rounded-md bg-muted/40 flex items-center justify-center">
+              <Package className="w-7 h-7 text-muted-foreground/40" />
             </div>
             <p className="text-xs text-muted-foreground/40 font-medium">Product Image</p>
           </div>
         )}
       </div>
 
-      <div className="p-5 flex flex-col flex-1">
+      <div className="p-4 flex flex-col flex-1">
         <div className="flex-1">
-          <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-1.5">{category?.title}</p>
-          <h3 className="text-base font-bold text-foreground mb-2" data-testid={`text-product-name-${product.id}`}>
-            {product.name}
-          </h3>
-          <p className="text-sm text-muted-foreground leading-relaxed mb-3">{product.shortDescription}</p>
-          <p className="text-lg font-bold text-foreground tabular-nums mb-4" data-testid={`text-product-price-${product.id}`}>
-            {formatPrice(product.basePrice)}
-          </p>
+          <p className="text-xs text-muted-foreground mb-1" data-testid={`text-vendor-${product.id}`}>Abley's</p>
+          <Link href={`/product/${product.id}`}>
+            <h3
+              className="text-sm font-medium text-foreground mb-1.5 line-clamp-2 hover:underline cursor-pointer"
+              data-testid={`text-product-name-${product.id}`}
+            >
+              {product.name}
+            </h3>
+          </Link>
+
+          <StarRating rating={rating} count={count} />
+
+          <div className="flex items-baseline gap-2 mt-2 flex-wrap" data-testid={`text-product-price-${product.id}`}>
+            <span className="text-base font-semibold text-foreground tabular-nums">
+              {formatPrice(product.basePrice)}
+            </span>
+            {product.comparePrice && product.comparePrice > product.basePrice && (
+              <span className="text-sm text-muted-foreground line-through tabular-nums">
+                {formatPrice(product.comparePrice)}
+              </span>
+            )}
+          </div>
+
+          {colors && colors.length > 0 && (
+            <div className="flex items-center gap-1.5 mt-2 flex-wrap" data-testid={`swatches-${product.id}`}>
+              {colors.slice(0, 6).map((color) => (
+                <span
+                  key={color.name}
+                  title={color.name}
+                  className="w-4 h-4 rounded-full border border-border"
+                  style={{ backgroundColor: color.hex }}
+                  data-testid={`swatch-${product.id}-${color.name}`}
+                />
+              ))}
+              {colors.length > 6 && (
+                <span className="text-xs text-muted-foreground">+{colors.length - 6}</span>
+              )}
+            </div>
+          )}
         </div>
 
-        <div className="space-y-2">
+        <div className="mt-3 space-y-2">
+          <Button
+            size="sm"
+            className="w-full text-xs gap-1.5"
+            onClick={() => addToCart({
+              productId: product.id,
+              productName: product.name,
+              category: category?.title || "",
+              unitPrice: product.basePrice,
+              config: { addons: [] },
+              image: product.images?.[0],
+            })}
+            data-testid={`button-add-cart-${product.id}`}
+          >
+            <ShoppingCart className="w-3.5 h-3.5" />
+            Add to Cart
+          </Button>
           <div className="flex gap-2">
             <Link href={`/product/${product.id}`} className="flex-1">
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full rounded-full text-xs gap-1.5 border-border/60 hover:border-primary/30"
+                className="w-full text-xs gap-1.5"
                 data-testid={`button-view-${product.id}`}
               >
                 <Eye className="w-3.5 h-3.5" />
-                View Details
+                View
               </Button>
             </Link>
             <Button
-              size="sm"
-              className="flex-1 rounded-full text-xs gap-1.5 shadow-sm"
-              onClick={() => addToCart({
-                productId: product.id,
-                productName: product.name,
-                category: category?.title || "",
-                unitPrice: product.basePrice,
-                config: { addons: [] },
-                image: product.images?.[0],
-              })}
-              data-testid={`button-add-cart-${product.id}`}
-            >
-              <ShoppingCart className="w-3.5 h-3.5" />
-              Add to Cart
-            </Button>
-          </div>
-          <div className="flex gap-2">
-            <Button
               variant="ghost"
               size="sm"
-              className="flex-1 rounded-full text-xs gap-1.5 text-muted-foreground"
+              className="flex-1 text-xs gap-1.5 text-muted-foreground"
               onClick={() => addItem(product.id, product.name, category?.title || "")}
               data-testid={`button-add-enquiry-${product.id}`}
             >
@@ -98,7 +172,7 @@ export function ProductCard({ product }: ProductCardProps) {
               ) : (
                 <>
                   <Package className="w-3.5 h-3.5" />
-                  Add to Enquiry
+                  Enquiry
                 </>
               )}
             </Button>

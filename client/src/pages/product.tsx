@@ -88,7 +88,7 @@ export default function ProductPage() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="pt-32 pb-20 text-center max-w-7xl mx-auto px-4">
+        <div className="pt-40 pb-20 text-center max-w-7xl mx-auto px-4">
           <h1 className="text-3xl font-bold text-foreground mb-4">Product Not Found</h1>
           <p className="text-muted-foreground mb-8">The product you're looking for doesn't exist.</p>
           <Link href="/">
@@ -147,7 +147,7 @@ export default function ProductPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main>
-        <section className="pt-28 pb-4">
+        <section className="pt-36 pb-4">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <nav className="flex items-center gap-2 text-sm text-muted-foreground" data-testid="breadcrumb">
               <Link href="/" className="transition-colors hover:text-foreground" data-testid="breadcrumb-home">Home</Link>
@@ -225,7 +225,7 @@ export default function ProductPage() {
                 )}
               </div>
 
-              <div className="lg:sticky lg:top-24 lg:self-start space-y-6">
+              <div className="lg:sticky lg:top-32 lg:self-start space-y-6">
                 <div>
                   <p className="text-sm font-semibold text-primary uppercase tracking-wider mb-2" data-testid="text-product-category">
                     {category?.title}

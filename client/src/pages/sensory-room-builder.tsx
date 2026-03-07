@@ -1406,7 +1406,7 @@ export default function SensoryRoomBuilder() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      <div className="flex-1 flex flex-col lg:flex-row pt-16 lg:pt-20">
+      <div className="flex-1 flex flex-col lg:flex-row pt-[6.5rem] lg:pt-[6.5rem]">
         <aside className="w-full lg:w-80 xl:w-96 border-b lg:border-b-0 lg:border-r border-border/50 bg-card/50 flex flex-col" data-testid="sidebar-products">
           <div className="p-4 lg:p-5 border-b border-border/30">
             <h2 className="text-lg font-bold text-foreground mb-1" data-testid="heading-product-catalog">Product Catalog</h2>

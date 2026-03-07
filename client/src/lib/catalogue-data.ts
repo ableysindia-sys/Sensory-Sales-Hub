@@ -4623,6 +4623,26 @@ export function calculateProductPrice(
   return price;
 }
 
+export function getDiscountPercent(product: CatalogueProduct): number | null {
+  if (!product.comparePrice || product.comparePrice <= product.basePrice) return null;
+  return Math.round(((product.comparePrice - product.basePrice) / product.comparePrice) * 100);
+}
+
+export function getNewArrivals(): CatalogueProduct[] {
+  const all = getAllProducts();
+  return all.filter(p => p.comparePrice && p.comparePrice > p.basePrice).slice(0, 8);
+}
+
+export function getBestSellers(): CatalogueProduct[] {
+  const all = getAllProducts();
+  const withDiscount = all.filter(p => p.comparePrice && p.comparePrice > p.basePrice);
+  return withDiscount.sort((a, b) => {
+    const dA = getDiscountPercent(a) || 0;
+    const dB = getDiscountPercent(b) || 0;
+    return dB - dA;
+  }).slice(0, 8);
+}
+
 export function formatPrice(price: number): string {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",

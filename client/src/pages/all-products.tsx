@@ -44,7 +44,7 @@ export default function AllProducts() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <div className="pt-20 pb-16">
+      <div className="pt-28 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-8 sm:py-12">
             <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6" data-testid="breadcrumb-products">

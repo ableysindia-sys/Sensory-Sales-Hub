@@ -84,7 +84,7 @@ export default function EnquiryCartPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="pt-28 pb-20">
+      <main className="pt-36 pb-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-4 mb-8">
             <Link href="/">
@@ -193,7 +193,7 @@ export default function EnquiryCartPage() {
               </div>
 
               <div className="lg:col-span-2" data-testid="enquiry-form-section">
-                <div className="bg-card rounded-2xl border border-border/50 p-6 sticky top-28">
+                <div className="bg-card rounded-2xl border border-border/50 p-6 sticky top-36">
                   <h2 className="text-lg font-bold text-foreground mb-1">Submit Enquiry</h2>
                   <p className="text-sm text-muted-foreground mb-5">Fill in your details and we'll prepare a quote.</p>
 
