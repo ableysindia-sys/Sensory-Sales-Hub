@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { EnquiryCartProvider } from "@/lib/enquiry-cart";
 import { CartDrawer } from "@/components/cart-drawer";
+import { ChatWidget } from "@/components/chat-widget";
 import NotFound from "@/pages/not-found";
 import Home from "./pages/home";
 import CategoryPage from "./pages/category";
@@ -36,6 +37,7 @@ function App() {
           <EnquiryCartProvider>
             <Router />
             <CartDrawer />
+            <ChatWidget />
             <Toaster />
           </EnquiryCartProvider>
         </TooltipProvider>

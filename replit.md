@@ -1,11 +1,12 @@
 # Abley's Rehab - B2B/B2C Hybrid E-Commerce Platform
 
 ## Overview
-Premium Apple-style B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional therapy equipment company. Features product catalogue with 9 categories (40+ products), product configurator with dynamic pricing, Zustand shopping cart, mock Razorpay checkout, 3D sensory room builder, and B2B enquiry system.
+Premium Apple-style B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional therapy equipment company. Features product catalogue with 9 categories (40+ products), product configurator with dynamic pricing, Zustand shopping cart, mock Razorpay checkout, 3D sensory room builder, Gemini AI chat assistant, and B2B enquiry system.
 
 ## Architecture
 - **Frontend**: React + Tailwind CSS + shadcn/ui + Framer Motion + wouter (routing)
 - **Backend**: Express.js API
+- **AI**: Gemini 2.0 Flash via @google/generative-ai (GEMINI_API_KEY env var)
 - **Database**: PostgreSQL via Drizzle ORM
 - **State**: 
   - B2C Shopping Cart: Zustand with `persist` middleware (localStorage key: `ableys-shopping-cart`)
@@ -64,6 +65,7 @@ Swings (7), Ballpool (2), Mats (5), Movement & Balance (8), Climbing (3), ADL Ki
 - **Mock Checkout**: Razorpay-branded modal with payment tabs, simulated processing, success animation
 - **Order Confirmation**: Animated checkmark, order ID, delivery estimate
 - **3D Room Builder**: react-three-fiber therapy room with padded walls, ceiling suspension bar, window, door, baseboards; real product images in sidebar catalog (16 products); welcome overlay with 3-step guide; grouped categories with accordion; placed items list with thumbnails; buy/quote actions
+- **AI Chat Assistant**: Floating chat widget (bottom-right FAB) powered by Gemini 2.0 Flash; context-aware about Abley's products and therapy equipment; IP-based rate limiting (15 req/min); suggestion chips for common questions; conversation history maintained per session
 
 ## Database Schema
 - `products`: id, name, description, price (text), imageUrl
