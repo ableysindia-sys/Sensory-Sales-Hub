@@ -79,18 +79,18 @@ const LED_COLORS = [
 ];
 
 const WALL_COLORS = [
-  { name: "Cream", value: "#f0ebe5" },
-  { name: "Soft Blue", value: "#DBEAFE" },
-  { name: "Light Green", value: "#DCFCE7" },
+  { name: "Soft White", value: "#F8F6F3" },
+  { name: "Sky Blue", value: "#DBEAFE" },
+  { name: "Mint", value: "#D1FAE5" },
   { name: "Lavender", value: "#EDE9FE" },
   { name: "Peach", value: "#FED7AA" },
-  { name: "Light Grey", value: "#E5E7EB" },
+  { name: "Cloud Grey", value: "#F1F5F9" },
 ];
 
 const FLOOR_TYPES: { id: "wood" | "foam" | "rubber"; name: string; color: string; accent: string }[] = [
-  { id: "wood", name: "Wood", color: "#d4c8b8", accent: "#c9bfb0" },
-  { id: "foam", name: "Safety Foam", color: "#60A5FA", accent: "#3B82F6" },
-  { id: "rubber", name: "Rubber", color: "#6B7280", accent: "#4B5563" },
+  { id: "wood", name: "Oak Parquet", color: "#C4A882", accent: "#B89B72" },
+  { id: "foam", name: "Safety Foam", color: "#7DD3FC", accent: "#38BDF8" },
+  { id: "rubber", name: "Rubber Mat", color: "#475569", accent: "#334155" },
 ];
 
 const roomProducts: RoomProduct[] = [
@@ -144,7 +144,7 @@ const roomTemplates: RoomTemplate[] = [
     name: "OT Clinic Setup",
     description: "Professional occupational therapy room with balance, coordination and sensory tools",
     items: ["t-swing", "balance-board", "peanut-ball", "crash-mat", "weighted-vest", "stepping-stone", "activity-panel"],
-    settings: { ledColor: "#FEF3C7", wallPadColor: "#f0ebe5", floorType: "rubber" },
+    settings: { ledColor: "#FEF3C7", wallPadColor: "#F8F6F3", floorType: "rubber" },
   },
 ];
 
@@ -775,30 +775,46 @@ function ProductMesh({ item }: { item: PlacedItem }) {
 function TherapyRoom({ settings }: { settings: RoomSettings }) {
   const floorConfig = FLOOR_TYPES.find(f => f.id === settings.floorType) || FLOOR_TYPES[0];
   const ledOn = settings.ledColor !== "#000000";
+
+  const wallBaseColor = useMemo(() => {
+    const c = new THREE.Color(settings.wallPadColor);
+    return "#" + c.clone().lerp(new THREE.Color("#ffffff"), 0.15).getHexString();
+  }, [settings.wallPadColor]);
+
+  const padHighlight = useMemo(() => {
+    const c = new THREE.Color(settings.wallPadColor);
+    return "#" + c.clone().lerp(new THREE.Color("#ffffff"), 0.25).getHexString();
+  }, [settings.wallPadColor]);
+
+  const padShadow = useMemo(() => {
+    const c = new THREE.Color(settings.wallPadColor);
+    return "#" + c.clone().lerp(new THREE.Color("#000000"), 0.08).getHexString();
+  }, [settings.wallPadColor]);
+
   return (
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <planeGeometry args={[6, 6]} />
-        <meshStandardMaterial color={floorConfig.color} roughness={0.7} />
+        <meshStandardMaterial color={floorConfig.color} roughness={0.6} metalness={0.05} />
       </mesh>
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, 0]}>
         <planeGeometry args={[5.8, 5.8]} />
-        <meshStandardMaterial color={floorConfig.accent} roughness={0.9} transparent opacity={0.3} />
+        <meshStandardMaterial color={floorConfig.accent} roughness={0.8} transparent opacity={0.25} />
       </mesh>
 
       {settings.floorType === "wood" && (
         <>
-          {[...Array(6)].map((_, i) => (
-            <mesh key={`floorline-x-${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.002, -2.5 + i]}>
-              <planeGeometry args={[5.8, 0.01]} />
-              <meshStandardMaterial color="#b8ae9e" />
+          {[...Array(12)].map((_, i) => (
+            <mesh key={`plank-x-${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.002, -2.75 + i * 0.5]}>
+              <planeGeometry args={[5.8, 0.008]} />
+              <meshStandardMaterial color="#A08968" transparent opacity={0.5} />
             </mesh>
           ))}
-          {[...Array(6)].map((_, i) => (
-            <mesh key={`floorline-z-${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[-2.5 + i, 0.002, 0]}>
-              <planeGeometry args={[0.01, 5.8]} />
-              <meshStandardMaterial color="#b8ae9e" />
+          {[...Array(3)].map((_, i) => (
+            <mesh key={`plank-z-${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[-1.9 + i * 1.9, 0.002, 0]}>
+              <planeGeometry args={[0.005, 5.8]} />
+              <meshStandardMaterial color="#A08968" transparent opacity={0.3} />
             </mesh>
           ))}
         </>
@@ -807,135 +823,198 @@ function TherapyRoom({ settings }: { settings: RoomSettings }) {
       {settings.floorType === "foam" && (
         <>
           {[...Array(4)].map((_, row) =>
-            [...Array(4)].map((_, col) => (
-              <mesh key={`foam-${row}-${col}`} rotation={[-Math.PI / 2, 0, 0]} position={[-2.1 + col * 1.4, 0.003, -2.1 + row * 1.4]}>
-                <planeGeometry args={[1.35, 1.35]} />
-                <meshStandardMaterial color={(row + col) % 2 === 0 ? "#93C5FD" : "#60A5FA"} roughness={0.95} />
-              </mesh>
-            ))
+            [...Array(4)].map((_, col) => {
+              const colors = ["#7DD3FC", "#93C5FD", "#67E8F9", "#A5F3FC"];
+              return (
+                <mesh key={`foam-${row}-${col}`} rotation={[-Math.PI / 2, 0, 0]} position={[-2.1 + col * 1.4, 0.003, -2.1 + row * 1.4]}>
+                  <planeGeometry args={[1.35, 1.35]} />
+                  <meshStandardMaterial color={colors[(row + col) % colors.length]} roughness={0.9} />
+                </mesh>
+              );
+            })
           )}
+        </>
+      )}
+
+      {settings.floorType === "rubber" && (
+        <>
+          {[...Array(6)].map((_, i) => (
+            <mesh key={`rubber-dot-${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[-2 + i * 0.8, 0.003, -2 + i * 0.8]}>
+              <circleGeometry args={[0.03, 8]} />
+              <meshStandardMaterial color="#5B6675" />
+            </mesh>
+          ))}
         </>
       )}
 
       <mesh position={[0, 1.5, -3]} receiveShadow>
         <planeGeometry args={[6, 3]} />
-        <meshStandardMaterial color={settings.wallPadColor} roughness={0.95} />
+        <meshStandardMaterial color={wallBaseColor} roughness={0.85} />
       </mesh>
       <mesh position={[-3, 1.5, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[6, 3]} />
-        <meshStandardMaterial color={settings.wallPadColor} roughness={0.95} />
+        <meshStandardMaterial color={wallBaseColor} roughness={0.85} />
       </mesh>
       <mesh position={[3, 1.5, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[6, 3]} />
-        <meshStandardMaterial color={settings.wallPadColor} roughness={0.95} />
+        <meshStandardMaterial color={wallBaseColor} roughness={0.85} />
       </mesh>
 
       <group>
-        <mesh position={[0, 0.06, -2.99]}>
-          <boxGeometry args={[6, 0.12, 0.02]} />
-          <meshStandardMaterial color="#8B7355" roughness={0.6} />
+        <mesh position={[0, 0.05, -2.99]}>
+          <boxGeometry args={[6, 0.10, 0.03]} />
+          <meshStandardMaterial color="#E8DDD0" roughness={0.5} />
         </mesh>
-        <mesh position={[-2.99, 0.06, 0]} rotation={[0, Math.PI / 2, 0]}>
-          <boxGeometry args={[6, 0.12, 0.02]} />
-          <meshStandardMaterial color="#8B7355" roughness={0.6} />
+        <mesh position={[0, 0.005, -2.99]}>
+          <boxGeometry args={[6, 0.01, 0.035]} />
+          <meshStandardMaterial color="#D4C4B0" roughness={0.6} />
         </mesh>
-        <mesh position={[2.99, 0.06, 0]} rotation={[0, -Math.PI / 2, 0]}>
-          <boxGeometry args={[6, 0.12, 0.02]} />
-          <meshStandardMaterial color="#8B7355" roughness={0.6} />
+        <mesh position={[-2.99, 0.05, 0]} rotation={[0, Math.PI / 2, 0]}>
+          <boxGeometry args={[6, 0.10, 0.03]} />
+          <meshStandardMaterial color="#E8DDD0" roughness={0.5} />
+        </mesh>
+        <mesh position={[-2.99, 0.005, 0]} rotation={[0, Math.PI / 2, 0]}>
+          <boxGeometry args={[6, 0.01, 0.035]} />
+          <meshStandardMaterial color="#D4C4B0" roughness={0.6} />
+        </mesh>
+        <mesh position={[2.99, 0.05, 0]} rotation={[0, -Math.PI / 2, 0]}>
+          <boxGeometry args={[6, 0.10, 0.03]} />
+          <meshStandardMaterial color="#E8DDD0" roughness={0.5} />
+        </mesh>
+        <mesh position={[2.99, 0.005, 0]} rotation={[0, -Math.PI / 2, 0]}>
+          <boxGeometry args={[6, 0.01, 0.035]} />
+          <meshStandardMaterial color="#D4C4B0" roughness={0.6} />
         </mesh>
       </group>
 
       <group position={[-3, 1.5, 0]}>
         <mesh position={[0.01, 0.3, -0.5]} rotation={[0, Math.PI / 2, 0]}>
           <planeGeometry args={[1.2, 1.0]} />
-          <meshStandardMaterial color="#d6e8f5" roughness={0.3} metalness={0.1} />
+          <meshStandardMaterial color="#E3EDF7" roughness={0.2} metalness={0.05} transparent opacity={0.9} />
         </mesh>
         <mesh position={[0.02, 0.3, -0.5]} rotation={[0, Math.PI / 2, 0]}>
           <boxGeometry args={[1.24, 1.04, 0.03]} />
-          <meshStandardMaterial color="#9CA3AF" roughness={0.5} />
+          <meshStandardMaterial color="#CBD5E1" roughness={0.4} />
         </mesh>
         <mesh position={[0.025, 0.3, -0.5]} rotation={[0, Math.PI / 2, 0]}>
           <boxGeometry args={[1.2, 0.005, 0.04]} />
-          <meshStandardMaterial color="#7f8a96" roughness={0.5} />
+          <meshStandardMaterial color="#94A3B8" roughness={0.4} />
         </mesh>
         <mesh position={[0.025, 0.3, -0.5]} rotation={[0, Math.PI / 2, 0]}>
           <boxGeometry args={[0.005, 1.0, 0.04]} />
-          <meshStandardMaterial color="#7f8a96" roughness={0.5} />
+          <meshStandardMaterial color="#94A3B8" roughness={0.4} />
         </mesh>
       </group>
 
       <group position={[3, 0, 1]}>
         <mesh position={[-0.01, 1.1, 0]} rotation={[0, -Math.PI / 2, 0]}>
           <planeGeometry args={[1.0, 2.2]} />
-          <meshStandardMaterial color="#a08060" roughness={0.7} />
+          <meshStandardMaterial color="#B8956A" roughness={0.65} />
         </mesh>
         <mesh position={[-0.02, 1.1, 0]} rotation={[0, -Math.PI / 2, 0]}>
           <boxGeometry args={[1.04, 2.24, 0.03]} />
-          <meshStandardMaterial color="#8B7355" roughness={0.6} />
+          <meshStandardMaterial color="#A07850" roughness={0.55} />
         </mesh>
         <mesh position={[-0.03, 1.1, -0.35]} rotation={[0, -Math.PI / 2, 0]}>
           <sphereGeometry args={[0.03, 16, 16]} />
-          <meshStandardMaterial color="#C0A060" roughness={0.3} metalness={0.6} />
+          <meshStandardMaterial color="#D4A860" roughness={0.25} metalness={0.7} />
         </mesh>
       </group>
 
       <group position={[0, 2.95, 0]}>
         <mesh>
           <boxGeometry args={[4, 0.06, 0.06]} />
-          <meshStandardMaterial color="#6B7280" roughness={0.4} metalness={0.5} />
+          <meshStandardMaterial color="#94A3B8" roughness={0.3} metalness={0.6} />
         </mesh>
         {[-1.5, -0.5, 0.5, 1.5].map((x, i) => (
           <mesh key={`hook-${i}`} position={[x, -0.06, 0]}>
             <sphereGeometry args={[0.04, 12, 12]} />
-            <meshStandardMaterial color="#9CA3AF" roughness={0.3} metalness={0.7} />
+            <meshStandardMaterial color="#CBD5E1" roughness={0.25} metalness={0.8} />
           </mesh>
         ))}
         <mesh position={[-2, 0.03, 0]}>
           <boxGeometry args={[0.08, 0.08, 0.08]} />
-          <meshStandardMaterial color="#4B5563" roughness={0.5} metalness={0.5} />
+          <meshStandardMaterial color="#64748B" roughness={0.4} metalness={0.6} />
         </mesh>
         <mesh position={[2, 0.03, 0]}>
           <boxGeometry args={[0.08, 0.08, 0.08]} />
-          <meshStandardMaterial color="#4B5563" roughness={0.5} metalness={0.5} />
+          <meshStandardMaterial color="#64748B" roughness={0.4} metalness={0.6} />
         </mesh>
       </group>
 
-      {ledOn && (
-        <group>
-          <mesh position={[0, 2.97, -2.98]}>
-            <boxGeometry args={[5.8, 0.02, 0.02]} />
-            <meshStandardMaterial color={settings.ledColor} emissive={settings.ledColor} emissiveIntensity={settings.ledIntensity * 2} />
-          </mesh>
-          <mesh position={[-2.98, 2.97, 0]} rotation={[0, Math.PI / 2, 0]}>
-            <boxGeometry args={[5.8, 0.02, 0.02]} />
-            <meshStandardMaterial color={settings.ledColor} emissive={settings.ledColor} emissiveIntensity={settings.ledIntensity * 2} />
-          </mesh>
-          <mesh position={[2.98, 2.97, 0]} rotation={[0, -Math.PI / 2, 0]}>
-            <boxGeometry args={[5.8, 0.02, 0.02]} />
-            <meshStandardMaterial color={settings.ledColor} emissive={settings.ledColor} emissiveIntensity={settings.ledIntensity * 2} />
-          </mesh>
-          <pointLight position={[0, 2.8, -2.5]} intensity={settings.ledIntensity * 0.4} color={settings.ledColor} distance={5} />
-          <pointLight position={[-2.5, 2.8, 0]} intensity={settings.ledIntensity * 0.3} color={settings.ledColor} distance={4} />
-          <pointLight position={[2.5, 2.8, 0]} intensity={settings.ledIntensity * 0.3} color={settings.ledColor} distance={4} />
-        </group>
-      )}
+      <group>
+        <mesh position={[0, 2.97, -2.98]}>
+          <boxGeometry args={[5.8, 0.025, 0.025]} />
+          <meshStandardMaterial
+            color={ledOn ? settings.ledColor : "#E2E8F0"}
+            emissive={ledOn ? settings.ledColor : "#FEF9EF"}
+            emissiveIntensity={ledOn ? settings.ledIntensity * 2 : 0.15}
+          />
+        </mesh>
+        <mesh position={[-2.98, 2.97, 0]} rotation={[0, Math.PI / 2, 0]}>
+          <boxGeometry args={[5.8, 0.025, 0.025]} />
+          <meshStandardMaterial
+            color={ledOn ? settings.ledColor : "#E2E8F0"}
+            emissive={ledOn ? settings.ledColor : "#FEF9EF"}
+            emissiveIntensity={ledOn ? settings.ledIntensity * 2 : 0.15}
+          />
+        </mesh>
+        <mesh position={[2.98, 2.97, 0]} rotation={[0, -Math.PI / 2, 0]}>
+          <boxGeometry args={[5.8, 0.025, 0.025]} />
+          <meshStandardMaterial
+            color={ledOn ? settings.ledColor : "#E2E8F0"}
+            emissive={ledOn ? settings.ledColor : "#FEF9EF"}
+            emissiveIntensity={ledOn ? settings.ledIntensity * 2 : 0.15}
+          />
+        </mesh>
+        {ledOn && (
+          <>
+            <pointLight position={[0, 2.8, -2.5]} intensity={settings.ledIntensity * 0.4} color={settings.ledColor} distance={5} />
+            <pointLight position={[-2.5, 2.8, 0]} intensity={settings.ledIntensity * 0.3} color={settings.ledColor} distance={4} />
+            <pointLight position={[2.5, 2.8, 0]} intensity={settings.ledIntensity * 0.3} color={settings.ledColor} distance={4} />
+          </>
+        )}
+      </group>
 
       {[-2.5, -1.25, 0, 1.25, 2.5].map((x, i) => (
         <group key={`padpanel-${i}`}>
-          <mesh position={[x, 0.6, -2.98]}>
-            <boxGeometry args={[1.2, 1.15, 0.04]} />
-            <meshStandardMaterial color={settings.wallPadColor} roughness={0.95} />
+          <mesh position={[x, 0.6, -2.97]}>
+            <boxGeometry args={[1.18, 1.12, 0.06]} />
+            <meshStandardMaterial color={padShadow} roughness={0.92} />
           </mesh>
-          <mesh position={[x, 0.6, -2.96]}>
-            <boxGeometry args={[1.16, 1.11, 0.01]} />
-            <meshStandardMaterial color={settings.wallPadColor} roughness={0.98} />
+          <mesh position={[x, 0.6, -2.94]}>
+            <boxGeometry args={[1.12, 1.06, 0.02]} />
+            <meshStandardMaterial color={settings.wallPadColor} roughness={0.88} />
           </mesh>
+          <mesh position={[x, 0.6, -2.929]}>
+            <boxGeometry args={[1.06, 1.0, 0.005]} />
+            <meshStandardMaterial color={padHighlight} roughness={0.85} />
+          </mesh>
+          {[-0.35, 0, 0.35].map((yOff, j) => (
+            <mesh key={j} position={[x, 0.6 + yOff, -2.926]}>
+              <boxGeometry args={[1.0, 0.008, 0.005]} />
+              <meshStandardMaterial color={padShadow} transparent opacity={0.3} />
+            </mesh>
+          ))}
         </group>
       ))}
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 3.0, 0]}>
         <planeGeometry args={[6, 6]} />
-        <meshStandardMaterial color="#f5f3f0" roughness={0.95} />
+        <meshStandardMaterial color="#FAFAF9" roughness={0.9} />
+      </mesh>
+
+      <mesh position={[0, 2.98, -2.98]}>
+        <boxGeometry args={[5.9, 0.04, 0.04]} />
+        <meshStandardMaterial color="#E8E5E0" roughness={0.6} />
+      </mesh>
+      <mesh position={[-2.98, 2.98, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <boxGeometry args={[5.9, 0.04, 0.04]} />
+        <meshStandardMaterial color="#E8E5E0" roughness={0.6} />
+      </mesh>
+      <mesh position={[2.98, 2.98, 0]} rotation={[0, -Math.PI / 2, 0]}>
+        <boxGeometry args={[5.9, 0.04, 0.04]} />
+        <meshStandardMaterial color="#E8E5E0" roughness={0.6} />
       </mesh>
     </group>
   );
@@ -962,11 +1041,12 @@ function ZoomController({ controlsRef, zoomRef }: { controlsRef: React.RefObject
 function Scene({ placedItems, controlsRef, zoomRef, settings }: { placedItems: PlacedItem[]; controlsRef: React.RefObject<any>; zoomRef: React.MutableRefObject<((d: number) => void) | null>; settings: RoomSettings }) {
   return (
     <>
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[5, 8, 5]} intensity={0.9} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024} />
-      <pointLight position={[-2, 2.5, -1]} intensity={0.4} color="#fef3c7" />
-      <pointLight position={[1, 2.5, 1]} intensity={0.3} color="#f0f4ff" />
-      <hemisphereLight args={["#f0f4ff", "#d4c8b8", 0.3]} />
+      <ambientLight intensity={0.6} color="#FFF8F0" />
+      <directionalLight position={[5, 8, 5]} intensity={1.0} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} color="#FFF5E6" />
+      <pointLight position={[-2, 2.5, -1]} intensity={0.5} color="#FEF3C7" />
+      <pointLight position={[1, 2.5, 1]} intensity={0.4} color="#E0F2FE" />
+      <pointLight position={[0, 1.0, 2]} intensity={0.2} color="#FDE68A" />
+      <hemisphereLight args={["#EFF6FF", "#C4A882", 0.4]} />
       <TherapyRoom settings={settings} />
       {placedItems.map((item) => (
         <ProductMesh key={item.instanceId} item={item} />
@@ -1133,9 +1213,9 @@ export default function SensoryRoomBuilder() {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [showCustomize, setShowCustomize] = useState(false);
   const [roomSettings, setRoomSettings] = useState<RoomSettings>({
-    ledColor: "#000000",
-    ledIntensity: 0.5,
-    wallPadColor: "#f0ebe5",
+    ledColor: "#FEF3C7",
+    ledIntensity: 0.6,
+    wallPadColor: "#F8F6F3",
     floorType: "wood",
   });
   const { addToCart } = useShoppingCart();
@@ -1229,7 +1309,7 @@ export default function SensoryRoomBuilder() {
 
   const clearRoom = () => {
     setPlacedItems([]);
-    setRoomSettings({ ledColor: "#000000", ledIntensity: 0.5, wallPadColor: "#f0ebe5", floorType: "wood" });
+    setRoomSettings({ ledColor: "#FEF3C7", ledIntensity: 0.6, wallPadColor: "#F8F6F3", floorType: "wood" });
   };
 
   const totalCost = placedItems.reduce((sum, item) => sum + item.product.price, 0);
@@ -1405,7 +1485,7 @@ export default function SensoryRoomBuilder() {
           )}
 
           <div className="flex-1 min-h-[400px] lg:min-h-0">
-            <Canvas shadows camera={{ position: [4.5, 3.5, 4.5], fov: 45 }} style={{ background: "linear-gradient(180deg, #e8eef5 0%, #d4dce8 100%)" }} data-testid="canvas-3d">
+            <Canvas shadows camera={{ position: [4.5, 3.5, 4.5], fov: 45 }} style={{ background: "linear-gradient(180deg, #F0F4FA 0%, #E8EDF5 40%, #F5EDE3 100%)" }} data-testid="canvas-3d">
               <Suspense fallback={null}>
                 <Scene placedItems={placedItems} controlsRef={controlsRef} zoomRef={zoomRef} settings={roomSettings} />
               </Suspense>
