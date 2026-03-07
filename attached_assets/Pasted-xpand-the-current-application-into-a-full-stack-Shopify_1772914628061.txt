@@ -1,0 +1,41 @@
+xpand the current application into a full-stack, Shopify-inspired B2B/B2C hybrid architecture. The platform must seamlessly merge direct e-commerce checkout capabilities with B2B lead generation.
+
+#### 1. Tech Stack Additions
+- **E-commerce & State:** Use Next.js (App Router) for full-stack API routes. Use Zustand or React Context for Cart/Checkout state management.
+- **Payments:** Integrate Razorpay API scaffolding for the checkout flow.
+- **3D/AR:** Use `@react-three/fiber` and `@react-three/drei` to render the 3D Virtual Sensory Room environment.
+
+#### 2. Highly Engaging Product Detail Page (PDP)
+Create a premium, Apple-style Product Page component (e.g., for a "Therapeutic Bolster Swing" or "Weighted Vest").
+- **Layout:** Sticky right column for product actions, expansive left column for media and storytelling.
+- **Media Gallery:** Large, high-resolution image carousel with zoom capabilities.
+- **Storytelling:** Include sections for "Therapeutic Benefits," "Material Engineering," and "How it Helps" (using icons for Proprioceptive Input, Vestibular Focus, etc.).
+- **Product Customization Engine:** A clean, interactive configurator allowing users to select:
+  - Color (visual swatches)
+  - Material (e.g., Vinyl vs. Soft Fabric)
+  - Size/Weight (e.g., 5lbs, 7lbs, 22lbs for blankets)
+  - Add-ons (e.g., ceiling mount hardware)
+  *The price must dynamically update based on these selections.*
+- **Hybrid Conversion Actions (The B2B/B2C Merge):**
+  - Primary Button: "Add to Cart" / "Buy Now" (Triggers Razorpay checkout drawer).
+  - Secondary Action: "Request Bulk/Custom Quote" (Triggers a modal tied to the lead-gen form).
+
+#### 3. Razorpay Checkout Flow (UI & Scaffolding)
+- Build a slide-out Cart Drawer (`transform translate-x-full` transitions).
+- Include cart line items, subtotal, tax calculation placeholders, and a "Proceed to Checkout" button.
+- Create the dummy Razorpay integration: A mock function that opens a stylish, centered modal mimicking the Razorpay payment gateway interface, followed by a polished "Order Confirmed" success page.
+
+#### 4. 3D "Build Your Sensory Room" Visualizer
+Create a dedicated page route (`/sensory-room-builder`) that acts as an interactive sales tool.
+- **The Environment:** Use `react-three-fiber` to render a clean, well-lit, minimal 3D room (walls, floor, soft ambient lighting).
+- **The UI Overlay:** A sleek sidebar catalog containing Abley's core products (Swings, Crash Mats, Therapy Balls, Bubble Tubes).
+- **Interactivity:**
+  - Users can click products in the sidebar to spawn them into the 3D room.
+  - Users can use `OrbitControls` (from drei) to rotate, pan, and zoom around the room to see the setup from multiple angles.
+  - Include an "AR View" button (placeholder UI indicating mobile AR capability).
+- **Checkout Integration:** A floating bottom bar summarizing the total cost of all items currently placed in the 3D room, with a "Buy Room Setup" or "Get Quote for Setup" button.
+
+#### 5. Output Instructions for Phase 2
+- Generate the necessary Next.js folder structure for these routes (`/products/[slug]`, `/checkout`, `/sensory-room-builder`).
+- Write the `react-three-fiber` canvas component with basic geometric placeholders (cylinders for swings, boxes for mats) if complex GLTF models are not available.
+- Ensure the UI remains incredibly polished, spacious, and consistent with the high-trust, professional medical/therapy aesthetic established in Phase 1.

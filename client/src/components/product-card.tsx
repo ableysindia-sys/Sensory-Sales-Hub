@@ -2,8 +2,9 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Eye, CheckCircle2, Package } from "lucide-react";
 import { Link } from "wouter";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
+import { useShoppingCart } from "@/lib/shopping-cart";
 import type { CatalogueProduct } from "@/lib/catalogue-data";
-import { getProductCategory } from "@/lib/catalogue-data";
+import { getProductCategory, formatPrice } from "@/lib/catalogue-data";
 
 interface ProductCardProps {
   product: CatalogueProduct;
@@ -11,6 +12,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem, isInCart } = useEnquiryCart();
+  const { addToCart } = useShoppingCart();
   const category = getProductCategory(product);
   const inCart = isInCart(product.id);
 
@@ -34,7 +36,10 @@ export function ProductCard({ product }: ProductCardProps) {
           <h3 className="text-base font-bold text-foreground mb-2" data-testid={`text-product-name-${product.id}`}>
             {product.name}
           </h3>
-          <p className="text-sm text-muted-foreground leading-relaxed mb-4">{product.shortDescription}</p>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-3">{product.shortDescription}</p>
+          <p className="text-lg font-bold text-foreground tabular-nums mb-4" data-testid={`text-product-price-${product.id}`}>
+            {formatPrice(product.basePrice)}
+          </p>
         </div>
 
         <div className="space-y-2">
@@ -53,32 +58,40 @@ export function ProductCard({ product }: ProductCardProps) {
             <Button
               size="sm"
               className="flex-1 rounded-full text-xs gap-1.5 shadow-sm"
+              onClick={() => addToCart({
+                productId: product.id,
+                productName: product.name,
+                category: category?.title || "",
+                unitPrice: product.basePrice,
+                config: { addons: [] },
+              })}
+              data-testid={`button-add-cart-${product.id}`}
+            >
+              <ShoppingCart className="w-3.5 h-3.5" />
+              Add to Cart
+            </Button>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex-1 rounded-full text-xs gap-1.5 text-muted-foreground"
               onClick={() => addItem(product.id, product.name, category?.title || "")}
               data-testid={`button-add-enquiry-${product.id}`}
             >
               {inCart ? (
                 <>
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  Added
+                  <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+                  In Enquiry
                 </>
               ) : (
                 <>
-                  <ShoppingCart className="w-3.5 h-3.5" />
+                  <Package className="w-3.5 h-3.5" />
                   Add to Enquiry
                 </>
               )}
             </Button>
           </div>
-          <Link href="/enquiry" className="block">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full rounded-full text-xs gap-1.5 text-primary hover:text-primary"
-              data-testid={`button-bulk-quote-${product.id}`}
-            >
-              Request Bulk Quote
-            </Button>
-          </Link>
         </div>
       </div>
     </div>

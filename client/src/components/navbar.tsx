@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ShoppingCart, ChevronDown, Send } from "lucide-react";
+import { Menu, X, ShoppingCart, ChevronDown, Send, Box } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
+import { useShoppingCart } from "@/lib/shopping-cart";
 import { categories } from "@/lib/catalogue-data";
 import logoPath from "@assets/ableys_rehab_logo.png";
 
@@ -10,17 +11,19 @@ const navLinks = [
   { label: "Home", href: "/" },
   { label: "Products", href: "#products", hasDropdown: true },
   { label: "Categories", href: "/#categories" },
+  { label: "Room Builder", href: "/sensory-room-builder" },
   { label: "Bulk Orders", href: "/enquiry" },
-  { label: "Custom Tools", href: "/enquiry" },
   { label: "Contact", href: "/#enquiry" },
 ];
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [productsOpen, setProductsOpen] = useState(false);
-  const { getItemCount } = useEnquiryCart();
+  const { getItemCount: getEnquiryCount } = useEnquiryCart();
+  const { getItemCount: getCartCount, openDrawer } = useShoppingCart();
   const [location, navigate] = useLocation();
-  const itemCount = getItemCount();
+  const enquiryCount = getEnquiryCount();
+  const cartCount = getCartCount();
 
   const handleNavClick = (href: string) => {
     setMobileOpen(false);
@@ -84,7 +87,7 @@ export function Navbar() {
                   key={link.label}
                   onClick={() => handleNavClick(link.href)}
                   className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/50"
-                  data-testid={`link-nav-${link.label.toLowerCase().replace(/\s+/g, '-')}`}
+                  data-testid={`link-nav-${link.label.toLowerCase().replace(/\s+/g, "-")}`}
                 >
                   {link.label}
                 </button>
@@ -92,14 +95,26 @@ export function Navbar() {
             )}
           </div>
 
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2">
+            <button
+              onClick={openDrawer}
+              className="relative p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
+              data-testid="button-nav-shopping-cart"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg shadow-primary/30" data-testid="badge-shopping-cart-count">
+                  {cartCount}
+                </span>
+              )}
+            </button>
             <Link href="/enquiry">
               <Button variant="outline" size="sm" className="rounded-full relative gap-2 border-border/60 hover:border-primary/30 hover:bg-primary/5 transition-all" data-testid="button-nav-cart">
-                <ShoppingCart className="w-4 h-4" />
-                Enquiry Cart
-                {itemCount > 0 && (
+                <Box className="w-4 h-4" />
+                Enquiry
+                {enquiryCount > 0 && (
                   <span className="absolute -top-2 -right-2 w-5 h-5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg shadow-primary/30" data-testid="badge-cart-count">
-                    {itemCount}
+                    {enquiryCount}
                   </span>
                 )}
               </Button>
@@ -113,12 +128,24 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-2 lg:hidden">
+            <button
+              onClick={openDrawer}
+              className="relative p-2 rounded-full text-muted-foreground"
+              data-testid="button-mobile-shopping-cart"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-primary-foreground text-[9px] font-bold rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </button>
             <Link href="/enquiry">
               <Button variant="ghost" size="icon" className="relative" data-testid="button-mobile-cart">
-                <ShoppingCart className="w-5 h-5" />
-                {itemCount > 0 && (
+                <Box className="w-5 h-5" />
+                {enquiryCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-primary-foreground text-[9px] font-bold rounded-full flex items-center justify-center">
-                    {itemCount}
+                    {enquiryCount}
                   </span>
                 )}
               </Button>
@@ -178,18 +205,18 @@ export function Navbar() {
               Categories
             </button>
             <button
+              onClick={() => handleNavClick("/sensory-room-builder")}
+              className="block w-full text-left px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all"
+              data-testid="link-mobile-room-builder"
+            >
+              Room Builder
+            </button>
+            <button
               onClick={() => handleNavClick("/enquiry")}
               className="block w-full text-left px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all"
               data-testid="link-mobile-bulk-orders"
             >
               Bulk Orders
-            </button>
-            <button
-              onClick={() => handleNavClick("/enquiry")}
-              className="block w-full text-left px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all"
-              data-testid="link-mobile-custom-tools"
-            >
-              Custom Tools
             </button>
             <button
               onClick={() => handleNavClick("/#enquiry")}
