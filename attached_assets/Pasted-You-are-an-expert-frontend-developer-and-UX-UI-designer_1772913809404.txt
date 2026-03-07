@@ -1,0 +1,107 @@
+You are an expert frontend developer and UX/UI designer. Your task is to build a premium, Apple-style responsive single-page website for "Abley’s Rehab" using React, Tailwind CSS, and Lucide React (for icons).
+
+### 1. Brand Context, Objective & Data Source
+Abley’s is an established Indian brand providing sensory toys and tools. "Abley’s Rehab" is their new B2B-first subdomain dedicated to equipping experts (occupational therapists, rehab centres, special schools, hospitals) with professional-grade therapy tools.
+**Important Instruction:** Throughout the design, keep the core offerings of the main website (https://ableys.in) in mind. If you need to generate placeholder text, product descriptions, or context for imagery, infer it from the high-quality sensory and deep-pressure products found on Abley's main site.
+
+### 2. Design System & Visual Language
+- **Vibe:** Minimal, elegant, modern, spacious, high-trust, and product-led. It must feel like an Apple product page (engineered, premium, polished) adapted for professional medical/therapy equipment.
+- **Colors:** - Primary/Hero: `#4A53A0`
+  - Secondary: Pure White, Light Grey (e.g., `bg-gray-50`), Charcoal Black (e.g., `text-gray-900`).
+- **Typography:** Use a clean, modern sans-serif (Inter or system-ui). Use large, bold typography for headings with tight tracking, and highly readable, spacious body text.
+- **UI Elements:** Soft, diffused shadows (`shadow-xl` on hover), large corner radiuses for sections (`rounded-3xl`), clean premium cards, subtle gradient backgrounds, and refined monochrome iconography.
+
+---
+
+### 3. Granular Page Architecture & Content Mapping
+
+#### A. Navigation / Header
+- **Layout:** Sticky, blurred glassmorphism background (`backdrop-blur-md`).
+- **Left:** Abley’s Rehab logo placeholder (bold, elegant text).
+- **Center Links:** Home, Products, Categories, Bulk Orders, Custom Tools, Contact.
+- **Right:** "Enquiry Cart" (with a small badge/icon) and a premium "Bulk Enquiry" button.
+
+#### B. Hero Section
+- **Visual Instruction:** The hero should feature a stunning, high-quality background or right-aligned image area depicting an *elaborate, high-end sensory room setup* with Abley’s products (e.g., a bolster swing and crash mat) in sharp focus. Use soft, natural, calming lighting.
+- **Top Tagline:** B2B Professional Equipment
+- **Headline:** Professional Therapy Tools for Experts
+- **Subheadline:** High-quality occupational therapy and rehabilitation tools for clinics, therapy centres, hospitals, and institutions.
+- **Motto Block:** "When experts are equipped with professional tools, magic happens." (Style this as a standout quote).
+- **Data/Stats Row (Floating Cards below text):** - Swings: 7 Products
+  - Mats: 5 Products
+  - Deep Pressure: 4 Products
+  - Total Categories: 9 Professional Lines
+- **CTAs:** Primary: "Browse Products" (Solid #4A53A0). Secondary: "Bulk Enquiry" (Ghost).
+
+#### C. Trust Strip
+- **Layout:** A clean, horizontal strip below the hero.
+- **Items (Include Lucide icons for each):** Made in India, Made with Love, 6 Months Warranty, Trusted by Professionals, Bulk Orders Supported, Customization Available.
+
+#### D. Category Showcase Grid
+- **Header:** "Product Range" (Eyebrow) / "Professional Categories" (Main).
+- **Description:** "Explore our comprehensive range of therapy and rehabilitation equipment, built for professional use."
+- **Visual Instruction:** Create a CSS Grid of premium cards. Each card needs an elegant placeholder image (representing the category), the title, a short description, a subtle pill showing the product count, and a list of specific sub-products (truncate with "+X more" if too long), followed by a "View Products" CTA.
+- **Data to map:**
+  1. **Swings:** Vestibular input swings for therapy and sensory integration. (7) Bolster Swing, T Swing, Disc Swing, Platform Swing, Tube Swing, Lycra Swing, +1 more.
+  2. **Ballpool:** Therapeutic ballpools for sensory rooms and clinics. (2) 4x4 Ballpool, 6x4 Ballpool.
+  3. **Mats:** Safety and therapy mats for professional environments. (5) Crash Mat, Therapy Mat, Floormat, Interlocking Mat, Foldable Mat.
+  4. **Movement & Balance:** Motor planning and balance training equipment. (8) Kidlite Barrel, Balance Board, Balance Beam, Stepping Stone, Wedges, Jumping Stool, +2 more.
+  5. **Climbing:** Climbing structures for strength and coordination. (3) Climb Board, Wall Bar Ladder, Spider Climb Net.
+  6. **ADL Kit:** Activities of Daily Living kits for functional training. (3) 4 Page Kit, 5 Page Kit, 6 Page Kit.
+  7. **Therapy Balls:** Professional-grade therapy balls for rehabilitation. (4) Gym Ball, Bosu Ball, Peanut Ball, Medicine Ball.
+  8. **Deep Pressure:** Weighted products for proprioceptive input and calming. (4) Weighted Vest, Weighted Blanket, Sensory Sock, Lap Pad.
+  9. **Visual:** Visual sensory equipment for therapy and sensory rooms. (6) Hexwall Touch Light, Liquid Motion Tiles, Glitter Pad, Glitter Capillary, Fibre Light, Bubble Tube.
+
+#### E. Featured Engineering / Manufacturing Quality
+- **Header:** "Engineering Quality" (Eyebrow) / "Built for Professional Use" (Main).
+- **Description:** "Every product is engineered for everyday therapy. High-quality manufacturing, thoughtfully designed for durability, safety, and therapist-friendly operation."
+- **Visual Instruction:** Apple-style technical layout. A large central product render (placeholder) surrounded by clean, floating text nodes pointing to the image.
+- **Nodes/Callouts:**
+  - Precision Engineering: Rigorous quality testing before leaving our facility.
+  - Reinforced Stitching: Double and triple-stitched seams.
+  - Durable Suspension Points: Exceeds safety standards for swings.
+  - Premium Foam Density: Maintains shape through years of use.
+  - Easy-Clean Finish: Antimicrobial, wipeable surfaces.
+  - Safe Edges & Corners: Rounded, padded edges to prevent injury.
+  - Long-Life Construction: Institutional-grade longevity.
+
+#### F. Why Choose Us (Features Grid)
+- **Header:** "Why Choose Us" / "The Abley's Advantage"
+- **Visual Instruction:** Grid of minimal icon cards with large whitespace.
+- **Content:** Institutional Grade, High Durability, Therapist Friendly, Easy to Clean, Customizable, Bulk Ordering, Made in India, 6 Months Warranty. (Use the descriptions provided in the initial draft).
+
+#### G. Client Logos Trust Section
+- **Header:** Trusted by Centres, Clinics & Institutions
+- **Visual Instruction:** A very subtle, grayscale 4x3 grid of 12 placeholder logo slots. Style them like premium SaaS trust sections.
+
+#### H. Bulk & Customization Enquiry Form
+- **Header:** Get in Touch / Bulk Orders & Custom Therapy Setups
+- **Subheading:** Whether you're setting up a rehab centre, sensory gym, therapy room, or institutional program, our team can help with bulk requirements and customized tools.
+- **Highlights:** Include small bullet points for "Quick response within 24 hours" and "Custom quotes for institutional orders".
+- **Form Fields (Floating label style):** - Full Name *
+  - Organisation / Clinic
+  - Email *
+  - Phone Number
+  - City / Country
+  - Category Interested In (Dropdown: Swings, Ballpool, Mats, Movement & Balance, Climbing, ADL Kit, Therapy Balls, Deep Pressure, Visual, Multiple Categories)
+  - Requirement Type (Dropdown: Bulk Order, Customization, New Centre Setup)
+  - Message (Textarea)
+- **Buttons:** Submit Enquiry (Primary), Talk to Our Team (Ghost/Outline).
+
+#### I. Platform Growth / Roadmap
+- **Header:** Platform Growth / Expanding Our Professional Range
+- **Visual Instruction:** Elegant cards that signal future scale. Use a bright green "Live" badge and subtle grey "Coming Soon" badges.
+- **Cards:** - OT Tools (Live): Comprehensive occupational therapy equipment.
+  - Sensory Room (Coming Soon): Complete sensory room solutions.
+  - Physiotherapy (Coming Soon): Professional physiotherapy equipment.
+  - Speech Tools (Coming Soon): Specialized tools for speech and language.
+
+#### J. Footer
+- **Visual Instruction:** Dark, premium footer.
+- **Left Column:** Abley's Rehab Logo, "Professional therapy tools for experts. Equipping therapists, centres, clinics, and institutions.", Badges for Made in India, 6 Months Warranty, B2B Ready.
+- **Link Columns:** - Categories (Swings, Ballpool, Mats, Movement & Balance, Climbing, ADL Kit, Therapy Balls, Deep Pressure, Visual)
+  - Services (Bulk Orders, Customization, New Centre Setup, Consultation)
+  - Company (About Us, Quality Standards, Contact, Careers)
+
+### Output Execution Instructions
+Write all the necessary React components and Tailwind classes. Create a single, highly polished, visually complete file or structure. Prioritize visual polish, padding (`py-24`, `px-8`), and smooth hover micro-interactions. Ensure it looks like a high-end presentation-ready UI, not a wireframe.
