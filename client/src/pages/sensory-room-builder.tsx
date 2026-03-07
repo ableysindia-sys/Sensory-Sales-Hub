@@ -21,6 +21,8 @@ import {
   Palette,
   Sparkles,
   X,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Link } from "wouter";
 import * as THREE from "three";
@@ -57,6 +59,7 @@ interface RoomSettings {
   ledIntensity: number;
   wallPadColor: string;
   floorType: "wood" | "foam" | "rubber";
+  roomMode: "light" | "dark";
 }
 
 interface RoomTemplate {
@@ -123,28 +126,35 @@ const roomTemplates: RoomTemplate[] = [
     name: "Calming Retreat",
     description: "A soothing space with soft lighting, bubble tubes and deep pressure tools",
     items: ["bubble-tube", "weighted-blanket", "fiber-optic-curtain", "interlocking-mat", "liquid-tiles"],
-    settings: { ledColor: "#C4B5FD", wallPadColor: "#EDE9FE", floorType: "foam" },
+    settings: { ledColor: "#C4B5FD", wallPadColor: "#EDE9FE", floorType: "foam", roomMode: "light" },
   },
   {
     id: "active-therapy",
     name: "Active Therapy Room",
     description: "Designed for vestibular and movement therapy with swings, climbing and trampolines",
     items: ["bolster-swing", "platform-swing", "trampoline", "crash-mat", "climbing-wall", "stepping-stone"],
-    settings: { ledColor: "#FEF3C7", wallPadColor: "#DBEAFE", floorType: "rubber" },
+    settings: { ledColor: "#FEF3C7", wallPadColor: "#DBEAFE", floorType: "rubber", roomMode: "light" },
+  },
+  {
+    id: "dark-sensory",
+    name: "Dark Sensory Room",
+    description: "Immersive dark environment where LED, fiber optics, projectors and liquid tiles glow vividly",
+    items: ["bubble-tube", "fiber-optic-curtain", "floor-projector", "liquid-tiles", "liquid-tiles"],
+    settings: { ledColor: "#C4B5FD", ledIntensity: 0.8, wallPadColor: "#1E1E2E", floorType: "rubber", roomMode: "dark" },
   },
   {
     id: "sensory-explorer",
     name: "Sensory Explorer",
     description: "Multi-sensory stimulation with interactive projector, activity panels and visual tools",
     items: ["floor-projector", "activity-panel", "bubble-tube", "soft-play-set", "gym-ball", "liquid-tiles"],
-    settings: { ledColor: "#93C5FD", wallPadColor: "#DCFCE7", floorType: "foam" },
+    settings: { ledColor: "#93C5FD", wallPadColor: "#DCFCE7", floorType: "foam", roomMode: "light" },
   },
   {
     id: "ot-clinic",
     name: "OT Clinic Setup",
     description: "Professional occupational therapy room with balance, coordination and sensory tools",
     items: ["t-swing", "balance-board", "peanut-ball", "crash-mat", "weighted-vest", "stepping-stone", "activity-panel"],
-    settings: { ledColor: "#FEF3C7", wallPadColor: "#F8F6F3", floorType: "rubber" },
+    settings: { ledColor: "#FEF3C7", wallPadColor: "#F8F6F3", floorType: "rubber", roomMode: "light" },
   },
 ];
 
@@ -346,7 +356,7 @@ function BallPeanut({ item }: { item: PlacedItem }) {
   );
 }
 
-function BubbleTube({ item }: { item: PlacedItem }) {
+function BubbleTube({ item, isDark = false }: { item: PlacedItem; isDark?: boolean }) {
   const x = item.position[0];
   const wallZ = -2.85;
   const bubblesRef = useRef<THREE.Group>(null);
@@ -358,21 +368,22 @@ function BubbleTube({ item }: { item: PlacedItem }) {
       });
     }
   });
+  const glowMult = isDark ? 2.5 : 1;
   return (
     <group position={[x, 0, wallZ]}>
       <mesh position={[0, 0.6, 0]} castShadow>
         <cylinderGeometry args={[0.1, 0.12, 1.2, 24]} />
-        <meshStandardMaterial color={item.product.color} transparent opacity={0.45} roughness={0.1} metalness={0.2} />
+        <meshStandardMaterial color={item.product.color} transparent opacity={isDark ? 0.6 : 0.45} roughness={0.1} metalness={0.2} emissive={isDark ? item.product.color : "#000000"} emissiveIntensity={isDark ? 0.4 : 0} />
       </mesh>
       <mesh position={[0, 0.6, 0]}>
         <cylinderGeometry args={[0.08, 0.1, 1.18, 24]} />
-        <meshStandardMaterial color={item.product.accentColor} transparent opacity={0.3} emissive={item.product.color} emissiveIntensity={0.6} roughness={0.05} />
+        <meshStandardMaterial color={item.product.accentColor} transparent opacity={isDark ? 0.5 : 0.3} emissive={item.product.color} emissiveIntensity={0.6 * glowMult} roughness={0.05} />
       </mesh>
       <group ref={bubblesRef}>
         {[0.15, 0.35, 0.55, 0.75, 0.95].map((y, i) => (
           <mesh key={i} position={[Math.sin(i * 1.8) * 0.04, y, Math.cos(i * 1.8) * 0.04]}>
             <sphereGeometry args={[0.02 + (i % 2) * 0.01, 8, 8]} />
-            <meshStandardMaterial color="#ffffff" transparent opacity={0.7} emissive={item.product.accentColor} emissiveIntensity={0.8} />
+            <meshStandardMaterial color="#ffffff" transparent opacity={isDark ? 0.9 : 0.7} emissive={item.product.accentColor} emissiveIntensity={0.8 * glowMult} />
           </mesh>
         ))}
       </group>
@@ -384,23 +395,25 @@ function BubbleTube({ item }: { item: PlacedItem }) {
         <cylinderGeometry args={[0.13, 0.13, 0.04, 24]} />
         <meshStandardMaterial color="#374151" roughness={0.4} metalness={0.3} />
       </mesh>
-      <pointLight position={[0, 0.6, 0.15]} intensity={0.3} color={item.product.color} distance={1.5} />
+      <pointLight position={[0, 0.6, 0.15]} intensity={isDark ? 0.8 : 0.3} color={item.product.color} distance={isDark ? 3 : 1.5} />
     </group>
   );
 }
 
-function FiberOpticCurtain({ item }: { item: PlacedItem }) {
+function FiberOpticCurtain({ item, isDark = false }: { item: PlacedItem; isDark?: boolean }) {
   const x = item.position[0];
   const wallZ = -2.92;
   const strandsRef = useRef<THREE.Group>(null);
   const timeRef = useRef(0);
+  const glowMult = isDark ? 2.5 : 1;
   useFrame((_, delta) => {
     timeRef.current += delta;
     if (strandsRef.current) {
       strandsRef.current.children.forEach((child, i) => {
         const mat = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
         const hue = ((timeRef.current * 0.15 + i * 0.05) % 1);
-        mat.emissive.setHSL(hue, 0.8, 0.5);
+        mat.emissive.setHSL(hue, isDark ? 1.0 : 0.8, isDark ? 0.6 : 0.5);
+        mat.emissiveIntensity = 0.9 * glowMult;
       });
     }
   });
@@ -414,42 +427,44 @@ function FiberOpticCurtain({ item }: { item: PlacedItem }) {
         {Array.from({ length: 20 }).map((_, i) => (
           <mesh key={i} position={[-0.45 + i * 0.047, 1.25, 0.01]}>
             <cylinderGeometry args={[0.004, 0.004, 2.4, 4]} />
-            <meshStandardMaterial color="#ffffff" transparent opacity={0.8} emissive={item.product.color} emissiveIntensity={0.9} />
+            <meshStandardMaterial color="#ffffff" transparent opacity={isDark ? 0.95 : 0.8} emissive={item.product.color} emissiveIntensity={0.9 * glowMult} />
           </mesh>
         ))}
       </group>
-      <pointLight position={[0, 1.5, 0.2]} intensity={0.2} color={item.product.color} distance={2} />
+      <pointLight position={[0, 1.5, 0.2]} intensity={isDark ? 0.6 : 0.2} color={item.product.color} distance={isDark ? 4 : 2} />
     </group>
   );
 }
 
-function FloorProjector({ item }: { item: PlacedItem }) {
+function FloorProjector({ item, isDark = false }: { item: PlacedItem; isDark?: boolean }) {
   const x = item.position[0];
   const z = item.position[2];
   const projRef = useRef<THREE.Mesh>(null);
   const timeRef = useRef(0);
+  const glowMult = isDark ? 2.5 : 1;
   useFrame((_, delta) => {
     timeRef.current += delta;
     if (projRef.current) {
       const mat = projRef.current.material as THREE.MeshStandardMaterial;
       const hue = (timeRef.current * 0.1) % 1;
-      mat.emissive.setHSL(hue, 0.6, 0.3);
-      mat.color.setHSL(hue, 0.4, 0.5);
+      mat.emissive.setHSL(hue, isDark ? 0.9 : 0.6, isDark ? 0.5 : 0.3);
+      mat.emissiveIntensity = 0.5 * glowMult;
+      mat.color.setHSL(hue, isDark ? 0.7 : 0.4, isDark ? 0.6 : 0.5);
     }
   });
   return (
     <group position={[x, 0, z]}>
       <mesh ref={projRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.005, 0]} receiveShadow>
         <circleGeometry args={[0.8, 32]} />
-        <meshStandardMaterial color={item.product.color} transparent opacity={0.4} emissive={item.product.color} emissiveIntensity={0.5} roughness={0.1} />
+        <meshStandardMaterial color={item.product.color} transparent opacity={isDark ? 0.7 : 0.4} emissive={item.product.color} emissiveIntensity={0.5 * glowMult} roughness={0.1} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.006, 0]}>
         <ringGeometry args={[0.6, 0.62, 32]} />
-        <meshStandardMaterial color="#ffffff" transparent opacity={0.3} emissive="#ffffff" emissiveIntensity={0.3} />
+        <meshStandardMaterial color="#ffffff" transparent opacity={isDark ? 0.6 : 0.3} emissive="#ffffff" emissiveIntensity={0.3 * glowMult} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.006, 0]}>
         <ringGeometry args={[0.3, 0.32, 32]} />
-        <meshStandardMaterial color="#ffffff" transparent opacity={0.3} emissive="#ffffff" emissiveIntensity={0.3} />
+        <meshStandardMaterial color="#ffffff" transparent opacity={isDark ? 0.6 : 0.3} emissive="#ffffff" emissiveIntensity={0.3 * glowMult} />
       </mesh>
       <mesh position={[0, 2.9, 0]}>
         <boxGeometry args={[0.2, 0.08, 0.15]} />
@@ -459,6 +474,7 @@ function FloorProjector({ item }: { item: PlacedItem }) {
         <cylinderGeometry args={[0.03, 0.05, 0.04, 8]} />
         <meshStandardMaterial color="#4B5563" roughness={0.3} metalness={0.5} />
       </mesh>
+      <pointLight position={[0, 0.3, 0]} intensity={isDark ? 0.5 : 0} color={item.product.color} distance={isDark ? 3 : 0} />
     </group>
   );
 }
@@ -569,23 +585,25 @@ function SoftPlayShapes({ item }: { item: PlacedItem }) {
   );
 }
 
-function LiquidTile({ item }: { item: PlacedItem }) {
+function LiquidTile({ item, isDark = false }: { item: PlacedItem; isDark?: boolean }) {
   const x = item.position[0];
   const z = item.position[2];
+  const glowMult = isDark ? 2.5 : 1;
   return (
     <group position={[x, 0, z]}>
       <mesh position={[0, 0.012, 0]} receiveShadow>
         <boxGeometry args={[0.5, 0.024, 0.5]} />
-        <meshStandardMaterial color={item.product.color} transparent opacity={0.7} roughness={0.1} metalness={0.1} />
+        <meshStandardMaterial color={item.product.color} transparent opacity={isDark ? 0.85 : 0.7} roughness={0.1} metalness={0.1} emissive={isDark ? item.product.color : "#000000"} emissiveIntensity={isDark ? 0.5 : 0} />
       </mesh>
       <mesh position={[0, 0.025, 0]}>
         <boxGeometry args={[0.46, 0.003, 0.46]} />
-        <meshStandardMaterial color={item.product.accentColor} transparent opacity={0.5} emissive={item.product.color} emissiveIntensity={0.4} roughness={0.05} />
+        <meshStandardMaterial color={item.product.accentColor} transparent opacity={isDark ? 0.8 : 0.5} emissive={item.product.color} emissiveIntensity={0.4 * glowMult} roughness={0.05} />
       </mesh>
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[0.52, 0.008, 0.52]} />
         <meshStandardMaterial color="#374151" roughness={0.5} />
       </mesh>
+      {isDark && <pointLight position={[0, 0.1, 0]} intensity={0.15} color={item.product.color} distance={1} />}
     </group>
   );
 }
@@ -746,7 +764,7 @@ function WeightedBlanket({ item }: { item: PlacedItem }) {
   );
 }
 
-function ProductMesh({ item }: { item: PlacedItem }) {
+function ProductMesh({ item, isDark }: { item: PlacedItem; isDark: boolean }) {
   switch (item.product.placement) {
     case "swing-bolster": return <SwingBolster item={item} />;
     case "swing-disc": return <SwingDisc item={item} />;
@@ -756,10 +774,10 @@ function ProductMesh({ item }: { item: PlacedItem }) {
     case "mat-tiles": return <MatTiles item={item} />;
     case "ball-round": return <BallRound item={item} />;
     case "ball-peanut": return <BallPeanut item={item} />;
-    case "tube-bubble": return <BubbleTube item={item} />;
-    case "tile-liquid": return <LiquidTile item={item} />;
-    case "fiber-optic": return <FiberOpticCurtain item={item} />;
-    case "floor-projector": return <FloorProjector item={item} />;
+    case "tube-bubble": return <BubbleTube item={item} isDark={isDark} />;
+    case "tile-liquid": return <LiquidTile item={item} isDark={isDark} />;
+    case "fiber-optic": return <FiberOpticCurtain item={item} isDark={isDark} />;
+    case "floor-projector": return <FloorProjector item={item} isDark={isDark} />;
     case "board-balance": return <BalanceBoard item={item} />;
     case "stones-stepping": return <SteppingStones item={item} />;
     case "trampoline": return <TrampolineMesh item={item} />;
@@ -775,32 +793,38 @@ function ProductMesh({ item }: { item: PlacedItem }) {
 function TherapyRoom({ settings }: { settings: RoomSettings }) {
   const floorConfig = FLOOR_TYPES.find(f => f.id === settings.floorType) || FLOOR_TYPES[0];
   const ledOn = settings.ledColor !== "#000000";
+  const isDark = settings.roomMode === "dark";
+
+  const effectiveWallColor = isDark ? "#1E1E2E" : settings.wallPadColor;
 
   const wallBaseColor = useMemo(() => {
-    const c = new THREE.Color(settings.wallPadColor);
-    return "#" + c.clone().lerp(new THREE.Color("#ffffff"), 0.15).getHexString();
-  }, [settings.wallPadColor]);
+    const c = new THREE.Color(effectiveWallColor);
+    return "#" + c.clone().lerp(new THREE.Color(isDark ? "#2A2A3A" : "#ffffff"), 0.15).getHexString();
+  }, [effectiveWallColor, isDark]);
 
   const padHighlight = useMemo(() => {
-    const c = new THREE.Color(settings.wallPadColor);
-    return "#" + c.clone().lerp(new THREE.Color("#ffffff"), 0.25).getHexString();
-  }, [settings.wallPadColor]);
+    const c = new THREE.Color(effectiveWallColor);
+    return "#" + c.clone().lerp(new THREE.Color(isDark ? "#3A3A4A" : "#ffffff"), 0.25).getHexString();
+  }, [effectiveWallColor, isDark]);
 
   const padShadow = useMemo(() => {
-    const c = new THREE.Color(settings.wallPadColor);
-    return "#" + c.clone().lerp(new THREE.Color("#000000"), 0.08).getHexString();
-  }, [settings.wallPadColor]);
+    const c = new THREE.Color(effectiveWallColor);
+    return "#" + c.clone().lerp(new THREE.Color("#000000"), isDark ? 0.2 : 0.08).getHexString();
+  }, [effectiveWallColor, isDark]);
+
+  const darkFloorColor = isDark ? "#181820" : floorConfig.color;
+  const darkFloorAccent = isDark ? "#222230" : floorConfig.accent;
 
   return (
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <planeGeometry args={[6, 6]} />
-        <meshStandardMaterial color={floorConfig.color} roughness={0.6} metalness={0.05} />
+        <meshStandardMaterial color={darkFloorColor} roughness={isDark ? 0.8 : 0.6} metalness={isDark ? 0.1 : 0.05} />
       </mesh>
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, 0]}>
         <planeGeometry args={[5.8, 5.8]} />
-        <meshStandardMaterial color={floorConfig.accent} roughness={0.8} transparent opacity={0.25} />
+        <meshStandardMaterial color={darkFloorAccent} roughness={0.8} transparent opacity={0.25} />
       </mesh>
 
       {settings.floorType === "wood" && (
@@ -808,13 +832,13 @@ function TherapyRoom({ settings }: { settings: RoomSettings }) {
           {[...Array(12)].map((_, i) => (
             <mesh key={`plank-x-${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.002, -2.75 + i * 0.5]}>
               <planeGeometry args={[5.8, 0.008]} />
-              <meshStandardMaterial color="#A08968" transparent opacity={0.5} />
+              <meshStandardMaterial color={isDark ? "#2A2A38" : "#A08968"} transparent opacity={isDark ? 0.3 : 0.5} />
             </mesh>
           ))}
           {[...Array(3)].map((_, i) => (
             <mesh key={`plank-z-${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[-1.9 + i * 1.9, 0.002, 0]}>
               <planeGeometry args={[0.005, 5.8]} />
-              <meshStandardMaterial color="#A08968" transparent opacity={0.3} />
+              <meshStandardMaterial color={isDark ? "#2A2A38" : "#A08968"} transparent opacity={0.3} />
             </mesh>
           ))}
         </>
@@ -824,7 +848,9 @@ function TherapyRoom({ settings }: { settings: RoomSettings }) {
         <>
           {[...Array(4)].map((_, row) =>
             [...Array(4)].map((_, col) => {
-              const colors = ["#7DD3FC", "#93C5FD", "#67E8F9", "#A5F3FC"];
+              const lightColors = ["#7DD3FC", "#93C5FD", "#67E8F9", "#A5F3FC"];
+              const darkColors = ["#1E293B", "#1A2332", "#1C2838", "#1E2D3F"];
+              const colors = isDark ? darkColors : lightColors;
               return (
                 <mesh key={`foam-${row}-${col}`} rotation={[-Math.PI / 2, 0, 0]} position={[-2.1 + col * 1.4, 0.003, -2.1 + row * 1.4]}>
                   <planeGeometry args={[1.35, 1.35]} />
@@ -841,7 +867,7 @@ function TherapyRoom({ settings }: { settings: RoomSettings }) {
           {[...Array(6)].map((_, i) => (
             <mesh key={`rubber-dot-${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[-2 + i * 0.8, 0.003, -2 + i * 0.8]}>
               <circleGeometry args={[0.03, 8]} />
-              <meshStandardMaterial color="#5B6675" />
+              <meshStandardMaterial color={isDark ? "#2A2A38" : "#5B6675"} />
             </mesh>
           ))}
         </>
@@ -863,82 +889,82 @@ function TherapyRoom({ settings }: { settings: RoomSettings }) {
       <group>
         <mesh position={[0, 0.05, -2.99]}>
           <boxGeometry args={[6, 0.10, 0.03]} />
-          <meshStandardMaterial color="#E8DDD0" roughness={0.5} />
+          <meshStandardMaterial color={isDark ? "#2A2A38" : "#E8DDD0"} roughness={0.5} />
         </mesh>
         <mesh position={[0, 0.005, -2.99]}>
           <boxGeometry args={[6, 0.01, 0.035]} />
-          <meshStandardMaterial color="#D4C4B0" roughness={0.6} />
+          <meshStandardMaterial color={isDark ? "#1A1A28" : "#D4C4B0"} roughness={0.6} />
         </mesh>
         <mesh position={[-2.99, 0.05, 0]} rotation={[0, Math.PI / 2, 0]}>
           <boxGeometry args={[6, 0.10, 0.03]} />
-          <meshStandardMaterial color="#E8DDD0" roughness={0.5} />
+          <meshStandardMaterial color={isDark ? "#2A2A38" : "#E8DDD0"} roughness={0.5} />
         </mesh>
         <mesh position={[-2.99, 0.005, 0]} rotation={[0, Math.PI / 2, 0]}>
           <boxGeometry args={[6, 0.01, 0.035]} />
-          <meshStandardMaterial color="#D4C4B0" roughness={0.6} />
+          <meshStandardMaterial color={isDark ? "#1A1A28" : "#D4C4B0"} roughness={0.6} />
         </mesh>
         <mesh position={[2.99, 0.05, 0]} rotation={[0, -Math.PI / 2, 0]}>
           <boxGeometry args={[6, 0.10, 0.03]} />
-          <meshStandardMaterial color="#E8DDD0" roughness={0.5} />
+          <meshStandardMaterial color={isDark ? "#2A2A38" : "#E8DDD0"} roughness={0.5} />
         </mesh>
         <mesh position={[2.99, 0.005, 0]} rotation={[0, -Math.PI / 2, 0]}>
           <boxGeometry args={[6, 0.01, 0.035]} />
-          <meshStandardMaterial color="#D4C4B0" roughness={0.6} />
+          <meshStandardMaterial color={isDark ? "#1A1A28" : "#D4C4B0"} roughness={0.6} />
         </mesh>
       </group>
 
       <group position={[-3, 1.5, 0]}>
         <mesh position={[0.01, 0.3, -0.5]} rotation={[0, Math.PI / 2, 0]}>
           <planeGeometry args={[1.2, 1.0]} />
-          <meshStandardMaterial color="#E3EDF7" roughness={0.2} metalness={0.05} transparent opacity={0.9} />
+          <meshStandardMaterial color={isDark ? "#1A2030" : "#E3EDF7"} roughness={0.2} metalness={isDark ? 0.2 : 0.05} transparent opacity={0.9} />
         </mesh>
         <mesh position={[0.02, 0.3, -0.5]} rotation={[0, Math.PI / 2, 0]}>
           <boxGeometry args={[1.24, 1.04, 0.03]} />
-          <meshStandardMaterial color="#CBD5E1" roughness={0.4} />
+          <meshStandardMaterial color={isDark ? "#2A2A38" : "#CBD5E1"} roughness={0.4} />
         </mesh>
         <mesh position={[0.025, 0.3, -0.5]} rotation={[0, Math.PI / 2, 0]}>
           <boxGeometry args={[1.2, 0.005, 0.04]} />
-          <meshStandardMaterial color="#94A3B8" roughness={0.4} />
+          <meshStandardMaterial color={isDark ? "#3A3A48" : "#94A3B8"} roughness={0.4} />
         </mesh>
         <mesh position={[0.025, 0.3, -0.5]} rotation={[0, Math.PI / 2, 0]}>
           <boxGeometry args={[0.005, 1.0, 0.04]} />
-          <meshStandardMaterial color="#94A3B8" roughness={0.4} />
+          <meshStandardMaterial color={isDark ? "#3A3A48" : "#94A3B8"} roughness={0.4} />
         </mesh>
       </group>
 
       <group position={[3, 0, 1]}>
         <mesh position={[-0.01, 1.1, 0]} rotation={[0, -Math.PI / 2, 0]}>
           <planeGeometry args={[1.0, 2.2]} />
-          <meshStandardMaterial color="#B8956A" roughness={0.65} />
+          <meshStandardMaterial color={isDark ? "#2A2030" : "#B8956A"} roughness={0.65} />
         </mesh>
         <mesh position={[-0.02, 1.1, 0]} rotation={[0, -Math.PI / 2, 0]}>
           <boxGeometry args={[1.04, 2.24, 0.03]} />
-          <meshStandardMaterial color="#A07850" roughness={0.55} />
+          <meshStandardMaterial color={isDark ? "#1A1828" : "#A07850"} roughness={0.55} />
         </mesh>
         <mesh position={[-0.03, 1.1, -0.35]} rotation={[0, -Math.PI / 2, 0]}>
           <sphereGeometry args={[0.03, 16, 16]} />
-          <meshStandardMaterial color="#D4A860" roughness={0.25} metalness={0.7} />
+          <meshStandardMaterial color={isDark ? "#8A7848" : "#D4A860"} roughness={0.25} metalness={0.7} />
         </mesh>
       </group>
 
       <group position={[0, 2.95, 0]}>
         <mesh>
           <boxGeometry args={[4, 0.06, 0.06]} />
-          <meshStandardMaterial color="#94A3B8" roughness={0.3} metalness={0.6} />
+          <meshStandardMaterial color={isDark ? "#3A3A48" : "#94A3B8"} roughness={0.3} metalness={0.6} />
         </mesh>
         {[-1.5, -0.5, 0.5, 1.5].map((x, i) => (
           <mesh key={`hook-${i}`} position={[x, -0.06, 0]}>
             <sphereGeometry args={[0.04, 12, 12]} />
-            <meshStandardMaterial color="#CBD5E1" roughness={0.25} metalness={0.8} />
+            <meshStandardMaterial color={isDark ? "#4A4A58" : "#CBD5E1"} roughness={0.25} metalness={0.8} />
           </mesh>
         ))}
         <mesh position={[-2, 0.03, 0]}>
           <boxGeometry args={[0.08, 0.08, 0.08]} />
-          <meshStandardMaterial color="#64748B" roughness={0.4} metalness={0.6} />
+          <meshStandardMaterial color={isDark ? "#2A2A38" : "#64748B"} roughness={0.4} metalness={0.6} />
         </mesh>
         <mesh position={[2, 0.03, 0]}>
           <boxGeometry args={[0.08, 0.08, 0.08]} />
-          <meshStandardMaterial color="#64748B" roughness={0.4} metalness={0.6} />
+          <meshStandardMaterial color={isDark ? "#2A2A38" : "#64748B"} roughness={0.4} metalness={0.6} />
         </mesh>
       </group>
 
@@ -1001,20 +1027,20 @@ function TherapyRoom({ settings }: { settings: RoomSettings }) {
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 3.0, 0]}>
         <planeGeometry args={[6, 6]} />
-        <meshStandardMaterial color="#FAFAF9" roughness={0.9} />
+        <meshStandardMaterial color={isDark ? "#0E0E18" : "#FAFAF9"} roughness={0.9} />
       </mesh>
 
       <mesh position={[0, 2.98, -2.98]}>
         <boxGeometry args={[5.9, 0.04, 0.04]} />
-        <meshStandardMaterial color="#E8E5E0" roughness={0.6} />
+        <meshStandardMaterial color={isDark ? "#1A1A28" : "#E8E5E0"} roughness={0.6} />
       </mesh>
       <mesh position={[-2.98, 2.98, 0]} rotation={[0, Math.PI / 2, 0]}>
         <boxGeometry args={[5.9, 0.04, 0.04]} />
-        <meshStandardMaterial color="#E8E5E0" roughness={0.6} />
+        <meshStandardMaterial color={isDark ? "#1A1A28" : "#E8E5E0"} roughness={0.6} />
       </mesh>
       <mesh position={[2.98, 2.98, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <boxGeometry args={[5.9, 0.04, 0.04]} />
-        <meshStandardMaterial color="#E8E5E0" roughness={0.6} />
+        <meshStandardMaterial color={isDark ? "#1A1A28" : "#E8E5E0"} roughness={0.6} />
       </mesh>
     </group>
   );
@@ -1039,17 +1065,18 @@ function ZoomController({ controlsRef, zoomRef }: { controlsRef: React.RefObject
 }
 
 function Scene({ placedItems, controlsRef, zoomRef, settings }: { placedItems: PlacedItem[]; controlsRef: React.RefObject<any>; zoomRef: React.MutableRefObject<((d: number) => void) | null>; settings: RoomSettings }) {
+  const isDark = settings.roomMode === "dark";
   return (
     <>
-      <ambientLight intensity={0.6} color="#FFF8F0" />
-      <directionalLight position={[5, 8, 5]} intensity={1.0} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} color="#FFF5E6" />
-      <pointLight position={[-2, 2.5, -1]} intensity={0.5} color="#FEF3C7" />
-      <pointLight position={[1, 2.5, 1]} intensity={0.4} color="#E0F2FE" />
-      <pointLight position={[0, 1.0, 2]} intensity={0.2} color="#FDE68A" />
-      <hemisphereLight args={["#EFF6FF", "#C4A882", 0.4]} />
+      <ambientLight intensity={isDark ? 0.08 : 0.6} color={isDark ? "#4A4A6A" : "#FFF8F0"} />
+      <directionalLight position={[5, 8, 5]} intensity={isDark ? 0.15 : 1.0} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} color={isDark ? "#6A6A8A" : "#FFF5E6"} />
+      <pointLight position={[-2, 2.5, -1]} intensity={isDark ? 0.08 : 0.5} color={isDark ? "#8888AA" : "#FEF3C7"} />
+      <pointLight position={[1, 2.5, 1]} intensity={isDark ? 0.08 : 0.4} color={isDark ? "#8888AA" : "#E0F2FE"} />
+      <pointLight position={[0, 1.0, 2]} intensity={isDark ? 0.05 : 0.2} color={isDark ? "#6A6A8A" : "#FDE68A"} />
+      <hemisphereLight args={[isDark ? "#1A1A2E" : "#EFF6FF", isDark ? "#0A0A14" : "#C4A882", isDark ? 0.1 : 0.4]} />
       <TherapyRoom settings={settings} />
       {placedItems.map((item) => (
-        <ProductMesh key={item.instanceId} item={item} />
+        <ProductMesh key={item.instanceId} item={item} isDark={isDark} />
       ))}
       <OrbitControls
         ref={controlsRef}
@@ -1080,7 +1107,7 @@ function WelcomeOverlay({ onDismiss, onTemplate }: { onDismiss: () => void; onTe
           Start from scratch or choose a pre-designed template:
         </p>
 
-        <div className="grid grid-cols-2 gap-2 mb-6">
+        <div className="grid grid-cols-2 gap-2 mb-6" data-testid="template-grid">
           {roomTemplates.map((t) => (
             <button
               key={t.id}
@@ -1131,6 +1158,35 @@ function RoomCustomizePanel({ settings, onChange, isOpen, onClose }: { settings:
         <button onClick={onClose} className="p-1 rounded-lg hover:bg-muted/50 transition-colors" data-testid="button-close-customize">
           <X className="w-3.5 h-3.5 text-muted-foreground" />
         </button>
+      </div>
+
+      <div className="mb-4">
+        <p className="text-xs font-medium text-muted-foreground mb-2">Room Mode</p>
+        <div className="flex gap-1.5">
+          <Button
+            variant={settings.roomMode === "light" ? "default" : "outline"}
+            size="sm"
+            className="flex-1 gap-1.5"
+            onClick={() => onChange({ ...settings, roomMode: "light" })}
+            data-testid="room-mode-light"
+          >
+            <Sun className="w-3.5 h-3.5" />
+            Light
+          </Button>
+          <Button
+            variant={settings.roomMode === "dark" ? "default" : "outline"}
+            size="sm"
+            className="flex-1 gap-1.5"
+            onClick={() => onChange({ ...settings, roomMode: "dark" })}
+            data-testid="room-mode-dark"
+          >
+            <Moon className="w-3.5 h-3.5" />
+            Dark
+          </Button>
+        </div>
+        {settings.roomMode === "dark" && (
+          <p className="text-[10px] text-muted-foreground mt-1.5 leading-tight">Glowing products like bubble tubes, fiber optics, projectors and liquid tiles are best viewed in dark mode</p>
+        )}
       </div>
 
       <div className="mb-4">
@@ -1217,6 +1273,7 @@ export default function SensoryRoomBuilder() {
     ledIntensity: 0.6,
     wallPadColor: "#F8F6F3",
     floorType: "wood",
+    roomMode: "light",
   });
   const { addToCart } = useShoppingCart();
   const controlsRef = useRef<any>(null);
@@ -1309,7 +1366,7 @@ export default function SensoryRoomBuilder() {
 
   const clearRoom = () => {
     setPlacedItems([]);
-    setRoomSettings({ ledColor: "#FEF3C7", ledIntensity: 0.6, wallPadColor: "#F8F6F3", floorType: "wood" });
+    setRoomSettings({ ledColor: "#FEF3C7", ledIntensity: 0.6, wallPadColor: "#F8F6F3", floorType: "wood", roomMode: "light" });
   };
 
   const totalCost = placedItems.reduce((sum, item) => sum + item.product.price, 0);
@@ -1445,6 +1502,16 @@ export default function SensoryRoomBuilder() {
               variant="outline"
               size="sm"
               className="rounded-full gap-1.5 bg-background/90 backdrop-blur-sm shadow-sm"
+              onClick={() => setRoomSettings(prev => ({ ...prev, roomMode: prev.roomMode === "light" ? "dark" : "light" }))}
+              data-testid="button-toggle-room-mode"
+            >
+              {roomSettings.roomMode === "light" ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
+              {roomSettings.roomMode === "light" ? "Dark" : "Light"}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-full gap-1.5 bg-background/90 backdrop-blur-sm shadow-sm"
               onClick={() => setShowCustomize(!showCustomize)}
               data-testid="button-customize-room"
             >
@@ -1485,7 +1552,7 @@ export default function SensoryRoomBuilder() {
           )}
 
           <div className="flex-1 min-h-[400px] lg:min-h-0">
-            <Canvas shadows camera={{ position: [4.5, 3.5, 4.5], fov: 45 }} style={{ background: "linear-gradient(180deg, #F0F4FA 0%, #E8EDF5 40%, #F5EDE3 100%)" }} data-testid="canvas-3d">
+            <Canvas shadows camera={{ position: [4.5, 3.5, 4.5], fov: 45 }} style={{ background: roomSettings.roomMode === "dark" ? "linear-gradient(180deg, #0A0A14 0%, #0E0E1C 40%, #121220 100%)" : "linear-gradient(180deg, #F0F4FA 0%, #E8EDF5 40%, #F5EDE3 100%)" }} data-testid="canvas-3d">
               <Suspense fallback={null}>
                 <Scene placedItems={placedItems} controlsRef={controlsRef} zoomRef={zoomRef} settings={roomSettings} />
               </Suspense>
