@@ -66,7 +66,7 @@ Swings & Vestibular (4), Mats & Flooring (6), Deep Pressure & Weighted (13), Fid
 - **Cart Drawer**: Slide-out sheet from right, line items with config details, subtotal/GST/total
 - **Mock Checkout**: Razorpay-branded modal with payment tabs, simulated processing, success animation
 - **Order Confirmation**: Animated checkmark, order ID, delivery estimate
-- **3D Room Builder**: react-three-fiber therapy room with padded walls, ceiling suspension bar, window, door, baseboards; real product images in sidebar catalog (16 products); welcome overlay with 3-step guide; grouped categories with accordion; placed items list with thumbnails; buy/quote actions
+- **3D Room Builder**: react-three-fiber therapy room with padded walls, ceiling, suspension bar, window, door, LED strip lighting. 21 products across 7 categories with realistic 3D representations (swings hang from ceiling with ropes, mats lay flat, balls are spheres, bubble tube animates, fiber optic curtain cycles colors, interactive projector glows on floor, climbing wall with colored holds). 4 pre-built templates (Calming Retreat, Active Therapy, Sensory Explorer, OT Clinic). Room customization panel: LED mood lighting (8 colors + intensity), wall padding (6 colors), floor type (wood/foam/rubber). Zoom +/- buttons (scroll not hijacked). Placed items list with thumbnails; buy/quote actions
 - **AI Chat Assistant**: Floating chat widget (bottom-right FAB) powered by Gemini 2.0 Flash; context-aware about Abley's products and therapy equipment; IP-based rate limiting (15 req/min); suggestion chips for common questions; conversation history maintained per session
 
 ## Database Schema

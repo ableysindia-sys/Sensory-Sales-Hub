@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback, Suspense } from "react";
-import { Canvas, useThree } from "@react-three/fiber";
+import { useState, useRef, useCallback, Suspense, useMemo } from "react";
+import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,6 @@ import { formatPrice } from "@/lib/catalogue-data";
 import { useShoppingCart } from "@/lib/shopping-cart";
 import {
   Plus,
-  Minus,
   RotateCcw,
   ShoppingCart,
   Send,
@@ -19,11 +18,21 @@ import {
   ChevronUp,
   ZoomIn,
   ZoomOut,
+  Palette,
+  Sparkles,
+  X,
 } from "lucide-react";
 import { Link } from "wouter";
 import * as THREE from "three";
 
-type ProductPlacement = "swing-bolster" | "swing-disc" | "swing-t" | "swing-platform" | "mat-crash" | "mat-tiles" | "ball-round" | "ball-peanut" | "tube-bubble" | "tile-liquid" | "board-balance" | "stones-stepping" | "trampoline" | "vest-weighted" | "sock-sensory" | "blanket-weighted";
+type ProductPlacement =
+  | "swing-bolster" | "swing-disc" | "swing-t" | "swing-platform"
+  | "mat-crash" | "mat-tiles"
+  | "ball-round" | "ball-peanut"
+  | "tube-bubble" | "tile-liquid"
+  | "board-balance" | "stones-stepping" | "trampoline"
+  | "vest-weighted" | "sock-sensory" | "blanket-weighted"
+  | "fiber-optic" | "climbing-wall" | "activity-panel" | "floor-projector" | "soft-play-shapes";
 
 interface RoomProduct {
   id: string;
@@ -43,6 +52,47 @@ interface PlacedItem {
   position: [number, number, number];
 }
 
+interface RoomSettings {
+  ledColor: string;
+  ledIntensity: number;
+  wallPadColor: string;
+  floorType: "wood" | "foam" | "rubber";
+}
+
+interface RoomTemplate {
+  id: string;
+  name: string;
+  description: string;
+  items: string[];
+  settings: Partial<RoomSettings>;
+}
+
+const LED_COLORS = [
+  { name: "Off", value: "#000000" },
+  { name: "Warm White", value: "#FEF3C7" },
+  { name: "Cool Blue", value: "#93C5FD" },
+  { name: "Calming Purple", value: "#C4B5FD" },
+  { name: "Soft Green", value: "#86EFAC" },
+  { name: "Sunset Orange", value: "#FDBA74" },
+  { name: "Pink", value: "#F9A8D4" },
+  { name: "Aqua", value: "#67E8F9" },
+];
+
+const WALL_COLORS = [
+  { name: "Cream", value: "#f0ebe5" },
+  { name: "Soft Blue", value: "#DBEAFE" },
+  { name: "Light Green", value: "#DCFCE7" },
+  { name: "Lavender", value: "#EDE9FE" },
+  { name: "Peach", value: "#FED7AA" },
+  { name: "Light Grey", value: "#E5E7EB" },
+];
+
+const FLOOR_TYPES: { id: "wood" | "foam" | "rubber"; name: string; color: string; accent: string }[] = [
+  { id: "wood", name: "Wood", color: "#d4c8b8", accent: "#c9bfb0" },
+  { id: "foam", name: "Safety Foam", color: "#60A5FA", accent: "#3B82F6" },
+  { id: "rubber", name: "Rubber", color: "#6B7280", accent: "#4B5563" },
+];
+
 const roomProducts: RoomProduct[] = [
   { id: "bolster-swing", name: "Bolster Swing", price: 4500, placement: "swing-bolster", color: "#4A53A0", accentColor: "#6B74C4", category: "Swings", image: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/Artboard_1_a43ed9ee-1c32-4081-9b0c-9e423b5538a8.jpg?v=1766662698", description: "Vestibular therapy swing" },
   { id: "disc-swing", name: "Disc Swing", price: 3200, placement: "swing-disc", color: "#0EA5E9", accentColor: "#38BDF8", category: "Swings", image: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/Artboard1_2.jpg?v=1764648162", description: "Rotational vestibular input" },
@@ -54,12 +104,48 @@ const roomProducts: RoomProduct[] = [
   { id: "peanut-ball", name: "Peanut Ball", price: 2800, placement: "ball-peanut", color: "#F59E0B", accentColor: "#D97706", category: "Therapy Balls", image: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/Artboard1_dc914207-e215-477d-8898-663d14b1d459.jpg?v=1763974508", description: "Prone therapy" },
   { id: "bubble-tube", name: "Bubble Tube", price: 8500, placement: "tube-bubble", color: "#7C3AED", accentColor: "#A78BFA", category: "Visual & Sensory", image: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/Artboard1_f169ba89-3192-47c3-8f27-6c3f543bfd72.jpg?v=1770267207", description: "Visual calming" },
   { id: "liquid-tiles", name: "Liquid Motion Tiles", price: 3500, placement: "tile-liquid", color: "#06B6D4", accentColor: "#22D3EE", category: "Visual & Sensory", image: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/Artboard1_1_3e4be01c-4d7f-41c5-9bd0-13d6118b2490.jpg?v=1770267810", description: "Pressure-responsive floor" },
+  { id: "fiber-optic-curtain", name: "Fiber Optic Curtain", price: 12000, placement: "fiber-optic", color: "#F472B6", accentColor: "#EC4899", category: "Visual & Sensory", image: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/Artboard1_f169ba89-3192-47c3-8f27-6c3f543bfd72.jpg?v=1770267207", description: "Cascading light strands" },
+  { id: "floor-projector", name: "Interactive Projector", price: 25000, placement: "floor-projector", color: "#8B5CF6", accentColor: "#6D28D9", category: "Visual & Sensory", image: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/Artboard1_1_3e4be01c-4d7f-41c5-9bd0-13d6118b2490.jpg?v=1770267810", description: "Motion-reactive floor display" },
   { id: "balance-board", name: "Balance Board", price: 2800, placement: "board-balance", color: "#D4A574", accentColor: "#8B7355", category: "Movement", image: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/IMG_9796_bd82fe01-e81e-4d39-a553-b1222ef7f681.jpg?v=1764648264", description: "Stability training" },
   { id: "stepping-stone", name: "Stepping Stones", price: 2200, placement: "stones-stepping", color: "#22C55E", accentColor: "#16A34A", category: "Movement", image: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/WhatsAppImage2025-12-26at5.11.10PM.jpg?v=1766749713", description: "Motor planning paths" },
   { id: "trampoline", name: "Trampoline", price: 6500, placement: "trampoline", color: "#1F2937", accentColor: "#4B5563", category: "Movement", image: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/Artboard_3_4.jpg?v=1767097014", description: "Vestibular bouncing" },
+  { id: "climbing-wall", name: "Climbing Wall", price: 18000, placement: "climbing-wall", color: "#78716C", accentColor: "#A8A29E", category: "Movement", image: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/Artboard_3_4.jpg?v=1767097014", description: "Sensory climbing surface" },
+  { id: "soft-play-set", name: "Soft Play Shapes", price: 9500, placement: "soft-play-shapes", color: "#F97316", accentColor: "#FB923C", category: "Movement", image: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/Untitled-687l799p_5517468c-2f14-472f-8e25-040031e57d66.jpg?v=1763022357", description: "Foam ramp, wedge & cylinder" },
+  { id: "activity-panel", name: "Activity Panel", price: 6500, placement: "activity-panel", color: "#0EA5E9", accentColor: "#38BDF8", category: "Interactive", image: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/Artboard1_10.jpg?v=1768027428", description: "Tactile wall-mounted panel" },
   { id: "weighted-vest", name: "Weighted Vest", price: 3200, placement: "vest-weighted", color: "#1E3A5F", accentColor: "#2563EB", category: "Deep Pressure", image: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/Gemini_Generated_Image_98o8p098o8p098o8_1.png?v=1764648068", description: "Proprioceptive calming" },
   { id: "sensory-sock", name: "Sensory Sock", price: 1800, placement: "sock-sensory", color: "#3B82F6", accentColor: "#60A5FA", category: "Deep Pressure", image: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/serenekids-sensory-body-sock-for-kids-blue-girl-therapeutic-badge-recommended_5da5095a-704b-46da-9ece-93365e69d3f4.jpg?v=1764647672", description: "Full-body compression" },
   { id: "weighted-blanket", name: "Weighted Blanket", price: 4500, placement: "blanket-weighted", color: "#9CA3AF", accentColor: "#6B7280", category: "Deep Pressure", image: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/cozykids-weighted-blanket-for-kids-folded-grey-quilted-therapeutic-badge_2fca9568-55a4-4dec-85db-979060d4cb1c.jpg?v=1764648068", description: "Deep pressure therapy" },
+];
+
+const roomTemplates: RoomTemplate[] = [
+  {
+    id: "calming-retreat",
+    name: "Calming Retreat",
+    description: "A soothing space with soft lighting, bubble tubes and deep pressure tools",
+    items: ["bubble-tube", "weighted-blanket", "fiber-optic-curtain", "interlocking-mat", "liquid-tiles"],
+    settings: { ledColor: "#C4B5FD", wallPadColor: "#EDE9FE", floorType: "foam" },
+  },
+  {
+    id: "active-therapy",
+    name: "Active Therapy Room",
+    description: "Designed for vestibular and movement therapy with swings, climbing and trampolines",
+    items: ["bolster-swing", "platform-swing", "trampoline", "crash-mat", "climbing-wall", "stepping-stone"],
+    settings: { ledColor: "#FEF3C7", wallPadColor: "#DBEAFE", floorType: "rubber" },
+  },
+  {
+    id: "sensory-explorer",
+    name: "Sensory Explorer",
+    description: "Multi-sensory stimulation with interactive projector, activity panels and visual tools",
+    items: ["floor-projector", "activity-panel", "bubble-tube", "soft-play-set", "gym-ball", "liquid-tiles"],
+    settings: { ledColor: "#93C5FD", wallPadColor: "#DCFCE7", floorType: "foam" },
+  },
+  {
+    id: "ot-clinic",
+    name: "OT Clinic Setup",
+    description: "Professional occupational therapy room with balance, coordination and sensory tools",
+    items: ["t-swing", "balance-board", "peanut-ball", "crash-mat", "weighted-vest", "stepping-stone", "activity-panel"],
+    settings: { ledColor: "#FEF3C7", wallPadColor: "#f0ebe5", floorType: "rubber" },
+  },
 ];
 
 function RopeLine({ start, end, color = "#8B7355" }: { start: [number, number, number]; end: [number, number, number]; color?: string }) {
@@ -102,11 +188,7 @@ function SwingDisc({ item }: { item: PlacedItem }) {
   const seatY = 1.4;
   const x = item.position[0];
   const z = item.position[2];
-  const ropeOffsets: [number, number][] = [
-    [0, -0.2],
-    [0.17, 0.1],
-    [-0.17, 0.1],
-  ];
+  const ropeOffsets: [number, number][] = [[0, -0.2], [0.17, 0.1], [-0.17, 0.1]];
   return (
     <group>
       {ropeOffsets.map(([dx, dz], i) => (
@@ -140,7 +222,7 @@ function SwingT({ item }: { item: PlacedItem }) {
         <sphereGeometry args={[0.025, 8, 8]} />
         <meshStandardMaterial color="#9CA3AF" metalness={0.7} roughness={0.3} />
       </mesh>
-      <mesh position={[x, barY, z]} rotation={[0, 0, 0]} castShadow>
+      <mesh position={[x, barY, z]} castShadow>
         <boxGeometry args={[0.6, 0.06, 0.06]} />
         <meshStandardMaterial color={item.product.color} roughness={0.4} metalness={0.1} />
       </mesh>
@@ -159,12 +241,7 @@ function SwingPlatform({ item }: { item: PlacedItem }) {
   const platY = 1.3;
   const x = item.position[0];
   const z = item.position[2];
-  const corners: [number, number][] = [
-    [-0.3, -0.2],
-    [0.3, -0.2],
-    [-0.3, 0.2],
-    [0.3, 0.2],
-  ];
+  const corners: [number, number][] = [[-0.3, -0.2], [0.3, -0.2], [-0.3, 0.2], [0.3, 0.2]];
   return (
     <group>
       {corners.map(([dx, dz], i) => (
@@ -271,8 +348,16 @@ function BallPeanut({ item }: { item: PlacedItem }) {
 
 function BubbleTube({ item }: { item: PlacedItem }) {
   const x = item.position[0];
-  const z = item.position[2];
   const wallZ = -2.85;
+  const bubblesRef = useRef<THREE.Group>(null);
+  useFrame((_, delta) => {
+    if (bubblesRef.current) {
+      bubblesRef.current.children.forEach((child, i) => {
+        child.position.y += delta * 0.15 * (1 + i * 0.1);
+        if (child.position.y > 1.15) child.position.y = 0.08;
+      });
+    }
+  });
   return (
     <group position={[x, 0, wallZ]}>
       <mesh position={[0, 0.6, 0]} castShadow>
@@ -283,12 +368,14 @@ function BubbleTube({ item }: { item: PlacedItem }) {
         <cylinderGeometry args={[0.08, 0.1, 1.18, 24]} />
         <meshStandardMaterial color={item.product.accentColor} transparent opacity={0.3} emissive={item.product.color} emissiveIntensity={0.6} roughness={0.05} />
       </mesh>
-      {[0.15, 0.35, 0.55, 0.75, 0.95].map((y, i) => (
-        <mesh key={i} position={[Math.sin(i * 1.8) * 0.04, y, Math.cos(i * 1.8) * 0.04]}>
-          <sphereGeometry args={[0.02 + (i % 2) * 0.01, 8, 8]} />
-          <meshStandardMaterial color="#ffffff" transparent opacity={0.7} emissive={item.product.accentColor} emissiveIntensity={0.8} />
-        </mesh>
-      ))}
+      <group ref={bubblesRef}>
+        {[0.15, 0.35, 0.55, 0.75, 0.95].map((y, i) => (
+          <mesh key={i} position={[Math.sin(i * 1.8) * 0.04, y, Math.cos(i * 1.8) * 0.04]}>
+            <sphereGeometry args={[0.02 + (i % 2) * 0.01, 8, 8]} />
+            <meshStandardMaterial color="#ffffff" transparent opacity={0.7} emissive={item.product.accentColor} emissiveIntensity={0.8} />
+          </mesh>
+        ))}
+      </group>
       <mesh position={[0, 0, 0]}>
         <cylinderGeometry args={[0.14, 0.14, 0.06, 24]} />
         <meshStandardMaterial color="#374151" roughness={0.4} metalness={0.3} />
@@ -298,6 +385,186 @@ function BubbleTube({ item }: { item: PlacedItem }) {
         <meshStandardMaterial color="#374151" roughness={0.4} metalness={0.3} />
       </mesh>
       <pointLight position={[0, 0.6, 0.15]} intensity={0.3} color={item.product.color} distance={1.5} />
+    </group>
+  );
+}
+
+function FiberOpticCurtain({ item }: { item: PlacedItem }) {
+  const x = item.position[0];
+  const wallZ = -2.92;
+  const strandsRef = useRef<THREE.Group>(null);
+  const timeRef = useRef(0);
+  useFrame((_, delta) => {
+    timeRef.current += delta;
+    if (strandsRef.current) {
+      strandsRef.current.children.forEach((child, i) => {
+        const mat = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
+        const hue = ((timeRef.current * 0.15 + i * 0.05) % 1);
+        mat.emissive.setHSL(hue, 0.8, 0.5);
+      });
+    }
+  });
+  return (
+    <group position={[x, 0, wallZ]}>
+      <mesh position={[0, 2.5, 0]}>
+        <boxGeometry args={[1.0, 0.06, 0.04]} />
+        <meshStandardMaterial color="#1F2937" roughness={0.4} metalness={0.3} />
+      </mesh>
+      <group ref={strandsRef}>
+        {Array.from({ length: 20 }).map((_, i) => (
+          <mesh key={i} position={[-0.45 + i * 0.047, 1.25, 0.01]}>
+            <cylinderGeometry args={[0.004, 0.004, 2.4, 4]} />
+            <meshStandardMaterial color="#ffffff" transparent opacity={0.8} emissive={item.product.color} emissiveIntensity={0.9} />
+          </mesh>
+        ))}
+      </group>
+      <pointLight position={[0, 1.5, 0.2]} intensity={0.2} color={item.product.color} distance={2} />
+    </group>
+  );
+}
+
+function FloorProjector({ item }: { item: PlacedItem }) {
+  const x = item.position[0];
+  const z = item.position[2];
+  const projRef = useRef<THREE.Mesh>(null);
+  const timeRef = useRef(0);
+  useFrame((_, delta) => {
+    timeRef.current += delta;
+    if (projRef.current) {
+      const mat = projRef.current.material as THREE.MeshStandardMaterial;
+      const hue = (timeRef.current * 0.1) % 1;
+      mat.emissive.setHSL(hue, 0.6, 0.3);
+      mat.color.setHSL(hue, 0.4, 0.5);
+    }
+  });
+  return (
+    <group position={[x, 0, z]}>
+      <mesh ref={projRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.005, 0]} receiveShadow>
+        <circleGeometry args={[0.8, 32]} />
+        <meshStandardMaterial color={item.product.color} transparent opacity={0.4} emissive={item.product.color} emissiveIntensity={0.5} roughness={0.1} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.006, 0]}>
+        <ringGeometry args={[0.6, 0.62, 32]} />
+        <meshStandardMaterial color="#ffffff" transparent opacity={0.3} emissive="#ffffff" emissiveIntensity={0.3} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.006, 0]}>
+        <ringGeometry args={[0.3, 0.32, 32]} />
+        <meshStandardMaterial color="#ffffff" transparent opacity={0.3} emissive="#ffffff" emissiveIntensity={0.3} />
+      </mesh>
+      <mesh position={[0, 2.9, 0]}>
+        <boxGeometry args={[0.2, 0.08, 0.15]} />
+        <meshStandardMaterial color="#1F2937" roughness={0.4} metalness={0.3} />
+      </mesh>
+      <mesh position={[0, 2.85, 0]}>
+        <cylinderGeometry args={[0.03, 0.05, 0.04, 8]} />
+        <meshStandardMaterial color="#4B5563" roughness={0.3} metalness={0.5} />
+      </mesh>
+    </group>
+  );
+}
+
+function ClimbingWall({ item }: { item: PlacedItem }) {
+  const wallX = 2.96;
+  const z = item.position[2];
+  const holdPositions = useMemo(() => {
+    const holds: { x: number; y: number; z: number; color: string; size: number }[] = [];
+    const colors = ["#EF4444", "#3B82F6", "#22C55E", "#F59E0B", "#8B5CF6", "#EC4899"];
+    for (let row = 0; row < 5; row++) {
+      for (let col = 0; col < 3; col++) {
+        holds.push({
+          x: -0.01,
+          y: 0.4 + row * 0.45 + (col % 2) * 0.2,
+          z: z - 0.3 + col * 0.3 + (row % 2) * 0.1,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          size: 0.04 + Math.random() * 0.02,
+        });
+      }
+    }
+    return holds;
+  }, [z]);
+
+  return (
+    <group position={[wallX, 0, 0]}>
+      <mesh position={[-0.02, 1.3, z]} rotation={[0, -Math.PI / 2, 0]}>
+        <boxGeometry args={[1.2, 2.4, 0.06]} />
+        <meshStandardMaterial color={item.product.color} roughness={0.9} />
+      </mesh>
+      {holdPositions.map((hold, i) => (
+        <mesh key={i} position={[hold.x, hold.y, hold.z]} rotation={[0, -Math.PI / 2, 0]}>
+          <dodecahedronGeometry args={[hold.size, 0]} />
+          <meshStandardMaterial color={hold.color} roughness={0.6} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function ActivityPanel({ item }: { item: PlacedItem }) {
+  const wallZ = -2.94;
+  const x = item.position[0];
+  return (
+    <group position={[x, 0, wallZ]}>
+      <mesh position={[0, 1.2, 0]}>
+        <boxGeometry args={[0.8, 0.7, 0.04]} />
+        <meshStandardMaterial color="#ffffff" roughness={0.3} />
+      </mesh>
+      <mesh position={[0, 1.2, 0.021]}>
+        <boxGeometry args={[0.76, 0.66, 0.005]} />
+        <meshStandardMaterial color={item.product.color} roughness={0.4} />
+      </mesh>
+      <mesh position={[-0.2, 1.35, 0.03]}>
+        <cylinderGeometry args={[0.06, 0.06, 0.04, 16]} />
+        <meshStandardMaterial color="#EF4444" roughness={0.5} />
+      </mesh>
+      <mesh position={[0.15, 1.35, 0.03]} rotation={[0, 0, Math.PI / 4]}>
+        <boxGeometry args={[0.08, 0.08, 0.03]} />
+        <meshStandardMaterial color="#F59E0B" roughness={0.5} />
+      </mesh>
+      <mesh position={[-0.1, 1.05, 0.03]}>
+        <torusGeometry args={[0.05, 0.015, 8, 16]} />
+        <meshStandardMaterial color="#22C55E" roughness={0.5} />
+      </mesh>
+      <mesh position={[0.2, 1.05, 0.03]}>
+        <sphereGeometry args={[0.04, 12, 12]} />
+        <meshStandardMaterial color="#8B5CF6" roughness={0.5} />
+      </mesh>
+      <mesh position={[0, 1.2, 0.03]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.08, 0.08, 0.02, 6]} />
+        <meshStandardMaterial color={item.product.accentColor} transparent opacity={0.4} roughness={0.3} />
+      </mesh>
+    </group>
+  );
+}
+
+function SoftPlayShapes({ item }: { item: PlacedItem }) {
+  const x = item.position[0];
+  const z = item.position[2];
+  return (
+    <group position={[x, 0, z]}>
+      <mesh position={[-0.3, 0.12, 0]} rotation={[0, 0, 0.15]} castShadow>
+        <boxGeometry args={[0.6, 0.06, 0.4]} />
+        <meshStandardMaterial color={item.product.color} roughness={0.85} />
+      </mesh>
+      <mesh position={[-0.3, 0.15, 0]} rotation={[0, 0, 0.15]}>
+        <boxGeometry args={[0.56, 0.005, 0.36]} />
+        <meshStandardMaterial color={item.product.accentColor} roughness={0.7} />
+      </mesh>
+      <mesh position={[0.15, 0.1, 0.15]} castShadow>
+        <boxGeometry args={[0.3, 0.2, 0.3]} />
+        <meshStandardMaterial color="#3B82F6" roughness={0.85} />
+      </mesh>
+      <mesh position={[0.15, 0.201, 0.15]}>
+        <boxGeometry args={[0.26, 0.005, 0.26]} />
+        <meshStandardMaterial color="#60A5FA" roughness={0.7} />
+      </mesh>
+      <mesh position={[0.2, 0.1, -0.2]} rotation={[0, 0, Math.PI / 2]} castShadow>
+        <capsuleGeometry args={[0.1, 0.3, 8, 16]} />
+        <meshStandardMaterial color="#22C55E" roughness={0.85} />
+      </mesh>
+      <mesh position={[-0.15, 0.08, -0.3]} castShadow>
+        <cylinderGeometry args={[0.12, 0.12, 0.16, 6]} />
+        <meshStandardMaterial color="#F59E0B" roughness={0.85} />
+      </mesh>
     </group>
   );
 }
@@ -366,7 +633,7 @@ function SteppingStones({ item }: { item: PlacedItem }) {
   );
 }
 
-function Trampoline({ item }: { item: PlacedItem }) {
+function TrampolineMesh({ item }: { item: PlacedItem }) {
   const x = item.position[0];
   const z = item.position[2];
   const legAngles = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2];
@@ -491,54 +758,76 @@ function ProductMesh({ item }: { item: PlacedItem }) {
     case "ball-peanut": return <BallPeanut item={item} />;
     case "tube-bubble": return <BubbleTube item={item} />;
     case "tile-liquid": return <LiquidTile item={item} />;
+    case "fiber-optic": return <FiberOpticCurtain item={item} />;
+    case "floor-projector": return <FloorProjector item={item} />;
     case "board-balance": return <BalanceBoard item={item} />;
     case "stones-stepping": return <SteppingStones item={item} />;
-    case "trampoline": return <Trampoline item={item} />;
+    case "trampoline": return <TrampolineMesh item={item} />;
+    case "climbing-wall": return <ClimbingWall item={item} />;
+    case "soft-play-shapes": return <SoftPlayShapes item={item} />;
+    case "activity-panel": return <ActivityPanel item={item} />;
     case "vest-weighted": return <WeightedVest item={item} />;
     case "sock-sensory": return <SensorySock item={item} />;
     case "blanket-weighted": return <WeightedBlanket item={item} />;
   }
 }
 
-function TherapyRoom() {
+function TherapyRoom({ settings }: { settings: RoomSettings }) {
+  const floorConfig = FLOOR_TYPES.find(f => f.id === settings.floorType) || FLOOR_TYPES[0];
+  const ledOn = settings.ledColor !== "#000000";
   return (
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <planeGeometry args={[6, 6]} />
-        <meshStandardMaterial color="#d4c8b8" roughness={0.7} />
+        <meshStandardMaterial color={floorConfig.color} roughness={0.7} />
       </mesh>
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, 0]}>
         <planeGeometry args={[5.8, 5.8]} />
-        <meshStandardMaterial color="#c9bfb0" roughness={0.9} transparent opacity={0.3} />
+        <meshStandardMaterial color={floorConfig.accent} roughness={0.9} transparent opacity={0.3} />
       </mesh>
 
-      {[...Array(6)].map((_, i) => (
-        <mesh key={`floorline-x-${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.002, -2.5 + i]}>
-          <planeGeometry args={[5.8, 0.01]} />
-          <meshStandardMaterial color="#b8ae9e" />
-        </mesh>
-      ))}
-      {[...Array(6)].map((_, i) => (
-        <mesh key={`floorline-z-${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[-2.5 + i, 0.002, 0]}>
-          <planeGeometry args={[0.01, 5.8]} />
-          <meshStandardMaterial color="#b8ae9e" />
-        </mesh>
-      ))}
+      {settings.floorType === "wood" && (
+        <>
+          {[...Array(6)].map((_, i) => (
+            <mesh key={`floorline-x-${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.002, -2.5 + i]}>
+              <planeGeometry args={[5.8, 0.01]} />
+              <meshStandardMaterial color="#b8ae9e" />
+            </mesh>
+          ))}
+          {[...Array(6)].map((_, i) => (
+            <mesh key={`floorline-z-${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[-2.5 + i, 0.002, 0]}>
+              <planeGeometry args={[0.01, 5.8]} />
+              <meshStandardMaterial color="#b8ae9e" />
+            </mesh>
+          ))}
+        </>
+      )}
+
+      {settings.floorType === "foam" && (
+        <>
+          {[...Array(4)].map((_, row) =>
+            [...Array(4)].map((_, col) => (
+              <mesh key={`foam-${row}-${col}`} rotation={[-Math.PI / 2, 0, 0]} position={[-2.1 + col * 1.4, 0.003, -2.1 + row * 1.4]}>
+                <planeGeometry args={[1.35, 1.35]} />
+                <meshStandardMaterial color={(row + col) % 2 === 0 ? "#93C5FD" : "#60A5FA"} roughness={0.95} />
+              </mesh>
+            ))
+          )}
+        </>
+      )}
 
       <mesh position={[0, 1.5, -3]} receiveShadow>
         <planeGeometry args={[6, 3]} />
-        <meshStandardMaterial color="#f0ebe5" roughness={0.95} />
+        <meshStandardMaterial color={settings.wallPadColor} roughness={0.95} />
       </mesh>
-
       <mesh position={[-3, 1.5, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[6, 3]} />
-        <meshStandardMaterial color="#ede8e2" roughness={0.95} />
+        <meshStandardMaterial color={settings.wallPadColor} roughness={0.95} />
       </mesh>
-
       <mesh position={[3, 1.5, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[6, 3]} />
-        <meshStandardMaterial color="#ede8e2" roughness={0.95} />
+        <meshStandardMaterial color={settings.wallPadColor} roughness={0.95} />
       </mesh>
 
       <group>
@@ -611,25 +900,49 @@ function TherapyRoom() {
         </mesh>
       </group>
 
+      {ledOn && (
+        <group>
+          <mesh position={[0, 2.97, -2.98]}>
+            <boxGeometry args={[5.8, 0.02, 0.02]} />
+            <meshStandardMaterial color={settings.ledColor} emissive={settings.ledColor} emissiveIntensity={settings.ledIntensity * 2} />
+          </mesh>
+          <mesh position={[-2.98, 2.97, 0]} rotation={[0, Math.PI / 2, 0]}>
+            <boxGeometry args={[5.8, 0.02, 0.02]} />
+            <meshStandardMaterial color={settings.ledColor} emissive={settings.ledColor} emissiveIntensity={settings.ledIntensity * 2} />
+          </mesh>
+          <mesh position={[2.98, 2.97, 0]} rotation={[0, -Math.PI / 2, 0]}>
+            <boxGeometry args={[5.8, 0.02, 0.02]} />
+            <meshStandardMaterial color={settings.ledColor} emissive={settings.ledColor} emissiveIntensity={settings.ledIntensity * 2} />
+          </mesh>
+          <pointLight position={[0, 2.8, -2.5]} intensity={settings.ledIntensity * 0.4} color={settings.ledColor} distance={5} />
+          <pointLight position={[-2.5, 2.8, 0]} intensity={settings.ledIntensity * 0.3} color={settings.ledColor} distance={4} />
+          <pointLight position={[2.5, 2.8, 0]} intensity={settings.ledIntensity * 0.3} color={settings.ledColor} distance={4} />
+        </group>
+      )}
+
       {[-2.5, -1.25, 0, 1.25, 2.5].map((x, i) => (
         <group key={`padpanel-${i}`}>
           <mesh position={[x, 0.6, -2.98]}>
             <boxGeometry args={[1.2, 1.15, 0.04]} />
-            <meshStandardMaterial color="#e8e2d8" roughness={0.95} />
+            <meshStandardMaterial color={settings.wallPadColor} roughness={0.95} />
           </mesh>
           <mesh position={[x, 0.6, -2.96]}>
             <boxGeometry args={[1.16, 1.11, 0.01]} />
-            <meshStandardMaterial color="#f0ebe5" roughness={0.98} />
+            <meshStandardMaterial color={settings.wallPadColor} roughness={0.98} />
           </mesh>
         </group>
       ))}
+
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 3.0, 0]}>
+        <planeGeometry args={[6, 6]} />
+        <meshStandardMaterial color="#f5f3f0" roughness={0.95} />
+      </mesh>
     </group>
   );
 }
 
 function ZoomController({ controlsRef, zoomRef }: { controlsRef: React.RefObject<any>; zoomRef: React.MutableRefObject<((d: number) => void) | null> }) {
   const { camera } = useThree();
-
   zoomRef.current = useCallback((direction: number) => {
     if (!controlsRef.current) return;
     const controls = controlsRef.current;
@@ -643,25 +956,18 @@ function ZoomController({ controlsRef, zoomRef }: { controlsRef: React.RefObject
     camera.updateProjectionMatrix();
     controls.update();
   }, [camera, controlsRef]);
-
   return null;
 }
 
-function Scene({ placedItems, onRemoveItem, controlsRef, zoomRef }: { placedItems: PlacedItem[]; onRemoveItem: (id: string) => void; controlsRef: React.RefObject<any>; zoomRef: React.MutableRefObject<((d: number) => void) | null> }) {
+function Scene({ placedItems, controlsRef, zoomRef, settings }: { placedItems: PlacedItem[]; controlsRef: React.RefObject<any>; zoomRef: React.MutableRefObject<((d: number) => void) | null>; settings: RoomSettings }) {
   return (
     <>
       <ambientLight intensity={0.5} />
-      <directionalLight
-        position={[5, 8, 5]}
-        intensity={0.9}
-        castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
-      />
+      <directionalLight position={[5, 8, 5]} intensity={0.9} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024} />
       <pointLight position={[-2, 2.5, -1]} intensity={0.4} color="#fef3c7" />
       <pointLight position={[1, 2.5, 1]} intensity={0.3} color="#f0f4ff" />
       <hemisphereLight args={["#f0f4ff", "#d4c8b8", 0.3]} />
-      <TherapyRoom />
+      <TherapyRoom settings={settings} />
       {placedItems.map((item) => (
         <ProductMesh key={item.instanceId} item={item} />
       ))}
@@ -682,40 +988,139 @@ function Scene({ placedItems, onRemoveItem, controlsRef, zoomRef }: { placedItem
   );
 }
 
-function WelcomeOverlay({ onDismiss }: { onDismiss: () => void }) {
+function WelcomeOverlay({ onDismiss, onTemplate }: { onDismiss: () => void; onTemplate: (t: RoomTemplate) => void }) {
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/30 backdrop-blur-sm" data-testid="welcome-overlay">
-      <div className="bg-background rounded-3xl border border-border/50 shadow-2xl p-8 max-w-md mx-4 text-center">
+      <div className="bg-background rounded-3xl border border-border/50 shadow-2xl p-6 sm:p-8 max-w-lg mx-4 text-center max-h-[90vh] overflow-y-auto">
         <div className="w-14 h-14 mx-auto mb-5 rounded-2xl bg-primary/10 flex items-center justify-center">
           <Lightbulb className="w-7 h-7 text-primary" />
         </div>
         <h3 className="text-xl font-bold text-foreground mb-3">Design Your Sensory Room</h3>
         <p className="text-muted-foreground mb-6 leading-relaxed">
-          Build a therapy room layout in 3 easy steps:
+          Start from scratch or choose a pre-designed template:
         </p>
-        <div className="space-y-4 text-left mb-8">
+
+        <div className="grid grid-cols-2 gap-2 mb-6">
+          {roomTemplates.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => onTemplate(t)}
+              className="text-left p-3 rounded-xl border border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-all group"
+              data-testid={`template-${t.id}`}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <Sparkles className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                <p className="text-xs font-semibold text-foreground truncate">{t.name}</p>
+              </div>
+              <p className="text-[10px] text-muted-foreground leading-tight line-clamp-2">{t.description}</p>
+              <p className="text-[10px] text-primary mt-1 font-medium">{t.items.length} items</p>
+            </button>
+          ))}
+        </div>
+
+        <div className="space-y-4 text-left mb-6">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider text-center">Or build from scratch</p>
           <div className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">1</span>
-            <p className="text-sm text-foreground"><span className="font-semibold">Browse products</span> in the sidebar and tap the <Plus className="w-3.5 h-3.5 inline" /> button to add them to the room.</p>
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold">1</span>
+            <p className="text-xs text-foreground"><span className="font-semibold">Browse products</span> in the sidebar and tap <Plus className="w-3 h-3 inline" /> to add them.</p>
           </div>
           <div className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">2</span>
-            <p className="text-sm text-foreground"><span className="font-semibold">Rotate the 3D view</span> by dragging with your mouse or finger to explore the room.</p>
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold">2</span>
+            <p className="text-xs text-foreground"><span className="font-semibold">Customize the room</span> — change wall colors, floor type and LED mood lighting.</p>
           </div>
           <div className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">3</span>
-            <p className="text-sm text-foreground"><span className="font-semibold">Review the total cost</span> at the bottom, then buy the setup or request a quote.</p>
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold">3</span>
+            <p className="text-xs text-foreground"><span className="font-semibold">Review &amp; order</span> — check the total cost, then buy or request a quote.</p>
           </div>
         </div>
-        <Button
-          onClick={onDismiss}
-          size="lg"
-          className="rounded-full w-full gap-2 shadow-lg shadow-primary/20"
-          data-testid="button-start-building"
-        >
-          Start Building
+        <Button onClick={onDismiss} size="lg" className="rounded-full w-full gap-2 shadow-lg shadow-primary/20" data-testid="button-start-building">
+          Start Empty Room
           <ArrowRight className="w-4 h-4" />
         </Button>
+      </div>
+    </div>
+  );
+}
+
+function RoomCustomizePanel({ settings, onChange, isOpen, onClose }: { settings: RoomSettings; onChange: (s: RoomSettings) => void; isOpen: boolean; onClose: () => void }) {
+  if (!isOpen) return null;
+  return (
+    <div className="absolute top-3 left-3 z-10 bg-background/95 backdrop-blur-sm rounded-xl border border-border/50 p-4 shadow-lg w-64 max-h-[60vh] overflow-y-auto" data-testid="customize-panel">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-bold text-foreground">Room Settings</h3>
+        <button onClick={onClose} className="p-1 rounded-lg hover:bg-muted/50 transition-colors" data-testid="button-close-customize">
+          <X className="w-3.5 h-3.5 text-muted-foreground" />
+        </button>
+      </div>
+
+      <div className="mb-4">
+        <p className="text-xs font-medium text-muted-foreground mb-2">LED Mood Lighting</p>
+        <div className="grid grid-cols-4 gap-1.5">
+          {LED_COLORS.map((c) => (
+            <button
+              key={c.value}
+              onClick={() => onChange({ ...settings, ledColor: c.value })}
+              className={`w-full aspect-square rounded-lg border-2 transition-all ${settings.ledColor === c.value ? "border-primary scale-110" : "border-border/30 hover:border-border"}`}
+              style={{ backgroundColor: c.value === "#000000" ? "#1F2937" : c.value }}
+              title={c.name}
+              data-testid={`led-${c.name.toLowerCase().replace(/\s/g, "-")}`}
+            >
+              {c.value === "#000000" && <X className="w-3 h-3 mx-auto text-gray-400" />}
+            </button>
+          ))}
+        </div>
+        {settings.ledColor !== "#000000" && (
+          <div className="mt-2">
+            <p className="text-[10px] text-muted-foreground mb-1">Intensity</p>
+            <input
+              type="range"
+              min="0.2"
+              max="1"
+              step="0.1"
+              value={settings.ledIntensity}
+              onChange={(e) => onChange({ ...settings, ledIntensity: parseFloat(e.target.value) })}
+              className="w-full h-1 rounded-lg appearance-none cursor-pointer accent-primary"
+              data-testid="slider-led-intensity"
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="mb-4">
+        <p className="text-xs font-medium text-muted-foreground mb-2">Wall Padding</p>
+        <div className="grid grid-cols-3 gap-1.5">
+          {WALL_COLORS.map((c) => (
+            <button
+              key={c.value}
+              onClick={() => onChange({ ...settings, wallPadColor: c.value })}
+              className={`w-full aspect-square rounded-lg border-2 transition-all ${settings.wallPadColor === c.value ? "border-primary scale-110" : "border-border/30 hover:border-border"}`}
+              style={{ backgroundColor: c.value }}
+              title={c.name}
+              data-testid={`wall-${c.name.toLowerCase().replace(/\s/g, "-")}`}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="text-xs font-medium text-muted-foreground mb-2">Floor Type</p>
+        <div className="space-y-1.5">
+          {FLOOR_TYPES.map((f) => (
+            <button
+              key={f.id}
+              onClick={() => onChange({ ...settings, floorType: f.id })}
+              className={`w-full flex items-center gap-2 p-2 rounded-lg border transition-all text-left ${settings.floorType === f.id ? "border-primary bg-primary/5" : "border-border/30 hover:border-border"}`}
+              data-testid={`floor-${f.id}`}
+            >
+              <div className="w-6 h-6 rounded-md flex-shrink-0" style={{ backgroundColor: f.color }} />
+              <span className="text-xs font-medium text-foreground">{f.name}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-4 pt-3 border-t border-border/30">
+        <p className="text-[10px] text-muted-foreground text-center">Room size: 6m x 6m x 3m</p>
       </div>
     </div>
   );
@@ -726,6 +1131,13 @@ export default function SensoryRoomBuilder() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [showWelcome, setShowWelcome] = useState(true);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [showCustomize, setShowCustomize] = useState(false);
+  const [roomSettings, setRoomSettings] = useState<RoomSettings>({
+    ledColor: "#000000",
+    ledIntensity: 0.5,
+    wallPadColor: "#f0ebe5",
+    floorType: "wood",
+  });
   const { addToCart } = useShoppingCart();
   const controlsRef = useRef<any>(null);
   const zoomRef = useRef<((d: number) => void) | null>(null);
@@ -733,14 +1145,27 @@ export default function SensoryRoomBuilder() {
   const addProductToRoom = (product: RoomProduct) => {
     const isSwing = product.placement.startsWith("swing-");
     const isBubbleTube = product.placement === "tube-bubble";
+    const isFiberOptic = product.placement === "fiber-optic";
+    const isClimbing = product.placement === "climbing-wall";
+    const isActivityPanel = product.placement === "activity-panel";
+    const isFloorProjector = product.placement === "floor-projector";
 
     let x: number, z: number;
     if (isSwing) {
       x = -1.0 + Math.random() * 2.0;
       z = -0.5 + Math.random() * 1.0;
-    } else if (isBubbleTube) {
+    } else if (isBubbleTube || isFiberOptic) {
       x = -2.0 + Math.random() * 4.0;
       z = 0;
+    } else if (isClimbing) {
+      x = 0;
+      z = -1.0 + Math.random() * 2.0;
+    } else if (isActivityPanel) {
+      x = -2.0 + Math.random() * 4.0;
+      z = 0;
+    } else if (isFloorProjector) {
+      x = -1.0 + Math.random() * 2.0;
+      z = -1.0 + Math.random() * 2.0;
     } else {
       const angle = Math.random() * Math.PI * 2;
       const radius = 0.5 + Math.random() * 1.5;
@@ -750,29 +1175,67 @@ export default function SensoryRoomBuilder() {
 
     setPlacedItems((prev) => [
       ...prev,
-      {
-        instanceId: `${product.id}-${Date.now()}`,
-        product,
-        position: [x, 0, z],
-      },
+      { instanceId: `${product.id}-${Date.now()}`, product, position: [x, 0, z] },
     ]);
-
     if (showWelcome) setShowWelcome(false);
+  };
+
+  const loadTemplate = (template: RoomTemplate) => {
+    const items: PlacedItem[] = [];
+    template.items.forEach((productId) => {
+      const product = roomProducts.find(p => p.id === productId);
+      if (!product) return;
+      const isSwing = product.placement.startsWith("swing-");
+      const isBubbleTube = product.placement === "tube-bubble";
+      const isFiberOptic = product.placement === "fiber-optic";
+      const isClimbing = product.placement === "climbing-wall";
+      const isActivityPanel = product.placement === "activity-panel";
+      const isFloorProjector = product.placement === "floor-projector";
+
+      let x: number, z: number;
+      if (isSwing) {
+        x = -1.0 + Math.random() * 2.0;
+        z = -0.5 + Math.random() * 1.0;
+      } else if (isBubbleTube || isFiberOptic) {
+        x = -2.0 + Math.random() * 4.0;
+        z = 0;
+      } else if (isClimbing) {
+        x = 0;
+        z = -0.5 + Math.random() * 1.0;
+      } else if (isActivityPanel) {
+        x = -1.5 + Math.random() * 3.0;
+        z = 0;
+      } else if (isFloorProjector) {
+        x = -0.5 + Math.random() * 1.0;
+        z = -0.5 + Math.random() * 1.0;
+      } else {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = 0.5 + Math.random() * 1.5;
+        x = Math.cos(angle) * radius;
+        z = Math.sin(angle) * radius;
+      }
+      items.push({ instanceId: `${product.id}-${Date.now()}-${Math.random()}`, product, position: [x, 0, z] });
+    });
+    setPlacedItems(items);
+    if (template.settings) {
+      setRoomSettings(prev => ({ ...prev, ...template.settings }));
+    }
+    setShowWelcome(false);
   };
 
   const removeItem = (instanceId: string) => {
     setPlacedItems((prev) => prev.filter((i) => i.instanceId !== instanceId));
   };
 
-  const clearRoom = () => setPlacedItems([]);
+  const clearRoom = () => {
+    setPlacedItems([]);
+    setRoomSettings({ ledColor: "#000000", ledIntensity: 0.5, wallPadColor: "#f0ebe5", floorType: "wood" });
+  };
 
   const totalCost = placedItems.reduce((sum, item) => sum + item.product.price, 0);
 
   const uniqueCategories = ["All", ...new Set(roomProducts.map((p) => p.category))];
-  const filteredProducts =
-    selectedCategory === "All"
-      ? roomProducts
-      : roomProducts.filter((p) => p.category === selectedCategory);
+  const filteredProducts = selectedCategory === "All" ? roomProducts : roomProducts.filter((p) => p.category === selectedCategory);
 
   const groupedProducts = filteredProducts.reduce((acc, p) => {
     if (!acc[p.category]) acc[p.category] = [];
@@ -784,22 +1247,12 @@ export default function SensoryRoomBuilder() {
     const grouped = new Map<string, { product: RoomProduct; count: number }>();
     for (const item of placedItems) {
       const existing = grouped.get(item.product.id);
-      if (existing) {
-        existing.count++;
-      } else {
-        grouped.set(item.product.id, { product: item.product, count: 1 });
-      }
+      if (existing) existing.count++;
+      else grouped.set(item.product.id, { product: item.product, count: 1 });
     }
     for (const [, { product, count }] of grouped) {
       for (let i = 0; i < count; i++) {
-        addToCart({
-          productId: product.id,
-          productName: product.name,
-          category: product.category,
-          unitPrice: product.price,
-          config: { addons: [] },
-          image: product.image,
-        });
+        addToCart({ productId: product.id, productName: product.name, category: product.category, unitPrice: product.price, config: { addons: [] }, image: product.image });
       }
     }
   };
@@ -829,11 +1282,7 @@ export default function SensoryRoomBuilder() {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all whitespace-nowrap ${
-                    selectedCategory === cat
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted/60 text-muted-foreground hover:bg-muted"
-                  }`}
+                  className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all whitespace-nowrap ${selectedCategory === cat ? "bg-primary text-primary-foreground" : "bg-muted/60 text-muted-foreground hover:bg-muted"}`}
                   data-testid={`filter-${cat.toLowerCase().replace(/[\s&]+/g, "-")}`}
                 >
                   {cat}
@@ -854,22 +1303,13 @@ export default function SensoryRoomBuilder() {
                     <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{category}</span>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground/60">{products.length}</span>
-                      {expandedCategory === category ? (
-                        <ChevronUp className="w-3.5 h-3.5 text-muted-foreground" />
-                      ) : (
-                        <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-                      )}
+                      {expandedCategory === category ? <ChevronUp className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />}
                     </div>
                   </button>
                   {(expandedCategory === category || expandedCategory === null) && (
                     <div className="px-3 lg:px-4 pb-3 space-y-2">
                       {products.map((product) => (
-                        <ProductCard
-                          key={product.id}
-                          product={product}
-                          count={itemCounts[product.id] || 0}
-                          onAdd={() => addProductToRoom(product)}
-                        />
+                        <ProductCard key={product.id} product={product} count={itemCounts[product.id] || 0} onAdd={() => addProductToRoom(product)} />
                       ))}
                     </div>
                   )}
@@ -878,12 +1318,7 @@ export default function SensoryRoomBuilder() {
             ) : (
               <div className="p-3 lg:p-4 space-y-2">
                 {filteredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    count={itemCounts[product.id] || 0}
-                    onAdd={() => addProductToRoom(product)}
-                  />
+                  <ProductCard key={product.id} product={product} count={itemCounts[product.id] || 0} onAdd={() => addProductToRoom(product)} />
                 ))}
               </div>
             )}
@@ -892,42 +1327,12 @@ export default function SensoryRoomBuilder() {
 
         <div className="flex-1 relative flex flex-col">
           {showWelcome && placedItems.length === 0 && (
-            <WelcomeOverlay onDismiss={() => setShowWelcome(false)} />
+            <WelcomeOverlay onDismiss={() => setShowWelcome(false)} onTemplate={loadTemplate} />
           )}
 
-          <div className="absolute top-3 right-3 z-10 flex gap-2">
-            {placedItems.length > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-full gap-1.5 bg-background/90 backdrop-blur-sm shadow-sm"
-                onClick={clearRoom}
-                data-testid="button-clear-room"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                Reset
-              </Button>
-            )}
-          </div>
+          <RoomCustomizePanel settings={roomSettings} onChange={setRoomSettings} isOpen={showCustomize} onClose={() => setShowCustomize(false)} />
 
-          <div className="absolute bottom-24 right-3 z-10 flex flex-col gap-1.5" data-testid="zoom-controls">
-            <button
-              onClick={() => handleZoom(1)}
-              className="w-10 h-10 rounded-xl bg-background/90 backdrop-blur-sm border border-border/50 shadow-sm flex items-center justify-center hover:bg-background transition-colors"
-              data-testid="button-zoom-in"
-            >
-              <ZoomIn className="w-4 h-4 text-foreground" />
-            </button>
-            <button
-              onClick={() => handleZoom(-1)}
-              className="w-10 h-10 rounded-xl bg-background/90 backdrop-blur-sm border border-border/50 shadow-sm flex items-center justify-center hover:bg-background transition-colors"
-              data-testid="button-zoom-out"
-            >
-              <ZoomOut className="w-4 h-4 text-foreground" />
-            </button>
-          </div>
-
-          {placedItems.length > 0 && (
+          {!showCustomize && placedItems.length > 0 && (
             <div className="absolute top-3 left-3 z-10 bg-background/90 backdrop-blur-sm rounded-xl border border-border/50 p-3 shadow-sm max-h-[240px] overflow-y-auto w-60" data-testid="placed-items-list">
               <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                 In Room ({placedItems.length})
@@ -946,11 +1351,7 @@ export default function SensoryRoomBuilder() {
                       <span className="text-xs text-foreground truncate block">{product.name}</span>
                       <span className="text-[10px] text-muted-foreground">{items.length > 1 ? `x${items.length}` : formatPrice(product.price)}</span>
                     </div>
-                    <button
-                      onClick={() => removeItem(items[items.length - 1].instanceId)}
-                      className="text-muted-foreground hover:text-destructive transition-colors flex-shrink-0 p-0.5"
-                      data-testid={`remove-room-item-${productId}`}
-                    >
+                    <button onClick={() => removeItem(items[items.length - 1].instanceId)} className="text-muted-foreground hover:text-destructive transition-colors flex-shrink-0 p-0.5" data-testid={`remove-room-item-${productId}`}>
                       <Trash2 className="w-3 h-3" />
                     </button>
                   </div>
@@ -959,25 +1360,54 @@ export default function SensoryRoomBuilder() {
             </div>
           )}
 
+          <div className="absolute top-3 right-3 z-10 flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-full gap-1.5 bg-background/90 backdrop-blur-sm shadow-sm"
+              onClick={() => setShowCustomize(!showCustomize)}
+              data-testid="button-customize-room"
+            >
+              <Palette className="w-3.5 h-3.5" />
+              Customize
+            </Button>
+            {placedItems.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full gap-1.5 bg-background/90 backdrop-blur-sm shadow-sm"
+                onClick={clearRoom}
+                data-testid="button-clear-room"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                Reset
+              </Button>
+            )}
+          </div>
+
+          <div className="absolute bottom-24 right-3 z-10 flex flex-col gap-1.5" data-testid="zoom-controls">
+            <button onClick={() => handleZoom(1)} className="w-10 h-10 rounded-xl bg-background/90 backdrop-blur-sm border border-border/50 shadow-sm flex items-center justify-center hover:bg-background transition-colors" data-testid="button-zoom-in">
+              <ZoomIn className="w-4 h-4 text-foreground" />
+            </button>
+            <button onClick={() => handleZoom(-1)} className="w-10 h-10 rounded-xl bg-background/90 backdrop-blur-sm border border-border/50 shadow-sm flex items-center justify-center hover:bg-background transition-colors" data-testid="button-zoom-out">
+              <ZoomOut className="w-4 h-4 text-foreground" />
+            </button>
+          </div>
+
           {placedItems.length === 0 && !showWelcome && (
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center pointer-events-none" data-testid="empty-room-hint">
               <div className="bg-background/80 backdrop-blur-sm rounded-2xl border border-border/30 px-6 py-5 shadow-sm">
                 <Hand className="w-8 h-8 text-primary/40 mx-auto mb-2" />
                 <p className="text-sm text-muted-foreground font-medium">Select a product from the sidebar</p>
-                <p className="text-xs text-muted-foreground/60 mt-1">to place it in the therapy room</p>
+                <p className="text-xs text-muted-foreground/60 mt-1">or use Customize to set up the room environment</p>
               </div>
             </div>
           )}
 
           <div className="flex-1 min-h-[400px] lg:min-h-0">
-            <Canvas
-              shadows
-              camera={{ position: [4.5, 3.5, 4.5], fov: 45 }}
-              style={{ background: "linear-gradient(180deg, #e8eef5 0%, #d4dce8 100%)" }}
-              data-testid="canvas-3d"
-            >
+            <Canvas shadows camera={{ position: [4.5, 3.5, 4.5], fov: 45 }} style={{ background: "linear-gradient(180deg, #e8eef5 0%, #d4dce8 100%)" }} data-testid="canvas-3d">
               <Suspense fallback={null}>
-                <Scene placedItems={placedItems} onRemoveItem={removeItem} controlsRef={controlsRef} zoomRef={zoomRef} />
+                <Scene placedItems={placedItems} controlsRef={controlsRef} zoomRef={zoomRef} settings={roomSettings} />
               </Suspense>
             </Canvas>
           </div>
@@ -1001,22 +1431,12 @@ export default function SensoryRoomBuilder() {
               {placedItems.length > 0 && (
                 <div className="flex gap-3">
                   <Link href="/#enquiry">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      className="rounded-full gap-2"
-                      data-testid="button-quote-setup"
-                    >
+                    <Button variant="outline" size="lg" className="rounded-full gap-2" data-testid="button-quote-setup">
                       <Send className="w-4 h-4" />
                       Get Quote
                     </Button>
                   </Link>
-                  <Button
-                    size="lg"
-                    className="rounded-full gap-2 shadow-lg shadow-primary/20"
-                    onClick={handleBuySetup}
-                    data-testid="button-buy-setup"
-                  >
+                  <Button size="lg" className="rounded-full gap-2 shadow-lg shadow-primary/20" onClick={handleBuySetup} data-testid="button-buy-setup">
                     <ShoppingCart className="w-4 h-4" />
                     Buy Setup
                   </Button>
@@ -1038,12 +1458,7 @@ function ProductCard({ product, count, onAdd }: { product: RoomProduct; count: n
       data-testid={`room-product-${product.id}`}
     >
       <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 border border-border/30">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-          loading="lazy"
-        />
+        <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" loading="lazy" />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-foreground truncate">{product.name}</p>
@@ -1054,9 +1469,7 @@ function ProductCard({ product, count, onAdd }: { product: RoomProduct; count: n
         <div className="w-7 h-7 rounded-full bg-primary/10 group-hover:bg-primary group-hover:text-primary-foreground flex items-center justify-center transition-colors">
           <Plus className="w-3.5 h-3.5 text-primary group-hover:text-primary-foreground" />
         </div>
-        {count > 0 && (
-          <span className="text-[10px] font-bold text-primary">x{count}</span>
-        )}
+        {count > 0 && <span className="text-[10px] font-bold text-primary">x{count}</span>}
       </div>
     </button>
   );
