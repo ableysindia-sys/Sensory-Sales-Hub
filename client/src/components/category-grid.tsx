@@ -38,7 +38,7 @@ export function CategoryGrid() {
           </motion.p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
           {categories.map((cat, i) => (
             <motion.div
               key={cat.title}
@@ -46,36 +46,36 @@ export function CategoryGrid() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
-              className="group relative bg-card rounded-2xl border border-border/50 p-6 transition-all duration-300"
+              className="group relative bg-card rounded-3xl border border-border/50 p-6 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/[0.04] transition-all duration-500"
               data-testid={`card-category-${i}`}
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+              <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
 
               <div className="relative z-10">
                 <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-bold text-foreground mb-1" data-testid={`text-category-title-${i}`}>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-foreground mb-1.5" data-testid={`text-category-title-${i}`}>
                       {cat.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground">{cat.description.split('.')[0]}.</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{cat.description.split('.')[0]}.</p>
                   </div>
-                  <span className="flex-shrink-0 text-xs font-semibold text-primary bg-primary/8 px-2.5 py-1 rounded-full">
+                  <span className="flex-shrink-0 text-xs font-bold text-primary bg-primary/[0.07] px-3 py-1.5 rounded-full ml-3">
                     {cat.products.length}
                   </span>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 mb-5">
-                  {cat.products.slice(0, 6).map((product) => (
+                <div className="flex flex-wrap gap-1.5 mb-6">
+                  {cat.products.slice(0, 5).map((product) => (
                     <span
                       key={product.id}
-                      className="text-xs px-2.5 py-1 rounded-full bg-muted text-muted-foreground font-medium"
+                      className="text-xs px-2.5 py-1 rounded-full bg-muted/80 text-muted-foreground font-medium"
                     >
                       {product.name}
                     </span>
                   ))}
-                  {cat.products.length > 6 && (
-                    <span className="text-xs px-2.5 py-1 rounded-full bg-muted text-muted-foreground font-medium">
-                      +{cat.products.length - 6} more
+                  {cat.products.length > 5 && (
+                    <span className="text-xs px-2.5 py-1 rounded-full bg-primary/[0.06] text-primary font-medium">
+                      +{cat.products.length - 5} more
                     </span>
                   )}
                 </div>
@@ -84,11 +84,11 @@ export function CategoryGrid() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="gap-1.5 text-primary p-0 h-auto font-medium"
+                    className="gap-2 text-primary p-0 h-auto font-semibold group/btn"
                     data-testid={`button-category-view-${i}`}
                   >
                     View Products
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
                   </Button>
                 </Link>
               </div>

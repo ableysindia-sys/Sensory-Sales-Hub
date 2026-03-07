@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Send, Phone } from "lucide-react";
+import { Loader2, Send, Phone, Clock, FileText } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -87,22 +87,28 @@ export function BulkEnquiryForm() {
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6" data-testid="heading-enquiry">
               Bulk Orders & Custom Therapy Setups
             </h2>
-            <p className="text-muted-foreground leading-relaxed mb-8" data-testid="text-enquiry-desc">
+            <p className="text-muted-foreground leading-relaxed mb-10" data-testid="text-enquiry-desc">
               Whether you're setting up a rehab centre, sensory gym, therapy room, or institutional program, our team can help with bulk requirements and customized tools.
             </p>
 
-            <div className="space-y-4 mb-8">
-              <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-4 h-4 text-primary" />
+            <div className="space-y-5 mb-8">
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="w-10 h-10 rounded-xl bg-primary/[0.06] border border-primary/[0.1] flex items-center justify-center flex-shrink-0">
+                  <Clock className="w-5 h-5 text-primary" />
                 </div>
-                <span>Quick response within 24 hours</span>
+                <div>
+                  <p className="font-medium text-foreground text-sm">Quick response within 24 hours</p>
+                  <p className="text-xs text-muted-foreground">Our team reviews every enquiry personally</p>
+                </div>
               </div>
-              <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center flex-shrink-0">
-                  <Send className="w-4 h-4 text-primary" />
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="w-10 h-10 rounded-xl bg-primary/[0.06] border border-primary/[0.1] flex items-center justify-center flex-shrink-0">
+                  <FileText className="w-5 h-5 text-primary" />
                 </div>
-                <span>Custom quotes for institutional orders</span>
+                <div>
+                  <p className="font-medium text-foreground text-sm">Custom quotes for institutional orders</p>
+                  <p className="text-xs text-muted-foreground">Tailored pricing for your requirements</p>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -113,7 +119,7 @@ export function BulkEnquiryForm() {
             viewport={{ once: true }}
             className="lg:col-span-3"
           >
-            <div className="bg-card rounded-2xl border border-border/50 p-6 sm:p-8">
+            <div className="bg-card rounded-3xl border border-border/50 p-6 sm:p-8 shadow-sm">
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                   <div className="grid sm:grid-cols-2 gap-5">
@@ -124,7 +130,7 @@ export function BulkEnquiryForm() {
                         <FormItem>
                           <FormLabel>Full Name *</FormLabel>
                           <FormControl>
-                            <Input placeholder="Dr. Jane Smith" data-testid="input-name" {...field} />
+                            <Input placeholder="Dr. Jane Smith" className="rounded-xl h-11" data-testid="input-name" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -137,7 +143,7 @@ export function BulkEnquiryForm() {
                         <FormItem>
                           <FormLabel>Organisation / Clinic</FormLabel>
                           <FormControl>
-                            <Input placeholder="City Rehab Centre" data-testid="input-org" {...field} value={field.value || ''} />
+                            <Input placeholder="City Rehab Centre" className="rounded-xl h-11" data-testid="input-org" {...field} value={field.value || ''} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -153,7 +159,7 @@ export function BulkEnquiryForm() {
                         <FormItem>
                           <FormLabel>Email *</FormLabel>
                           <FormControl>
-                            <Input type="email" placeholder="jane@clinic.com" data-testid="input-email" {...field} />
+                            <Input type="email" placeholder="jane@clinic.com" className="rounded-xl h-11" data-testid="input-email" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -166,7 +172,7 @@ export function BulkEnquiryForm() {
                         <FormItem>
                           <FormLabel>Phone Number</FormLabel>
                           <FormControl>
-                            <Input type="tel" placeholder="+91 9876543210" data-testid="input-phone" {...field} value={field.value || ''} />
+                            <Input type="tel" placeholder="+91 9876543210" className="rounded-xl h-11" data-testid="input-phone" {...field} value={field.value || ''} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -182,7 +188,7 @@ export function BulkEnquiryForm() {
                         <FormItem>
                           <FormLabel>City / Country</FormLabel>
                           <FormControl>
-                            <Input placeholder="Mumbai, India" data-testid="input-city" {...field} value={field.value || ''} />
+                            <Input placeholder="Mumbai, India" className="rounded-xl h-11" data-testid="input-city" {...field} value={field.value || ''} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -196,7 +202,7 @@ export function BulkEnquiryForm() {
                           <FormLabel>Category Interested In</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value || ''}>
                             <FormControl>
-                              <SelectTrigger data-testid="select-category">
+                              <SelectTrigger className="rounded-xl h-11" data-testid="select-category">
                                 <SelectValue placeholder="Select category" />
                               </SelectTrigger>
                             </FormControl>
@@ -220,7 +226,7 @@ export function BulkEnquiryForm() {
                         <FormLabel>Requirement Type</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value || ''}>
                           <FormControl>
-                            <SelectTrigger data-testid="select-requirement">
+                            <SelectTrigger className="rounded-xl h-11" data-testid="select-requirement">
                               <SelectValue placeholder="Select requirement type" />
                             </SelectTrigger>
                           </FormControl>
@@ -244,7 +250,7 @@ export function BulkEnquiryForm() {
                         <FormControl>
                           <Textarea
                             placeholder="Tell us about your requirements, quantities, or any customization needs..."
-                            className="min-h-[100px] resize-none"
+                            className="min-h-[110px] resize-none rounded-xl"
                             data-testid="textarea-message"
                             {...field}
                             value={field.value || ''}
@@ -255,12 +261,12 @@ export function BulkEnquiryForm() {
                     )}
                   />
 
-                  <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                  <div className="flex flex-col sm:flex-row gap-3 pt-3">
                     <Button
                       type="submit"
                       size="lg"
                       disabled={createLead.isPending}
-                      className="rounded-full flex-1"
+                      className="rounded-full flex-1 h-12 shadow-lg shadow-primary/20"
                       data-testid="button-submit-enquiry"
                     >
                       {createLead.isPending ? (
@@ -279,7 +285,7 @@ export function BulkEnquiryForm() {
                       type="button"
                       variant="outline"
                       size="lg"
-                      className="rounded-full"
+                      className="rounded-full h-12 border-border/60"
                       data-testid="button-talk-team"
                     >
                       <Phone className="mr-2 h-4 w-4" />

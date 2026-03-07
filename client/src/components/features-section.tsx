@@ -45,7 +45,7 @@ export function FeaturesSection() {
           </motion.p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
           {features.map((feat, i) => (
             <motion.div
               key={feat.title}
@@ -53,14 +53,14 @@ export function FeaturesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
-              className="text-center p-6 rounded-2xl bg-card border border-border/50 transition-all duration-300"
+              className="group text-center p-6 lg:p-8 rounded-3xl bg-card border border-border/50 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/[0.04] transition-all duration-500"
               data-testid={`feature-card-${i}`}
             >
-              <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-primary/8 flex items-center justify-center">
+              <div className="w-14 h-14 mx-auto mb-5 rounded-2xl bg-primary/[0.06] border border-primary/[0.08] flex items-center justify-center group-hover:bg-primary/[0.1] group-hover:border-primary/[0.15] group-hover:scale-110 transition-all duration-500">
                 <feat.icon className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="font-semibold text-foreground mb-2 text-sm">{feat.title}</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">{feat.desc}</p>
+              <h3 className="font-bold text-foreground mb-2">{feat.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{feat.desc}</p>
             </motion.div>
           ))}
         </div>

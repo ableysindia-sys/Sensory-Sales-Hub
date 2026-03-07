@@ -16,21 +16,21 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div
-      className="bg-card rounded-2xl border border-border/50 overflow-hidden transition-all duration-300 flex flex-col"
+      className="group bg-card rounded-3xl border border-border/50 overflow-hidden hover:border-primary/20 hover:shadow-xl hover:shadow-primary/[0.04] transition-all duration-500 flex flex-col"
       data-testid={`product-card-${product.id}`}
     >
-      <div className="aspect-[4/3] bg-muted/30 flex items-center justify-center border-b border-border/30">
+      <div className="aspect-[4/3] bg-muted/20 flex items-center justify-center border-b border-border/20 group-hover:bg-muted/30 transition-colors duration-500">
         <div className="text-center p-6">
-          <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-primary/8 flex items-center justify-center">
-            <Package className="w-7 h-7 text-primary/40" />
+          <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-primary/[0.06] border border-primary/[0.08] flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+            <Package className="w-7 h-7 text-primary/30 group-hover:text-primary/50 transition-colors" />
           </div>
-          <p className="text-xs text-muted-foreground/50 font-medium">Product Image</p>
+          <p className="text-xs text-muted-foreground/40 font-medium">Product Image</p>
         </div>
       </div>
 
       <div className="p-5 flex flex-col flex-1">
         <div className="flex-1">
-          <p className="text-xs font-medium text-primary uppercase tracking-wider mb-1.5">{category?.title}</p>
+          <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-1.5">{category?.title}</p>
           <h3 className="text-base font-bold text-foreground mb-2" data-testid={`text-product-name-${product.id}`}>
             {product.name}
           </h3>
@@ -43,7 +43,7 @@ export function ProductCard({ product }: ProductCardProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full rounded-full text-xs gap-1.5"
+                className="w-full rounded-full text-xs gap-1.5 border-border/60 hover:border-primary/30"
                 data-testid={`button-view-${product.id}`}
               >
                 <Eye className="w-3.5 h-3.5" />
@@ -52,7 +52,7 @@ export function ProductCard({ product }: ProductCardProps) {
             </Link>
             <Button
               size="sm"
-              className="flex-1 rounded-full text-xs gap-1.5"
+              className="flex-1 rounded-full text-xs gap-1.5 shadow-sm"
               onClick={() => addItem(product.id, product.name, category?.title || "")}
               data-testid={`button-add-enquiry-${product.id}`}
             >
@@ -73,7 +73,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full rounded-full text-xs gap-1.5 text-primary"
+              className="w-full rounded-full text-xs gap-1.5 text-primary hover:text-primary"
               data-testid={`button-bulk-quote-${product.id}`}
             >
               Request Bulk Quote
