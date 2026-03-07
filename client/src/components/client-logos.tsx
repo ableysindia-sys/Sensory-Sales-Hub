@@ -1,4 +1,14 @@
 import { motion } from "framer-motion";
+import { SITE_IMAGES } from "@/lib/catalogue-data";
+
+const showcaseImages = [
+  { src: SITE_IMAGES.workshop, alt: "Abley's workshop" },
+  { src: SITE_IMAGES.getStarted, alt: "Get started with therapy" },
+  { src: SITE_IMAGES.sensoryRoom, alt: "Sensory room setup" },
+  { src: SITE_IMAGES.diy, alt: "DIY therapy tools" },
+  { src: SITE_IMAGES.productShowcase, alt: "Product showcase" },
+  { src: SITE_IMAGES.weightedVest, alt: "Weighted vest" },
+];
 
 export function ClientLogos() {
   return (
@@ -10,30 +20,48 @@ export function ClientLogos() {
           viewport={{ once: true }}
           className="text-center mb-14"
         >
-          <p className="text-sm font-semibold text-primary uppercase tracking-wider mb-4">Our Clients</p>
+          <p className="text-sm font-semibold text-primary uppercase tracking-wider mb-4">Our Work</p>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground" data-testid="heading-clients">
-            Trusted by Centres, Clinics & Institutions
+            Built for Centres, Clinics & Institutions
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 lg:gap-5 max-w-4xl mx-auto">
-          {Array.from({ length: 12 }).map((_, i) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 lg:gap-5 max-w-4xl mx-auto">
+          {showcaseImages.map((img, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.03 }}
-              className="aspect-[2.5/1] bg-muted/30 rounded-2xl border border-border/20 flex items-center justify-center grayscale opacity-50 hover:opacity-70 hover:grayscale-0 transition-all duration-500"
-              data-testid={`logo-placeholder-${i}`}
+              transition={{ delay: i * 0.05 }}
+              className="group aspect-[3/2] rounded-2xl overflow-hidden border border-border/20 shadow-sm hover:shadow-lg hover:border-primary/20 transition-all duration-500"
+              data-testid={`showcase-image-${i}`}
             >
-              <div className="text-center">
-                <div className="w-10 h-6 mx-auto mb-1.5 rounded bg-muted/60" />
-                <p className="text-[9px] text-muted-foreground/30 font-medium tracking-wider uppercase">Partner</p>
-              </div>
+              <img
+                src={img.src}
+                alt={img.alt}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                loading="lazy"
+              />
             </motion.div>
           ))}
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+          className="mt-10 overflow-hidden rounded-2xl border border-border/30 shadow-sm"
+        >
+          <img
+            src={SITE_IMAGES.shopBanner}
+            alt="Abley's India Shop"
+            className="w-full h-32 sm:h-40 lg:h-48 object-cover"
+            loading="lazy"
+            data-testid="img-shop-banner"
+          />
+        </motion.div>
       </div>
     </section>
   );

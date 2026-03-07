@@ -46,26 +46,42 @@ export function CategoryGrid() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
-              className="group relative bg-card rounded-3xl border border-border/50 p-6 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/[0.04] transition-all duration-500"
+              className="group relative bg-card rounded-3xl border border-border/50 overflow-hidden hover:border-primary/20 hover:shadow-xl hover:shadow-primary/[0.04] transition-all duration-500"
               data-testid={`card-category-${i}`}
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+              {cat.image && (
+                <div className="relative h-40 overflow-hidden">
+                  <img
+                    src={cat.image}
+                    alt={cat.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    loading="lazy"
+                    data-testid={`img-category-${i}`}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
+                  <span className="absolute top-3 right-3 text-xs font-bold text-primary bg-background/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm">
+                    {cat.products.length}
+                  </span>
+                </div>
+              )}
 
-              <div className="relative z-10">
-                <div className="flex items-start justify-between mb-4">
+              <div className="relative z-10 p-6 pt-4">
+                <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <h3 className="text-lg font-bold text-foreground mb-1.5" data-testid={`text-category-title-${i}`}>
                       {cat.title}
                     </h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">{cat.description.split('.')[0]}.</p>
                   </div>
-                  <span className="flex-shrink-0 text-xs font-bold text-primary bg-primary/[0.07] px-3 py-1.5 rounded-full ml-3">
-                    {cat.products.length}
-                  </span>
+                  {!cat.image && (
+                    <span className="flex-shrink-0 text-xs font-bold text-primary bg-primary/[0.07] px-3 py-1.5 rounded-full ml-3">
+                      {cat.products.length}
+                    </span>
+                  )}
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 mb-6">
-                  {cat.products.slice(0, 5).map((product) => (
+                <div className="flex flex-wrap gap-1.5 mb-5">
+                  {cat.products.slice(0, 4).map((product) => (
                     <span
                       key={product.id}
                       className="text-xs px-2.5 py-1 rounded-full bg-muted/80 text-muted-foreground font-medium"
@@ -73,9 +89,9 @@ export function CategoryGrid() {
                       {product.name}
                     </span>
                   ))}
-                  {cat.products.length > 5 && (
+                  {cat.products.length > 4 && (
                     <span className="text-xs px-2.5 py-1 rounded-full bg-primary/[0.06] text-primary font-medium">
-                      +{cat.products.length - 5} more
+                      +{cat.products.length - 4} more
                     </span>
                   )}
                 </div>

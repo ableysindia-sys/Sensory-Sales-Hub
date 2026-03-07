@@ -31,7 +31,20 @@ export default function CategoryPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main>
-        <section className="pt-28 pb-16" data-testid="section-category-header">
+        {category.image && (
+          <div className="relative h-48 sm:h-56 lg:h-64 mt-16 overflow-hidden" data-testid="section-category-banner">
+            <img
+              src={category.image.replace('width=600', 'width=1920')}
+              alt={category.title}
+              className="w-full h-full object-cover"
+              loading="eager"
+              data-testid="img-category-banner"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/20" />
+          </div>
+        )}
+
+        <section className={category.image ? "pb-16 -mt-16 relative z-10" : "pt-28 pb-16"} data-testid="section-category-header">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8" data-testid="breadcrumb">
               <Link href="/" className="transition-colors" data-testid="breadcrumb-home">Home</Link>

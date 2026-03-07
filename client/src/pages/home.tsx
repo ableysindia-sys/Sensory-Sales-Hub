@@ -11,6 +11,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { Box, ArrowRight } from "lucide-react";
+import { SITE_IMAGES } from "@/lib/catalogue-data";
 
 function SensoryRoomCTA() {
   return (
@@ -40,12 +41,17 @@ function SensoryRoomCTA() {
                 </Button>
               </Link>
             </div>
-            <div className="flex-shrink-0 w-64 h-64 lg:w-80 lg:h-80 rounded-3xl bg-card/80 border border-border/50 flex items-center justify-center backdrop-blur-sm">
-              <div className="text-center p-8">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary/10 flex items-center justify-center">
-                  <Box className="w-8 h-8 text-primary" />
-                </div>
-                <p className="text-sm font-medium text-foreground mb-1">Interactive 3D</p>
+            <div className="flex-shrink-0 w-64 h-64 lg:w-80 lg:h-80 rounded-3xl overflow-hidden border border-border/50 shadow-xl relative group">
+              <img
+                src={SITE_IMAGES.sensoryRoom}
+                alt="Sensory room floor play setup"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                loading="lazy"
+                data-testid="img-sensory-room-cta"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 via-transparent to-transparent" />
+              <div className="absolute bottom-4 left-4 right-4 bg-background/90 backdrop-blur-sm rounded-xl px-4 py-3 border border-border/30">
+                <p className="text-sm font-medium text-foreground">Interactive 3D</p>
                 <p className="text-xs text-muted-foreground">Drag, drop & visualize</p>
               </div>
             </div>

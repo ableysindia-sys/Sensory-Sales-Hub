@@ -57,7 +57,7 @@ Premium Apple-style B2B/B2C hybrid e-commerce platform for Abley's Rehab, a prof
 Swings (7), Ballpool (2), Mats (5), Movement & Balance (8), Climbing (3), ADL Kit (3), Therapy Balls (4), Deep Pressure (4), Visual (6)
 
 ## E-Commerce Features
-- **Real Product Images**: ~20 products pull real images from ableys.in Shopify store (CDN URLs), with image gallery and thumbnails on product pages; remaining products show styled placeholder icons
+- **Real Website Images**: ableys.in images used throughout — hero banner, category grid cards (9 categories), manufacturing workshop visual, sensory room CTA, product showcase gallery, shop banner. ~20 products have Shopify CDN image galleries; category pages show banner headers from collection images
 - **Product Configurator**: Color swatches, material variants, size options, add-on checkboxes with dynamic price calculation
 - **Shopping Cart**: Zustand store with cartKey-based item identity (supports multiple configs of same product), quantity controls, GST (18%) calculation
 - **Cart Drawer**: Slide-out sheet from right, line items with config details, subtotal/GST/total
