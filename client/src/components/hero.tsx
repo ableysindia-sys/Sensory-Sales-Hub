@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Layers, Shield, Ruler } from "lucide-react";
+import { Link } from "wouter";
 
 export function Hero() {
   return (
@@ -27,7 +28,7 @@ export function Hero() {
             </h1>
 
             <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-xl mb-4" data-testid="text-hero-desc">
-              Abley's Rehab equips therapists, centres, clinics, and institutions with high-quality, professionally designed tools for occupational therapy, movement, sensory integration, deep pressure, and rehabilitation.
+              High-quality occupational therapy and rehabilitation tools for clinics, therapy centres, hospitals, and institutions.
             </p>
 
             <p className="text-base italic text-primary/80 font-medium mb-10" data-testid="text-hero-motto">
@@ -35,24 +36,26 @@ export function Hero() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button
-                size="lg"
-                className="rounded-full text-base gap-2"
-                onClick={() => document.getElementById("categories")?.scrollIntoView({ behavior: "smooth" })}
-                data-testid="button-hero-explore"
-              >
-                Explore Categories
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="rounded-full text-base"
-                onClick={() => document.getElementById("enquiry")?.scrollIntoView({ behavior: "smooth" })}
-                data-testid="button-hero-enquiry"
-              >
-                Bulk / Custom Enquiry
-              </Button>
+              <Link href="/category/swings">
+                <Button
+                  size="lg"
+                  className="rounded-full text-base gap-2"
+                  data-testid="button-hero-browse"
+                >
+                  Browse Products
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+              <Link href="/enquiry">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="rounded-full text-base"
+                  data-testid="button-hero-enquiry"
+                >
+                  Bulk Enquiry
+                </Button>
+              </Link>
             </div>
           </motion.div>
 

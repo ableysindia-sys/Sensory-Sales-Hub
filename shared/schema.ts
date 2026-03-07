@@ -21,6 +21,7 @@ export const leads = pgTable("leads", {
   category: text("category"),
   requirementType: text("requirement_type"),
   message: text("message"),
+  cartItems: text("cart_items"),
 });
 
 export const insertProductSchema = createInsertSchema(products).omit({ id: true });

@@ -1,65 +1,86 @@
-import { motion } from "framer-motion";
-import type { Product } from "@shared/schema";
 import { Button } from "@/components/ui/button";
+import { ShoppingCart, Eye, CheckCircle2, Package } from "lucide-react";
+import { Link } from "wouter";
+import { useEnquiryCart } from "@/lib/enquiry-cart";
+import type { CatalogueProduct } from "@/lib/catalogue-data";
+import { getProductCategory } from "@/lib/catalogue-data";
 
 interface ProductCardProps {
-  product: Product;
-  index: number;
+  product: CatalogueProduct;
 }
 
-export function ProductCard({ product, index }: ProductCardProps) {
-  const formattedPrice = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(product.price / 100);
+export function ProductCard({ product }: ProductCardProps) {
+  const { addItem, isInCart } = useEnquiryCart();
+  const category = getProductCategory(product);
+  const inCart = isInCart(product.id);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group relative bg-card rounded-3xl overflow-hidden border border-border/50 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-300"
-      data-testid={`card-product-${product.id}`}
+    <div
+      className="bg-card rounded-2xl border border-border/50 overflow-hidden transition-all duration-300 flex flex-col"
+      data-testid={`product-card-${product.id}`}
     >
-      <div className="aspect-[4/3] overflow-hidden bg-muted relative">
-        {/* Soft overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
-        <img
-          src={product.imageUrl}
-          alt={product.name}
-          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700 ease-out"
-          loading="lazy"
-          data-testid={`img-product-${product.id}`}
-        />
+      <div className="aspect-[4/3] bg-muted/30 flex items-center justify-center border-b border-border/30">
+        <div className="text-center p-6">
+          <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-primary/8 flex items-center justify-center">
+            <Package className="w-7 h-7 text-primary/40" />
+          </div>
+          <p className="text-xs text-muted-foreground/50 font-medium">Product Image</p>
+        </div>
       </div>
-      
-      <div className="p-6">
-        <div className="flex justify-between items-start mb-3">
-          <h3 className="font-display text-xl text-foreground font-medium line-clamp-1" data-testid={`text-product-name-${product.id}`}>
+
+      <div className="p-5 flex flex-col flex-1">
+        <div className="flex-1">
+          <p className="text-xs font-medium text-primary uppercase tracking-wider mb-1.5">{category?.title}</p>
+          <h3 className="text-base font-bold text-foreground mb-2" data-testid={`text-product-name-${product.id}`}>
             {product.name}
           </h3>
-          <span className="text-primary font-medium bg-primary/10 px-3 py-1 rounded-full text-sm" data-testid={`text-product-price-${product.id}`}>
-            {formattedPrice}
-          </span>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-4">{product.shortDescription}</p>
         </div>
-        
-        <p className="text-muted-foreground text-sm line-clamp-2 mb-6 leading-relaxed" data-testid={`text-product-desc-${product.id}`}>
-          {product.description}
-        </p>
-        
-        <Button 
-          className="w-full rounded-xl"
-          variant="secondary"
-          onClick={() => {
-            // Smooth scroll to lead form and pre-fill interest
-            document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-          }}
-          data-testid={`button-product-interest-${product.id}`}
-        >
-          Express Interest
-        </Button>
+
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <Link href={`/product/${product.id}`} className="flex-1">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full rounded-full text-xs gap-1.5"
+                data-testid={`button-view-${product.id}`}
+              >
+                <Eye className="w-3.5 h-3.5" />
+                View Details
+              </Button>
+            </Link>
+            <Button
+              size="sm"
+              className="flex-1 rounded-full text-xs gap-1.5"
+              onClick={() => addItem(product.id, product.name, category?.title || "")}
+              data-testid={`button-add-enquiry-${product.id}`}
+            >
+              {inCart ? (
+                <>
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Added
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="w-3.5 h-3.5" />
+                  Add to Enquiry
+                </>
+              )}
+            </Button>
+          </div>
+          <Link href="/enquiry" className="block">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full rounded-full text-xs gap-1.5 text-primary"
+              data-testid={`button-bulk-quote-${product.id}`}
+            >
+              Request Bulk Quote
+            </Button>
+          </Link>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

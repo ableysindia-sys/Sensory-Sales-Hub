@@ -1,0 +1,207 @@
+Update the current Abley’s Rehab website.
+Right now it is behaving like a landing page with enquiry form, but the requirement is a B2B ecommerce catalogue website.
+
+Keep the current design style, colours (#4A53A0, white, grey, black), and branding, but modify the structure so the site functions like a product catalogue with ecommerce capability.
+
+⸻
+
+Required Changes
+
+1. Add a Product Catalogue System
+
+Each category should open a product listing page showing products in a grid.
+
+Example:
+
+Category page layout:
+
+Swings
+Bolster Swing
+T Swing
+Disc Swing
+Platform Swing
+Tube Swing
+Lycra Swing
+Acrobat Swing
+
+Each product card should contain:
+	•	Product image placeholder
+	•	Product name
+	•	Short description
+	•	CTA buttons:
+	•	View Details
+	•	Add to Enquiry
+	•	Request Bulk Quote
+
+⸻
+
+2. Create Product Detail Pages
+
+Each product must have a dedicated product page.
+
+Product page should include:
+
+Product Name
+Large product image
+
+Sections:
+
+Description
+Specifications
+Features
+Applications (OT / therapy use)
+
+Example fields:
+	•	Dimensions
+	•	Material
+	•	Weight capacity
+	•	Use case
+
+Add icons for:
+
+✔ Durable construction
+✔ Therapist friendly
+✔ Easy maintenance
+✔ Institutional grade
+
+Buttons:
+	•	Add to Enquiry Cart
+	•	Bulk Order Enquiry
+	•	Request Customisation
+
+⸻
+
+3. Enquiry Cart System
+
+Instead of a simple contact form, create an Enquiry Cart.
+
+Users can add products they are interested in.
+
+Cart page should include:
+
+Selected Products
+Quantity
+Notes
+
+Form fields:
+
+Name
+Organisation / Clinic
+Email
+Phone
+City / Country
+Project Details
+
+Submit button:
+
+Submit Bulk Enquiry
+
+This will generate qualified B2B leads.
+
+⸻
+
+4. Navigation Update
+
+Top navigation should include:
+
+Home
+Products
+Categories
+Bulk Orders
+Custom Tools
+Contact
+
+Under Products, show the 9 categories.
+
+⸻
+
+5. Category List (Must Exist)
+
+Create catalogue pages for these categories:
+
+Swings
+Ballpool
+Mats
+Movement & Balance
+Climbing
+ADL Kit
+Therapy Balls
+Deep Pressure
+Visual
+
+Each category should display 10–12 product cards.
+
+⸻
+
+6. Ecommerce Ready Structure
+
+Even if checkout is not active, structure the site so that:
+
+Products
+Categories
+Product pages
+Cart system
+
+are already implemented.
+
+Use reusable components:
+
+ProductCard
+CategoryPage
+ProductPage
+EnquiryCart
+
+⸻
+
+7. Maintain B2B Focus
+
+Make sure the tone remains professional and institutional.
+
+Add trust indicators:
+
+Made in India
+6 Month Warranty
+Institutional Grade
+Custom Manufacturing Available
+
+⸻
+
+8. Improve Hero Message
+
+Hero headline should remain:
+
+Professional Therapy Tools for Experts
+
+Subline:
+
+High-quality occupational therapy and rehabilitation tools for clinics, therapy centres, hospitals, and institutions.
+
+Add buttons:
+
+Browse Products
+Bulk Enquiry
+
+⸻
+
+Technical Requirement
+
+Use:
+
+React + Tailwind
+
+Create reusable components:
+
+Navbar
+Hero
+CategoryGrid
+ProductCard
+ProductPage
+EnquiryCart
+BulkEnquiryForm
+Footer
+
+⸻
+
+Important
+
+The website must behave like a product catalogue + B2B enquiry ecommerce system, not just a static landing page.

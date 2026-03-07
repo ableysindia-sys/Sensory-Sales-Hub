@@ -1,63 +1,8 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-
-const categories = [
-  {
-    title: "Swings",
-    description: "Vestibular input swings for therapy and sensory integration.",
-    products: ["Bolster Swing", "T Swing", "Disc Swing", "Platform Swing", "Tube Swing", "Lycra Swing", "Acrobat Swing"],
-    color: "from-blue-500/10 to-indigo-500/10",
-  },
-  {
-    title: "Ballpool",
-    description: "Therapeutic ballpools for sensory rooms and clinics.",
-    products: ["4x4 Ballpool", "6x4 Ballpool"],
-    color: "from-violet-500/10 to-purple-500/10",
-  },
-  {
-    title: "Mats",
-    description: "Safety and therapy mats for professional environments.",
-    products: ["Crash Mat", "Therapy Mat", "Floormat", "Interlocking Mat", "Foldable Mat"],
-    color: "from-emerald-500/10 to-teal-500/10",
-  },
-  {
-    title: "Movement & Balance",
-    description: "Motor planning and balance training equipment.",
-    products: ["Kidlite Barrel", "Balance Board", "Balance Beam", "Stepping Stone", "Wedges", "Jumping Stool", "Trampoline", "Ramp & Stairs"],
-    color: "from-amber-500/10 to-orange-500/10",
-  },
-  {
-    title: "Climbing",
-    description: "Climbing structures for strength and coordination.",
-    products: ["Climb Board", "Wall Bar Ladder", "Spider Climb Net"],
-    color: "from-rose-500/10 to-pink-500/10",
-  },
-  {
-    title: "ADL Kit",
-    description: "Activities of Daily Living kits for functional training.",
-    products: ["4 Page Kit", "5 Page Kit", "6 Page Kit"],
-    color: "from-cyan-500/10 to-sky-500/10",
-  },
-  {
-    title: "Therapy Balls",
-    description: "Professional-grade therapy balls for rehabilitation.",
-    products: ["Gym Ball", "Bosu Ball", "Peanut Ball", "Medicine Ball"],
-    color: "from-green-500/10 to-emerald-500/10",
-  },
-  {
-    title: "Deep Pressure",
-    description: "Weighted products for proprioceptive input and calming.",
-    products: ["Weighted Vest", "Weighted Blanket", "Sensory Sock", "Lap Pad"],
-    color: "from-indigo-500/10 to-blue-500/10",
-  },
-  {
-    title: "Visual",
-    description: "Visual sensory equipment for therapy and sensory rooms.",
-    products: ["Hexwall Touch Light", "Liquid Motion Tiles", "Glitter Pad", "Glitter Capillary", "Fibre Light", "Bubble Tube"],
-    color: "from-purple-500/10 to-fuchsia-500/10",
-  },
-];
+import { Link } from "wouter";
+import { categories } from "@/lib/catalogue-data";
 
 export function CategoryGrid() {
   return (
@@ -112,7 +57,7 @@ export function CategoryGrid() {
                     <h3 className="text-lg font-bold text-foreground mb-1" data-testid={`text-category-title-${i}`}>
                       {cat.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground">{cat.description}</p>
+                    <p className="text-sm text-muted-foreground">{cat.description.split('.')[0]}.</p>
                   </div>
                   <span className="flex-shrink-0 text-xs font-semibold text-primary bg-primary/8 px-2.5 py-1 rounded-full">
                     {cat.products.length}
@@ -120,26 +65,32 @@ export function CategoryGrid() {
                 </div>
 
                 <div className="flex flex-wrap gap-1.5 mb-5">
-                  {cat.products.map((product) => (
+                  {cat.products.slice(0, 6).map((product) => (
                     <span
-                      key={product}
+                      key={product.id}
                       className="text-xs px-2.5 py-1 rounded-full bg-muted text-muted-foreground font-medium"
                     >
-                      {product}
+                      {product.name}
                     </span>
                   ))}
+                  {cat.products.length > 6 && (
+                    <span className="text-xs px-2.5 py-1 rounded-full bg-muted text-muted-foreground font-medium">
+                      +{cat.products.length - 6} more
+                    </span>
+                  )}
                 </div>
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="gap-1.5 text-primary p-0 h-auto font-medium no-default-hover-elevate no-default-active-elevate"
-                  onClick={() => document.getElementById("enquiry")?.scrollIntoView({ behavior: "smooth" })}
-                  data-testid={`button-category-view-${i}`}
-                >
-                  Enquire Now
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Button>
+                <Link href={`/category/${cat.slug}`}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5 text-primary p-0 h-auto font-medium"
+                    data-testid={`button-category-view-${i}`}
+                  >
+                    View Products
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Button>
+                </Link>
               </div>
             </motion.div>
           ))}

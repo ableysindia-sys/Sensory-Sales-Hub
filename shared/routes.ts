@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { insertLeadSchema } from './schema';
 
 export const errorSchemas = {
   validation: z.object({
@@ -16,9 +15,17 @@ export const api = {
     create: {
       method: 'POST' as const,
       path: '/api/leads' as const,
-      input: insertLeadSchema.extend({
-        email: z.string().email("Please enter a valid email address."),
+      input: z.object({
         name: z.string().min(1, "Name is required"),
+        email: z.string().email("Please enter a valid email address."),
+        interest: z.string().optional().nullable(),
+        organisation: z.string().optional().nullable(),
+        phone: z.string().optional().nullable(),
+        city: z.string().optional().nullable(),
+        category: z.string().optional().nullable(),
+        requirementType: z.string().optional().nullable(),
+        message: z.string().optional().nullable(),
+        cartItems: z.string().optional().nullable(),
       }),
       responses: {
         201: z.object({ id: z.number(), message: z.string() }),

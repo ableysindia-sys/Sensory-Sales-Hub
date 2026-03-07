@@ -1,10 +1,6 @@
+import { Link } from "wouter";
+import { categories } from "@/lib/catalogue-data";
 import logoPath from "@assets/ableys_rehab_logo.png";
-
-const footerLinks = {
-  categories: ["Swings", "Ballpool", "Mats", "Movement & Balance", "Climbing", "ADL Kit", "Therapy Balls", "Deep Pressure", "Visual"],
-  services: ["Bulk Orders", "Customization", "New Centre Setup", "Consultation"],
-  company: ["About Us", "Quality Standards", "Contact", "Careers"],
-};
 
 export function SiteFooter() {
   return (
@@ -26,15 +22,15 @@ export function SiteFooter() {
           <div>
             <h4 className="font-semibold text-sm text-background/90 mb-4">Categories</h4>
             <ul className="space-y-2">
-              {footerLinks.categories.map((link) => (
-                <li key={link}>
-                  <button
-                    onClick={() => document.getElementById("categories")?.scrollIntoView({ behavior: "smooth" })}
+              {categories.map((cat) => (
+                <li key={cat.slug}>
+                  <Link
+                    href={`/category/${cat.slug}`}
                     className="text-sm text-background/50 transition-colors"
-                    data-testid={`link-footer-${link.toLowerCase().replace(/\s+/g, '-')}`}
+                    data-testid={`link-footer-${cat.slug}`}
                   >
-                    {link}
-                  </button>
+                    {cat.title}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -43,15 +39,15 @@ export function SiteFooter() {
           <div>
             <h4 className="font-semibold text-sm text-background/90 mb-4">Services</h4>
             <ul className="space-y-2">
-              {footerLinks.services.map((link) => (
+              {["Bulk Orders", "Customization", "New Centre Setup", "Consultation"].map((link) => (
                 <li key={link}>
-                  <button
-                    onClick={() => document.getElementById("enquiry")?.scrollIntoView({ behavior: "smooth" })}
+                  <Link
+                    href="/enquiry"
                     className="text-sm text-background/50 transition-colors"
                     data-testid={`link-footer-${link.toLowerCase().replace(/\s+/g, '-')}`}
                   >
                     {link}
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -60,14 +56,15 @@ export function SiteFooter() {
           <div>
             <h4 className="font-semibold text-sm text-background/90 mb-4">Company</h4>
             <ul className="space-y-2">
-              {footerLinks.company.map((link) => (
+              {["About Us", "Quality Standards", "Contact", "Careers"].map((link) => (
                 <li key={link}>
-                  <button
+                  <Link
+                    href="/"
                     className="text-sm text-background/50 transition-colors"
                     data-testid={`link-footer-${link.toLowerCase().replace(/\s+/g, '-')}`}
                   >
                     {link}
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>
