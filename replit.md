@@ -42,12 +42,12 @@ Premium Apple-style B2B/B2C hybrid e-commerce platform for Abley's Rehab, a prof
 - `cart-drawer.tsx` - Slide-out shopping cart drawer with items, quantity controls, GST calculation, checkout button
 - `razorpay-modal.tsx` - Mock Razorpay payment modal (UPI/Card/Netbanking tabs, simulated 2s processing)
 - `product-card.tsx` - Product card with price, Add to Cart (B2C), Add to Enquiry (B2B)
-- `hero.tsx` - Full-width hero with Browse Products / Bulk Enquiry CTAs
+- `hero.tsx` - Full-width hero with real product photography + Browse Products / Bulk Enquiry CTAs
 - `trust-strip.tsx` - Trust badges (Made in India, Warranty, etc.)
-- `category-grid.tsx` - 9 category cards linking to category pages
+- `category-grid.tsx` - 9 category cards with real collection images linking to category pages
 - `manufacturing-section.tsx` - Quality/engineering highlights
 - `features-section.tsx` - 8 feature benefit cards
-- `client-logos.tsx` - Client trust section with placeholder logos
+- `client-logos.tsx` - Product showcase gallery with real images + shop banner
 - `bulk-enquiry-form.tsx` - B2B lead generation form (on home page)
 - `roadmap-section.tsx` - Future verticals (OT, Sensory, Physio, Speech)
 - `site-footer.tsx` - Multi-column footer with category links
@@ -63,7 +63,7 @@ Swings (7), Ballpool (2), Mats (5), Movement & Balance (8), Climbing (3), ADL Ki
 - **Cart Drawer**: Slide-out sheet from right, line items with config details, subtotal/GST/total
 - **Mock Checkout**: Razorpay-branded modal with payment tabs, simulated processing, success animation
 - **Order Confirmation**: Animated checkmark, order ID, delivery estimate
-- **3D Room Builder**: react-three-fiber scene with room walls/floor, product catalogue sidebar, click-to-place geometric representations, orbit controls, pricing summary
+- **3D Room Builder**: react-three-fiber therapy room with padded walls, ceiling suspension bar, window, door, baseboards; real product images in sidebar catalog (16 products); welcome overlay with 3-step guide; grouped categories with accordion; placed items list with thumbnails; buy/quote actions
 
 ## Database Schema
 - `products`: id, name, description, price (text), imageUrl
