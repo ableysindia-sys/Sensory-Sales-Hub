@@ -12,6 +12,7 @@ import Home from "./pages/home";
 import CategoryPage from "./pages/category";
 import ProductPage from "./pages/product";
 import EnquiryCartPage from "./pages/enquiry-cart";
+import AllProducts from "./pages/all-products";
 import OrderConfirmation from "./pages/order-confirmation";
 import SensoryRoomBuilder from "./pages/sensory-room-builder";
 
@@ -19,6 +20,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/products" component={AllProducts} />
       <Route path="/category/:slug" component={CategoryPage} />
       <Route path="/product/:slug" component={ProductPage} />
       <Route path="/enquiry" component={EnquiryCartPage} />

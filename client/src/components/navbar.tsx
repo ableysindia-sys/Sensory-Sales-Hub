@@ -66,6 +66,16 @@ export function Navbar() {
                     <>
                       <div className="fixed inset-0 z-40" onClick={() => setProductsOpen(false)} />
                       <div className="absolute top-full left-0 mt-2 w-72 bg-background/95 backdrop-blur-xl border border-border/50 rounded-2xl shadow-2xl z-50 p-2 animate-fade-up" data-testid="dropdown-products">
+                        <Link
+                          href="/products"
+                          onClick={() => setProductsOpen(false)}
+                          className="flex items-center justify-between px-3.5 py-2.5 text-sm rounded-xl hover:bg-primary/10 transition-all mb-1"
+                          data-testid="link-dropdown-all"
+                        >
+                          <span className="font-semibold text-primary">All Products</span>
+                          <span className="text-[11px] text-primary/70 bg-primary/10 px-2 py-0.5 rounded-full">View All</span>
+                        </Link>
+                        <div className="border-t border-border/30 my-1" />
                         {categories.map((cat) => (
                           <Link
                             key={cat.slug}

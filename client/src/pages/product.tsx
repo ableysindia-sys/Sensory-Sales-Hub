@@ -489,7 +489,11 @@ export default function ProductPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl">
               <h2 className="text-2xl font-bold text-foreground mb-4">About This Product</h2>
-              <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+              <div className="text-muted-foreground leading-relaxed space-y-2">
+                {product.description.split('\n').filter(l => l.trim()).map((line, i) => (
+                  <p key={i}>{line}</p>
+                ))}
+              </div>
             </div>
           </div>
         </section>

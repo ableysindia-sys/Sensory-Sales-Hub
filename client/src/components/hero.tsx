@@ -64,7 +64,7 @@ export function Hero() {
               transition={{ duration: 0.6, delay: 0.45 }}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
-              <Link href="/#categories">
+              <Link href="/products">
                 <Button
                   size="lg"
                   className="rounded-full text-base gap-2 px-8 h-12 shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all duration-300"

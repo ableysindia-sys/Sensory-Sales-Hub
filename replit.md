@@ -54,11 +54,13 @@ Premium Apple-style B2B/B2C hybrid e-commerce platform for Abley's Rehab, a prof
 - `site-footer.tsx` - Multi-column footer with category links
 - `theme-provider.tsx` - Dark/light mode support
 
-## Product Categories (9)
-Swings (7), Ballpool (2), Mats (5), Movement & Balance (8), Climbing (3), ADL Kit (3), Therapy Balls (4), Deep Pressure (4), Visual (6)
+## Product Categories (11) — 119 products from ableys.in Shopify
+Swings & Vestibular (4), Mats & Flooring (6), Deep Pressure & Weighted (13), Fidgets & Focus Tools (33), Oral Motor & Chew Tools (14), Balance & Movement (13), Visual & Calming (7), Communication & Learning (5), Daily Living & ADL (21), Tactile & Sensory Brushes (2), Therapy & Exercise Balls (1)
 
 ## E-Commerce Features
-- **Real Website Images**: ableys.in images used throughout — hero banner, category grid cards (9 categories), manufacturing workshop visual, sensory room CTA, product showcase gallery, shop banner. ~20 products have Shopify CDN image galleries; category pages show banner headers from collection images
+- **Real Shopify Data**: All 119 products fetched from ableys.in Shopify API with real titles, descriptions, prices, images, and variant data. Generated via `scripts/generate-catalogue.mjs`
+- **All Products Page**: `/products` with search bar, category filter buttons, sort (price/name), product grid
+- **Real Website Images**: ableys.in images used throughout — hero banner, category grid cards, manufacturing workshop visual, sensory room CTA, product showcase gallery, shop banner. All products have Shopify CDN image galleries
 - **Product Configurator**: Color swatches, material variants, size options, add-on checkboxes with dynamic price calculation
 - **Shopping Cart**: Zustand store with cartKey-based item identity (supports multiple configs of same product), quantity controls, GST (18%) calculation
 - **Cart Drawer**: Slide-out sheet from right, line items with config details, subtotal/GST/total
@@ -73,6 +75,7 @@ Swings (7), Ballpool (2), Mats (5), Movement & Balance (8), Climbing (3), ADL Ki
 
 ## API Endpoints
 - `POST /api/leads` - Submit B2B enquiry (with or without cart items)
+- `POST /api/chat` - Gemini AI chat assistant (rate-limited, 15 req/min per IP)
 
 ## Deployment
 - Target domain: rehab.ableys.in (CNAME to Replit .replit.app URL)
