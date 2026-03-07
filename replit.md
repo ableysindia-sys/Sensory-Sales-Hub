@@ -1,7 +1,7 @@
 # Abley's Rehab - B2B/B2C Hybrid E-Commerce Platform
 
 ## Overview
-Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional therapy equipment company. UI closely replicates the visual design of ableys.in (Shopify Dawn theme). Features product catalogue with 11 categories (119 products), product configurator with dynamic pricing, Zustand shopping cart, mock Razorpay checkout, 3D sensory room builder, Gemini AI chat assistant, and B2B enquiry system.
+Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional therapy equipment company. UI closely replicates the visual design of ableys.in (Shopify Dawn theme). Features product catalogue with 9 categories (42 professional B2B products), product configurator with dynamic pricing, Zustand shopping cart, mock Razorpay checkout, 3D sensory room builder, Gemini AI chat assistant, and B2B enquiry system.
 
 ## Architecture
 - **Frontend**: React + Tailwind CSS + shadcn/ui + Framer Motion + wouter (routing)
@@ -34,7 +34,7 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 - `shared/routes.ts` - API contract with Zod validation
 - `server/routes.ts` - Express API routes
 - `server/storage.ts` - Database storage layer
-- `client/src/lib/catalogue-data.ts` - Full product catalogue (119 products, 11 categories) with basePrice, comparePrice, configOptions, images, formatPrice(), calculateProductPrice(), getDiscountPercent(), getNewArrivals(), getBestSellers()
+- `client/src/lib/catalogue-data.ts` - Full product catalogue (42 products, 9 categories) with basePrice, comparePrice, configOptions, images, formatPrice(), calculateProductPrice(), getDiscountPercent(), getNewArrivals(), getBestSellers()
 - `client/src/lib/shopping-cart.ts` - Zustand B2C cart store (cartKey-based identity, GST 18%, localStorage persist)
 - `client/src/lib/enquiry-cart.tsx` - B2B enquiry cart context with localStorage persistence
 - `client/src/pages/` - Home, AllProducts, Category, Product, EnquiryCart, OrderConfirmation, SensoryRoomBuilder
@@ -42,7 +42,7 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 
 ## Components (Active)
 - `navbar.tsx` - Fixed header with AnnouncementBar ("Free Shipping All Over India" + social icons) + clean Shopify-style navbar (Products dropdown, cart, enquiry, mobile menu)
-- `hero.tsx` - Full-width auto-advancing hero slideshow (3 slides: Adaptive Clothing, Minky, Gifts) with prev/next arrows, dot navigation
+- `hero.tsx` - Full-width auto-advancing hero slideshow (3 slides: Professional Equipment, Sensory Room Essentials, Swings & Movement) with prev/next arrows, dot navigation
 - `category-grid.tsx` - "Our Top Rated Collections" — 5 featured collection cards with images, product counts, masonry-like grid layout
 - `product-carousel.tsx` - Horizontal scrolling product carousel with scroll buttons (used for "Just In" and "Our Best-Sellers")
 - `product-card.tsx` - Shopify-style product card: sale badge ("Save X%"), strikethrough compare price, star ratings (seeded), "Abley's" vendor label, inline color swatches, Add to Cart button
@@ -60,11 +60,11 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 ## Components (Legacy/Unused)
 - `trust-strip.tsx`, `manufacturing-section.tsx`, `features-section.tsx`, `client-logos.tsx`, `roadmap-section.tsx` — replaced by new ableys.in-matching components
 
-## Product Categories (11) — 119 products from ableys.in Shopify
-Swings & Vestibular (4), Mats & Flooring (6), Deep Pressure & Weighted (13), Fidgets & Focus Tools (33), Oral Motor & Chew Tools (14), Balance & Movement (13), Visual & Calming (7), Communication & Learning (5), Daily Living & ADL (21), Tactile & Sensory Brushes (2), Therapy & Exercise Balls (1)
+## Product Categories (9) — 42 professional B2B therapy products
+Swings (7), Ballpool (2), Mats (5), Movement & Balance (8), Climbing (3), ADL Kit (3), Therapy Balls (4), Deep Pressure (4), Visual (6)
 
 ## E-Commerce Features
-- **Real Shopify Data**: All 119 products fetched from ableys.in Shopify API with real titles, descriptions, prices, images, compare prices, and variant data. Generated via `scripts/generate-catalogue.mjs`
+- **Curated B2B Catalogue**: 42 professional therapy products across 9 categories with detailed descriptions, specifications, professional pricing, and real product images from ableys.in Shopify CDN
 - **Sale Badges**: Products with comparePrice show "Save X%" badges and strikethrough pricing
 - **Star Ratings**: Seeded deterministic 4-5 star ratings with review counts per product
 - **All Products Page**: `/products` with search bar, category filter buttons, sort (price/name), product grid

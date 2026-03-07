@@ -7,24 +7,24 @@ import { SITE_IMAGES } from "@/lib/catalogue-data";
 const slides = [
   {
     image: SITE_IMAGES.hero,
-    smallLabel: "Sensory & Adaptable Clothing",
-    heading: "Introducing Abley's Adaptive Clothing",
-    description: "Thoughtfully designed apparel that adapts to comfort, sensitivity, and everyday needs. Because everyone deserves to feel comfortable.",
-    cta: { label: "Explore Our Collection", href: "/products" },
+    smallLabel: "Professional Therapy Equipment",
+    heading: "Equip Your Clinic with Abley's",
+    description: "Premium sensory integration and rehabilitation equipment designed for therapists, clinics, and sensory rooms. Built to professional standards.",
+    cta: { label: "Explore All Equipment", href: "/products" },
   },
   {
     image: SITE_IMAGES.heroSecondary,
-    smallLabel: "Winter Break Essentials",
-    heading: "Keep the Calm at Home",
-    description: "Discover the magic of Minky. Our textured pillows and blankets provide the tactile input and deep pressure needed for restful days and nights.",
-    cta: { label: "Explore Minky Collection", href: "/category/deep-pressure" },
+    smallLabel: "Sensory Room Essentials",
+    heading: "Create Calming Sensory Spaces",
+    description: "From bubble tubes to weighted blankets, discover professional-grade deep pressure and visual sensory tools for therapy centres and sensory rooms.",
+    cta: { label: "Deep Pressure Products", href: "/category/deep-pressure" },
   },
   {
     image: SITE_IMAGES.sensoryRoom,
-    smallLabel: "Give the Gift of Calm this Season.",
-    heading: "Meaningful Gifts, Peaceful Moments",
-    description: "This season, wrap them in comfort. Discover therapist-approved tools designed to turn holiday overwhelm into sensory joy.",
-    cta: { label: "Shop Sensory Gifts", href: "/products" },
+    smallLabel: "Vestibular & Movement Equipment",
+    heading: "Swings, Balance & Active Therapy",
+    description: "Professional therapy swings, balance boards, and climbing structures for motor planning, vestibular input, and coordination development.",
+    cta: { label: "Shop Swings & Movement", href: "/category/swings" },
   },
 ];
 
