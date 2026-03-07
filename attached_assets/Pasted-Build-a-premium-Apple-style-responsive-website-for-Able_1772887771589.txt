@@ -1,0 +1,323 @@
+Build a premium Apple-style responsive website for Abley’s Rehab using React + Tailwind CSS. The visual language should feel minimal, elegant, modern, spacious, high-trust, and product-led — similar to Apple product pages, but adapted for professional therapy and rehabilitation equipment.
+
+Brand setup
+	•	Website name: Abley’s Rehab
+	•	Hero / primary color: #4A53A0
+	•	Secondary colors: white, light grey, charcoal black
+	•	Accent use should be subtle and premium
+	•	Avoid loud or toy-like design
+	•	Tone should feel professional, institutional, polished, engineered, and warm
+	•	Add soft shadows, large clean typography, lots of whitespace, rounded sections, premium cards, subtle gradients, and refined iconography
+
+Business positioning
+
+Abley’s Rehab sells professional therapy tools for experts such as:
+	•	Occupational therapists
+	•	Rehab centres
+	•	Special schools
+	•	Hospitals
+	•	Clinics
+	•	Sensory gyms
+	•	Institutions
+
+This is a B2B-first website with ecommerce capabilities, with clear options for:
+	•	direct browsing of categories
+	•	bulk order enquiries
+	•	tool customization enquiries
+	•	future scalability into ecommerce catalog/product pages
+
+Brand statement
+
+Use the motto prominently in the hero or brand section:
+
+“When experts are equipped with professional tools, magic happens.”
+
+Current and future structure
+
+Right now the main focus is OT tools, but the website should visually communicate that the platform will expand into:
+	•	Sensory Room
+	•	Physiotherapy
+	•	Speech Tools
+
+Create the architecture in a way that supports future expansion.
+
+⸻
+
+Website sections required
+
+1. Hero section
+
+Design a full-width premium hero section with:
+	•	Abley’s Rehab logo placeholder at top left
+	•	Minimal top navigation
+	•	Headline:
+Professional Therapy Tools for Experts
+	•	Subheadline:
+Abley’s Rehab equips therapists, centres, clinics, and institutions with high-quality, professionally designed tools for occupational therapy, movement, sensory integration, deep pressure, and rehabilitation.
+	•	Motto:
+When experts are equipped with professional tools, magic happens.
+	•	Primary CTA button:
+Explore Categories
+	•	Secondary CTA button:
+Bulk / Custom Enquiry
+	•	On the right side, include a premium hero visual area with:
+	•	floating therapy products
+	•	blueprint-style product diagrams
+	•	subtle technical illustration overlays
+	•	Apple-style clean product composition
+
+The hero should feel engineered, premium, and aspirational.
+
+⸻
+
+2. Trust strip below hero
+
+Add a clean strip with trust statements in minimal icon format:
+	•	Made in India
+	•	Made with Love
+	•	6 Months Warranty
+	•	Trusted by Professionals
+	•	Bulk Orders Supported
+	•	Customization Available
+
+Use clean monochrome/premium icons.
+
+⸻
+
+3. Categories section
+
+Create a premium category showcase grid for these 9 categories. Each category should appear as a modern card with:
+	•	category title
+	•	short description
+	•	5–8 small product labels preview
+	•	product image placeholder or elegant shape mock
+	•	CTA: View Products
+
+Categories to include:
+1. Swings
+Products:
+	•	Bolster Swing
+	•	T Swing
+	•	Disc Swing
+	•	Platform Swing
+	•	Tube Swing
+	•	Lycra Swing
+	•	Acrobat Swing
+
+2. Ballpool
+Products:
+	•	4x4 Ballpool
+	•	6x4 Ballpool
+
+3. Mats
+Products:
+	•	Crash Mat
+	•	Therapy Mat
+	•	Floormat
+	•	Interlocking Mat
+	•	Foldable Mat
+
+4. Movement and Balance
+Products:
+	•	Kidlite Barrel
+	•	Balance Board
+	•	Balance Beam
+	•	Stepping Stone
+	•	Wedges
+	•	Jumping Stool
+	•	Trampoline
+	•	Ramp and Stairs
+
+5. Climbing
+Products:
+	•	Climb Board
+	•	Wall Bar Ladder
+	•	Spider Climb Net
+
+6. ADL Kit
+Products:
+	•	4 Page Kit
+	•	5 Page Kit
+	•	6 Page Kit
+
+7. Therapy Balls
+Products:
+	•	Gym Ball
+	•	Bosu Ball
+	•	Peanut Ball
+	•	Medicine Ball
+
+8. Deep Pressure
+Products:
+	•	Weighted Vest
+	•	Weighted Blanket
+	•	Sensory Sock
+	•	Lap Pad
+
+9. Visual
+Products:
+	•	Hexwall Touch Light
+	•	Liquid Motion Tiles
+	•	Glitter Pad
+	•	Glitter Capillary
+	•	Fibre Light
+	•	Bubble Tube
+
+Design these cards in a very premium way with large spacing and subtle hover interactions.
+
+⸻
+
+4. Featured engineering / manufacturing quality section
+
+Create an Apple-like section highlighting quality of manufacturing.
+
+This section should include:
+	•	large product render / product diagram / blueprint visual
+	•	zoomed-in material highlights
+	•	clean labels pointing to features
+	•	minimal technical callouts
+
+Possible headings:
+	•	Built for Professional Use
+	•	Engineered for Everyday Therapy
+	•	High Quality Manufacturing, Thoughtfully Designed
+
+Show callouts like:
+	•	reinforced stitching
+	•	durable suspension points
+	•	premium foam density
+	•	easy-clean finish
+	•	safe edges
+	•	therapist-friendly design
+	•	long-life construction
+
+Use Apple-style technical storytelling layout with left-right split sections and elegant transitions.
+
+⸻
+
+5. Features with icons section
+
+Create a section with premium icon cards showing key benefits:
+	•	Institutional Grade
+	•	High Durability
+	•	Therapist Friendly
+	•	Easy to Clean
+	•	Customizable
+	•	Bulk Ordering Available
+	•	Made in India
+	•	6 Months Warranty
+
+These should be very clean, minimal, and premium.
+
+⸻
+
+6. Client logos trust section
+
+Add a section titled:
+
+Trusted by Centres, Clinics & Institutions
+
+This section should show a clean logo wall / client logo strip with placeholder logos in grayscale.
+Use 8–12 placeholder logo slots.
+Make it elegant and subtle, like enterprise trust sections on SaaS/Apple-like sites.
+
+⸻
+
+7. Bulk and customization enquiry section
+
+Create a high-conversion lead form section for B2B buyers.
+
+Heading:
+Bulk Orders & Custom Therapy Setups
+
+Subheading:
+Whether you’re setting up a rehab centre, sensory gym, therapy room, or institutional program, our team can help with bulk requirements and customized tools.
+
+Form fields:
+	•	Full Name
+	•	Organisation / Clinic Name
+	•	Email
+	•	Phone Number
+	•	City / Country
+	•	Category Interested In
+	•	Requirement Type (Bulk Order / Customization / New Centre Setup)
+	•	Message
+
+Buttons:
+	•	Submit Enquiry
+	•	Talk to Our Team
+
+Make the form modern, premium, clean, and conversion-focused.
+
+⸻
+
+8. Future roadmap / expansion section
+
+Add a section introducing future verticals in elegant cards:
+	•	OT Tools (Live)
+	•	Sensory Room (Coming Soon)
+	•	Physiotherapy (Coming Soon)
+	•	Speech Tools (Coming Soon)
+
+This should signal growth and long-term credibility.
+
+⸻
+
+9. Footer
+
+Footer should be elegant and minimal, with columns:
+	•	About Abley’s Rehab
+	•	Categories
+	•	Bulk Orders
+	•	Customization
+	•	Contact
+	•	Social icons placeholders
+
+Include:
+	•	Made in India
+	•	6 Months Warranty
+	•	B2B / Ecommerce Ready
+
+⸻
+
+Design guidelines
+	•	Apple-style clean layout
+	•	Minimal but premium
+	•	Use large bold typography
+	•	Strong section spacing
+	•	Subtle parallax / hover motion if possible
+	•	Soft gradients using #4A53A0
+	•	White background with light grey blocks
+	•	Very elegant buttons
+	•	Rounded corners
+	•	Clean iconography
+	•	No clutter
+	•	No childish design language
+	•	No marketplace/generic ecommerce look
+	•	Must look like a high-end professional product platform
+
+⸻
+
+Technical requirements
+	•	Use React + Tailwind CSS
+	•	Component structure should be clean and reusable
+	•	Create components such as:
+	•	Navbar
+	•	HeroSection
+	•	TrustStrip
+	•	CategoryGrid
+	•	ManufacturingSection
+	•	FeaturesSection
+	•	ClientLogosSection
+	•	BulkEnquiryForm
+	•	RoadmapSection
+	•	Footer
+	•	Add dummy placeholder images / product mock blocks where needed
+	•	Make it fully responsive for desktop, tablet, and mobile
+	•	Ensure it looks like a polished website concept, not a rough wireframe
+
+⸻
+
+Important output instruction
+
+Create a visually complete homepage design that feels ready for presentation to founders, designers, or developers. Prioritize visual polish, premium composition, and brand trust.

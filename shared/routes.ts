@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { insertProductSchema, insertLeadSchema, products, leads } from './schema';
+import { insertLeadSchema } from './schema';
 
 export const errorSchemas = {
   validation: z.object({
@@ -12,24 +12,16 @@ export const errorSchemas = {
 };
 
 export const api = {
-  products: {
-    list: {
-      method: 'GET' as const,
-      path: '/api/products' as const,
-      responses: {
-        200: z.array(z.custom<typeof products.$inferSelect>()),
-      },
-    },
-  },
   leads: {
     create: {
       method: 'POST' as const,
       path: '/api/leads' as const,
       input: insertLeadSchema.extend({
-        email: z.string().email("Please enter a valid email address.")
+        email: z.string().email("Please enter a valid email address."),
+        name: z.string().min(1, "Name is required"),
       }),
       responses: {
-        201: z.custom<typeof leads.$inferSelect>(),
+        201: z.object({ id: z.number(), message: z.string() }),
         400: errorSchemas.validation,
       },
     },

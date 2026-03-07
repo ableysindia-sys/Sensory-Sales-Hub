@@ -1,4 +1,4 @@
-import { pgTable, text, serial, varchar, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -6,7 +6,7 @@ export const products = pgTable("products", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description").notNull(),
-  price: integer("price").notNull(), // price in cents
+  price: text("price").notNull(),
   imageUrl: text("image_url").notNull(),
 });
 
@@ -15,6 +15,12 @@ export const leads = pgTable("leads", {
   name: text("name").notNull(),
   email: varchar("email", { length: 255 }).notNull(),
   interest: text("interest"),
+  organisation: text("organisation"),
+  phone: text("phone"),
+  city: text("city"),
+  category: text("category"),
+  requirementType: text("requirement_type"),
+  message: text("message"),
 });
 
 export const insertProductSchema = createInsertSchema(products).omit({ id: true });

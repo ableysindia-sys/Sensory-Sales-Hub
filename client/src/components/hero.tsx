@@ -1,73 +1,101 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Feather } from "lucide-react";
+import { ArrowRight, Layers, Shield, Ruler } from "lucide-react";
 
 export function Hero() {
   return (
-    <div className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
-      {/* Decorative background blobs */}
-      <div className="absolute top-1/4 left-0 w-[500px] h-[500px] bg-secondary/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-float" />
-      <div className="absolute bottom-0 right-10 w-[600px] h-[600px] bg-accent/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-float" style={{ animationDelay: "2s" }} />
+    <section className="relative min-h-screen flex items-center pt-20 overflow-hidden" data-testid="section-hero">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/3" />
+      <div className="absolute top-20 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/3 rounded-full blur-3xl" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full grid lg:grid-cols-2 gap-12 items-center">
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="max-w-2xl"
-        >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary font-medium text-sm mb-6 border border-primary/20" data-testid="badge-hero-callout">
-            <Feather className="w-4 h-4" />
-            <span>Discover inner peace</span>
-          </div>
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-display font-medium leading-[1.1] text-foreground mb-6" data-testid="heading-hero">
-            Calm your mind, <br/>
-            <span className="text-primary italic">soothe your senses.</span>
-          </h1>
-          <p className="text-lg sm:text-xl text-muted-foreground mb-8 leading-relaxed max-w-lg" data-testid="text-hero-desc">
-            Curated sensory tools and calming products designed to help you find focus, relieve stress, and embrace moments of tranquility.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Button 
-              size="lg" 
-              className="rounded-full text-base"
-              onClick={() => document.getElementById("products")?.scrollIntoView({ behavior: "smooth" })}
-              data-testid="button-hero-explore"
-            >
-              Explore Collection
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="rounded-full text-base group"
-              onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
-              data-testid="button-hero-waitlist"
-            >
-              Join Waitlist
-              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </div>
-        </motion.div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/8 border border-primary/15 text-primary text-sm font-medium mb-8" data-testid="badge-hero">
+              <Shield className="w-3.5 h-3.5" />
+              B2B Professional Equipment
+            </div>
 
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.2 }}
-          className="relative hidden lg:block"
-        >
-          <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl shadow-primary/10 aspect-[4/5] max-w-[500px] mx-auto">
-            <div className="absolute inset-0 bg-gradient-to-tr from-black/60 via-black/20 to-transparent z-10 mix-blend-overlay" />
-            {/* landing page hero calming soft abstract textures pastels */}
-            <img 
-              src="https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?q=80&w=1200&auto=format&fit=crop" 
-              alt="Soft abstract waves representing calm and focus" 
-              className="object-cover w-full h-full hover:scale-105 transition-transform duration-700 ease-out"
-              data-testid="img-hero"
-            />
-          </div>
-        </motion.div>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.08] tracking-tight text-foreground mb-6" data-testid="heading-hero">
+              Professional Therapy Tools{" "}
+              <span className="text-primary">for Experts</span>
+            </h1>
+
+            <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-xl mb-4" data-testid="text-hero-desc">
+              Abley's Rehab equips therapists, centres, clinics, and institutions with high-quality, professionally designed tools for occupational therapy, movement, sensory integration, deep pressure, and rehabilitation.
+            </p>
+
+            <p className="text-base italic text-primary/80 font-medium mb-10" data-testid="text-hero-motto">
+              "When experts are equipped with professional tools, magic happens."
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button
+                size="lg"
+                className="rounded-full text-base gap-2"
+                onClick={() => document.getElementById("categories")?.scrollIntoView({ behavior: "smooth" })}
+                data-testid="button-hero-explore"
+              >
+                Explore Categories
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="rounded-full text-base"
+                onClick={() => document.getElementById("enquiry")?.scrollIntoView({ behavior: "smooth" })}
+                data-testid="button-hero-enquiry"
+              >
+                Bulk / Custom Enquiry
+              </Button>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.3 }}
+            className="relative hidden lg:block"
+          >
+            <div className="relative aspect-square max-w-[520px] mx-auto">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-primary/5 rounded-[3rem]" />
+              <div className="absolute inset-4 bg-card rounded-[2.5rem] border border-border/50 flex items-center justify-center" data-testid="container-hero-visual">
+                <div className="grid grid-cols-2 gap-6 p-8">
+                  <div className="space-y-6">
+                    <div className="bg-background rounded-2xl p-5 border border-border/50 shadow-sm animate-float">
+                      <Layers className="w-8 h-8 text-primary mb-3" />
+                      <p className="text-xs font-medium text-muted-foreground">Swings</p>
+                      <p className="text-lg font-bold text-foreground">7 Products</p>
+                    </div>
+                    <div className="bg-background rounded-2xl p-5 border border-border/50 shadow-sm animate-float" style={{ animationDelay: "1s" }}>
+                      <Ruler className="w-8 h-8 text-primary mb-3" />
+                      <p className="text-xs font-medium text-muted-foreground">Mats</p>
+                      <p className="text-lg font-bold text-foreground">5 Products</p>
+                    </div>
+                  </div>
+                  <div className="space-y-6 mt-8">
+                    <div className="bg-background rounded-2xl p-5 border border-border/50 shadow-sm animate-float" style={{ animationDelay: "2s" }}>
+                      <Shield className="w-8 h-8 text-primary mb-3" />
+                      <p className="text-xs font-medium text-muted-foreground">Deep Pressure</p>
+                      <p className="text-lg font-bold text-foreground">4 Products</p>
+                    </div>
+                    <div className="bg-primary/10 rounded-2xl p-5 border border-primary/20 animate-float" style={{ animationDelay: "3s" }}>
+                      <p className="text-xs font-medium text-primary/70">Total Categories</p>
+                      <p className="text-3xl font-bold text-primary">9</p>
+                      <p className="text-xs text-primary/60 mt-1">Professional Lines</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
