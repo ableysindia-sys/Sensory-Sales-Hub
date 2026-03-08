@@ -150,7 +150,7 @@ export default function ProductPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main>
+      <main id="main-content">
         <section className="pt-36 pb-4">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <nav className="flex items-center gap-2 text-sm text-muted-foreground" data-testid="breadcrumb">

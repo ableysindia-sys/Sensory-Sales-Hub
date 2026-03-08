@@ -84,7 +84,7 @@ export default function EnquiryCartPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="pt-36 pb-20">
+      <main id="main-content" className="pt-36 pb-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-4 mb-8">
             <Link href="/">

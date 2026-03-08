@@ -53,7 +53,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div
-      className="group bg-card border border-border rounded-md overflow-hidden flex flex-col"
+      className="group bg-card border border-border rounded-md overflow-hidden flex flex-col transition-all duration-200 hover:shadow-lg hover:shadow-primary/[0.06] hover:border-primary/20"
       data-testid={`product-card-${product.id}`}
     >
       <div className="relative aspect-square bg-muted/20 flex items-center justify-center overflow-hidden">

@@ -21,14 +21,14 @@ export function AnnouncementBar() {
   return (
     <div className="bg-foreground text-background text-xs py-2 px-4" data-testid="announcement-bar">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <a href="https://www.facebook.com/ableysrehab" target="_blank" rel="noopener noreferrer" aria-label="Facebook" data-testid="link-social-facebook" className="opacity-70 hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-2">
+          <a href="https://www.facebook.com/ableysrehab" target="_blank" rel="noopener noreferrer" aria-label="Facebook" data-testid="link-social-facebook" className="opacity-70 hover:opacity-100 transition-opacity p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center">
             <SiFacebook className="w-3.5 h-3.5" />
           </a>
-          <a href="https://www.instagram.com/ableysrehab" target="_blank" rel="noopener noreferrer" aria-label="Instagram" data-testid="link-social-instagram" className="opacity-70 hover:opacity-100 transition-opacity">
+          <a href="https://www.instagram.com/ableysrehab" target="_blank" rel="noopener noreferrer" aria-label="Instagram" data-testid="link-social-instagram" className="opacity-70 hover:opacity-100 transition-opacity p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center">
             <SiInstagram className="w-3.5 h-3.5" />
           </a>
-          <a href="https://www.youtube.com/@ableysrehab" target="_blank" rel="noopener noreferrer" aria-label="YouTube" data-testid="link-social-youtube" className="opacity-70 hover:opacity-100 transition-opacity">
+          <a href="https://www.youtube.com/@ableysrehab" target="_blank" rel="noopener noreferrer" aria-label="YouTube" data-testid="link-social-youtube" className="opacity-70 hover:opacity-100 transition-opacity p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center">
             <SiYoutube className="w-3.5 h-3.5" />
           </a>
         </div>
@@ -67,10 +67,19 @@ export function Navbar() {
     }
   };
 
+  const isActive = (href: string) => {
+    if (href === "/") return location === "/";
+    if (href.startsWith("/#")) return false;
+    return location.startsWith(href);
+  };
+
   return (
     <header className="fixed top-0 w-full z-50" data-testid="navbar">
+      <a href="#main-content" className="skip-to-content" data-testid="link-skip-to-content">
+        Skip to content
+      </a>
       <AnnouncementBar />
-      <nav className="bg-background border-b border-border">
+      <nav className="bg-background/95 backdrop-blur-md border-b border-border supports-[backdrop-filter]:bg-background/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2 flex-shrink-0" data-testid="link-home">
@@ -83,7 +92,11 @@ export function Navbar() {
                   <div key={link.label} className="relative">
                     <button
                       onClick={() => setProductsOpen(!productsOpen)}
-                      className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                      className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors ${
+                        location.startsWith("/product") || location.startsWith("/category")
+                          ? "text-primary"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
                       data-testid="link-nav-products"
                     >
                       {link.label}
@@ -123,7 +136,11 @@ export function Navbar() {
                   <button
                     key={link.label}
                     onClick={() => handleNavClick(link.href)}
-                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                    className={`px-4 py-2 text-sm font-medium transition-colors ${
+                      isActive(link.href)
+                        ? "text-primary"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
                     data-testid={`link-nav-${link.label.toLowerCase().replace(/\s+/g, "-")}`}
                   >
                     {link.label}

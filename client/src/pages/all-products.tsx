@@ -44,7 +44,7 @@ export default function AllProducts() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <div className="pt-28 pb-16">
+      <div id="main-content" className="pt-28 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-8 sm:py-12">
             <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6" data-testid="breadcrumb-products">
@@ -70,10 +70,11 @@ export default function AllProducts() {
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
-                  type="text"
+                  type="search"
                   placeholder="Search products..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
+                  aria-label="Search products"
                   className="w-full pl-10 pr-10 py-2.5 rounded-full border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
                   data-testid="input-search-products"
                 />
