@@ -57,8 +57,9 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 - `chat-widget.tsx` - Gemini AI chat assistant (floating FAB)
 - `theme-provider.tsx` - Dark/light mode support
 
-## Components (Legacy/Unused)
-- `trust-strip.tsx`, `manufacturing-section.tsx`, `features-section.tsx`, `client-logos.tsx`, `roadmap-section.tsx` — replaced by new ableys.in-matching components
+## Product Images
+- Products with real Shopify CDN images: bolster-swing, t-swing, disc-swing, tube-swing, balance-board, stepping-stones, trampoline, gym-ball, peanut-ball, medicine-ball, weighted-vest, weighted-blanket, sensory-sock, lap-pad, liquid-motion-tiles, fibre-light, bubble-tube
+- Products with AI-generated images (via `client/src/lib/product-images.ts`): platform-swing, lycra-swing, acrobat-swing, ballpool-4x4, ballpool-6x4, crash-mat, therapy-mat, floormat, interlocking-mat, foldable-mat, kidlite-barrel, balance-beam, wedges, jumping-stool, ramp-and-stairs, climb-board, wall-bar-ladder, spider-climb-net, adl-kit (3 variants), bosu-ball, hexwall-touch-light, glitter-pad, glitter-capillary
 
 ## Product Categories (9) — 42 professional B2B therapy products
 Swings (7), Ballpool (2), Mats (5), Movement & Balance (8), Climbing (3), ADL Kit (3), Therapy Balls (4), Deep Pressure (4), Visual (6)

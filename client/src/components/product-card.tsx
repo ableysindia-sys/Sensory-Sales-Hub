@@ -6,6 +6,7 @@ import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { useShoppingCart } from "@/lib/shopping-cart";
 import type { CatalogueProduct } from "@/lib/catalogue-data";
 import { getProductCategory, formatPrice, getDiscountPercent } from "@/lib/catalogue-data";
+import { generatedProductImages } from "@/lib/product-images";
 
 interface ProductCardProps {
   product: CatalogueProduct;
@@ -65,24 +66,27 @@ export function ProductCard({ product }: ProductCardProps) {
             Save {discount}%
           </Badge>
         )}
-        {product.images && product.images.length > 0 ? (
-          <Link href={`/product/${product.id}`} className="w-full h-full">
-            <img
-              src={product.images[0]}
-              alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              loading="lazy"
-              data-testid={`img-product-${product.id}`}
-            />
-          </Link>
-        ) : (
-          <div className="text-center p-6">
-            <div className="w-16 h-16 mx-auto mb-3 rounded-md bg-muted/40 flex items-center justify-center">
-              <Package className="w-7 h-7 text-muted-foreground/40" />
+        {(() => {
+          const imgSrc = product.images?.[0] || generatedProductImages[product.id];
+          return imgSrc ? (
+            <Link href={`/product/${product.id}`} className="w-full h-full">
+              <img
+                src={imgSrc}
+                alt={product.name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+                data-testid={`img-product-${product.id}`}
+              />
+            </Link>
+          ) : (
+            <div className="text-center p-6">
+              <div className="w-16 h-16 mx-auto mb-3 rounded-md bg-muted/40 flex items-center justify-center">
+                <Package className="w-7 h-7 text-muted-foreground/40" />
+              </div>
+              <p className="text-xs text-muted-foreground/40 font-medium">Product Image</p>
             </div>
-            <p className="text-xs text-muted-foreground/40 font-medium">Product Image</p>
-          </div>
-        )}
+          );
+        })()}
       </div>
 
       <div className="p-4 flex flex-col flex-1">
@@ -138,7 +142,7 @@ export function ProductCard({ product }: ProductCardProps) {
               category: category?.title || "",
               unitPrice: product.basePrice,
               config: { addons: [] },
-              image: product.images?.[0],
+              image: product.images?.[0] || generatedProductImages[product.id],
             })}
             data-testid={`button-add-cart-${product.id}`}
           >

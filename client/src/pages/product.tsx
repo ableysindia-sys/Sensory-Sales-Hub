@@ -7,6 +7,7 @@ import {
   formatPrice,
   type CatalogueProduct,
 } from "@/lib/catalogue-data";
+import { generatedProductImages } from "@/lib/product-images";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { useShoppingCart } from "@/lib/shopping-cart";
 import { Navbar } from "@/components/navbar";
@@ -129,7 +130,7 @@ export default function ProductPage() {
         size: selectedSize,
         addons: selectedAddons,
       },
-      image: product.images?.[0],
+      image: product.images?.[0] || generatedProductImages[product.id],
     }, quantity);
   };
 
@@ -138,7 +139,10 @@ export default function ProductPage() {
     setShowRazorpay(true);
   };
 
-  const productImages = product.images || [];
+  const fallbackImg = generatedProductImages[product.id];
+  const productImages = product.images && product.images.length > 0
+    ? product.images
+    : (fallbackImg ? [fallbackImg] : []);
   const imageDots = productImages.length > 0
     ? productImages.length
     : (product.configOptions?.colors?.length || 3);

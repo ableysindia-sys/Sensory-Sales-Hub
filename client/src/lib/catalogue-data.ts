@@ -185,21 +185,21 @@ export const categories: Category[] = [
         }
       },
       {
-        id: "hammock-swing",
-        name: "Hammock Swing",
+        id: "acrobat-swing",
+        name: "Acrobat Swing",
         categorySlug: "swings",
-        shortDescription: "Fabric hammock swing for gentle vestibular input, relaxation, and therapeutic rocking.",
-        description: "The Hammock Swing provides gentle, rhythmic vestibular input through a comfortable fabric hammock design. Children can sit or recline in the hammock while being gently rocked, which promotes calming, self-regulation, and vestibular processing. The enclosed sides provide a sense of security while allowing freedom of movement.\n\nKey Features:\n- Comfortable fabric hammock design\n- Gentle rhythmic rocking motion\n- Enclosed sides for security\n- Breathable cotton-polyester blend\n- Adjustable height suspension",
-        specifications: { dimensions: "140cm x 70cm", material: "Cotton-polyester blend fabric", weightCapacity: "80 kg", useCase: "Sensory rooms, therapy centres" },
-        features: ["Comfortable hammock design", "Rhythmic rocking", "Enclosed sides", "Breathable fabric", "Adjustable height"],
-        applications: ["calming", "vestibular-input", "relaxation", "self-regulation"],
+        shortDescription: "Multi-position acrobat swing for advanced vestibular challenges, aerial therapy, and dynamic movement.",
+        description: "The Acrobat Swing is designed for advanced vestibular and proprioceptive therapy, allowing children to perform dynamic aerial movements in a safe, supported environment. Its trapeze-style design encourages grip strength, bilateral coordination, core engagement, and confidence building through progressive movement challenges.\n\nKey Features:\n- Trapeze-style multi-position design\n- Padded grip bars for comfort\n- Adjustable rope length\n- Supports advanced vestibular challenges\n- Professional-grade hardware and mounting",
+        specifications: { dimensions: "Bar: 50cm wide, Rope: adjustable to 250cm", material: "Steel bar with foam padding and nylon rope", weightCapacity: "80 kg", useCase: "Therapy centres, sensory gyms" },
+        features: ["Multi-position design", "Padded grip bars", "Advanced vestibular challenges", "Core engagement", "Professional hardware"],
+        applications: ["advanced-vestibular", "aerial-therapy", "grip-strength", "confidence-building"],
         basePrice: 9999,
         comparePrice: 11999,
         configOptions: {
           colors: [
-            { name: "Natural", hex: "#D4B896" },
             { name: "Blue", hex: "#3B82F6" },
-            { name: "Grey", hex: "#9CA3AF" }
+            { name: "Red", hex: "#EF4444" },
+            { name: "Yellow", hex: "#F59E0B" }
           ]
         }
       }
@@ -445,20 +445,16 @@ export const categories: Category[] = [
         comparePrice: 3999
       },
       {
-        id: "rocker-board",
-        name: "Rocker Board",
+        id: "ramp-and-stairs",
+        name: "Ramp and Stairs",
         categorySlug: "movement-balance",
-        shortDescription: "Curved rocker board for balance training, vestibular stimulation, and core strengthening activities.",
-        description: "The Rocker Board is a curved balance board that rocks side to side, challenging balance, core stability, and vestibular processing. Children can stand, sit, or kneel on the board while maintaining balance through weight shifting. The progressive curve provides appropriate challenge for various skill levels.\n\nKey Features:\n- Side-to-side rocking motion\n- Progressive curve design\n- Natural wood construction\n- Non-slip surface\n- Core stability development",
-        specifications: { dimensions: "75cm x 35cm", material: "Natural wood with non-slip finish", weightCapacity: "90 kg" },
-        features: ["Rocking motion", "Progressive curve", "Natural wood", "Non-slip finish", "Core stability"],
-        applications: ["balance-training", "vestibular-input", "core-strengthening", "weight-shifting"],
-        basePrice: 3999,
-        comparePrice: 4999,
-        images: [
-          "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/Artboard1_9ffdffab-4564-4849-b3ae-a2c1dca742dc.jpg?v=1770267466",
-          "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/Artboard2_59bb6e8d-6ec2-43b5-895a-406be9a6baa5.jpg?v=1770267466"
-        ]
+        shortDescription: "Climbing ramp and stairs combo for gross motor development, gait training, and confidence building.",
+        description: "The Ramp and Stairs is a versatile gross motor development tool combining a climbing ramp with practice stairs. Children develop gait patterns, leg strength, balance, and confidence through ascending and descending activities. The padded, non-slip surfaces ensure safety during therapy sessions.\n\nKey Features:\n- Combined ramp and stairs design\n- Padded non-slip surfaces\n- Adjustable ramp angle\n- Handrails for support\n- Develops gait and gross motor skills",
+        specifications: { dimensions: "120cm x 60cm x 45cm height", material: "Plywood with foam padding and vinyl cover, steel handrails", weightCapacity: "80 kg" },
+        features: ["Combined ramp and stairs", "Non-slip padding", "Adjustable angle", "Handrail support", "Gross motor development"],
+        applications: ["gait-training", "gross-motor", "stair-climbing", "confidence-building"],
+        basePrice: 12999,
+        comparePrice: 15999
       },
       {
         id: "trampoline",

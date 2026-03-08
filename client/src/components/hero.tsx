@@ -8,9 +8,11 @@ const slides = [
   {
     image: SITE_IMAGES.hero,
     smallLabel: "Professional Therapy Equipment",
-    heading: "Equip Your Clinic with Abley's",
-    description: "Premium sensory integration and rehabilitation equipment designed for therapists, clinics, and sensory rooms. Built to professional standards.",
-    cta: { label: "Explore All Equipment", href: "/products" },
+    heading: "Professional Therapy Tools for Experts",
+    description: "Abley's Rehab equips therapists, centres, clinics, and institutions with high-quality, professionally designed tools for occupational therapy, movement, sensory integration, deep pressure, and rehabilitation.",
+    motto: "When experts are equipped with professional tools, magic happens.",
+    cta: { label: "Explore Categories", href: "/#categories" },
+    secondaryCta: { label: "Bulk / Custom Enquiry", href: "/#enquiry" },
   },
   {
     image: SITE_IMAGES.heroSecondary,
@@ -83,21 +85,44 @@ export function Hero() {
               {slide.heading}
             </h1>
             <p
-              className="text-base sm:text-lg text-white/85 leading-relaxed mb-8 max-w-xl mx-auto"
+              className="text-base sm:text-lg text-white/85 leading-relaxed mb-4 max-w-xl mx-auto"
               data-testid="text-hero-desc"
             >
               {slide.description}
             </p>
-            <Link href={slide.cta.href}>
-              <Button
-                size="lg"
-                className="bg-white text-gray-900 hover:bg-gray-100 rounded-none text-sm sm:text-base px-8 h-12 gap-2 font-medium tracking-wide"
-                data-testid="button-hero-cta"
+            {"motto" in slide && slide.motto && (
+              <p
+                className="text-sm sm:text-base italic text-white/70 mb-8 max-w-lg mx-auto"
+                data-testid="text-hero-motto"
               >
-                {slide.cta.label}
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
+                "{slide.motto}"
+              </p>
+            )}
+            {!("motto" in slide) && <div className="mb-4" />}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Link href={slide.cta.href}>
+                <Button
+                  size="lg"
+                  className="bg-white text-gray-900 hover:bg-gray-100 rounded-none text-sm sm:text-base px-8 h-12 gap-2 font-medium tracking-wide"
+                  data-testid="button-hero-cta"
+                >
+                  {slide.cta.label}
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+              {"secondaryCta" in slide && slide.secondaryCta && (
+                <Link href={(slide as any).secondaryCta.href}>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-white/40 text-white hover:bg-white/10 rounded-none text-sm sm:text-base px-8 h-12 gap-2 font-medium tracking-wide bg-transparent"
+                    data-testid="button-hero-secondary-cta"
+                  >
+                    {(slide as any).secondaryCta.label}
+                  </Button>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
 

@@ -1,13 +1,19 @@
 import { motion } from "framer-motion";
-import { SITE_IMAGES } from "@/lib/catalogue-data";
+import { Building2 } from "lucide-react";
 
-const showcaseImages = [
-  { src: SITE_IMAGES.workshop, alt: "Abley's workshop" },
-  { src: SITE_IMAGES.getStarted, alt: "Get started with therapy" },
-  { src: SITE_IMAGES.sensoryRoom, alt: "Sensory room setup" },
-  { src: SITE_IMAGES.diy, alt: "DIY therapy tools" },
-  { src: SITE_IMAGES.productShowcase, alt: "Product showcase" },
-  { src: SITE_IMAGES.weightedVest, alt: "Weighted vest" },
+const clientTypes = [
+  "Rehab Centre",
+  "Sensory Gym",
+  "Special School",
+  "Paediatric Hospital",
+  "Therapy Clinic",
+  "Autism Centre",
+  "Child Development",
+  "OT Practice",
+  "Speech Clinic",
+  "Physiotherapy Centre",
+  "Government Hospital",
+  "NGO Foundation",
 ];
 
 export function ClientLogos() {
@@ -20,48 +26,30 @@ export function ClientLogos() {
           viewport={{ once: true }}
           className="text-center mb-14"
         >
-          <p className="text-sm font-semibold text-primary uppercase tracking-wider mb-4">Our Work</p>
+          <p className="text-sm font-semibold text-primary uppercase tracking-wider mb-4">Our Clients</p>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground" data-testid="heading-clients">
-            Built for Centres, Clinics & Institutions
+            Trusted by Centres, Clinics & Institutions
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 lg:gap-5 max-w-4xl mx-auto">
-          {showcaseImages.map((img, i) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 lg:gap-5 max-w-5xl mx-auto">
+          {clientTypes.map((name, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.05 }}
-              className="group aspect-[3/2] rounded-2xl overflow-hidden border border-border/20 shadow-sm hover:shadow-lg hover:border-primary/20 transition-all duration-500"
-              data-testid={`showcase-image-${i}`}
+              transition={{ delay: i * 0.04 }}
+              className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-background border border-border/40 hover:border-primary/20 hover:shadow-md transition-all duration-500 aspect-[4/3]"
+              data-testid={`client-logo-${i}`}
             >
-              <img
-                src={img.src}
-                alt={img.alt}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                loading="lazy"
-              />
+              <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center group-hover:bg-primary/[0.06] transition-colors">
+                <Building2 className="w-6 h-6 text-gray-400 dark:text-gray-500 group-hover:text-primary/50 transition-colors" />
+              </div>
+              <span className="text-xs font-medium text-muted-foreground text-center leading-tight">{name}</span>
             </motion.div>
           ))}
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-          className="mt-10 overflow-hidden rounded-2xl border border-border/30 shadow-sm"
-        >
-          <img
-            src={SITE_IMAGES.shopBanner}
-            alt="Abley's India Shop"
-            className="w-full h-32 sm:h-40 lg:h-48 object-cover"
-            loading="lazy"
-            data-testid="img-shop-banner"
-          />
-        </motion.div>
       </div>
     </section>
   );

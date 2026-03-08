@@ -1,11 +1,16 @@
 import { Navbar } from "@/components/navbar";
 import { Hero } from "@/components/hero";
+import { TrustStrip } from "@/components/trust-strip";
 import { CategoryGrid } from "@/components/category-grid";
 import { ProductCarousel } from "@/components/product-carousel";
+import { ManufacturingSection } from "@/components/manufacturing-section";
+import { FeaturesSection } from "@/components/features-section";
+import { ClientLogos } from "@/components/client-logos";
 import { Testimonials } from "@/components/testimonials";
 import { TrustBadges } from "@/components/trust-badges";
 import { CommitmentSection } from "@/components/commitment-section";
 import { BlogPreview } from "@/components/blog-preview";
+import { RoadmapSection } from "@/components/roadmap-section";
 import { BulkEnquiryForm } from "@/components/bulk-enquiry-form";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
@@ -89,6 +94,7 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
+        <TrustStrip />
         <CategoryGrid />
         <ProductCarousel
           title="Just In"
@@ -97,15 +103,19 @@ export default function Home() {
         />
         <ProductCarousel
           title="Our Best-Sellers"
-          subtitle="Chosen by parents, approved by therapists"
+          subtitle="Chosen by therapists, trusted by institutions"
           products={bestSellers}
         />
         <GetStartedBanner />
+        <ManufacturingSection />
+        <FeaturesSection />
+        <ClientLogos />
         <Testimonials />
         <TrustBadges />
         <CommitmentSection />
-        <BlogPreview />
+        <RoadmapSection />
         <SensoryRoomCTA />
+        <BlogPreview />
         <BulkEnquiryForm />
       </main>
       <SiteFooter />
