@@ -12,7 +12,7 @@ const slides = [
     description: "Abley's Rehab equips therapists, centres, clinics, and institutions with high-quality, professionally designed tools for occupational therapy, movement, sensory integration, deep pressure, and rehabilitation.",
     motto: "When experts are equipped with professional tools, magic happens.",
     cta: { label: "Explore Categories", href: "/#categories" },
-    secondaryCta: { label: "Bulk / Custom Enquiry", href: "/#enquiry" },
+    secondaryCta: { label: "Bulk / Custom Enquiry", href: "/enquiry" },
   },
   {
     image: SITE_IMAGES.heroSecondary,
