@@ -1107,7 +1107,7 @@ function WelcomeOverlay({ onDismiss, onTemplate }: { onDismiss: () => void; onTe
           Start from scratch or choose a pre-designed template:
         </p>
 
-        <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 mb-6" data-testid="template-grid">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6" data-testid="template-grid">
           {roomTemplates.map((t) => (
             <button
               key={t.id}
@@ -1506,7 +1506,7 @@ export default function SensoryRoomBuilder() {
               data-testid="button-toggle-room-mode"
             >
               {roomSettings.roomMode === "light" ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
-              <span className="hidden xs:inline">{roomSettings.roomMode === "light" ? "Dark" : "Light"}</span>
+              <span className="hidden sm:inline">{roomSettings.roomMode === "light" ? "Dark" : "Light"}</span>
             </Button>
             <Button
               variant="outline"
