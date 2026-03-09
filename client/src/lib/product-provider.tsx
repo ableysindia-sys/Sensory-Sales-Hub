@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Product as DbProduct, Category as DbCategory } from "@shared/schema";
-import { generatedProductImages } from "./product-images";
+import { generatedProductImages, generatedCategoryImages } from "./product-images";
 import type { CatalogueProduct, Category, ProductSpec, ConfigOptions } from "./catalogue-data";
 
 function parseJson<T>(val: string | null, fallback: T): T {
@@ -37,13 +37,22 @@ export function dbProductToCatalogue(p: DbProduct): CatalogueProduct {
   };
 }
 
+function resolveCategoryImage(image: string | null): string | undefined {
+  if (!image) return undefined;
+  if (image.startsWith("__generated_category__:")) {
+    const slug = image.replace("__generated_category__:", "");
+    return generatedCategoryImages[slug] || undefined;
+  }
+  return image;
+}
+
 export function dbCategoryToCatalogue(c: DbCategory, products: CatalogueProduct[]): Category {
   return {
     slug: c.slug,
     title: c.title,
     description: c.description,
     color: c.color,
-    image: c.image || undefined,
+    image: resolveCategoryImage(c.image),
     products: products.filter(p => p.categorySlug === c.slug),
   };
 }

@@ -73,7 +73,7 @@ export const categories: Category[] = [
     title: "Swings",
     description: "Vestibular input swings for therapy and sensory integration. Professional-grade suspension swings designed for clinics, therapy centres, and sensory rooms.",
     color: "from-blue-600 to-indigo-700",
-    image: "https://www.ableys.in/cdn/shop/collections/1257x329_9ae5b2e4-3b64-4bb3-95e3-13f7c1fc2cd0.jpg?v=1766789920&width=600",
+    image: "__generated_category__:swings",
     products: [
       {
         id: "bolster-swing",

@@ -21,6 +21,11 @@ import bosuBall from "@assets/generated_images/bosu-ball.png";
 import hexwallTouchLight from "@assets/generated_images/hexwall-touch-light.png";
 import glitterPad from "@assets/generated_images/glitter-pad.png";
 import glitterCapillary from "@assets/generated_images/glitter-capillary.png";
+import featuredSwingsBanner from "@assets/generated_images/featured-swings-banner.png";
+
+export const generatedCategoryImages: Record<string, string> = {
+  "swings": featuredSwingsBanner,
+};
 
 export const generatedProductImages: Record<string, string> = {
   "platform-swing": platformSwing,
