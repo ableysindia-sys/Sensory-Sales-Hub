@@ -1,5 +1,4 @@
 import { Link } from "wouter";
-import { useProducts } from "@/lib/product-provider";
 import logoPath from "@assets/ableys_rehab_logo.png";
 import { SiFacebook, SiInstagram, SiYoutube } from "react-icons/si";
 import { Mail, MapPin, Phone } from "lucide-react";
@@ -22,31 +21,45 @@ const socialLinks = [
   },
 ];
 
+const quickLinks = [
+  { label: "All Products", href: "/products" },
+  { label: "Sensory Room Builder", href: "/sensory-room" },
+  { label: "Bulk / Custom Enquiry", href: "/enquiry" },
+  { label: "About Us", href: "/page/about-us" },
+  { label: "Contact Us", href: "/contact" },
+];
+
+const policyLinks = [
+  { label: "Shipping Policy", href: "/" },
+  { label: "Return Policy", href: "/" },
+  { label: "Privacy Policy", href: "/" },
+  { label: "Terms of Service", href: "/" },
+];
+
 export function SiteFooter() {
-  const { categories } = useProducts();
   return (
     <footer className="bg-gray-950 text-white" data-testid="footer">
-      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
-          <div>
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
+          <div className="lg:col-span-4">
             <img
               src={logoPath}
               alt="Abley's Rehab"
               className="h-9 w-auto mb-5 brightness-0 invert"
               data-testid="img-footer-logo"
             />
-            <p className="text-gray-400 text-sm leading-relaxed mb-5">
-              Empowering families and therapists with safe, certified therapy
-              tools and adaptive products for children with special needs.
+            <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-xs">
+              Professional therapy tools for occupational therapists, clinics,
+              and sensory rooms. Made in India with love.
             </p>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex gap-3">
               {socialLinks.map((social) => (
                 <a
                   key={social.name}
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-md border border-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:border-gray-600 transition-colors"
+                  className="w-9 h-9 rounded-full bg-gray-800/60 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
                   data-testid={`link-social-${social.name.toLowerCase()}`}
                   aria-label={social.name}
                 >
@@ -56,92 +69,68 @@ export function SiteFooter() {
             </div>
           </div>
 
-          <div>
+          <div className="lg:col-span-3">
             <h4 className="font-semibold text-sm text-white/90 mb-5 uppercase tracking-wider text-[13px]">
-              Shop
+              Quick Links
             </h4>
-            <ul className="space-y-2.5">
-              {categories.map((cat) => (
-                <li key={cat.slug}>
-                  <Link
-                    href={`/category/${cat.slug}`}
-                    className="text-sm text-gray-400 hover:text-gray-200 transition-colors"
-                    data-testid={`link-footer-${cat.slug}`}
-                  >
-                    {cat.title}
-                  </Link>
-                </li>
-              ))}
-              <li>
-                <Link
-                  href="/products"
-                  className="text-sm text-gray-400 hover:text-gray-200 transition-colors"
-                  data-testid="link-footer-all-products"
-                >
-                  All Products
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-semibold text-sm text-white/90 mb-5 uppercase tracking-wider text-[13px]">
-              Help & Info
-            </h4>
-            <ul className="space-y-2.5">
-              {[
-                "About Us",
-                "Contact Us",
-                "Shipping Policy",
-                "Return Policy",
-                "Privacy Policy",
-                "Terms of Service",
-              ].map((link) => (
-                <li key={link}>
-                  <Link
-                    href="/"
-                    className="text-sm text-gray-400 hover:text-gray-200 transition-colors"
-                    data-testid={`link-footer-${link.toLowerCase().replace(/\s+/g, "-")}`}
-                  >
-                    {link}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-semibold text-sm text-white/90 mb-5 uppercase tracking-wider text-[13px]">
-              Our Commitment
-            </h4>
-            <p className="text-gray-400 text-sm leading-relaxed mb-5">
-              At Abley's, we are committed to providing safe, high-quality
-              therapy products that support every child's growth and
-              development. Every product is designed with care and tested to
-              meet the highest safety standards.
-            </p>
             <ul className="space-y-3">
-              <li className="flex items-start gap-2">
+              {quickLinks.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-gray-400 hover:text-white transition-colors"
+                    data-testid={`link-footer-${link.label.toLowerCase().replace(/\s+/g, "-")}`}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="lg:col-span-2">
+            <h4 className="font-semibold text-sm text-white/90 mb-5 uppercase tracking-wider text-[13px]">
+              Policies
+            </h4>
+            <ul className="space-y-3">
+              {policyLinks.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-gray-400 hover:text-white transition-colors"
+                    data-testid={`link-footer-${link.label.toLowerCase().replace(/\s+/g, "-")}`}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="lg:col-span-3">
+            <h4 className="font-semibold text-sm text-white/90 mb-5 uppercase tracking-wider text-[13px]">
+              Get in Touch
+            </h4>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
-                <span className="text-sm text-gray-400">
-                  India
-                </span>
+                <span className="text-sm text-gray-400">India</span>
               </li>
-              <li className="flex items-start gap-2">
+              <li className="flex items-start gap-3">
                 <Mail className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
                 <a
                   href="mailto:info@ableys.in"
-                  className="text-sm text-gray-400 hover:text-gray-200 transition-colors"
+                  className="text-sm text-gray-400 hover:text-white transition-colors"
                   data-testid="link-footer-email"
                 >
                   info@ableys.in
                 </a>
               </li>
-              <li className="flex items-start gap-2">
+              <li className="flex items-start gap-3">
                 <Phone className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
                 <a
                   href="tel:+919876543210"
-                  className="text-sm text-gray-400 hover:text-gray-200 transition-colors"
+                  className="text-sm text-gray-400 hover:text-white transition-colors"
                   data-testid="link-footer-phone"
                 >
                   +91 98765 43210
@@ -152,27 +141,15 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="border-t border-gray-800/60">
-        <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="border-t border-gray-800/50">
+        <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row justify-between items-center gap-3">
           <p className="text-xs text-gray-500" data-testid="text-footer-copy">
             &copy; {new Date().getFullYear()} Abley's Rehab. All rights
             reserved.
           </p>
-          <div className="flex flex-wrap items-center gap-4">
-            {socialLinks.map((social) => (
-              <a
-                key={social.name}
-                href={social.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-1.5"
-                data-testid={`link-social-bottom-${social.name.toLowerCase()}`}
-              >
-                <social.icon className="w-3.5 h-3.5" />
-                {social.name}
-              </a>
-            ))}
-          </div>
+          <p className="text-xs text-gray-600">
+            Made with care in India
+          </p>
         </div>
       </div>
     </footer>
