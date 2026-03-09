@@ -44,7 +44,7 @@ import type { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
-import { categories } from "@/lib/catalogue-data";
+import { categories, SITE_IMAGES } from "@/lib/catalogue-data";
 
 type EnquiryFormValues = z.infer<typeof api.leads.create.input>;
 
@@ -350,17 +350,31 @@ export default function EnquiryCartPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main id="main-content" className="pt-32 sm:pt-36 pb-20">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-8">
-            <p className="text-sm font-semibold text-primary uppercase tracking-wider mb-2">Bulk Orders</p>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2" data-testid="heading-bulk-orders">
-              Tell Us About Your Requirements
-            </h1>
-            <p className="text-muted-foreground max-w-lg mx-auto">
-              Answer a few quick questions so we can prepare the right quote for you
-            </p>
+      <main id="main-content">
+        <div className="relative h-56 sm:h-64 lg:h-80 mt-[6.5rem] overflow-hidden" data-testid="section-bulk-banner">
+          <img
+            src={SITE_IMAGES.shopBanner}
+            alt="Abley's Rehab workshop and manufacturing"
+            className="w-full h-full object-cover"
+            loading="eager"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+              <p className="text-sm font-semibold text-white/80 uppercase tracking-wider mb-2">
+                For Clinics, Schools & Institutions
+              </p>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-3 font-display" data-testid="heading-bulk-orders">
+                Bulk Orders & Custom Setups
+              </h1>
+              <p className="text-white/80 text-sm sm:text-base max-w-xl mx-auto">
+                Professional therapy equipment tailored to your facility's needs — tell us your requirements and we'll prepare a custom quote
+              </p>
+            </motion.div>
           </div>
+        </div>
+
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
 
           <div className="flex justify-center mb-8">
             <StepIndicator current={step} total={TOTAL_STEPS} />
