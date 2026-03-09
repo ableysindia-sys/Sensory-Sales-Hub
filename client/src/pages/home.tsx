@@ -16,6 +16,7 @@ import { Link } from "wouter";
 import { Box, ArrowRight } from "lucide-react";
 import { SITE_IMAGES } from "@/lib/catalogue-data";
 import { useProducts } from "@/lib/product-provider";
+import featuredSwingsImg from "@assets/generated_images/featured-swings-banner.png";
 
 function FeaturedSwings() {
   return (
@@ -25,7 +26,7 @@ function FeaturedSwings() {
           <div className="relative overflow-hidden rounded-xl group cursor-pointer">
             <div className="aspect-[21/9] sm:aspect-[3/1]">
               <img
-                src="https://www.ableys.in/cdn/shop/collections/1257x329_9ae5b2e4-3b64-4bb3-95e3-13f7c1fc2cd0.jpg?v=1766789920&width=1400"
+                src={featuredSwingsImg}
                 alt="Professional therapy swings collection"
                 className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700"
                 loading="lazy"
