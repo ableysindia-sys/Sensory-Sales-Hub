@@ -9,7 +9,6 @@ import { useProducts } from "@/lib/product-provider";
 import logoPath from "@assets/ableys_rehab_logo.png";
 
 const navLinks = [
-  { label: "Home", href: "/" },
   { label: "Products", href: "#products", hasDropdown: true },
   { label: "Room Builder", href: "/sensory-room-builder" },
   { label: "Bulk Orders", href: "/enquiry" },
