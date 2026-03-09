@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ShoppingCart, ChevronDown, Send, Box } from "lucide-react";
+import { Menu, X, ShoppingCart, ChevronDown, Send } from "lucide-react";
 import { SiFacebook, SiInstagram, SiYoutube } from "react-icons/si";
 import { Link, useLocation } from "wouter";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
@@ -11,7 +11,6 @@ import logoPath from "@assets/ableys_rehab_logo.png";
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "Products", href: "#products", hasDropdown: true },
-  { label: "Categories", href: "/#categories" },
   { label: "Room Builder", href: "/sensory-room-builder" },
   { label: "Bulk Orders", href: "/enquiry" },
   { label: "Contact", href: "/contact" },
@@ -93,10 +92,10 @@ export function Navbar() {
                   <div key={link.label} className="relative">
                     <button
                       onClick={() => setProductsOpen(!productsOpen)}
-                      className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors ${
+                      className={`flex items-center gap-1 px-4 py-2 text-[13px] font-semibold uppercase tracking-wider transition-colors ${
                         location.startsWith("/product") || location.startsWith("/category")
                           ? "text-primary"
-                          : "text-muted-foreground hover:text-foreground"
+                          : "text-foreground/70 hover:text-foreground"
                       }`}
                       data-testid="link-nav-products"
                     >
@@ -113,7 +112,7 @@ export function Navbar() {
                             className="flex items-center justify-between px-4 py-2.5 text-sm hover:bg-muted transition-colors"
                             data-testid="link-dropdown-all"
                           >
-                            <span className="font-medium text-foreground">All Products</span>
+                            <span className="font-semibold text-foreground">All Products</span>
                             <span className="text-xs text-muted-foreground">View All</span>
                           </Link>
                           <div className="border-t border-border my-1" />
@@ -137,10 +136,10 @@ export function Navbar() {
                   <button
                     key={link.label}
                     onClick={() => handleNavClick(link.href)}
-                    className={`px-4 py-2 text-sm font-medium transition-colors ${
+                    className={`px-4 py-2 text-[13px] font-semibold uppercase tracking-wider transition-colors ${
                       isActive(link.href)
                         ? "text-primary"
-                        : "text-muted-foreground hover:text-foreground"
+                        : "text-foreground/70 hover:text-foreground"
                     }`}
                     data-testid={`link-nav-${link.label.toLowerCase().replace(/\s+/g, "-")}`}
                   >
@@ -150,10 +149,10 @@ export function Navbar() {
               )}
             </div>
 
-            <div className="hidden lg:flex items-center gap-2">
+            <div className="hidden lg:flex items-center gap-3">
               <button
                 onClick={openDrawer}
-                className="relative p-2 text-muted-foreground hover:text-foreground transition-colors"
+                className="relative p-2 text-foreground/60 hover:text-foreground transition-colors"
                 data-testid="button-nav-shopping-cart"
               >
                 <ShoppingCart className="w-5 h-5" />
@@ -164,20 +163,14 @@ export function Navbar() {
                 )}
               </button>
               <Link href="/enquiry">
-                <Button variant="outline" size="sm" className="relative gap-2" data-testid="button-nav-cart">
-                  <Box className="w-4 h-4" />
-                  Enquiry
+                <Button size="sm" className="gap-2 rounded-none text-xs font-semibold uppercase tracking-wider" data-testid="button-nav-bulk-enquiry">
+                  <Send className="w-3.5 h-3.5" />
+                  Get a Quote
                   {enquiryCount > 0 && (
-                    <span className="absolute -top-2 -right-2 w-5 h-5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center" data-testid="badge-cart-count">
+                    <span className="ml-1 w-5 h-5 bg-white/20 text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center" data-testid="badge-cart-count">
                       {enquiryCount}
                     </span>
                   )}
-                </Button>
-              </Link>
-              <Link href="/enquiry">
-                <Button size="sm" className="gap-2" data-testid="button-nav-bulk-enquiry">
-                  <Send className="w-3.5 h-3.5" />
-                  Bulk Enquiry
                 </Button>
               </Link>
             </div>
@@ -185,7 +178,7 @@ export function Navbar() {
             <div className="flex items-center gap-2 lg:hidden">
               <button
                 onClick={openDrawer}
-                className="relative p-2 text-muted-foreground"
+                className="relative p-2 text-foreground/60"
                 data-testid="button-mobile-shopping-cart"
               >
                 <ShoppingCart className="w-5 h-5" />
@@ -196,14 +189,14 @@ export function Navbar() {
                 )}
               </button>
               <Link href="/enquiry">
-                <Button variant="ghost" size="icon" className="relative" data-testid="button-mobile-cart">
-                  <Box className="w-5 h-5" />
+                <button className="relative p-2 text-foreground/60" aria-label="Get a Quote" data-testid="button-mobile-cart">
+                  <Send className="w-5 h-5" />
                   {enquiryCount > 0 && (
                     <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-primary-foreground text-[9px] font-bold rounded-full flex items-center justify-center">
                       {enquiryCount}
                     </span>
                   )}
-                </Button>
+                </button>
               </Link>
               <Button
                 variant="ghost"
@@ -238,6 +231,14 @@ export function Navbar() {
                 </button>
                 {productsOpen && (
                   <div className="pl-4 pb-2 space-y-0.5">
+                    <Link
+                      href="/products"
+                      onClick={() => { setMobileOpen(false); setProductsOpen(false); }}
+                      className="block px-4 py-2.5 text-sm font-medium text-foreground rounded-md transition-colors"
+                      data-testid="link-mobile-all-products"
+                    >
+                      All Products
+                    </Link>
                     {categories.map((cat) => (
                       <Link
                         key={cat.slug}
@@ -252,13 +253,6 @@ export function Navbar() {
                   </div>
                 )}
               </div>
-              <button
-                onClick={() => handleNavClick("/#categories")}
-                className="block w-full text-left px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-                data-testid="link-mobile-categories"
-              >
-                Categories
-              </button>
               <button
                 onClick={() => handleNavClick("/sensory-room-builder")}
                 className="block w-full text-left px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
@@ -284,12 +278,12 @@ export function Navbar() {
             <div className="px-4 pt-4 border-t border-border">
               <Button
                 size="lg"
-                className="w-full gap-2"
+                className="w-full gap-2 rounded-none font-semibold uppercase tracking-wider"
                 onClick={() => handleNavClick("/enquiry")}
                 data-testid="button-mobile-bulk-enquiry"
               >
                 <Send className="w-4 h-4" />
-                Bulk Enquiry
+                Get a Quote
               </Button>
             </div>
           </div>
