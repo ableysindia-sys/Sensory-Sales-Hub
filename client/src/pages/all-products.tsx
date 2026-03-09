@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { Search, X, ChevronDown, SlidersHorizontal, Grid3X3, LayoutGrid, Check } from "lucide-react";
 import { Navbar } from "@/components/navbar";
 import { SiteFooter } from "@/components/site-footer";
+import { FeaturesSection } from "@/components/features-section";
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { useProducts } from "@/lib/product-provider";
@@ -487,6 +488,7 @@ export default function AllProducts() {
         )}
       </AnimatePresence>
 
+      <FeaturesSection />
       <SiteFooter />
     </div>
   );

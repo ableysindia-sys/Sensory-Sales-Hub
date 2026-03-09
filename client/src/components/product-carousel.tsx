@@ -4,13 +4,15 @@ import { ProductCard } from "@/components/product-card";
 import type { CatalogueProduct } from "@/lib/catalogue-data";
 
 interface ProductCarouselProps {
-  title: string;
+  title?: string;
   subtitle?: string;
   products: CatalogueProduct[];
+  hideHeader?: boolean;
 }
 
-export function ProductCarousel({ title, subtitle, products }: ProductCarouselProps) {
+export function ProductCarousel({ title, subtitle, products, hideHeader }: ProductCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const sectionId = title ? title.toLowerCase().replace(/\s+/g, "-") : "products";
 
   const scroll = (dir: "left" | "right") => {
     if (!scrollRef.current) return;
@@ -21,12 +23,12 @@ export function ProductCarousel({ title, subtitle, products }: ProductCarouselPr
     });
   };
 
-  return (
-    <section className="py-12 sm:py-16" data-testid={`section-carousel-${title.toLowerCase().replace(/\s+/g, "-")}`}>
-      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
+  const content = (
+    <>
+      {!hideHeader && (
         <div className="flex items-end justify-between mb-8">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground font-display" data-testid={`heading-${title.toLowerCase().replace(/\s+/g, "-")}`}>
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground font-display" data-testid={`heading-${sectionId}`}>
               {title}
             </h2>
             {subtitle && (
@@ -37,7 +39,7 @@ export function ProductCarousel({ title, subtitle, products }: ProductCarouselPr
             <button
               onClick={() => scroll("left")}
               className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-full border border-border hover:bg-muted active:bg-muted/80 transition-colors"
-              data-testid={`button-scroll-left-${title.toLowerCase().replace(/\s+/g, "-")}`}
+              data-testid={`button-scroll-left-${sectionId}`}
               aria-label="Scroll left"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -45,14 +47,36 @@ export function ProductCarousel({ title, subtitle, products }: ProductCarouselPr
             <button
               onClick={() => scroll("right")}
               className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-full border border-border hover:bg-muted active:bg-muted/80 transition-colors"
-              data-testid={`button-scroll-right-${title.toLowerCase().replace(/\s+/g, "-")}`}
+              data-testid={`button-scroll-right-${sectionId}`}
               aria-label="Scroll right"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
+      )}
 
+      <div className="relative">
+        {hideHeader && (
+          <div className="absolute right-0 -top-12 flex gap-2 z-10">
+            <button
+              onClick={() => scroll("left")}
+              className="w-10 h-10 flex items-center justify-center rounded-full border border-border hover:bg-muted active:bg-muted/80 transition-colors"
+              data-testid="button-scroll-left-showcase"
+              aria-label="Scroll left"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => scroll("right")}
+              className="w-10 h-10 flex items-center justify-center rounded-full border border-border hover:bg-muted active:bg-muted/80 transition-colors"
+              data-testid="button-scroll-right-showcase"
+              aria-label="Scroll right"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
         <div
           ref={scrollRef}
           className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2"
@@ -67,6 +91,18 @@ export function ProductCarousel({ title, subtitle, products }: ProductCarouselPr
             </div>
           ))}
         </div>
+      </div>
+    </>
+  );
+
+  if (hideHeader) {
+    return content;
+  }
+
+  return (
+    <section className="py-12 sm:py-16" data-testid={`section-carousel-${sectionId}`}>
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
+        {content}
       </div>
     </section>
   );
