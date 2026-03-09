@@ -6,7 +6,7 @@ import { Navbar } from "@/components/navbar";
 import { SiteFooter } from "@/components/site-footer";
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
-import { categories, getAllProducts } from "@/lib/catalogue-data";
+import { useProducts } from "@/lib/product-provider";
 
 const PRICE_RANGES = [
   { label: "Under ₹5,000", min: 0, max: 5000 },
@@ -112,7 +112,8 @@ export default function AllProducts() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [gridCols, setGridCols] = useState<3 | 4>(4);
 
-  const allProducts = useMemo(() => getAllProducts(), []);
+  const { categories, getAllProducts } = useProducts();
+  const allProducts = useMemo(() => getAllProducts(), [getAllProducts]);
 
   const toggleCategory = (slug: string) => {
     setSelectedCategories((prev) =>

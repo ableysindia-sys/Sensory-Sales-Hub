@@ -5,7 +5,7 @@ import { Link } from "wouter";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { useShoppingCart } from "@/lib/shopping-cart";
 import type { CatalogueProduct } from "@/lib/catalogue-data";
-import { getProductCategory, formatPrice, getDiscountPercent } from "@/lib/catalogue-data";
+import { useProducts, formatPrice, getDiscountPercent } from "@/lib/product-provider";
 import { generatedProductImages } from "@/lib/product-images";
 
 interface ProductCardProps {
@@ -45,6 +45,7 @@ function getSeededRating(id: string): { rating: number; count: number } {
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem, isInCart } = useEnquiryCart();
   const { addToCart } = useShoppingCart();
+  const { getProductCategory } = useProducts();
   const category = getProductCategory(product);
   const inCart = isInCart(product.id);
   const discount = getDiscountPercent(product);

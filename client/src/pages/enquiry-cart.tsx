@@ -44,7 +44,8 @@ import type { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
-import { categories, SITE_IMAGES } from "@/lib/catalogue-data";
+import { SITE_IMAGES } from "@/lib/catalogue-data";
+import { useProducts } from "@/lib/product-provider";
 
 type EnquiryFormValues = z.infer<typeof api.leads.create.input>;
 
@@ -213,6 +214,7 @@ function CategoryCheckbox({
 
 export default function EnquiryCartPage() {
   const { items, removeItem, updateQuantity, updateNotes, clearCart, getItemCount } = useEnquiryCart();
+  const { categories } = useProducts();
   const { toast } = useToast();
   const [step, setStep] = useState(0);
   const [setupType, setSetupType] = useState<string>("");

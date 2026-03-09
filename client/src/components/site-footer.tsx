@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { categories } from "@/lib/catalogue-data";
+import { useProducts } from "@/lib/product-provider";
 import logoPath from "@assets/ableys_rehab_logo.png";
 import { SiFacebook, SiInstagram, SiYoutube } from "react-icons/si";
 import { Mail, MapPin, Phone } from "lucide-react";
@@ -23,6 +23,7 @@ const socialLinks = [
 ];
 
 export function SiteFooter() {
+  const { categories } = useProducts();
   return (
     <footer className="bg-gray-950 text-white" data-testid="footer">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-16">

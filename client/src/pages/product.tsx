@@ -1,12 +1,7 @@
 import { useState, useMemo } from "react";
 import { useParams, Link } from "wouter";
-import {
-  getProductBySlug,
-  getProductCategory,
-  calculateProductPrice,
-  formatPrice,
-  type CatalogueProduct,
-} from "@/lib/catalogue-data";
+import type { CatalogueProduct } from "@/lib/catalogue-data";
+import { useProducts, calculateProductPrice, formatPrice } from "@/lib/product-provider";
 import { generatedProductImages } from "@/lib/product-images";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { useShoppingCart } from "@/lib/shopping-cart";
@@ -66,6 +61,7 @@ const storyCards = [
 
 export default function ProductPage() {
   const params = useParams<{ slug: string }>();
+  const { getProductBySlug, getProductCategory, isLoading } = useProducts();
   const product = getProductBySlug(params.slug);
   const { addItem, isInCart } = useEnquiryCart();
   const { addToCart } = useShoppingCart();
@@ -84,6 +80,17 @@ export default function ProductPage() {
   );
 
   const computedPrice = product ? calculateProductPrice(product, config) : 0;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="pt-40 pb-20 flex items-center justify-center">
+          <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (

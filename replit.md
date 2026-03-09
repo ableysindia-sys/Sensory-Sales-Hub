@@ -1,7 +1,7 @@
 # Abley's Rehab - B2B/B2C Hybrid E-Commerce Platform
 
 ## Overview
-Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional therapy equipment company. UI closely replicates the visual design of ableys.in (Shopify Dawn theme). Features product catalogue with 9 categories (42 professional B2B products), product configurator with dynamic pricing, Zustand shopping cart, mock Razorpay checkout, 3D sensory room builder, Gemini AI chat assistant, and B2B enquiry system.
+Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional therapy equipment company. UI closely replicates the visual design of ableys.in (Shopify Dawn theme). Features product catalogue with 9 categories (42 professional B2B products), product configurator with dynamic pricing, Zustand shopping cart, mock Razorpay checkout, 3D sensory room builder, Gemini AI chat assistant, B2B enquiry system, and full admin panel with product CRUD, inventory, leads, and pages management.
 
 ## Architecture
 - **Frontend**: React + Tailwind CSS + shadcn/ui + Framer Motion + wouter (routing)
@@ -11,6 +11,7 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 - **State**: 
   - B2C Shopping Cart: Zustand with `persist` middleware (localStorage key: `ableys-shopping-cart`)
   - B2B Enquiry Cart: React Context with localStorage (key: `ableys-enquiry-cart`)
+  - Product Data: React Context (ProductsProvider) fetching from API with fallback to catalogue-data.ts
 - **3D**: react-three-fiber + @react-three/drei (sensory room builder)
 
 ## Brand
@@ -28,71 +29,70 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 - `/enquiry` - Multi-step bulk order wizard (5 steps: Setup Type → Order Type → Category Selection → Budget & Timeline → Contact Form + Summary → Success page)
 - `/order-confirmation` - Order confirmation after successful checkout
 - `/contact` - Contact Us page (form, business hours, WhatsApp/phone quick connect, social links, Google Maps embed, bulk order CTA)
-- `/admin` - Admin panel (password-protected) with Dashboard (stats cards, recent leads) and Leads management (table, search, status filter, detail view, status updates, delete)
+- `/admin` - Admin panel (password-protected) with Dashboard, Leads, Products, and Pages tabs
 - `/sensory-room-builder` - 3D interactive room builder with product placement
+- `/page/:slug` - Dynamic pages (CMS-managed content pages)
 
 ## Key Files
-- `shared/schema.ts` - Database models (products, leads)
+- `shared/schema.ts` - Database models (products, categories, leads, pages)
 - `shared/routes.ts` - API contract with Zod validation
-- `server/routes.ts` - Express API routes
-- `server/storage.ts` - Database storage layer
-- `client/src/lib/catalogue-data.ts` - Full product catalogue (42 products, 9 categories) with basePrice, comparePrice, configOptions, images, formatPrice(), calculateProductPrice(), getDiscountPercent(), getNewArrivals(), getBestSellers()
+- `server/routes.ts` - Express API routes (public + admin CRUD)
+- `server/storage.ts` - Database storage layer (CRUD for products, categories, leads, pages)
+- `server/seed.ts` - Seeds database from catalogue-data.ts on first run
+- `client/src/lib/catalogue-data.ts` - Static product catalogue data (42 products, 9 categories) - types and SITE_IMAGES still imported from here
+- `client/src/lib/product-provider.tsx` - React context providing products/categories from API with hooks: useProducts(), formatPrice(), calculateProductPrice(), getDiscountPercent()
+- `client/src/lib/product-images.ts` - AI-generated product image imports (Vite asset imports)
 - `client/src/lib/shopping-cart.ts` - Zustand B2C cart store (cartKey-based identity, GST 18%, localStorage persist)
 - `client/src/lib/enquiry-cart.tsx` - B2B enquiry cart context with localStorage persistence
-- `client/src/pages/` - Home, AllProducts, Category, Product, EnquiryCart, OrderConfirmation, SensoryRoomBuilder
-- `client/src/components/` - All UI sections
+- `client/src/pages/admin.tsx` - Full admin panel (Dashboard, Leads, Products CRUD, Pages CMS)
+- `client/src/pages/dynamic-page.tsx` - Dynamic page renderer for CMS pages
 
-## Components (Active)
-- `navbar.tsx` - Fixed header with AnnouncementBar ("Free Shipping All Over India" + social icons) + clean Shopify-style navbar (Products dropdown, cart, enquiry, mobile menu)
-- `hero.tsx` - Full-width auto-advancing hero slideshow (3 slides: Professional Equipment, Sensory Room Essentials, Swings & Movement) with prev/next arrows, dot navigation
-- `category-grid.tsx` - "Our Top Rated Collections" — 5 featured collection cards with images, product counts, masonry-like grid layout
-- `product-carousel.tsx` - Horizontal scrolling product carousel with scroll buttons (used for "Just In" and "Our Best-Sellers")
-- `product-card.tsx` - Shopify-style product card: sale badge ("Save X%"), strikethrough compare price, star ratings (seeded), "Abley's" vendor label, inline color swatches, Add to Cart button
-- `testimonials.tsx` - "Loved by Parents & Therapists" — 3 testimonial cards with star ratings
-- `trust-badges.tsx` - 3-column trust badges (Free Shipping, Certified Safe, Expert Support)
-- `commitment-section.tsx` - "Our Commitment to Your Family" — about section with workshop image
-- `blog-preview.tsx` - "Therapist-Approved Resources" — 3 blog cards with images
-- `cart-drawer.tsx` - Slide-out shopping cart drawer with items, quantity controls, GST calculation, checkout button
-- `razorpay-modal.tsx` - Mock Razorpay payment modal (UPI/Card/Netbanking tabs, simulated 2s processing)
-- `bulk-enquiry-form.tsx` - B2B lead generation form
-- `site-footer.tsx` - Multi-column footer: brand+social icons, shop categories, help & info links, our commitment + contact info
-- `chat-widget.tsx` - Gemini AI chat assistant (floating FAB)
-- `theme-provider.tsx` - Dark/light mode support
+## Database Schema
+- `categories`: id (serial), slug (unique), title, description, color, image, displayOrder, isActive
+- `products`: id (serial), slug (unique), name, categorySlug, shortDescription, longDescription, basePrice (int), comparePrice (int nullable), stock (int nullable = unlimited), images (JSON text), specifications (JSON text), features (JSON text), applications (JSON text), configOptions (JSON text), shopifyHandle, shopifyUrl, isActive, createdAt
+- `leads`: id (serial), name, email, interest, organisation, phone, city, category, requirementType, message, cartItems, status (new/contacted/converted/closed), createdAt
+- `pages`: id (serial), slug (unique), title, content, isPublished, createdAt, updatedAt
+
+## API Endpoints
+### Public
+- `GET /api/products` - List all active products
+- `GET /api/products/:slug` - Get single product
+- `GET /api/categories` - List all active categories
+- `GET /api/pages/:slug` - Get published page by slug
+- `POST /api/leads` - Submit B2B enquiry
+- `POST /api/chat` - Gemini AI chat (rate-limited, 15 req/min per IP)
+
+### Admin (Bearer token auth)
+- `POST /api/admin/login` - Admin login (returns bearer token)
+- `GET /api/admin/stats` - Dashboard statistics
+- `GET /api/admin/leads` - List all leads
+- `GET /api/admin/leads/:id` - Get single lead
+- `PATCH /api/admin/leads/:id` - Update lead status
+- `DELETE /api/admin/leads/:id` - Delete lead
+- `GET /api/admin/products` - List all products (including inactive)
+- `POST /api/admin/products` - Create product
+- `PATCH /api/admin/products/:id` - Update product
+- `DELETE /api/admin/products/:id` - Delete product
+- `GET /api/admin/categories` - List all categories
+- `POST /api/admin/categories` - Create category
+- `PATCH /api/admin/categories/:id` - Update category
+- `DELETE /api/admin/categories/:id` - Delete category
+- `GET /api/admin/pages` - List all pages
+- `POST /api/admin/pages` - Create page
+- `PATCH /api/admin/pages/:id` - Update page
+- `DELETE /api/admin/pages/:id` - Delete page
+
+## Admin Panel Features
+- Password-protected login (ADMIN_PASSWORD env secret)
+- Bearer token auth stored in sessionStorage
+- Dashboard: stat cards (Total Leads, New, Products, Low Stock), recent enquiries
+- Leads: searchable table, status filter, detail view, inline status updates, delete
+- Products: table with thumbnails, category, price, stock, active toggle, search, add/edit/delete with full form (images, specs, features, applications)
+- Pages: CMS for custom content pages with title, slug, content (HTML/Markdown), published toggle
 
 ## Product Images
 - Products with real Shopify CDN images: bolster-swing, t-swing, disc-swing, tube-swing, balance-board, stepping-stones, trampoline, gym-ball, peanut-ball, medicine-ball, weighted-vest, weighted-blanket, sensory-sock, lap-pad, liquid-motion-tiles, fibre-light, bubble-tube
-- Products with AI-generated images (via `client/src/lib/product-images.ts`): platform-swing, lycra-swing, acrobat-swing, ballpool-4x4, ballpool-6x4, crash-mat, therapy-mat, floormat, interlocking-mat, foldable-mat, kidlite-barrel, balance-beam, wedges, jumping-stool, ramp-and-stairs, climb-board, wall-bar-ladder, spider-climb-net, adl-kit (3 variants), bosu-ball, hexwall-touch-light, glitter-pad, glitter-capillary
-
-## Product Categories (9) — 42 professional B2B therapy products
-Swings (7), Ballpool (2), Mats (5), Movement & Balance (8), Climbing (3), ADL Kit (3), Therapy Balls (4), Deep Pressure (4), Visual (6)
-
-## E-Commerce Features
-- **Curated B2B Catalogue**: 42 professional therapy products across 9 categories with detailed descriptions, specifications, professional pricing, and real product images from ableys.in Shopify CDN
-- **Sale Badges**: Products with comparePrice show "Save X%" badges and strikethrough pricing
-- **Star Ratings**: Seeded deterministic 4-5 star ratings with review counts per product
-- **All Products Page**: `/products` with search bar, category filter buttons, sort (price/name), product grid
-- **Category Pages**: Full-width banner with title overlay, sort dropdown (Best selling, A-Z, Z-A, Price low/high), product count, product grid
-- **Product Configurator**: Color swatches, material variants, size options, add-on checkboxes with dynamic price calculation
-- **Shopping Cart**: Zustand store with cartKey-based item identity, quantity controls, GST (18%) calculation
-- **Cart Drawer**: Slide-out sheet from right, line items with config details, subtotal/GST/total
-- **Mock Checkout**: Razorpay-branded modal with payment tabs, simulated processing, success animation
-- **Order Confirmation**: Animated checkmark, order ID, delivery estimate
-- **3D Room Builder**: react-three-fiber therapy room with padded walls, ceiling, suspension bar, window, door, LED strip lighting. 21 products across 7 categories. 5 pre-built templates (Calming Retreat, Active Therapy, Sensory Explorer, OT Clinic, Dark Sensory Room). Room customization: LED mood lighting, wall padding, floor type, light/dark room mode. Zoom +/- buttons
-- **AI Chat Assistant**: Floating chat widget powered by Gemini 2.0 Flash; context-aware; rate-limited (15 req/min)
-
-## Database Schema
-- `products`: id, name, description, price (text), imageUrl
-- `leads`: id, name, email, interest, organisation, phone, city, category, requirementType, message, cartItems, status (new/contacted/converted/closed), createdAt (timestamp)
-
-## API Endpoints
-- `POST /api/leads` - Submit B2B enquiry (with or without cart items)
-- `POST /api/chat` - Gemini AI chat assistant (rate-limited, 15 req/min per IP)
-- `POST /api/admin/login` - Admin login (returns bearer token)
-- `GET /api/admin/stats` - Dashboard statistics (requires auth)
-- `GET /api/admin/leads` - List all leads (requires auth)
-- `GET /api/admin/leads/:id` - Get single lead (requires auth)
-- `PATCH /api/admin/leads/:id` - Update lead status (requires auth)
-- `DELETE /api/admin/leads/:id` - Delete lead (requires auth)
+- Products with AI-generated images stored as `__generated__:{slug}` markers in DB, resolved at render time via `product-images.ts`
 
 ## Mobile Responsiveness
 - Global `overflow-x: hidden` on body to prevent horizontal scrollbar on all pages

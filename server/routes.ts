@@ -127,12 +127,47 @@ export async function registerRoutes(
       res.status(201).json({ id: lead.id, message: "Enquiry submitted successfully" });
     } catch (err) {
       if (err instanceof z.ZodError) {
-        return res.status(400).json({
-          message: err.errors[0].message,
-          field: err.errors[0].path.join('.'),
-        });
+        return res.status(400).json({ message: err.errors[0].message, field: err.errors[0].path.join('.') });
       }
       res.status(500).json({ message: "Failed to submit enquiry" });
+    }
+  });
+
+  app.get("/api/products", async (_req, res) => {
+    try {
+      const products = await storage.getActiveProducts();
+      res.json(products);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch products" });
+    }
+  });
+
+  app.get("/api/products/:slug", async (req, res) => {
+    try {
+      const product = await storage.getProductBySlug(req.params.slug);
+      if (!product || !product.isActive) return res.status(404).json({ message: "Product not found" });
+      res.json(product);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch product" });
+    }
+  });
+
+  app.get("/api/categories", async (_req, res) => {
+    try {
+      const cats = await storage.getCategories();
+      res.json(cats.filter(c => c.isActive));
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch categories" });
+    }
+  });
+
+  app.get("/api/pages/:slug", async (req, res) => {
+    try {
+      const page = await storage.getPageBySlug(req.params.slug);
+      if (!page || !page.isPublished) return res.status(404).json({ message: "Page not found" });
+      res.json(page);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch page" });
     }
   });
 
@@ -155,20 +190,27 @@ export async function registerRoutes(
 
   app.get(api.admin.stats.path, requireAdmin, async (_req, res) => {
     try {
-      const stats = await storage.getLeadStats();
-      res.json(stats);
+      const leadStats = await storage.getLeadStats();
+      const allProducts = await storage.getProducts();
+      const cats = await storage.getCategories();
+      const activeProducts = allProducts.filter(p => p.isActive).length;
+      const outOfStock = allProducts.filter(p => p.stock !== null && p.stock <= 0).length;
+      const lowStock = allProducts.filter(p => p.stock !== null && p.stock > 0 && p.stock <= 5).length;
+      res.json({
+        ...leadStats,
+        totalProducts: allProducts.length,
+        activeProducts,
+        totalCategories: cats.length,
+        outOfStock,
+        lowStock,
+      });
     } catch (err) {
       res.status(500).json({ message: "Failed to fetch stats" });
     }
   });
 
   app.get(api.admin.leads.list.path, requireAdmin, async (_req, res) => {
-    try {
-      const allLeads = await storage.getLeads();
-      res.json(allLeads);
-    } catch (err) {
-      res.status(500).json({ message: "Failed to fetch leads" });
-    }
+    try { res.json(await storage.getLeads()); } catch { res.status(500).json({ message: "Failed" }); }
   });
 
   app.get("/api/admin/leads/:id", requireAdmin, async (req, res) => {
@@ -178,9 +220,7 @@ export async function registerRoutes(
       const lead = await storage.getLead(id);
       if (!lead) return res.status(404).json({ message: "Lead not found" });
       res.json(lead);
-    } catch (err) {
-      res.status(500).json({ message: "Failed to fetch lead" });
-    }
+    } catch { res.status(500).json({ message: "Failed" }); }
   });
 
   app.patch("/api/admin/leads/:id", requireAdmin, async (req, res) => {
@@ -192,10 +232,8 @@ export async function registerRoutes(
       if (!lead) return res.status(404).json({ message: "Lead not found" });
       res.json(lead);
     } catch (err) {
-      if (err instanceof z.ZodError) {
-        return res.status(400).json({ message: err.errors[0].message });
-      }
-      res.status(500).json({ message: "Failed to update lead" });
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Failed" });
     }
   });
 
@@ -206,9 +244,163 @@ export async function registerRoutes(
       const deleted = await storage.deleteLead(id);
       if (!deleted) return res.status(404).json({ message: "Lead not found" });
       res.json({ message: "Lead deleted" });
+    } catch { res.status(500).json({ message: "Failed" }); }
+  });
+
+  app.get("/api/admin/products", requireAdmin, async (_req, res) => {
+    try { res.json(await storage.getProducts()); } catch { res.status(500).json({ message: "Failed" }); }
+  });
+
+  const productBodySchema = z.object({
+    slug: z.string().min(1).optional(),
+    name: z.string().min(1).optional(),
+    categorySlug: z.string().min(1).optional(),
+    shortDescription: z.string().min(1).optional(),
+    longDescription: z.string().nullable().optional(),
+    basePrice: z.number().int().min(0).optional(),
+    comparePrice: z.number().int().nullable().optional(),
+    stock: z.number().int().nullable().optional(),
+    images: z.string().nullable().optional(),
+    specifications: z.string().nullable().optional(),
+    features: z.string().nullable().optional(),
+    applications: z.string().nullable().optional(),
+    configOptions: z.string().nullable().optional(),
+    shopifyHandle: z.string().nullable().optional(),
+    shopifyUrl: z.string().nullable().optional(),
+    isActive: z.boolean().optional(),
+  });
+
+  app.post("/api/admin/products", requireAdmin, async (req, res) => {
+    try {
+      const data = productBodySchema.parse(req.body);
+      if (!data.name || !data.slug || !data.categorySlug || !data.shortDescription || data.basePrice === undefined) {
+        return res.status(400).json({ message: "Name, slug, category, short description, and base price are required" });
+      }
+      const product = await storage.createProduct(data as any);
+      res.status(201).json(product);
     } catch (err) {
-      res.status(500).json({ message: "Failed to delete lead" });
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Failed to create product" });
     }
+  });
+
+  app.patch("/api/admin/products/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid ID" });
+      const data = productBodySchema.parse(req.body);
+      const product = await storage.updateProduct(id, data);
+      if (!product) return res.status(404).json({ message: "Product not found" });
+      res.json(product);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Failed" });
+    }
+  });
+
+  app.delete("/api/admin/products/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid ID" });
+      const deleted = await storage.deleteProduct(id);
+      if (!deleted) return res.status(404).json({ message: "Product not found" });
+      res.json({ message: "Product deleted" });
+    } catch { res.status(500).json({ message: "Failed" }); }
+  });
+
+  app.get("/api/admin/categories", requireAdmin, async (_req, res) => {
+    try { res.json(await storage.getCategories()); } catch { res.status(500).json({ message: "Failed" }); }
+  });
+
+  const categoryBodySchema = z.object({
+    slug: z.string().min(1).optional(),
+    title: z.string().min(1).optional(),
+    description: z.string().min(1).optional(),
+    color: z.string().min(1).optional(),
+    image: z.string().nullable().optional(),
+    displayOrder: z.number().int().optional(),
+    isActive: z.boolean().optional(),
+  });
+
+  app.post("/api/admin/categories", requireAdmin, async (req, res) => {
+    try {
+      const data = categoryBodySchema.parse(req.body);
+      const cat = await storage.createCategory(data as any);
+      res.status(201).json(cat);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Failed" });
+    }
+  });
+
+  app.patch("/api/admin/categories/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid ID" });
+      const data = categoryBodySchema.parse(req.body);
+      const cat = await storage.updateCategory(id, data);
+      if (!cat) return res.status(404).json({ message: "Category not found" });
+      res.json(cat);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Failed" });
+    }
+  });
+
+  app.delete("/api/admin/categories/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid ID" });
+      const deleted = await storage.deleteCategory(id);
+      if (!deleted) return res.status(404).json({ message: "Category not found" });
+      res.json({ message: "Category deleted" });
+    } catch { res.status(500).json({ message: "Failed" }); }
+  });
+
+  app.get("/api/admin/pages", requireAdmin, async (_req, res) => {
+    try { res.json(await storage.getPages()); } catch { res.status(500).json({ message: "Failed" }); }
+  });
+
+  const pageBodySchema = z.object({
+    slug: z.string().min(1).optional(),
+    title: z.string().min(1).optional(),
+    content: z.string().optional(),
+    isPublished: z.boolean().optional(),
+  });
+
+  app.post("/api/admin/pages", requireAdmin, async (req, res) => {
+    try {
+      const data = pageBodySchema.parse(req.body);
+      const page = await storage.createPage(data as any);
+      res.status(201).json(page);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Failed" });
+    }
+  });
+
+  app.patch("/api/admin/pages/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid ID" });
+      const data = pageBodySchema.parse(req.body);
+      const page = await storage.updatePage(id, data);
+      if (!page) return res.status(404).json({ message: "Page not found" });
+      res.json(page);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      res.status(500).json({ message: "Failed" });
+    }
+  });
+
+  app.delete("/api/admin/pages/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid ID" });
+      const deleted = await storage.deletePage(id);
+      if (!deleted) return res.status(404).json({ message: "Page not found" });
+      res.json({ message: "Page deleted" });
+    } catch { res.status(500).json({ message: "Failed" }); }
   });
 
   return httpServer;

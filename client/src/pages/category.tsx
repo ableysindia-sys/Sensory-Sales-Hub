@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useParams, Link } from "wouter";
-import { getCategoryBySlug, categories } from "@/lib/catalogue-data";
 import type { CatalogueProduct } from "@/lib/catalogue-data";
+import { useProducts } from "@/lib/product-provider";
 import { ProductCard } from "@/components/product-card";
 import { Navbar } from "@/components/navbar";
 import { SiteFooter } from "@/components/site-footer";
@@ -29,6 +29,7 @@ function sortProducts(products: CatalogueProduct[], sort: SortOption): Catalogue
 
 export default function CategoryPage() {
   const params = useParams<{ slug: string }>();
+  const { getCategoryBySlug, categories, isLoading } = useProducts();
   const category = getCategoryBySlug(params.slug);
   const [sort, setSort] = useState<SortOption>("best-selling");
   const [gridCols, setGridCols] = useState<3 | 4>(4);
@@ -38,6 +39,17 @@ export default function CategoryPage() {
     () => (category ? sortProducts(category.products, sort) : []),
     [category, sort]
   );
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="pt-40 pb-20 flex items-center justify-center">
+          <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+        </div>
+      </div>
+    );
+  }
 
   if (!category) {
     return (

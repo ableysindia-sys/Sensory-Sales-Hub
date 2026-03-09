@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { EnquiryCartProvider } from "@/lib/enquiry-cart";
+import { ProductsProvider } from "@/lib/product-provider";
 import { CartDrawer } from "@/components/cart-drawer";
 import { ChatWidget } from "@/components/chat-widget";
 import NotFound from "@/pages/not-found";
@@ -18,6 +19,7 @@ import OrderConfirmation from "./pages/order-confirmation";
 import SensoryRoomBuilder from "./pages/sensory-room-builder";
 import ContactPage from "./pages/contact";
 import AdminPage from "./pages/admin";
+import DynamicPage from "./pages/dynamic-page";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -41,6 +43,7 @@ function Router() {
         <Route path="/contact" component={ContactPage} />
         <Route path="/sensory-room-builder" component={SensoryRoomBuilder} />
         <Route path="/admin" component={AdminPage} />
+        <Route path="/page/:slug" component={DynamicPage} />
         <Route component={NotFound} />
       </Switch>
     </>
@@ -52,12 +55,14 @@ function App() {
     <ThemeProvider defaultTheme="light" storageKey="ableys-rehab-theme">
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <EnquiryCartProvider>
-            <Router />
-            <CartDrawer />
-            <ChatWidget />
-            <Toaster />
-          </EnquiryCartProvider>
+          <ProductsProvider>
+            <EnquiryCartProvider>
+              <Router />
+              <CartDrawer />
+              <ChatWidget />
+              <Toaster />
+            </EnquiryCartProvider>
+          </ProductsProvider>
         </TooltipProvider>
       </QueryClientProvider>
     </ThemeProvider>

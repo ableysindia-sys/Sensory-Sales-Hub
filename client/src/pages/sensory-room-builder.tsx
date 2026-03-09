@@ -3,7 +3,7 @@ import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
-import { formatPrice } from "@/lib/catalogue-data";
+import { formatPrice } from "@/lib/product-provider";
 import { useShoppingCart } from "@/lib/shopping-cart";
 import {
   Plus,

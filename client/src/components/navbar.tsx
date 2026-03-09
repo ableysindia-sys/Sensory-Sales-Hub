@@ -5,7 +5,7 @@ import { SiFacebook, SiInstagram, SiYoutube } from "react-icons/si";
 import { Link, useLocation } from "wouter";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { useShoppingCart } from "@/lib/shopping-cart";
-import { categories } from "@/lib/catalogue-data";
+import { useProducts } from "@/lib/product-provider";
 import logoPath from "@assets/ableys_rehab_logo.png";
 
 const navLinks = [
@@ -46,6 +46,7 @@ export function Navbar() {
   const [productsOpen, setProductsOpen] = useState(false);
   const { getItemCount: getEnquiryCount } = useEnquiryCart();
   const { getItemCount: getCartCount, openDrawer } = useShoppingCart();
+  const { categories } = useProducts();
   const [location, navigate] = useLocation();
   const enquiryCount = getEnquiryCount();
   const cartCount = getCartCount();

@@ -1,8 +1,9 @@
 import { ArrowRight } from "lucide-react";
 import { Link } from "wouter";
-import { categories } from "@/lib/catalogue-data";
+import { useProducts } from "@/lib/product-provider";
 
 export function CategoryGrid() {
+  const { categories } = useProducts();
   return (
     <section id="categories" className="py-16 sm:py-20" data-testid="section-categories">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

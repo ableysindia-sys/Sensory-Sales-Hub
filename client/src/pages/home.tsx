@@ -16,7 +16,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { Box, ArrowRight } from "lucide-react";
-import { SITE_IMAGES, getNewArrivals, getBestSellers } from "@/lib/catalogue-data";
+import { SITE_IMAGES } from "@/lib/catalogue-data";
+import { useProducts } from "@/lib/product-provider";
 
 function SensoryRoomCTA() {
   return (
@@ -86,6 +87,7 @@ function GetStartedBanner() {
 }
 
 export default function Home() {
+  const { getNewArrivals, getBestSellers } = useProducts();
   const newArrivals = getNewArrivals();
   const bestSellers = getBestSellers();
 
