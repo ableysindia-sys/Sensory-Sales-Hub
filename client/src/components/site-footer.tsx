@@ -30,10 +30,10 @@ const quickLinks = [
 ];
 
 const policyLinks = [
-  { label: "Shipping Policy", href: "/" },
-  { label: "Return Policy", href: "/" },
-  { label: "Privacy Policy", href: "/" },
-  { label: "Terms of Service", href: "/" },
+  { label: "Shipping Policy", href: "/page/shipping-policy" },
+  { label: "Return Policy", href: "/page/return-policy" },
+  { label: "Privacy Policy", href: "/page/privacy-policy" },
+  { label: "Terms of Service", href: "/page/terms-of-service" },
 ];
 
 export function SiteFooter() {

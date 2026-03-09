@@ -32,14 +32,13 @@ export default function DynamicPage() {
             <p className="text-muted-foreground">The page you're looking for doesn't exist or hasn't been published yet.</p>
           </div>
         ) : (
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-8" data-testid="heading-page-title">{page.title}</h1>
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-10 font-display" data-testid="heading-page-title">{page.title}</h1>
             <div
-              className="prose prose-gray dark:prose-invert max-w-none text-foreground whitespace-pre-wrap"
+              className="prose prose-gray dark:prose-invert max-w-none text-foreground/90 prose-headings:text-foreground prose-headings:font-display prose-h2:text-xl prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-lg prose-h3:mt-8 prose-h3:mb-3 prose-p:leading-relaxed prose-li:leading-relaxed prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground"
               data-testid="content-page-body"
-            >
-              {page.content}
-            </div>
+              dangerouslySetInnerHTML={{ __html: page.content }}
+            />
           </div>
         )}
       </main>
