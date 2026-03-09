@@ -16,7 +16,7 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 
 ## Brand
 - Primary color: #4A53A0
-- Fonts: Plus Jakarta Sans (headings), Inter (body)
+- Fonts: Poppins (headings), Montserrat (body) — matches ableys.in Shopify theme
 - Tone: Professional, clean, Shopify-style e-commerce
 - Logo: `attached_assets/ableys_rehab_logo.png` (transparent background)
 - Social: Facebook, Instagram, YouTube (react-icons/si)
