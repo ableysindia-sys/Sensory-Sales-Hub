@@ -28,6 +28,7 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 - `/enquiry` - Multi-step bulk order wizard (5 steps: Setup Type → Order Type → Category Selection → Budget & Timeline → Contact Form + Summary → Success page)
 - `/order-confirmation` - Order confirmation after successful checkout
 - `/contact` - Contact Us page (form, business hours, WhatsApp/phone quick connect, social links, Google Maps embed, bulk order CTA)
+- `/admin` - Admin panel (password-protected) with Dashboard (stats cards, recent leads) and Leads management (table, search, status filter, detail view, status updates, delete)
 - `/sensory-room-builder` - 3D interactive room builder with product placement
 
 ## Key Files
@@ -81,11 +82,17 @@ Swings (7), Ballpool (2), Mats (5), Movement & Balance (8), Climbing (3), ADL Ki
 
 ## Database Schema
 - `products`: id, name, description, price (text), imageUrl
-- `leads`: id, name, email, interest, organisation, phone, city, category, requirementType, message, cartItems
+- `leads`: id, name, email, interest, organisation, phone, city, category, requirementType, message, cartItems, status (new/contacted/converted/closed), createdAt (timestamp)
 
 ## API Endpoints
 - `POST /api/leads` - Submit B2B enquiry (with or without cart items)
 - `POST /api/chat` - Gemini AI chat assistant (rate-limited, 15 req/min per IP)
+- `POST /api/admin/login` - Admin login (returns bearer token)
+- `GET /api/admin/stats` - Dashboard statistics (requires auth)
+- `GET /api/admin/leads` - List all leads (requires auth)
+- `GET /api/admin/leads/:id` - Get single lead (requires auth)
+- `PATCH /api/admin/leads/:id` - Update lead status (requires auth)
+- `DELETE /api/admin/leads/:id` - Delete lead (requires auth)
 
 ## Mobile Responsiveness
 - Global `overflow-x: hidden` on body to prevent horizontal scrollbar on all pages

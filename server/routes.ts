@@ -48,7 +48,10 @@ function isRateLimited(ip: string): boolean {
   return entry.count > RATE_LIMIT_MAX_REQUESTS;
 }
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "ableys2024";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+if (!ADMIN_PASSWORD) {
+  console.warn("ADMIN_PASSWORD is not set — admin panel login will be disabled");
+}
 
 const adminTokens = new Set<string>();
 
@@ -135,6 +138,9 @@ export async function registerRoutes(
 
   app.post(api.admin.login.path, (req, res) => {
     try {
+      if (!ADMIN_PASSWORD) {
+        return res.status(503).json({ message: "Admin panel is not configured" });
+      }
       const { password } = api.admin.login.input.parse(req.body);
       if (password !== ADMIN_PASSWORD) {
         return res.status(401).json({ message: "Invalid password" });
