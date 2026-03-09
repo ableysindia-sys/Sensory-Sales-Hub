@@ -22,10 +22,10 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 
 ## Pages & Routes
 - `/` - Home (announcement bar, hero slideshow, top collections grid, new arrivals carousel, best-sellers carousel, get started banner, testimonials, trust badges, commitment section, blog preview, sensory room CTA, bulk enquiry form, footer)
-- `/products` - All products with search, filter, sort
-- `/category/:slug` - Category page with banner, sort dropdown, product grid
+- `/products` - All products with sidebar filters (Product Type accordion, Price accordion, active filter chips), search, sort, grid density toggle
+- `/category/:slug` - Category page with sidebar category navigation, banner, sort dropdown, grid toggle, product grid
 - `/product/:slug` - Product detail page with configurator, dynamic pricing, B2C/B2B actions
-- `/enquiry` - B2B enquiry cart page with form submission
+- `/enquiry` - Multi-step bulk order wizard (5 steps: Setup Type → Order Type → Category Selection → Budget & Timeline → Contact Form + Summary → Success page)
 - `/order-confirmation` - Order confirmation after successful checkout
 - `/sensory-room-builder` - 3D interactive room builder with product placement
 
