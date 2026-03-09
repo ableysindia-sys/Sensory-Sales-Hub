@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import logoPath from "@assets/ableys_rehab_logo.png";
 import { SiFacebook, SiInstagram, SiYoutube } from "react-icons/si";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Building2, Mail, MapPin, Phone } from "lucide-react";
 
 const socialLinks = [
   {
@@ -113,27 +113,31 @@ export function SiteFooter() {
             </h4>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
-                <span className="text-sm text-gray-400">India</span>
+                <Building2 className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
+                <span className="text-sm text-gray-400">A brand of Eighth Fold Circle Pvt Ltd.</span>
               </li>
               <li className="flex items-start gap-3">
-                <Mail className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
-                <a
-                  href="mailto:info@ableys.in"
-                  className="text-sm text-gray-400 hover:text-white transition-colors"
-                  data-testid="link-footer-email"
-                >
-                  info@ableys.in
-                </a>
+                <MapPin className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
+                <span className="text-sm text-gray-400 leading-relaxed">Khasra No. 227 PS Tower, Village Mamura Sector 66, 201301 Noida, Uttar Pradesh, India</span>
               </li>
               <li className="flex items-start gap-3">
                 <Phone className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
                 <a
-                  href="tel:+919876543210"
+                  href="tel:+917042180166"
                   className="text-sm text-gray-400 hover:text-white transition-colors"
                   data-testid="link-footer-phone"
                 >
-                  +91 98765 43210
+                  +91-704-218-0166
+                </a>
+              </li>
+              <li className="flex items-start gap-3">
+                <Mail className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
+                <a
+                  href="mailto:team@ableys.in"
+                  className="text-sm text-gray-400 hover:text-white transition-colors"
+                  data-testid="link-footer-email"
+                >
+                  team@ableys.in
                 </a>
               </li>
             </ul>
