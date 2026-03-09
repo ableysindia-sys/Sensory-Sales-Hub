@@ -5,7 +5,7 @@ import { Hero } from "@/components/hero";
 import { CategoryGrid } from "@/components/category-grid";
 import { ProductCarousel } from "@/components/product-carousel";
 import { ManufacturingSection } from "@/components/manufacturing-section";
-import { ClientLogos } from "@/components/client-logos";
+
 import { Testimonials } from "@/components/testimonials";
 import { TrustBadges } from "@/components/trust-badges";
 
@@ -168,7 +168,7 @@ export default function Home() {
         <FeaturedSwings />
         <ProductShowcase />
         <ManufacturingSection />
-        <ClientLogos />
+
         <Testimonials />
         <TrustBadges />
 
