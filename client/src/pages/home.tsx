@@ -8,7 +8,7 @@ import { ManufacturingSection } from "@/components/manufacturing-section";
 import { ClientLogos } from "@/components/client-logos";
 import { Testimonials } from "@/components/testimonials";
 import { TrustBadges } from "@/components/trust-badges";
-import { CommitmentSection } from "@/components/commitment-section";
+
 import { BulkEnquiryForm } from "@/components/bulk-enquiry-form";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
@@ -172,7 +172,7 @@ export default function Home() {
         <ClientLogos />
         <Testimonials />
         <TrustBadges />
-        <CommitmentSection />
+
         <SensoryRoomCTA />
         <BulkEnquiryForm />
       </main>
