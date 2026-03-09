@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import logoPath from "@assets/ableys_rehab_logo.png";
-import { SiFacebook, SiInstagram, SiYoutube, SiWhatsapp } from "react-icons/si";
+import { SiFacebook, SiInstagram, SiYoutube } from "react-icons/si";
 import { Building2, Mail, MapPin, Phone } from "lucide-react";
 
 const socialLinks = [
@@ -138,18 +138,6 @@ export function SiteFooter() {
                   data-testid="link-footer-email"
                 >
                   team@ableys.in
-                </a>
-              </li>
-              <li className="pt-2">
-                <a
-                  href="https://wa.me/917042180166"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 transition-colors text-sm font-medium"
-                  data-testid="link-footer-whatsapp"
-                >
-                  <SiWhatsapp className="w-4 h-4" />
-                  Chat on WhatsApp
                 </a>
               </li>
             </ul>
