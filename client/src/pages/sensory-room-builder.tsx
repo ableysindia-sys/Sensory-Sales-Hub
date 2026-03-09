@@ -1577,7 +1577,7 @@ export default function SensoryRoomBuilder() {
               </div>
               {placedItems.length > 0 && (
                 <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
-                  <Link href="/#enquiry" className="flex-1 sm:flex-initial">
+                  <Link href="/enquiry" className="flex-1 sm:flex-initial">
                     <Button variant="outline" size="default" className="rounded-full gap-1.5 sm:gap-2 w-full sm:w-auto text-xs sm:text-sm h-9 sm:h-11" data-testid="button-quote-setup">
                       <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       Get Quote

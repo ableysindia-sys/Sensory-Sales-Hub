@@ -455,7 +455,7 @@ export default function ProductPage() {
                         </>
                       )}
                     </Button>
-                    <Link href="/#enquiry" className="flex-1">
+                    <Link href="/enquiry" className="flex-1">
                       <Button
                         size="lg"
                         variant="ghost"

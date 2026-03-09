@@ -27,6 +27,7 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 - `/product/:slug` - Product detail page with configurator, dynamic pricing, B2C/B2B actions
 - `/enquiry` - Multi-step bulk order wizard (5 steps: Setup Type → Order Type → Category Selection → Budget & Timeline → Contact Form + Summary → Success page)
 - `/order-confirmation` - Order confirmation after successful checkout
+- `/contact` - Contact Us page (form, business hours, WhatsApp/phone quick connect, social links, Google Maps embed, bulk order CTA)
 - `/sensory-room-builder` - 3D interactive room builder with product placement
 
 ## Key Files

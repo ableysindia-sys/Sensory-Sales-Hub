@@ -14,7 +14,7 @@ const navLinks = [
   { label: "Categories", href: "/#categories" },
   { label: "Room Builder", href: "/sensory-room-builder" },
   { label: "Bulk Orders", href: "/enquiry" },
-  { label: "Contact", href: "/#enquiry" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export function AnnouncementBar() {
@@ -173,7 +173,7 @@ export function Navbar() {
                   )}
                 </Button>
               </Link>
-              <Link href="/#enquiry">
+              <Link href="/enquiry">
                 <Button size="sm" className="gap-2" data-testid="button-nav-bulk-enquiry">
                   <Send className="w-3.5 h-3.5" />
                   Bulk Enquiry
@@ -273,7 +273,7 @@ export function Navbar() {
                 Bulk Orders
               </button>
               <button
-                onClick={() => handleNavClick("/#enquiry")}
+                onClick={() => handleNavClick("/contact")}
                 className="block w-full text-left px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
                 data-testid="link-mobile-contact"
               >
@@ -284,7 +284,7 @@ export function Navbar() {
               <Button
                 size="lg"
                 className="w-full gap-2"
-                onClick={() => handleNavClick("/#enquiry")}
+                onClick={() => handleNavClick("/enquiry")}
                 data-testid="button-mobile-bulk-enquiry"
               >
                 <Send className="w-4 h-4" />
