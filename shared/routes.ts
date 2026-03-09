@@ -50,6 +50,40 @@ export const api = {
       },
     },
   },
+  admin: {
+    login: {
+      method: 'POST' as const,
+      path: '/api/admin/login' as const,
+      input: z.object({
+        password: z.string().min(1, "Password is required"),
+      }),
+    },
+    stats: {
+      method: 'GET' as const,
+      path: '/api/admin/stats' as const,
+    },
+    leads: {
+      list: {
+        method: 'GET' as const,
+        path: '/api/admin/leads' as const,
+      },
+      get: {
+        method: 'GET' as const,
+        path: '/api/admin/leads/:id' as const,
+      },
+      updateStatus: {
+        method: 'PATCH' as const,
+        path: '/api/admin/leads/:id' as const,
+        input: z.object({
+          status: z.enum(["new", "contacted", "converted", "closed"]),
+        }),
+      },
+      delete: {
+        method: 'DELETE' as const,
+        path: '/api/admin/leads/:id' as const,
+      },
+    },
+  },
 };
 
 export function buildUrl(path: string, params?: Record<string, string | number>): string {

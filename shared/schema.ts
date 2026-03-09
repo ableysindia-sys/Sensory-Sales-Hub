@@ -1,4 +1,4 @@
-import { pgTable, text, serial, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, varchar, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -22,10 +22,12 @@ export const leads = pgTable("leads", {
   requirementType: text("requirement_type"),
   message: text("message"),
   cartItems: text("cart_items"),
+  status: text("status").notNull().default("new"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const insertProductSchema = createInsertSchema(products).omit({ id: true });
-export const insertLeadSchema = createInsertSchema(leads).omit({ id: true });
+export const insertLeadSchema = createInsertSchema(leads).omit({ id: true, status: true, createdAt: true });
 
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;

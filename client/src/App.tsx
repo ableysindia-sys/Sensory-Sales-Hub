@@ -17,6 +17,7 @@ import AllProducts from "./pages/all-products";
 import OrderConfirmation from "./pages/order-confirmation";
 import SensoryRoomBuilder from "./pages/sensory-room-builder";
 import ContactPage from "./pages/contact";
+import AdminPage from "./pages/admin";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -39,6 +40,7 @@ function Router() {
         <Route path="/order-confirmation" component={OrderConfirmation} />
         <Route path="/contact" component={ContactPage} />
         <Route path="/sensory-room-builder" component={SensoryRoomBuilder} />
+        <Route path="/admin" component={AdminPage} />
         <Route component={NotFound} />
       </Switch>
     </>

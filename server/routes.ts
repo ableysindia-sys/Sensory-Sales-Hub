@@ -1,9 +1,10 @@
-import type { Express, Request } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import crypto from "crypto";
 
 const SYSTEM_PROMPT = `You are a friendly, knowledgeable assistant for Abley's Rehab — a professional therapy equipment company based in India. You help occupational therapists, physiotherapists, special educators, parents, and clinic owners find the right rehabilitation and sensory integration equipment.
 
@@ -45,6 +46,22 @@ function isRateLimited(ip: string): boolean {
   }
   entry.count++;
   return entry.count > RATE_LIMIT_MAX_REQUESTS;
+}
+
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "ableys2024";
+
+const adminTokens = new Set<string>();
+
+function generateToken(): string {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+function requireAdmin(req: Request, res: Response, next: NextFunction) {
+  const token = req.headers.authorization?.replace("Bearer ", "");
+  if (!token || !adminTokens.has(token)) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  next();
 }
 
 export async function registerRoutes(
@@ -113,6 +130,78 @@ export async function registerRoutes(
         });
       }
       res.status(500).json({ message: "Failed to submit enquiry" });
+    }
+  });
+
+  app.post(api.admin.login.path, (req, res) => {
+    try {
+      const { password } = api.admin.login.input.parse(req.body);
+      if (password !== ADMIN_PASSWORD) {
+        return res.status(401).json({ message: "Invalid password" });
+      }
+      const token = generateToken();
+      adminTokens.add(token);
+      res.json({ token });
+    } catch (err) {
+      res.status(400).json({ message: "Invalid request" });
+    }
+  });
+
+  app.get(api.admin.stats.path, requireAdmin, async (_req, res) => {
+    try {
+      const stats = await storage.getLeadStats();
+      res.json(stats);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch stats" });
+    }
+  });
+
+  app.get(api.admin.leads.list.path, requireAdmin, async (_req, res) => {
+    try {
+      const allLeads = await storage.getLeads();
+      res.json(allLeads);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch leads" });
+    }
+  });
+
+  app.get("/api/admin/leads/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid ID" });
+      const lead = await storage.getLead(id);
+      if (!lead) return res.status(404).json({ message: "Lead not found" });
+      res.json(lead);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch lead" });
+    }
+  });
+
+  app.patch("/api/admin/leads/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid ID" });
+      const { status } = api.admin.leads.updateStatus.input.parse(req.body);
+      const lead = await storage.updateLeadStatus(id, status);
+      if (!lead) return res.status(404).json({ message: "Lead not found" });
+      res.json(lead);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message });
+      }
+      res.status(500).json({ message: "Failed to update lead" });
+    }
+  });
+
+  app.delete("/api/admin/leads/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid ID" });
+      const deleted = await storage.deleteLead(id);
+      if (!deleted) return res.status(404).json({ message: "Lead not found" });
+      res.json({ message: "Lead deleted" });
+    } catch (err) {
+      res.status(500).json({ message: "Failed to delete lead" });
     }
   });
 
