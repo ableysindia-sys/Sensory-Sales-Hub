@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Navbar } from "@/components/navbar";
 import { Hero } from "@/components/hero";
-import { TrustStrip } from "@/components/trust-strip";
+
 import { CategoryGrid } from "@/components/category-grid";
 import { ProductCarousel } from "@/components/product-carousel";
 import { ManufacturingSection } from "@/components/manufacturing-section";
@@ -164,7 +164,6 @@ export default function Home() {
       <Navbar />
       <main id="main-content">
         <Hero />
-        <TrustStrip />
         <CategoryGrid />
         <FeaturedSwings />
         <ProductShowcase />
