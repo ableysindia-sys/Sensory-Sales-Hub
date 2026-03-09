@@ -5,8 +5,9 @@ import type { CatalogueProduct } from "@/lib/catalogue-data";
 import { ProductCard } from "@/components/product-card";
 import { Navbar } from "@/components/navbar";
 import { SiteFooter } from "@/components/site-footer";
-import { ChevronRight, Grid3X3, LayoutGrid } from "lucide-react";
+import { ChevronRight, Grid3X3, LayoutGrid, SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 type SortOption = "best-selling" | "a-z" | "z-a" | "price-low" | "price-high";
 
@@ -31,6 +32,7 @@ export default function CategoryPage() {
   const category = getCategoryBySlug(params.slug);
   const [sort, setSort] = useState<SortOption>("best-selling");
   const [gridCols, setGridCols] = useState<3 | 4>(4);
+  const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
 
   const sorted = useMemo(
     () => (category ? sortProducts(category.products, sort) : []),
@@ -147,9 +149,21 @@ export default function CategoryPage() {
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-                  <p className="text-sm text-muted-foreground" data-testid="text-product-count">
-                    {category.products.length} product{category.products.length !== 1 ? "s" : ""}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="lg:hidden gap-2 rounded-lg cursor-pointer touch-manipulation"
+                      onClick={() => setMobileCategoriesOpen(true)}
+                      data-testid="button-open-mobile-categories"
+                    >
+                      <SlidersHorizontal className="w-4 h-4" />
+                      Categories
+                    </Button>
+                    <p className="text-sm text-muted-foreground" data-testid="text-product-count">
+                      {category.products.length} product{category.products.length !== 1 ? "s" : ""}
+                    </p>
+                  </div>
                   <div className="flex items-center gap-2">
                     <div className="hidden sm:flex items-center gap-1 mr-2">
                       <button
@@ -206,28 +220,73 @@ export default function CategoryPage() {
           </div>
         </section>
 
-        <section className="pb-16 lg:hidden">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h3 className="text-lg font-bold text-foreground mb-4">Browse Other Categories</h3>
-            <div className="flex flex-wrap gap-2">
-              {categories
-                .filter((c) => c.slug !== category.slug)
-                .map((c) => (
-                  <Link key={c.slug} href={`/category/${c.slug}`}>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="cursor-pointer touch-manipulation"
-                      data-testid={`button-other-category-${c.slug}`}
+      </main>
+
+      <AnimatePresence>
+        {mobileCategoriesOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/40 z-50 lg:hidden"
+              onClick={() => setMobileCategoriesOpen(false)}
+            />
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-label="Browse categories"
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 250 }}
+              className="fixed top-0 left-0 bottom-0 w-[300px] max-w-[85vw] bg-background z-50 lg:hidden shadow-2xl flex flex-col"
+              data-testid="category-sidebar-mobile"
+              onKeyDown={(e: React.KeyboardEvent) => { if (e.key === "Escape") setMobileCategoriesOpen(false); }}
+            >
+              <div className="flex items-center justify-between p-4 border-b border-border/50">
+                <h2 className="text-base font-semibold text-foreground">Categories</h2>
+                <button
+                  onClick={() => setMobileCategoriesOpen(false)}
+                  aria-label="Close categories"
+                  className="p-1.5 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer touch-manipulation"
+                  data-testid="button-close-mobile-categories"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
+                <Link href="/products" onClick={() => setMobileCategoriesOpen(false)}>
+                  <span
+                    className="block py-2.5 px-3 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors cursor-pointer"
+                    data-testid="mobile-sidebar-link-all"
+                  >
+                    All Products
+                  </span>
+                </Link>
+                {categories.map((c) => (
+                  <Link key={c.slug} href={`/category/${c.slug}`} onClick={() => setMobileCategoriesOpen(false)}>
+                    <span
+                      className={`block py-2.5 px-3 rounded-lg text-sm transition-colors cursor-pointer ${
+                        c.slug === category.slug
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                      }`}
+                      data-testid={`mobile-sidebar-category-${c.slug}`}
                     >
                       {c.title}
-                    </Button>
+                      <span className="text-xs text-muted-foreground/60 ml-1.5">
+                        ({c.products.length})
+                      </span>
+                    </span>
                   </Link>
                 ))}
-            </div>
-          </div>
-        </section>
-      </main>
+              </nav>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
       <SiteFooter />
     </div>
   );
