@@ -46,16 +46,15 @@ export function Hero() {
                 "When experts are equipped with professional tools, magic happens."
               </p>
               <div className="flex flex-col sm:flex-row items-start gap-3">
-                <Link href="/#categories">
-                  <Button
-                    size="lg"
-                    className="bg-white text-gray-900 hover:bg-gray-100 rounded-none text-sm sm:text-base px-8 h-12 gap-2 font-medium tracking-wide"
-                    data-testid="button-hero-cta"
-                  >
-                    Explore Categories
-                    <ArrowRight className="w-4 h-4" />
-                  </Button>
-                </Link>
+                <Button
+                  size="lg"
+                  className="bg-white text-gray-900 hover:bg-gray-100 rounded-none text-sm sm:text-base px-8 h-12 gap-2 font-medium tracking-wide"
+                  data-testid="button-hero-cta"
+                  onClick={() => document.getElementById("categories")?.scrollIntoView({ behavior: "smooth" })}
+                >
+                  Explore Categories
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
                 <Link href="/enquiry">
                   <Button
                     size="lg"
