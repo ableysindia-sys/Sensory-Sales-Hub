@@ -148,19 +148,19 @@ export default function ProductPage() {
     : (product.configOptions?.colors?.length || 3);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <Navbar />
       <main id="main-content">
         <section className="pt-36 pb-4">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <nav className="flex items-center gap-2 text-sm text-muted-foreground" data-testid="breadcrumb">
-              <Link href="/" className="transition-colors hover:text-foreground" data-testid="breadcrumb-home">Home</Link>
-              <ChevronRight className="w-3.5 h-3.5" />
-              <Link href={`/category/${category?.slug}`} className="transition-colors hover:text-foreground" data-testid="breadcrumb-category">
+            <nav className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap min-w-0" data-testid="breadcrumb">
+              <Link href="/" className="transition-colors hover:text-foreground flex-shrink-0" data-testid="breadcrumb-home">Home</Link>
+              <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
+              <Link href={`/category/${category?.slug}`} className="transition-colors hover:text-foreground truncate max-w-[120px] sm:max-w-none" data-testid="breadcrumb-category">
                 {category?.title}
               </Link>
-              <ChevronRight className="w-3.5 h-3.5" />
-              <span className="text-foreground font-medium">{product.name}</span>
+              <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
+              <span className="text-foreground font-medium truncate min-w-0">{product.name}</span>
             </nav>
           </div>
         </section>
@@ -174,7 +174,7 @@ export default function ProductPage() {
                     <img
                       src={productImages[activeImageIdx] || productImages[0]}
                       alt={`${product.name} - Image ${activeImageIdx + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover max-w-full"
                       data-testid="img-product-main"
                     />
                   ) : (
@@ -195,7 +195,7 @@ export default function ProductPage() {
                   )}
                 </div>
                 {productImages.length > 1 ? (
-                  <div className="flex items-center justify-center gap-2">
+                  <div className="flex items-center justify-center gap-2 overflow-x-auto pb-1">
                     {productImages.map((img, i) => (
                       <button
                         key={i}
@@ -266,7 +266,7 @@ export default function ProductPage() {
                             <button
                               key={color.name}
                               onClick={() => setSelectedColor(color.name)}
-                              className={`w-9 h-9 rounded-full border-2 transition-all ${
+                              className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 transition-all ${
                                 selectedColor === color.name
                                   ? "border-primary scale-110 ring-2 ring-primary/20"
                                   : "border-border/60 hover:border-muted-foreground/40"

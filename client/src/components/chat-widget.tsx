@@ -84,7 +84,7 @@ export function ChatWidget() {
       {isOpen && (
         <div
           data-testid="chat-panel"
-          className="fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)] h-[540px] max-h-[calc(100vh-6rem)] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300"
+          className="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 z-50 w-full sm:w-[380px] sm:max-w-[calc(100vw-2rem)] h-[100dvh] sm:h-[540px] sm:max-h-[calc(100vh-6rem)] bg-white dark:bg-gray-900 sm:rounded-2xl shadow-2xl border-0 sm:border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300"
         >
           <div className="flex items-center justify-between px-5 py-4 bg-primary text-white rounded-t-2xl">
             <div className="flex items-center gap-3">

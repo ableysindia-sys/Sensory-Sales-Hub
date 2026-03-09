@@ -36,7 +36,7 @@ export function ProductCarousel({ title, subtitle, products }: ProductCarouselPr
           <div className="flex gap-2">
             <button
               onClick={() => scroll("left")}
-              className="w-9 h-9 flex items-center justify-center rounded-full border border-border hover:bg-muted transition-colors"
+              className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-full border border-border hover:bg-muted active:bg-muted/80 transition-colors"
               data-testid={`button-scroll-left-${title.toLowerCase().replace(/\s+/g, "-")}`}
               aria-label="Scroll left"
             >
@@ -44,7 +44,7 @@ export function ProductCarousel({ title, subtitle, products }: ProductCarouselPr
             </button>
             <button
               onClick={() => scroll("right")}
-              className="w-9 h-9 flex items-center justify-center rounded-full border border-border hover:bg-muted transition-colors"
+              className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-full border border-border hover:bg-muted active:bg-muted/80 transition-colors"
               data-testid={`button-scroll-right-${title.toLowerCase().replace(/\s+/g, "-")}`}
               aria-label="Scroll right"
             >

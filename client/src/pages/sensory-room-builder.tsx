@@ -1107,7 +1107,7 @@ function WelcomeOverlay({ onDismiss, onTemplate }: { onDismiss: () => void; onTe
           Start from scratch or choose a pre-designed template:
         </p>
 
-        <div className="grid grid-cols-2 gap-2 mb-6" data-testid="template-grid">
+        <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 mb-6" data-testid="template-grid">
           {roomTemplates.map((t) => (
             <button
               key={t.id}
@@ -1152,7 +1152,7 @@ function WelcomeOverlay({ onDismiss, onTemplate }: { onDismiss: () => void; onTe
 function RoomCustomizePanel({ settings, onChange, isOpen, onClose }: { settings: RoomSettings; onChange: (s: RoomSettings) => void; isOpen: boolean; onClose: () => void }) {
   if (!isOpen) return null;
   return (
-    <div className="absolute top-3 left-3 z-10 bg-background/95 backdrop-blur-sm rounded-xl border border-border/50 p-4 shadow-lg w-64 max-h-[60vh] overflow-y-auto" data-testid="customize-panel">
+    <div className="absolute top-2 sm:top-3 left-2 sm:left-3 z-10 bg-background/95 backdrop-blur-sm rounded-xl border border-border/50 p-3 sm:p-4 shadow-lg w-[calc(100%-1rem)] sm:w-64 max-h-[60vh] overflow-y-auto" data-testid="customize-panel">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-bold text-foreground">Room Settings</h3>
         <button onClick={onClose} className="p-1 rounded-lg hover:bg-muted/50 transition-colors" data-testid="button-close-customize">
@@ -1408,18 +1408,18 @@ export default function SensoryRoomBuilder() {
       <Navbar />
       <div className="flex-1 flex flex-col lg:flex-row pt-[6.5rem] lg:pt-[6.5rem]">
         <aside className="w-full lg:w-80 xl:w-96 border-b lg:border-b-0 lg:border-r border-border/50 bg-card/50 flex flex-col" data-testid="sidebar-products">
-          <div className="p-4 lg:p-5 border-b border-border/30">
-            <h2 className="text-lg font-bold text-foreground mb-1" data-testid="heading-product-catalog">Product Catalog</h2>
+          <div className="p-3 sm:p-4 lg:p-5 border-b border-border/30">
+            <h2 className="text-base sm:text-lg font-bold text-foreground mb-0.5 sm:mb-1" data-testid="heading-product-catalog">Product Catalog</h2>
             <p className="text-xs text-muted-foreground">Tap a product to add it to your therapy room</p>
           </div>
 
-          <div className="px-4 lg:px-5 py-3 border-b border-border/30 overflow-x-auto">
+          <div className="px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 border-b border-border/30 overflow-x-auto">
             <div className="flex gap-1.5 min-w-max">
               {uniqueCategories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all whitespace-nowrap ${selectedCategory === cat ? "bg-primary text-primary-foreground" : "bg-muted/60 text-muted-foreground hover:bg-muted"}`}
+                  className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all whitespace-nowrap min-h-[32px] ${selectedCategory === cat ? "bg-primary text-primary-foreground" : "bg-muted/60 text-muted-foreground hover:bg-muted"}`}
                   data-testid={`filter-${cat.toLowerCase().replace(/[\s&]+/g, "-")}`}
                 >
                   {cat}
@@ -1428,7 +1428,7 @@ export default function SensoryRoomBuilder() {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto max-h-[280px] lg:max-h-none">
+          <div className="flex-1 overflow-y-auto max-h-[240px] sm:max-h-[280px] lg:max-h-none">
             {selectedCategory === "All" ? (
               Object.entries(groupedProducts).map(([category, products]) => (
                 <div key={category} className="border-b border-border/20 last:border-b-0">
@@ -1470,7 +1470,7 @@ export default function SensoryRoomBuilder() {
           <RoomCustomizePanel settings={roomSettings} onChange={setRoomSettings} isOpen={showCustomize} onClose={() => setShowCustomize(false)} />
 
           {!showCustomize && placedItems.length > 0 && (
-            <div className="absolute top-3 left-3 z-10 bg-background/90 backdrop-blur-sm rounded-xl border border-border/50 p-3 shadow-sm max-h-[240px] overflow-y-auto w-60" data-testid="placed-items-list">
+            <div className="absolute top-2 sm:top-3 left-2 sm:left-3 z-10 bg-background/90 backdrop-blur-sm rounded-xl border border-border/50 p-2.5 sm:p-3 shadow-sm max-h-[180px] sm:max-h-[240px] overflow-y-auto w-48 sm:w-60" data-testid="placed-items-list">
               <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
                 In Room ({placedItems.length})
               </p>
@@ -1497,46 +1497,46 @@ export default function SensoryRoomBuilder() {
             </div>
           )}
 
-          <div className="absolute top-3 right-3 z-10 flex gap-2">
+          <div className="absolute top-2 sm:top-3 right-2 sm:right-3 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[calc(100%-1rem)]">
             <Button
               variant="outline"
               size="sm"
-              className="rounded-full gap-1.5 bg-background/90 backdrop-blur-sm shadow-sm"
+              className="rounded-full gap-1 sm:gap-1.5 bg-background/90 backdrop-blur-sm shadow-sm text-xs sm:text-sm h-8 sm:h-9 px-2.5 sm:px-3"
               onClick={() => setRoomSettings(prev => ({ ...prev, roomMode: prev.roomMode === "light" ? "dark" : "light" }))}
               data-testid="button-toggle-room-mode"
             >
               {roomSettings.roomMode === "light" ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
-              {roomSettings.roomMode === "light" ? "Dark" : "Light"}
+              <span className="hidden xs:inline">{roomSettings.roomMode === "light" ? "Dark" : "Light"}</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
-              className="rounded-full gap-1.5 bg-background/90 backdrop-blur-sm shadow-sm"
+              className="rounded-full gap-1 sm:gap-1.5 bg-background/90 backdrop-blur-sm shadow-sm text-xs sm:text-sm h-8 sm:h-9 px-2.5 sm:px-3"
               onClick={() => setShowCustomize(!showCustomize)}
               data-testid="button-customize-room"
             >
               <Palette className="w-3.5 h-3.5" />
-              Customize
+              <span className="hidden sm:inline">Customize</span>
             </Button>
             {placedItems.length > 0 && (
               <Button
                 variant="outline"
                 size="sm"
-                className="rounded-full gap-1.5 bg-background/90 backdrop-blur-sm shadow-sm"
+                className="rounded-full gap-1 sm:gap-1.5 bg-background/90 backdrop-blur-sm shadow-sm text-xs sm:text-sm h-8 sm:h-9 px-2.5 sm:px-3"
                 onClick={clearRoom}
                 data-testid="button-clear-room"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                Reset
+                <span className="hidden sm:inline">Reset</span>
               </Button>
             )}
           </div>
 
-          <div className="absolute bottom-24 right-3 z-10 flex flex-col gap-1.5" data-testid="zoom-controls">
-            <button onClick={() => handleZoom(1)} className="w-10 h-10 rounded-xl bg-background/90 backdrop-blur-sm border border-border/50 shadow-sm flex items-center justify-center hover:bg-background transition-colors" data-testid="button-zoom-in">
+          <div className="absolute bottom-20 sm:bottom-24 right-2 sm:right-3 z-10 flex flex-col gap-1.5" data-testid="zoom-controls">
+            <button onClick={() => handleZoom(1)} className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-background/90 backdrop-blur-sm border border-border/50 shadow-sm flex items-center justify-center hover:bg-background transition-colors" data-testid="button-zoom-in">
               <ZoomIn className="w-4 h-4 text-foreground" />
             </button>
-            <button onClick={() => handleZoom(-1)} className="w-10 h-10 rounded-xl bg-background/90 backdrop-blur-sm border border-border/50 shadow-sm flex items-center justify-center hover:bg-background transition-colors" data-testid="button-zoom-out">
+            <button onClick={() => handleZoom(-1)} className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-background/90 backdrop-blur-sm border border-border/50 shadow-sm flex items-center justify-center hover:bg-background transition-colors" data-testid="button-zoom-out">
               <ZoomOut className="w-4 h-4 text-foreground" />
             </button>
           </div>
@@ -1551,7 +1551,7 @@ export default function SensoryRoomBuilder() {
             </div>
           )}
 
-          <div className="flex-1 min-h-[400px] lg:min-h-0">
+          <div className="flex-1 min-h-[300px] sm:min-h-[400px] lg:min-h-0">
             <Canvas shadows camera={{ position: [4.5, 3.5, 4.5], fov: 45 }} style={{ background: roomSettings.roomMode === "dark" ? "linear-gradient(180deg, #0A0A14 0%, #0E0E1C 40%, #121220 100%)" : "linear-gradient(180deg, #F0F4FA 0%, #E8EDF5 40%, #F5EDE3 100%)" }} data-testid="canvas-3d">
               <Suspense fallback={null}>
                 <Scene placedItems={placedItems} controlsRef={controlsRef} zoomRef={zoomRef} settings={roomSettings} />
@@ -1559,32 +1559,32 @@ export default function SensoryRoomBuilder() {
             </Canvas>
           </div>
 
-          <div className="border-t border-border/50 bg-background/95 backdrop-blur-xl px-4 lg:px-6 py-4" data-testid="room-summary-bar">
-            <div className="max-w-4xl mx-auto flex items-center justify-between gap-4 flex-wrap">
-              <div>
+          <div className="border-t border-border/50 bg-background/95 backdrop-blur-xl px-3 sm:px-4 lg:px-6 py-3 sm:py-4" data-testid="room-summary-bar">
+            <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
+              <div className="min-w-0">
                 {placedItems.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     Browse the catalog and tap products to build your therapy room
                   </p>
                 ) : (
                   <>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       {placedItems.length} item{placedItems.length > 1 ? "s" : ""} in your setup
                     </p>
-                    <p className="text-2xl font-bold text-foreground">{formatPrice(totalCost)}</p>
+                    <p className="text-xl sm:text-2xl font-bold text-foreground">{formatPrice(totalCost)}</p>
                   </>
                 )}
               </div>
               {placedItems.length > 0 && (
-                <div className="flex gap-3">
-                  <Link href="/#enquiry">
-                    <Button variant="outline" size="lg" className="rounded-full gap-2" data-testid="button-quote-setup">
-                      <Send className="w-4 h-4" />
+                <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
+                  <Link href="/#enquiry" className="flex-1 sm:flex-initial">
+                    <Button variant="outline" size="default" className="rounded-full gap-1.5 sm:gap-2 w-full sm:w-auto text-xs sm:text-sm h-9 sm:h-11" data-testid="button-quote-setup">
+                      <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       Get Quote
                     </Button>
                   </Link>
-                  <Button size="lg" className="rounded-full gap-2 shadow-lg shadow-primary/20" onClick={handleBuySetup} data-testid="button-buy-setup">
-                    <ShoppingCart className="w-4 h-4" />
+                  <Button size="default" className="rounded-full gap-1.5 sm:gap-2 shadow-lg shadow-primary/20 flex-1 sm:flex-initial text-xs sm:text-sm h-9 sm:h-11" onClick={handleBuySetup} data-testid="button-buy-setup">
+                    <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     Buy Setup
                   </Button>
                 </div>

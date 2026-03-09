@@ -59,14 +59,14 @@ export function CategoryGrid() {
                     {cat.products.slice(0, 6).map((product) => (
                       <span
                         key={product.id}
-                        className="text-[11px] px-2 py-0.5 bg-muted/60 text-muted-foreground rounded-full border border-border/30"
+                        className="text-xs px-2 py-0.5 bg-muted/60 text-muted-foreground rounded-full border border-border/30"
                         data-testid={`label-product-${product.id}`}
                       >
                         {product.name}
                       </span>
                     ))}
                     {cat.products.length > 6 && (
-                      <span className="text-[11px] px-2 py-0.5 text-primary font-medium">
+                      <span className="text-xs px-2 py-0.5 text-primary font-medium">
                         +{cat.products.length - 6} more
                       </span>
                     )}

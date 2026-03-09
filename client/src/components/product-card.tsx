@@ -120,7 +120,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 <span
                   key={color.name}
                   title={color.name}
-                  className="w-4 h-4 rounded-full border border-border"
+                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border border-border"
                   style={{ backgroundColor: color.hex }}
                   data-testid={`swatch-${product.id}-${color.name}`}
                 />

@@ -128,7 +128,7 @@ export function Hero() {
 
         <button
           onClick={prev}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 flex items-center justify-center bg-white/20 hover:bg-white/40 text-white rounded-full transition-colors"
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center bg-white/20 hover:bg-white/40 active:bg-white/50 text-white rounded-full transition-colors"
           data-testid="button-hero-prev"
           aria-label="Previous slide"
         >
@@ -136,19 +136,19 @@ export function Hero() {
         </button>
         <button
           onClick={next}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 flex items-center justify-center bg-white/20 hover:bg-white/40 text-white rounded-full transition-colors"
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center bg-white/20 hover:bg-white/40 active:bg-white/50 text-white rounded-full transition-colors"
           data-testid="button-hero-next"
           aria-label="Next slide"
         >
           <ChevronRight className="w-5 h-5" />
         </button>
 
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+        <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2">
           {slides.map((_, i) => (
             <button
               key={i}
               onClick={() => { setDirection(i > current ? 1 : -1); setCurrent(i); }}
-              className={`w-2.5 h-2.5 rounded-full transition-all ${i === current ? "bg-white w-8" : "bg-white/50 hover:bg-white/70"}`}
+              className={`h-3 rounded-full transition-all ${i === current ? "bg-white w-8" : "bg-white/50 hover:bg-white/70 w-3"}`}
               data-testid={`button-hero-dot-${i}`}
               aria-label={`Go to slide ${i + 1}`}
             />

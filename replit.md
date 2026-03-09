@@ -86,6 +86,14 @@ Swings (7), Ballpool (2), Mats (5), Movement & Balance (8), Climbing (3), ADL Ki
 - `POST /api/leads` - Submit B2B enquiry (with or without cart items)
 - `POST /api/chat` - Gemini AI chat assistant (rate-limited, 15 req/min per IP)
 
+## Mobile Responsiveness
+- Global `overflow-x: hidden` on body to prevent horizontal scrollbar on all pages
+- Product page: breadcrumb wraps/truncates on mobile, thumbnail strip scrolls horizontally
+- Sensory room builder: sidebar stacks above canvas on mobile with max-h-[240px], canvas min-h-[300px]
+- Hero arrows repositioned for mobile, category grid tags enlarged
+- Chat widget goes full-screen on mobile (100dvh)
+- All interactive elements have min 44px touch targets
+
 ## Deployment
 - Target domain: rehab.ableys.in (CNAME to Replit .replit.app URL)
 - Autoscale deployment configured
