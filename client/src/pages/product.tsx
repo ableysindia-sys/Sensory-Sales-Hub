@@ -96,7 +96,7 @@ export default function ProductPage() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="pt-40 pb-20 text-center max-w-7xl mx-auto px-4">
+        <div className="pt-40 pb-20 text-center max-w-page mx-auto px-4">
           <h1 className="text-3xl font-bold text-foreground mb-4">Product Not Found</h1>
           <p className="text-muted-foreground mb-8">The product you're looking for doesn't exist.</p>
           <Link href="/">
@@ -159,7 +159,7 @@ export default function ProductPage() {
       <Navbar />
       <main id="main-content">
         <section className="pt-36 pb-4">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <nav className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap min-w-0" data-testid="breadcrumb">
               <Link href="/" className="transition-colors hover:text-foreground flex-shrink-0" data-testid="breadcrumb-home">Home</Link>
               <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
@@ -173,7 +173,7 @@ export default function ProductPage() {
         </section>
 
         <section className="py-8 lg:py-12" data-testid="section-product-detail">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
               <div className="space-y-4">
                 <div className="aspect-square bg-card rounded-3xl border border-border/50 flex items-center justify-center relative overflow-hidden" data-testid="container-product-image">
@@ -481,7 +481,7 @@ export default function ProductPage() {
         </section>
 
         <section className="py-16" data-testid="section-storytelling">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid md:grid-cols-3 gap-6">
               {storyCards.map((card) => (
                 <div key={card.title} className="p-6 rounded-2xl bg-card border border-border/50" data-testid={`card-story-${card.title.toLowerCase().replace(/\s+/g, "-")}`}>
@@ -497,7 +497,7 @@ export default function ProductPage() {
         </section>
 
         <section className="py-12" data-testid="section-full-description">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl">
               <h2 className="text-2xl font-bold text-foreground mb-4">About This Product</h2>
               <div className="text-muted-foreground leading-relaxed space-y-2">
@@ -510,7 +510,7 @@ export default function ProductPage() {
         </section>
 
         <section className="py-12 bg-card/50" data-testid="section-product-specs">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               <div>
                 <h3 className="text-lg font-bold text-foreground mb-4">Specifications</h3>

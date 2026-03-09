@@ -138,7 +138,7 @@ export default function ContactPage() {
         </div>
 
         <section className="py-12 sm:py-16" data-testid="section-contact-info">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid lg:grid-cols-3 gap-6 mb-12">
               <motion.a
                 href={`tel:${CONTACT_INFO.phone.replace(/-/g, "")}`}
@@ -438,7 +438,7 @@ export default function ContactPage() {
         </section>
 
         <section className="pb-12 sm:pb-16" data-testid="section-map">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <div className="rounded-2xl overflow-hidden border border-border/50 shadow-sm">
               <div className="relative w-full h-64 sm:h-80 lg:h-96 bg-muted">
                 <iframe

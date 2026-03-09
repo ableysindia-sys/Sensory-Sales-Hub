@@ -23,7 +23,7 @@ export function ProductCarousel({ title, subtitle, products }: ProductCarouselPr
 
   return (
     <section className="py-12 sm:py-16" data-testid={`section-carousel-${title.toLowerCase().replace(/\s+/g, "-")}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between mb-8">
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground font-display" data-testid={`heading-${title.toLowerCase().replace(/\s+/g, "-")}`}>

@@ -234,7 +234,7 @@ export default function AllProducts() {
       <Navbar />
 
       <div id="main-content" className="pt-28 pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6 sm:py-8">
             <nav
               className="flex items-center gap-2 text-sm text-muted-foreground mb-6"

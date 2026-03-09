@@ -13,7 +13,7 @@ const trustItems = [
 export function TrustStrip() {
   return (
     <section className="py-8 sm:py-10 border-y border-border/30 bg-card/30" data-testid="section-trust">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 lg:gap-4">
           {trustItems.map((item, i) => (
             <motion.div

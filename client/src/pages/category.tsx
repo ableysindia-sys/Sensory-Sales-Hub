@@ -55,7 +55,7 @@ export default function CategoryPage() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="pt-40 pb-20 text-center max-w-7xl mx-auto px-4">
+        <div className="pt-40 pb-20 text-center max-w-page mx-auto px-4">
           <h1 className="text-3xl font-bold text-foreground mb-4">Category Not Found</h1>
           <p className="text-muted-foreground mb-8">The category you're looking for doesn't exist.</p>
           <Link href="/">
@@ -100,7 +100,7 @@ export default function CategoryPage() {
 
         {!category.image && (
           <section className="pt-36 pb-8" data-testid="section-category-header">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
               <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6" data-testid="breadcrumb">
                 <Link href="/" className="transition-colors" data-testid="breadcrumb-home">
                   Home
@@ -122,7 +122,7 @@ export default function CategoryPage() {
         )}
 
         <section className="py-8" data-testid="section-product-grid">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex lg:gap-8">
               <aside className="hidden lg:block w-56 xl:w-64 flex-shrink-0" data-testid="category-sidebar">
                 <div className="sticky top-28">

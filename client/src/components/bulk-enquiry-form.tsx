@@ -75,7 +75,7 @@ export function BulkEnquiryForm() {
 
   return (
     <section id="enquiry" className="py-24 sm:py-32" data-testid="section-enquiry">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
           <motion.div
             initial={{ opacity: 0, x: -20 }}

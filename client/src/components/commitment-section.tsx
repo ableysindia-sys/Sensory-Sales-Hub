@@ -4,7 +4,7 @@ import { SITE_IMAGES } from "@/lib/catalogue-data";
 export function CommitmentSection() {
   return (
     <section className="py-16 sm:py-20" data-testid="section-commitment">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div className="rounded-lg overflow-hidden">
             <img

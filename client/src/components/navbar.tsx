@@ -20,7 +20,7 @@ const navLinks = [
 export function AnnouncementBar() {
   return (
     <div className="bg-foreground text-background text-xs py-2 px-4" data-testid="announcement-bar">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <div className="max-w-page mx-auto flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <a href="https://www.facebook.com/ableysrehab" target="_blank" rel="noopener noreferrer" aria-label="Facebook" data-testid="link-social-facebook" className="opacity-70 hover:opacity-100 transition-opacity p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center">
             <SiFacebook className="w-3.5 h-3.5" />
@@ -81,7 +81,7 @@ export function Navbar() {
       </a>
       <AnnouncementBar />
       <nav className="bg-background/95 backdrop-blur-md border-b border-border supports-[backdrop-filter]:bg-background/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2 flex-shrink-0" data-testid="link-home">
               <img src={logoPath} alt="Abley's Rehab" className="h-8 lg:h-10 w-auto" data-testid="img-logo" />

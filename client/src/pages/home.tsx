@@ -22,7 +22,7 @@ import { useProducts } from "@/lib/product-provider";
 function SensoryRoomCTA() {
   return (
     <section className="py-16 lg:py-20" data-testid="section-room-builder-cta">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden bg-gradient-to-br from-primary/8 via-primary/4 to-background border border-border">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
           <div className="relative px-8 py-14 lg:px-16 lg:py-16 flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
@@ -71,7 +71,7 @@ function SensoryRoomCTA() {
 function GetStartedBanner() {
   return (
     <section className="py-4" data-testid="section-get-started">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
         <Link href="/products">
           <img
             src={SITE_IMAGES.getStarted}

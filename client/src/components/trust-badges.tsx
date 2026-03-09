@@ -21,7 +21,7 @@ const badges = [
 export function TrustBadges() {
   return (
     <section className="py-16 sm:py-20 border-y border-border" data-testid="section-trust-badges">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
           {badges.map((b, i) => (
             <div key={i} className="text-center" data-testid={`trust-badge-${i}`}>

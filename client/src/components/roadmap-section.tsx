@@ -11,7 +11,7 @@ const verticals = [
 export function RoadmapSection() {
   return (
     <section className="py-24 sm:py-32 bg-card/30" data-testid="section-roadmap">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <motion.p
             initial={{ opacity: 0, y: 10 }}

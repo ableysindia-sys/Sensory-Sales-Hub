@@ -26,7 +26,7 @@ export function SiteFooter() {
   const { categories } = useProducts();
   return (
     <footer className="bg-gray-950 text-white" data-testid="footer">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-16">
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
           <div>
             <img
@@ -153,7 +153,7 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-gray-800/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-gray-500" data-testid="text-footer-copy">
             &copy; {new Date().getFullYear()} Abley's Rehab. All rights
             reserved.

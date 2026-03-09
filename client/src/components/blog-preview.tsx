@@ -24,7 +24,7 @@ const blogPosts = [
 export function BlogPreview() {
   return (
     <section className="py-16 sm:py-20" data-testid="section-blog">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between mb-10">
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground font-display" data-testid="heading-blog">

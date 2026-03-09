@@ -6,7 +6,7 @@ export function CategoryGrid() {
   const { categories } = useProducts();
   return (
     <section id="categories" className="py-16 sm:py-20" data-testid="section-categories">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
           <h2
             className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2 font-display"

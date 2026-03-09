@@ -15,7 +15,7 @@ const callouts = [
 export function ManufacturingSection() {
   return (
     <section id="quality" className="py-24 sm:py-32 bg-card/30" data-testid="section-quality">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16 lg:mb-20">
           <motion.p
             initial={{ opacity: 0, y: 10 }}
