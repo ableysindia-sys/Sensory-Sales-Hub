@@ -47,3 +47,5 @@ waitForPort = 5000
 
 [userenv.shared]
 GEMINI_API_KEY = "AIzaSyCpBPn9BOPianjU83D5vzThNjQy-fVdumA"
+SHOPIFY_STORE_DOMAIN = "2feec0-4.myshopify.com"
+SHOPIFY_STOREFRONT_TOKEN = "2039d99455f140fcc2abf54c0feb873f"

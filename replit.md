@@ -62,6 +62,15 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 - `GET /api/pages/:slug` - Get published page by slug
 - `POST /api/leads` - Submit B2B enquiry
 - `POST /api/chat` - Gemini AI chat (rate-limited, 15 req/min per IP)
+- `POST /api/shopify/checkout` - Create Shopify checkout URL (handle, quantity) → redirects to Shopify checkout
+
+### Shopify Integration
+- Store domain: `2feec0-4.myshopify.com` (env: SHOPIFY_STORE_DOMAIN)
+- Storefront API token: env secret SHOPIFY_STOREFRONT_TOKEN
+- API version: 2024-10
+- Client-side product slug → Shopify handle mapping in `client/src/lib/shopify.ts`
+- "Buy on Shopify" button on product pages for products with Shopify listings; falls back to Razorpay for others
+- Checkout flow: server creates checkout via Storefront API GraphQL mutation → returns webUrl → frontend opens in new tab
 
 ### Admin (Bearer token auth)
 - `POST /api/admin/login` - Admin login (returns bearer token)

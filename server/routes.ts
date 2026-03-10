@@ -393,6 +393,91 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/shopify/checkout", async (req, res) => {
+    try {
+      const { handle, quantity = 1 } = req.body;
+      if (!handle) return res.status(400).json({ message: "Product handle required" });
+
+      const storeDomain = process.env.SHOPIFY_STORE_DOMAIN;
+      const storefrontToken = process.env.SHOPIFY_STOREFRONT_TOKEN;
+      if (!storeDomain || !storefrontToken) {
+        return res.status(500).json({ message: "Shopify not configured" });
+      }
+
+      const productQuery = await fetch(
+        `https://${storeDomain}/api/2024-10/graphql.json`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Shopify-Storefront-Access-Token": storefrontToken,
+          },
+          body: JSON.stringify({
+            query: `query getProduct($handle: String!) {
+              product(handle: $handle) {
+                id
+                title
+                variants(first: 1) {
+                  edges {
+                    node {
+                      id
+                    }
+                  }
+                }
+              }
+            }`,
+            variables: { handle },
+          }),
+        }
+      );
+
+      const productData = await productQuery.json() as any;
+      const variant = productData?.data?.product?.variants?.edges?.[0]?.node;
+      if (!variant) return res.status(404).json({ message: "Product not found on Shopify" });
+
+      const cartQuery = await fetch(
+        `https://${storeDomain}/api/2024-10/graphql.json`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Shopify-Storefront-Access-Token": storefrontToken,
+          },
+          body: JSON.stringify({
+            query: `mutation cartCreate($input: CartInput!) {
+              cartCreate(input: $input) {
+                cart {
+                  checkoutUrl
+                }
+                userErrors {
+                  field
+                  message
+                }
+              }
+            }`,
+            variables: {
+              input: {
+                lines: [{ merchandiseId: variant.id, quantity }],
+              },
+            },
+          }),
+        }
+      );
+
+      const cartData = await cartQuery.json() as any;
+      const checkoutUrl = cartData?.data?.cartCreate?.cart?.checkoutUrl;
+      if (!checkoutUrl) {
+        const errors = cartData?.data?.cartCreate?.userErrors;
+        console.error("Shopify cart error:", JSON.stringify(cartData, null, 2));
+        return res.status(400).json({ message: errors?.[0]?.message || "Failed to create cart" });
+      }
+
+      res.json({ checkoutUrl });
+    } catch {
+      res.status(500).json({ message: "Checkout failed" });
+    }
+  });
+
   app.delete("/api/admin/pages/:id", requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);

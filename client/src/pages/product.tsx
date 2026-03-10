@@ -5,6 +5,7 @@ import { useProducts, calculateProductPrice, formatPrice } from "@/lib/product-p
 import { generatedProductImages } from "@/lib/product-images";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { useShoppingCart } from "@/lib/shopping-cart";
+import { hasShopifyListing, getShopifyHandle, createShopifyCheckout, getShopifyProductUrl } from "@/lib/shopify";
 import { Navbar } from "@/components/navbar";
 import { SiteFooter } from "@/components/site-footer";
 import { RazorpayModal } from "@/components/razorpay-modal";
@@ -72,6 +73,7 @@ export default function ProductPage() {
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
   const [quantity, setQuantity] = useState(1);
   const [showRazorpay, setShowRazorpay] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
 
   const config = useMemo(
@@ -141,7 +143,22 @@ export default function ProductPage() {
     }, quantity);
   };
 
-  const handleBuyNow = () => {
+  const handleBuyNow = async () => {
+    const shopifyHandle = product ? getShopifyHandle(product.id) : null;
+    if (shopifyHandle) {
+      setCheckoutLoading(true);
+      const checkoutUrl = await createShopifyCheckout(shopifyHandle, quantity);
+      setCheckoutLoading(false);
+      if (checkoutUrl) {
+        window.open(checkoutUrl, "_blank");
+        return;
+      }
+      const productUrl = getShopifyProductUrl(product!.id);
+      if (productUrl) {
+        window.open(productUrl, "_blank");
+        return;
+      }
+    }
     handleAddToCart();
     setShowRazorpay(true);
   };
@@ -436,10 +453,15 @@ export default function ProductPage() {
                       variant="outline"
                       className="flex-1 rounded-full gap-2 border-primary/20 hover:bg-primary/5"
                       onClick={handleBuyNow}
+                      disabled={checkoutLoading}
                       data-testid="button-buy-now"
                     >
-                      <Zap className="w-4 h-4" />
-                      Buy Now
+                      {checkoutLoading ? (
+                        <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                      ) : (
+                        <Zap className="w-4 h-4" />
+                      )}
+                      {checkoutLoading ? "Redirecting..." : hasShopifyListing(product.id) ? "Buy on Shopify" : "Buy Now"}
                     </Button>
                   </div>
                   <div className="flex gap-3">
