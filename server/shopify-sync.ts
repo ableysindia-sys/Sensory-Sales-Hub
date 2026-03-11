@@ -309,10 +309,6 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
 let syncInterval: ReturnType<typeof setInterval> | null = null;
 
 export function startPeriodicSync(intervalMs: number = 30 * 60 * 1000) {
-  syncShopifyProducts().catch(err =>
-    console.error("[shopify-sync] Initial sync failed:", err)
-  );
-
   syncInterval = setInterval(() => {
     syncShopifyProducts().catch(err =>
       console.error("[shopify-sync] Periodic sync failed:", err)

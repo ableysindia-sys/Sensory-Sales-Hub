@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import { seedDatabase, seedPages } from "./seed";
+import { syncShopifyProducts } from "./shopify-sync";
 
 const app = express();
 const httpServer = createServer(app);
@@ -72,6 +73,12 @@ app.use((req, res, next) => {
     await seedPages();
   } catch (err) {
     console.error("Page seed error:", err);
+  }
+
+  try {
+    await syncShopifyProducts();
+  } catch (err) {
+    console.error("Initial Shopify sync error:", err);
   }
 
   await registerRoutes(httpServer, app);
