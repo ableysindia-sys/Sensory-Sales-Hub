@@ -78,6 +78,7 @@ interface ShopifyProduct {
   productType: string;
   descriptionHtml: string;
   tags: string[];
+  availableForSale: boolean;
   collections: { edges: Array<{ node: { handle: string; title: string } }> };
   images: { edges: Array<{ node: { url: string; altText: string | null } }> };
   variants: {
@@ -148,6 +149,11 @@ function shopifyToDbProduct(sp: ShopifyProduct) {
     shopifyVariants.length === 1 &&
     shopifyVariants[0].title === "Default Title";
 
+  // A product is available if Shopify says availableForSale AND at least one variant is available.
+  // This ensures OOS products (where Shopify hides them from its storefront) are also hidden here.
+  const anyVariantAvailable = shopifyVariants.some(v => v.availableForSale);
+  const isAvailable = sp.availableForSale && anyVariantAvailable;
+
   return {
     slug: sp.handle,
     name: sp.title,
@@ -156,7 +162,7 @@ function shopifyToDbProduct(sp: ShopifyProduct) {
     longDescription: sp.descriptionHtml,
     basePrice,
     comparePrice,
-    stock: null as number | null,
+    stock: isAvailable ? null : 0,
     images: JSON.stringify(images),
     specifications: null as string | null,
     features: JSON.stringify(sp.tags.filter(t => !t.startsWith("need:") && !t.startsWith("product:"))),
@@ -168,7 +174,7 @@ function shopifyToDbProduct(sp: ShopifyProduct) {
     productType: sp.productType || null,
     vendor: sp.vendor || null,
     sku: firstVariantNode?.sku || null,
-    isActive: true,
+    isActive: isAvailable,
   };
 }
 
@@ -199,6 +205,7 @@ async function fetchAllShopifyProducts(): Promise<ShopifyProduct[]> {
             productType
             descriptionHtml
             tags
+            availableForSale
             collections(first: 10) {
               edges { node { handle title } }
             }
@@ -285,6 +292,7 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
           longDescription: dbProduct.longDescription,
           basePrice: dbProduct.basePrice,
           comparePrice: dbProduct.comparePrice,
+          stock: dbProduct.stock,
           images: dbProduct.images,
           features: dbProduct.features,
           applications: dbProduct.applications,
@@ -294,9 +302,12 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
           productType: dbProduct.productType,
           vendor: dbProduct.vendor,
           sku: dbProduct.sku,
-          isActive: true,
+          isActive: dbProduct.isActive, // Respect Shopify availability — OOS products become inactive
         })
         .where(eq(productsTable.slug, dbProduct.slug));
+      if (!dbProduct.isActive) {
+        console.log(`[shopify-sync] Deactivated OOS product: ${dbProduct.slug} (availableForSale=false on Shopify)`);
+      }
       updated++;
     } else {
       await db.insert(productsTable).values(dbProduct);
@@ -315,10 +326,15 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
   }
 
   // Enforce Shopify as single source of truth:
-  // Only products that are currently published on Shopify should be active.
-  // This covers both Shopify-synced products (with shopifyHandle) and seeded
-  // catalogue products (no shopifyHandle) that have no Shopify counterpart.
-  const fetchedHandles = new Set(shopifyProducts.map(sp => sp.handle));
+  // Products not in Shopify (unpublished / seeded catalogue) → deactivated.
+  // Products in Shopify but OOS (availableForSale=false) → deactivated (already handled in update loop above).
+  // Products that were OOS and are now back in stock → reactivated only if Shopify says available.
+  const shopifyAvailability = new Map(
+    shopifyProducts.map(sp => {
+      const anyVariantAvailable = sp.variants.edges.some(e => e.node.availableForSale);
+      return [sp.handle, sp.availableForSale && anyVariantAvailable] as [string, boolean];
+    })
+  );
   const allDbProducts = await db
     .select({ slug: productsTable.slug, shopifyHandle: productsTable.shopifyHandle, isActive: productsTable.isActive })
     .from(productsTable);
@@ -326,25 +342,26 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
   let deactivated = 0;
   let reactivated = 0;
   for (const dbProd of allDbProducts) {
-    // A product is "in Shopify" if its shopifyHandle matches a fetched handle
-    const isInShopify = !!(dbProd.shopifyHandle && fetchedHandles.has(dbProd.shopifyHandle));
+    const shopifyIsAvailable = dbProd.shopifyHandle ? shopifyAvailability.get(dbProd.shopifyHandle) : undefined;
+    // undefined = not in Shopify at all (unpublished or seeded product with no Shopify handle)
+    const shouldBeActive = shopifyIsAvailable === true;
+    const shouldBeInactive = shopifyIsAvailable === false || shopifyIsAvailable === undefined;
 
-    if (!isInShopify) {
-      if (dbProd.isActive) {
-        await db
-          .update(productsTable)
-          .set({ isActive: false })
-          .where(eq(productsTable.slug, dbProd.slug));
-        deactivated++;
-        console.log(`[shopify-sync] Deactivated non-published product: ${dbProd.slug}`);
-      }
-    } else if (!dbProd.isActive) {
+    if (shouldBeInactive && dbProd.isActive) {
+      await db
+        .update(productsTable)
+        .set({ isActive: false })
+        .where(eq(productsTable.slug, dbProd.slug));
+      deactivated++;
+      const reason = shopifyIsAvailable === false ? "out of stock on Shopify" : "not published on Shopify";
+      console.log(`[shopify-sync] Deactivated ${dbProd.slug}: ${reason}`);
+    } else if (shouldBeActive && !dbProd.isActive) {
       await db
         .update(productsTable)
         .set({ isActive: true })
         .where(eq(productsTable.slug, dbProd.slug));
       reactivated++;
-      console.log(`[shopify-sync] Reactivated re-published product: ${dbProd.slug}`);
+      console.log(`[shopify-sync] Reactivated back-in-stock product: ${dbProd.slug}`);
     }
   }
 
