@@ -393,10 +393,49 @@ export async function registerRoutes(
     }
   });
 
+  const ALLOWED_SHOPIFY_HANDLES = new Set([
+    "bolster-swing-soft-comfortable-baby-swing-indoor-hammock-style-bolster-jhula-for-kids",
+    "t-swing-therapeutic-sensory-swing-for-kids-balance-coordination-calming-vestibular-play",
+    "disc-swing-outdoor-rope-swing-seat-for-kids-fun-balance-coordination-play-equipment-for-gardens-therapy",
+    "platform-swing-heavy-duty-sensory-swing-for-kids-outdoor-indoor-therapy-balance-swing",
+    "abley-s-crash-pad-soft-landing-sensory-cushion-4x4-6x4-ft-for-safe-jumping-deep-pressure-play",
+    "interlocking-mats-soft-eva-foam-floor-tiles-non-slip-shock-absorbing-play-exercise-mats",
+    "wooden-balance-board-curved-wobble-board-for-kids-balance-core-strength-sensory-development",
+    "sensory-stepping-stones-for-kids",
+    "abley-s-ball-pool-soft-play-pit-with-colorful-balls-4x4-6x4-ft-for-sensory-motor-skill-development",
+    "gym-ball-65cm-anti-burst-exercise-ball-for-yoga-fitness-core-strength-training",
+    "abley-s-hexagon-touch-lights-for-autism-sensory-room-usb-rechargeable-modular-led-panels-tap-sensitive-calming-wall-lights-for-kids-with-spd-adhd-easy-install-soothing-night-light",
+  ]);
+
+  const shopifyCheckoutSchema = z.object({
+    handle: z.string().min(1).max(300),
+    quantity: z.number().int().min(1).max(10).default(1),
+  });
+
+  const checkoutRateLimit = new Map<string, number[]>();
+
   app.post("/api/shopify/checkout", async (req, res) => {
     try {
-      const { handle, quantity = 1 } = req.body;
-      if (!handle) return res.status(400).json({ message: "Product handle required" });
+      const ip = req.ip || "unknown";
+      const now = Date.now();
+      const windowMs = 60_000;
+      const maxRequests = 10;
+      const timestamps = (checkoutRateLimit.get(ip) || []).filter(t => now - t < windowMs);
+      if (timestamps.length >= maxRequests) {
+        return res.status(429).json({ message: "Too many checkout requests, please try again later" });
+      }
+      timestamps.push(now);
+      checkoutRateLimit.set(ip, timestamps);
+
+      const parsed = shopifyCheckoutSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: "Invalid request: " + parsed.error.issues[0]?.message });
+      }
+      const { handle, quantity } = parsed.data;
+
+      if (!ALLOWED_SHOPIFY_HANDLES.has(handle)) {
+        return res.status(400).json({ message: "Product not available for checkout" });
+      }
 
       const storeDomain = process.env.SHOPIFY_STORE_DOMAIN;
       const storefrontToken = process.env.SHOPIFY_STOREFRONT_TOKEN;
@@ -431,7 +470,13 @@ export async function registerRoutes(
         }
       );
 
+      if (!productQuery.ok) {
+        return res.status(502).json({ message: "Failed to reach Shopify" });
+      }
       const productData = await productQuery.json() as any;
+      if (productData?.errors) {
+        return res.status(502).json({ message: "Shopify query failed" });
+      }
       const variant = productData?.data?.product?.variants?.edges?.[0]?.node;
       if (!variant) return res.status(404).json({ message: "Product not found on Shopify" });
 
@@ -464,16 +509,19 @@ export async function registerRoutes(
         }
       );
 
+      if (!cartQuery.ok) {
+        return res.status(502).json({ message: "Failed to create Shopify cart" });
+      }
       const cartData = await cartQuery.json() as any;
       const checkoutUrl = cartData?.data?.cartCreate?.cart?.checkoutUrl;
       if (!checkoutUrl) {
         const errors = cartData?.data?.cartCreate?.userErrors;
-        console.error("Shopify cart error:", JSON.stringify(cartData, null, 2));
         return res.status(400).json({ message: errors?.[0]?.message || "Failed to create cart" });
       }
 
       res.json({ checkoutUrl });
-    } catch {
+    } catch (err) {
+      console.error("Shopify checkout error:", err instanceof Error ? err.message : err);
       res.status(500).json({ message: "Checkout failed" });
     }
   });
