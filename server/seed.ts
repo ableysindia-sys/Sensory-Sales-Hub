@@ -327,7 +327,7 @@ const CMS_PAGES = [
   },
 ];
 
-async function seedPages() {
+export async function seedPages() {
   console.log("Upserting CMS pages...");
   for (const page of CMS_PAGES) {
     await db.insert(pagesTable).values({
