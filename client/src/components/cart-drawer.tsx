@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useShoppingCart, type CartItem } from "@/lib/shopping-cart";
+import { getShopifyItemsFromCart, createShopifyMultiCheckout } from "@/lib/shopify";
 import {
   Sheet,
   SheetContent,
@@ -11,7 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RazorpayModal } from "@/components/razorpay-modal";
-import { ShoppingCart, Minus, Plus, Trash2, ArrowRight, ShoppingBag, Package } from "lucide-react";
+import { ShoppingCart, Minus, Plus, Trash2, ArrowRight, ShoppingBag, Package, ExternalLink } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 function formatPrice(amount: number): string {
   return new Intl.NumberFormat("en-IN", {
@@ -121,6 +123,8 @@ function EmptyCartState({ onClose }: { onClose: () => void }) {
 
 export function CartDrawer() {
   const [showRazorpay, setShowRazorpay] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const { toast } = useToast();
   const {
     items,
     isDrawerOpen,
@@ -136,6 +140,47 @@ export function CartDrawer() {
   const tax = getTaxAmount();
   const total = getTotal();
   const itemCount = getItemCount();
+
+  const { shopifyItems, nonShopifyIds } = getShopifyItemsFromCart(
+    items.map(i => ({ productId: i.productId, quantity: i.quantity }))
+  );
+  const allShopify = nonShopifyIds.length === 0 && shopifyItems.length > 0;
+  const someShopify = shopifyItems.length > 0;
+
+  const handleCheckout = async () => {
+    if (allShopify) {
+      setCheckoutLoading(true);
+      const checkoutUrl = await createShopifyMultiCheckout(shopifyItems);
+      setCheckoutLoading(false);
+      if (checkoutUrl) {
+        closeDrawer();
+        window.open(checkoutUrl, "_blank");
+        return;
+      }
+      toast({
+        title: "Checkout unavailable",
+        description: "Could not connect to Shopify. Please try again.",
+        variant: "destructive",
+      });
+    } else if (someShopify) {
+      setCheckoutLoading(true);
+      const checkoutUrl = await createShopifyMultiCheckout(shopifyItems);
+      setCheckoutLoading(false);
+      if (checkoutUrl) {
+        closeDrawer();
+        window.open(checkoutUrl, "_blank");
+        return;
+      }
+      toast({
+        title: "Checkout unavailable",
+        description: "Could not connect to Shopify. Please try again.",
+        variant: "destructive",
+      });
+    } else {
+      closeDrawer();
+      setShowRazorpay(true);
+    }
+  };
 
   return (
     <>
@@ -183,9 +228,24 @@ export function CartDrawer() {
                   </div>
                 </div>
 
-                <Button className="w-full gap-2" onClick={() => { closeDrawer(); setShowRazorpay(true); }} data-testid="button-proceed-checkout">
-                  Proceed to Checkout
-                  <ArrowRight className="w-4 h-4" />
+                <Button
+                  className="w-full gap-2"
+                  onClick={handleCheckout}
+                  disabled={checkoutLoading}
+                  data-testid="button-proceed-checkout"
+                >
+                  {checkoutLoading ? (
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : someShopify ? (
+                    <ExternalLink className="w-4 h-4" />
+                  ) : (
+                    <ArrowRight className="w-4 h-4" />
+                  )}
+                  {checkoutLoading
+                    ? "Redirecting to Shopify..."
+                    : someShopify
+                      ? "Checkout on Shopify"
+                      : "Proceed to Checkout"}
                 </Button>
 
                 <div className="flex items-center justify-between gap-2 flex-wrap">

@@ -405,45 +405,41 @@ export async function registerRoutes(
     "abley-s-ball-pool-soft-play-pit-with-colorful-balls-4x4-6x4-ft-for-sensory-motor-skill-development",
     "gym-ball-65cm-anti-burst-exercise-ball-for-yoga-fitness-core-strength-training",
     "abley-s-hexagon-touch-lights-for-autism-sensory-room-usb-rechargeable-modular-led-panels-tap-sensitive-calming-wall-lights-for-kids-with-spd-adhd-easy-install-soothing-night-light",
+    "weighted-vest-for-kids-2lbs-3lbs-blue",
+    "weighted-blanket-for-kids-5lb",
+    "compression-vest-for-sensory-needs",
+    "sensory-body-sock-for-kids",
+    "weighted-lap-pad-for-focus-minky-3lb",
   ]);
 
   const shopifyCheckoutSchema = z.object({
-    handle: z.string().min(1).max(300),
-    quantity: z.number().int().min(1).max(10).default(1),
+    items: z.array(z.object({
+      handle: z.string().min(1).max(300),
+      quantity: z.number().int().min(1).max(10).default(1),
+    })).min(1).max(20),
   });
 
   const checkoutRateLimit = new Map<string, number[]>();
 
-  app.post("/api/shopify/checkout", async (req, res) => {
-    try {
-      const ip = req.ip || "unknown";
-      const now = Date.now();
-      const windowMs = 60_000;
-      const maxRequests = 10;
-      const timestamps = (checkoutRateLimit.get(ip) || []).filter(t => now - t < windowMs);
-      if (timestamps.length >= maxRequests) {
-        return res.status(429).json({ message: "Too many checkout requests, please try again later" });
-      }
-      timestamps.push(now);
-      checkoutRateLimit.set(ip, timestamps);
+  function applyCheckoutRateLimit(ip: string): boolean {
+    const now = Date.now();
+    const windowMs = 60_000;
+    const maxRequests = 10;
+    const timestamps = (checkoutRateLimit.get(ip) || []).filter(t => now - t < windowMs);
+    if (timestamps.length >= maxRequests) return false;
+    timestamps.push(now);
+    checkoutRateLimit.set(ip, timestamps);
+    return true;
+  }
 
-      const parsed = shopifyCheckoutSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return res.status(400).json({ message: "Invalid request: " + parsed.error.issues[0]?.message });
-      }
-      const { handle, quantity } = parsed.data;
-
-      if (!ALLOWED_SHOPIFY_HANDLES.has(handle)) {
-        return res.status(400).json({ message: "Product not available for checkout" });
-      }
-
-      const storeDomain = process.env.SHOPIFY_STORE_DOMAIN;
-      const storefrontToken = process.env.SHOPIFY_STOREFRONT_TOKEN;
-      if (!storeDomain || !storefrontToken) {
-        return res.status(500).json({ message: "Shopify not configured" });
-      }
-
-      const productQuery = await fetch(
+  async function resolveVariantIds(
+    storeDomain: string,
+    storefrontToken: string,
+    handles: string[]
+  ): Promise<Map<string, string>> {
+    const results = new Map<string, string>();
+    for (const handle of handles) {
+      const resp = await fetch(
         `https://${storeDomain}/api/2024-10/graphql.json`,
         {
           method: "POST",
@@ -454,14 +450,8 @@ export async function registerRoutes(
           body: JSON.stringify({
             query: `query getProduct($handle: String!) {
               product(handle: $handle) {
-                id
-                title
                 variants(first: 1) {
-                  edges {
-                    node {
-                      id
-                    }
-                  }
+                  edges { node { id } }
                 }
               }
             }`,
@@ -469,18 +459,53 @@ export async function registerRoutes(
           }),
         }
       );
+      if (!resp.ok) continue;
+      const data = await resp.json() as any;
+      const variantId = data?.data?.product?.variants?.edges?.[0]?.node?.id;
+      if (variantId) results.set(handle, variantId);
+    }
+    return results;
+  }
 
-      if (!productQuery.ok) {
-        return res.status(502).json({ message: "Failed to reach Shopify" });
+  app.post("/api/shopify/checkout", async (req, res) => {
+    try {
+      const ip = req.ip || "unknown";
+      if (!applyCheckoutRateLimit(ip)) {
+        return res.status(429).json({ message: "Too many checkout requests, please try again later" });
       }
-      const productData = await productQuery.json() as any;
-      if (productData?.errors) {
-        return res.status(502).json({ message: "Shopify query failed" });
-      }
-      const variant = productData?.data?.product?.variants?.edges?.[0]?.node;
-      if (!variant) return res.status(404).json({ message: "Product not found on Shopify" });
 
-      const cartQuery = await fetch(
+      const parsed = shopifyCheckoutSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: "Invalid request: " + parsed.error.issues[0]?.message });
+      }
+      const { items } = parsed.data;
+
+      for (const item of items) {
+        if (!ALLOWED_SHOPIFY_HANDLES.has(item.handle)) {
+          return res.status(400).json({ message: `Product not available for checkout: ${item.handle}` });
+        }
+      }
+
+      const storeDomain = process.env.SHOPIFY_STORE_DOMAIN;
+      const storefrontToken = process.env.SHOPIFY_STOREFRONT_TOKEN;
+      if (!storeDomain || !storefrontToken) {
+        return res.status(500).json({ message: "Shopify not configured" });
+      }
+
+      const uniqueHandles = [...new Set(items.map(i => i.handle))];
+      const variantMap = await resolveVariantIds(storeDomain, storefrontToken, uniqueHandles);
+
+      const missingHandles = uniqueHandles.filter(h => !variantMap.has(h));
+      if (missingHandles.length > 0) {
+        return res.status(404).json({ message: "Products not found on Shopify", missing: missingHandles });
+      }
+
+      const lines = items.map(item => ({
+        merchandiseId: variantMap.get(item.handle)!,
+        quantity: item.quantity,
+      }));
+
+      const cartResp = await fetch(
         `https://${storeDomain}/api/2024-10/graphql.json`,
         {
           method: "POST",
@@ -500,19 +525,15 @@ export async function registerRoutes(
                 }
               }
             }`,
-            variables: {
-              input: {
-                lines: [{ merchandiseId: variant.id, quantity }],
-              },
-            },
+            variables: { input: { lines } },
           }),
         }
       );
 
-      if (!cartQuery.ok) {
+      if (!cartResp.ok) {
         return res.status(502).json({ message: "Failed to create Shopify cart" });
       }
-      const cartData = await cartQuery.json() as any;
+      const cartData = await cartResp.json() as any;
       const checkoutUrl = cartData?.data?.cartCreate?.cart?.checkoutUrl;
       if (!checkoutUrl) {
         const errors = cartData?.data?.cartCreate?.userErrors;
