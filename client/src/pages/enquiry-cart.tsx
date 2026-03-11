@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
@@ -64,6 +64,48 @@ const ORDER_TYPES = [
   { id: "customization", label: "Custom Equipment", icon: Wrench, desc: "Modified or custom-built therapy tools" },
   { id: "replenish", label: "Replenish / Reorder", icon: ShoppingBag, desc: "Restocking existing equipment" },
 ];
+
+const SETUP_CATEGORY_MAP: Record<string, string[]> = {
+  "therapy-centre":   ["swings", "therapy-balls", "deep-pressure", "movement-balance", "mats"],
+  "school":           ["deep-pressure", "visual", "movement-balance", "therapy-balls", "adl-kit"],
+  "sensory-room":     ["swings", "ballpool", "visual", "deep-pressure", "mats", "climbing"],
+  "home-setup":       ["swings", "deep-pressure", "therapy-balls", "visual"],
+  "gym-fitness":      ["climbing", "movement-balance", "therapy-balls", "mats"],
+  "other":            [],
+};
+
+const SETUP_KIT_INFO: Record<string, { title: string; description: string; highlight: string }> = {
+  "therapy-centre": {
+    title: "Therapy Centre Essentials",
+    description: "Vestibular swings, therapy balls, deep-pressure tools, balance boards and safety mats — the core equipment for an OT or physiotherapy clinic.",
+    highlight: "Recommended for OT, PT & Rehab clinics",
+  },
+  "school": {
+    title: "School Sensory Kit",
+    description: "Sensory tools for inclusive classrooms — weighted items, visual aids, movement equipment and ADL kits to support children with special needs.",
+    highlight: "Recommended for SPED, inclusive & mainstream schools",
+  },
+  "sensory-room": {
+    title: "Full Sensory Room Setup",
+    description: "Everything for a complete sensory integration room: platform swings, ball pools, visual panels, deep-pressure items, soft mats and climbing structures.",
+    highlight: "Recommended for sensory integration rooms",
+  },
+  "home-setup": {
+    title: "Home Therapy Corner",
+    description: "Compact, safe equipment for home-based sensory therapy — a therapy swing, calming weighted tools, therapy balls and visual stimulation items.",
+    highlight: "Recommended for home-based therapy",
+  },
+  "gym-fitness": {
+    title: "Rehab Gym Setup",
+    description: "Climbing structures, balance boards, therapy balls and safety mats — equipment for rehabilitation gyms and fitness centres with therapy needs.",
+    highlight: "Recommended for rehab gyms & fitness centres",
+  },
+  "other": {
+    title: "Custom Selection",
+    description: "Not sure where to start? Browse all our product categories below and pick what you need. Our team will help you finalise the right combination.",
+    highlight: "All categories available",
+  },
+};
 
 const BUDGET_RANGES = [
   "Under ₹50,000",
@@ -246,6 +288,15 @@ export default function EnquiryCartPage() {
       cartItems: "",
     },
   });
+
+  useEffect(() => {
+    if (!setupType || categories.length === 0) return;
+    const recommendedSlugs = SETUP_CATEGORY_MAP[setupType] || [];
+    const recommended = categories
+      .filter((c) => recommendedSlugs.includes(c.slug))
+      .map((c) => c.title);
+    setSelectedCategories(recommended);
+  }, [setupType, categories]);
 
   const toggleCategory = (cat: string) => {
     setSelectedCategories((prev) =>
@@ -456,22 +507,107 @@ export default function EnquiryCartPage() {
                   className="p-6 sm:p-8"
                 >
                   <h2 className="text-lg font-bold text-foreground mb-1" data-testid="heading-step-2">
-                    Which product categories are you interested in?
+                    Products for your {SETUP_TYPES.find((s) => s.id === setupType)?.label || "setup"}
                   </h2>
-                  <p className="text-sm text-muted-foreground mb-6">
-                    Select all that apply. You can pick multiple categories.
+                  <p className="text-sm text-muted-foreground mb-5">
+                    We've pre-selected the categories best suited to your needs. Adjust as required.
                   </p>
-                  <div className="grid sm:grid-cols-2 gap-2.5">
-                    {categories.map((cat) => (
-                      <CategoryCheckbox
-                        key={cat.slug}
-                        label={cat.title}
-                        checked={selectedCategories.includes(cat.title)}
-                        onChange={() => toggleCategory(cat.title)}
-                        testId={`check-category-${cat.slug}`}
-                      />
-                    ))}
-                  </div>
+
+                  {setupType && SETUP_KIT_INFO[setupType] && (
+                    <div className="mb-6 p-4 rounded-xl bg-primary/5 border border-primary/20" data-testid="recommended-kit-banner">
+                      <div className="flex items-start gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          {(() => {
+                            const S = SETUP_TYPES.find((s) => s.id === setupType);
+                            return S ? <S.icon className="w-4.5 h-4.5 text-primary" /> : null;
+                          })()}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-primary mb-0.5">{SETUP_KIT_INFO[setupType].title}</p>
+                          <p className="text-xs text-muted-foreground leading-relaxed">{SETUP_KIT_INFO[setupType].description}</p>
+                          <p className="text-xs font-medium text-primary/70 mt-1.5">✓ {SETUP_KIT_INFO[setupType].highlight}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {(() => {
+                    const recommendedSlugs = SETUP_CATEGORY_MAP[setupType] || [];
+                    const recommended = categories.filter((c) => recommendedSlugs.includes(c.slug));
+                    const additional = categories.filter((c) => !recommendedSlugs.includes(c.slug));
+                    return (
+                      <>
+                        {recommended.length > 0 && (
+                          <div className="mb-5">
+                            <div className="flex items-center justify-between mb-2.5">
+                              <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Recommended for you</p>
+                              <button
+                                type="button"
+                                className="text-xs text-primary hover:underline cursor-pointer touch-manipulation"
+                                onClick={() => {
+                                  const allRec = recommended.map((c) => c.title);
+                                  const allSelected = allRec.every((t) => selectedCategories.includes(t));
+                                  if (allSelected) {
+                                    setSelectedCategories((prev) => prev.filter((t) => !allRec.includes(t)));
+                                  } else {
+                                    setSelectedCategories((prev) => [...new Set([...prev, ...allRec])]);
+                                  }
+                                }}
+                                data-testid="button-toggle-recommended"
+                              >
+                                {recommended.map((c) => c.title).every((t) => selectedCategories.includes(t)) ? "Deselect all" : "Select all"}
+                              </button>
+                            </div>
+                            <div className="grid sm:grid-cols-2 gap-2">
+                              {recommended.map((cat) => (
+                                <label
+                                  key={cat.slug}
+                                  className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all touch-manipulation group ${
+                                    selectedCategories.includes(cat.title)
+                                      ? "border-primary/40 bg-primary/5"
+                                      : "border-border/50 hover:bg-muted/30"
+                                  }`}
+                                  data-testid={`check-category-${cat.slug}`}
+                                >
+                                  <span
+                                    className={`w-5 h-5 rounded border-[1.5px] flex items-center justify-center flex-shrink-0 transition-all ${
+                                      selectedCategories.includes(cat.title)
+                                        ? "bg-primary border-primary"
+                                        : "border-muted-foreground/40 group-hover:border-primary/50"
+                                    }`}
+                                  >
+                                    {selectedCategories.includes(cat.title) && <Check className="w-3 h-3 text-primary-foreground" />}
+                                  </span>
+                                  <input type="checkbox" checked={selectedCategories.includes(cat.title)} onChange={() => toggleCategory(cat.title)} className="sr-only" />
+                                  <span className="text-sm font-medium text-foreground flex-1">{cat.title}</span>
+                                  <span className="text-[10px] font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded-full whitespace-nowrap">Recommended</span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {additional.length > 0 && (
+                          <div>
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5">
+                              {recommended.length > 0 ? "Additional options" : "All categories"}
+                            </p>
+                            <div className="grid sm:grid-cols-2 gap-2">
+                              {additional.map((cat) => (
+                                <CategoryCheckbox
+                                  key={cat.slug}
+                                  label={cat.title}
+                                  checked={selectedCategories.includes(cat.title)}
+                                  onChange={() => toggleCategory(cat.title)}
+                                  testId={`check-category-${cat.slug}`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
 
                   {items.length > 0 && (
                     <div className="mt-6 pt-6 border-t border-border/40">
