@@ -3,25 +3,62 @@ import { products as productsTable, categories as categoriesTable } from "@share
 import { eq, isNotNull } from "drizzle-orm";
 
 const SHOPIFY_COLLECTION_TO_CATEGORY: Record<string, string> = {
+  // Swings (most specific — must win over generic deep-pressure)
+  "swings-movement": "swings",
+  "movement-swings": "swings",
+
+  // Visual / sensory room
+  "sensory-room-equipment": "visual",
+  "visual-calming": "visual",
+
+  // Mats / flooring
+  "sensory-mats-for-kids": "mats",
+  "sensory-mats-flooring": "mats",
+
+  // Movement & balance
+  "sensory-active-motor-skill-toys": "movement-balance",
+  "balance-coordination": "movement-balance",
+  "movement-balance": "movement-balance",
+  "the-active-seeker": "movement-balance",
+  "constant-movement-seeking": "movement-balance",
+  "for-movement-energy": "movement-balance",
+  "overactive-restless": "movement-balance",
+
+  // Deep pressure / weighted
   "weighted-sensory-products-for-kids": "deep-pressure",
   "weighted-vests-for-sensory-processing": "deep-pressure",
   "weighted-compression": "deep-pressure",
   "calming-comfort-v2": "deep-pressure",
-  "sensory-room-equipment": "visual",
+  "the-focused-calmer": "deep-pressure",
+  "the-sleep-transition-support-seeker": "deep-pressure",
+  "bedtime-struggles": "deep-pressure",
+
+  // ADL kit / OT tools
   "fidgets-for-sensory-needs": "adl-kit",
   "fidget-boxes-for-sensory-needs": "adl-kit",
-  "sensory-active-motor-skill-toys": "movement-balance",
-  "balance-coordination": "movement-balance",
+  "fidgets-focus-tools": "adl-kit",
   "chew-necklaces": "adl-kit",
   "chewing-oral-needs": "adl-kit",
+  "chewing-mouthing": "adl-kit",
   "therapy-putty-for-hand-exercises": "adl-kit",
-  "sensory-mats-for-kids": "mats",
-  "the-active-seeker": "movement-balance",
-  "the-focused-calmer": "deep-pressure",
+  "ot-equipments": "adl-kit",
+  "ot-equipment": "adl-kit",
   "the-oral-explorer": "adl-kit",
-  "the-sleep-transition-support-seeker": "deep-pressure",
   "the-general-foundational-explorer": "adl-kit",
+  "fine-motor-learning": "adl-kit",
+  "for-chewing-oral-needs": "adl-kit",
+  "for-independence-life-skills": "adl-kit",
+  "for-communication-learning": "adl-kit",
+  "needs-help-daily-tasks": "adl-kit",
+  "clinical-assessment-tools": "adl-kit",
+  "classroom-bulk-packs": "adl-kit",
 };
+
+// Priority order: most specific physical categories first so they beat generic fallbacks
+const CATEGORY_PRIORITY = [
+  "swings", "ballpool", "climbing", "mats", "therapy-balls",
+  "visual", "deep-pressure", "movement-balance", "adl-kit",
+];
 
 export interface ShopifyVariant {
   id: string;
@@ -60,9 +97,16 @@ interface ShopifyProduct {
 }
 
 function resolveCategory(product: ShopifyProduct): string {
+  // Collect all category matches from the product's collections
+  const matched = new Set<string>();
   for (const edge of product.collections.edges) {
-    const mapped = SHOPIFY_COLLECTION_TO_CATEGORY[edge.node.handle];
-    if (mapped) return mapped;
+    const cat = SHOPIFY_COLLECTION_TO_CATEGORY[edge.node.handle];
+    if (cat) matched.add(cat);
+  }
+  // Return the highest-priority category, so specific physical categories
+  // (swings, mats, visual…) win over generic fallbacks (deep-pressure, adl-kit)
+  for (const cat of CATEGORY_PRIORITY) {
+    if (matched.has(cat)) return cat;
   }
   return "adl-kit";
 }
@@ -270,34 +314,37 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
     }
   }
 
-  // Deactivate any Shopify-sourced products that were NOT returned in this sync
-  // (they've been unpublished or deleted in Shopify)
+  // Enforce Shopify as single source of truth:
+  // Only products that are currently published on Shopify should be active.
+  // This covers both Shopify-synced products (with shopifyHandle) and seeded
+  // catalogue products (no shopifyHandle) that have no Shopify counterpart.
   const fetchedHandles = new Set(shopifyProducts.map(sp => sp.handle));
-  const shopifyDbProducts = await db
-    .select({ shopifyHandle: productsTable.shopifyHandle, isActive: productsTable.isActive })
-    .from(productsTable)
-    .where(isNotNull(productsTable.shopifyHandle));
+  const allDbProducts = await db
+    .select({ slug: productsTable.slug, shopifyHandle: productsTable.shopifyHandle, isActive: productsTable.isActive })
+    .from(productsTable);
 
   let deactivated = 0;
   let reactivated = 0;
-  for (const dbProd of shopifyDbProducts) {
-    if (!dbProd.shopifyHandle) continue;
-    if (!fetchedHandles.has(dbProd.shopifyHandle)) {
+  for (const dbProd of allDbProducts) {
+    // A product is "in Shopify" if its shopifyHandle matches a fetched handle
+    const isInShopify = !!(dbProd.shopifyHandle && fetchedHandles.has(dbProd.shopifyHandle));
+
+    if (!isInShopify) {
       if (dbProd.isActive) {
         await db
           .update(productsTable)
           .set({ isActive: false })
-          .where(eq(productsTable.shopifyHandle, dbProd.shopifyHandle));
+          .where(eq(productsTable.slug, dbProd.slug));
         deactivated++;
-        console.log(`[shopify-sync] Deactivated unpublished product: ${dbProd.shopifyHandle}`);
+        console.log(`[shopify-sync] Deactivated non-published product: ${dbProd.slug}`);
       }
     } else if (!dbProd.isActive) {
       await db
         .update(productsTable)
         .set({ isActive: true })
-        .where(eq(productsTable.shopifyHandle, dbProd.shopifyHandle));
+        .where(eq(productsTable.slug, dbProd.slug));
       reactivated++;
-      console.log(`[shopify-sync] Reactivated re-published product: ${dbProd.shopifyHandle}`);
+      console.log(`[shopify-sync] Reactivated re-published product: ${dbProd.slug}`);
     }
   }
 
