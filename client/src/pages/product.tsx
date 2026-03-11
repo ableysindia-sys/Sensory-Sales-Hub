@@ -373,6 +373,33 @@ export default function ProductPage() {
       .slice(0, 6);
   }, [product, getProductsByCategory]);
 
+  // Compute displayImages before any early returns — hooks must never be
+  // called conditionally or after early returns (React rules of hooks).
+  const displayImages = useMemo(() => {
+    if (!product) return [];
+    const imgs =
+      product.images && product.images.length > 0
+        ? product.images
+        : generatedProductImages[product.id]
+        ? [generatedProductImages[product.id]]
+        : [];
+    const variantImg = selectedVariant?.image;
+    if (variantImg && !imgs.includes(variantImg)) {
+      return [variantImg, ...imgs];
+    }
+    return imgs;
+  }, [product, selectedVariant?.id]);
+
+  // When the selected variant changes, jump the gallery to that variant's image.
+  useEffect(() => {
+    const variantImg = selectedVariant?.image;
+    if (variantImg) {
+      const idx = displayImages.findIndex((img) => img === variantImg);
+      setActiveImageIdx(idx >= 0 ? idx : 0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedVariant?.id]);
+
   const categorySlug = product?.categorySlug || "adl-kit";
   const reviews = REVIEWS_BY_CATEGORY[categorySlug] || BASE_REVIEWS;
   const faqs = FAQS_BY_CATEGORY[categorySlug] || SHARED_FAQS;
@@ -437,26 +464,6 @@ export default function ProductPage() {
       ? [fallbackImg]
       : [];
 
-  // Merge variant-specific image into the gallery (deduplicated).
-  // This ensures thumbnails always work — clicking any thumbnail updates
-  // activeImageIdx and the main image responds, regardless of variant selection.
-  const displayImages = useMemo(() => {
-    const variantImg = selectedVariant?.image;
-    if (variantImg && !productImages.includes(variantImg)) {
-      return [variantImg, ...productImages];
-    }
-    return productImages;
-  }, [productImages, selectedVariant?.id]);
-
-  // When the selected variant changes, jump the gallery to that variant's image.
-  useEffect(() => {
-    const variantImg = selectedVariant?.image;
-    if (variantImg) {
-      const idx = displayImages.findIndex((img) => img === variantImg);
-      setActiveImageIdx(idx >= 0 ? idx : 0);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedVariant?.id]);
 
   const activeImage = displayImages[activeImageIdx] ?? displayImages[0];
 
@@ -643,10 +650,10 @@ export default function ProductPage() {
               </div>
 
               {/* Product Info Panel */}
-              <div className="lg:sticky lg:top-32 lg:self-start space-y-5">
+              <div className="flex flex-col gap-5 lg:sticky lg:top-32 lg:self-start">
 
                 {/* Category + Rating */}
-                <div>
+                <div className="order-1">
                   <p
                     className="text-sm font-semibold text-primary uppercase tracking-wider mb-2"
                     data-testid="text-product-category"
@@ -683,7 +690,7 @@ export default function ProductPage() {
 
                   {product.vendor && (
                     <p
-                      className="text-sm text-muted-foreground mb-2"
+                      className="hidden sm:block text-sm text-muted-foreground mb-2"
                       data-testid="text-product-vendor"
                     >
                       By{" "}
@@ -695,7 +702,7 @@ export default function ProductPage() {
 
                   {product.productType && (
                     <p
-                      className="text-xs text-muted-foreground mb-2 flex items-center gap-1"
+                      className="hidden sm:flex text-xs text-muted-foreground mb-2 items-center gap-1"
                       data-testid="text-product-type"
                     >
                       <Tag className="w-3 h-3" />
@@ -705,7 +712,7 @@ export default function ProductPage() {
 
                   {currentSku && (
                     <p
-                      className="text-xs text-muted-foreground mb-3"
+                      className="hidden sm:block text-xs text-muted-foreground mb-3"
                       data-testid="text-product-sku"
                     >
                       SKU: <span className="font-mono">{currentSku}</span>
@@ -713,15 +720,15 @@ export default function ProductPage() {
                   )}
 
                   <p
-                    className="text-sm text-muted-foreground leading-relaxed"
+                    className="text-sm text-muted-foreground leading-relaxed line-clamp-3 sm:line-clamp-none"
                     data-testid="text-product-description"
                   >
                     {product.shortDescription}
                   </p>
                 </div>
 
-                {/* Shipping trust strip */}
-                <div className="flex flex-wrap gap-x-4 gap-y-1.5 py-3 px-4 rounded-2xl bg-green-50 dark:bg-green-950/30 border border-green-100 dark:border-green-900/50" data-testid="container-trust-strip">
+                {/* Shipping trust strip — below CTAs on mobile, second on desktop */}
+                <div className="order-5 lg:order-2 flex flex-wrap gap-x-4 gap-y-1.5 py-3 px-4 rounded-2xl bg-green-50 dark:bg-green-950/30 border border-green-100 dark:border-green-900/50" data-testid="container-trust-strip">
                   <span className="flex items-center gap-1.5 text-xs font-medium text-green-700 dark:text-green-400">
                     <Truck className="w-3.5 h-3.5" /> Free delivery, Pan India
                   </span>
@@ -736,8 +743,8 @@ export default function ProductPage() {
                   </span>
                 </div>
 
-                {/* Price */}
-                <div className="flex items-baseline gap-3">
+                {/* Price — second on mobile, third on desktop */}
+                <div className="order-2 lg:order-3 flex items-baseline gap-3">
                   <span
                     className="text-3xl font-bold text-foreground tabular-nums"
                     data-testid="text-product-price"
@@ -763,7 +770,7 @@ export default function ProductPage() {
                 {/* Shopify Variant Selectors */}
                 {hasShopifyVariants && optionGroups.length > 0 && (
                   <div
-                    className="space-y-5 py-4 border-t border-border/40"
+                    className="order-3 lg:order-4 space-y-5 py-4 border-t border-border/40"
                     data-testid="section-variant-selector"
                   >
                     {optionGroups.map((group) => (
@@ -840,7 +847,7 @@ export default function ProductPage() {
                 {/* Legacy Config Options */}
                 {!hasShopifyVariants && hasLegacyConfig && (
                   <div
-                    className="space-y-5 py-4 border-t border-border/40"
+                    className="order-3 lg:order-4 space-y-5 py-4 border-t border-border/40"
                     data-testid="section-configurator"
                   >
                     {product.configOptions?.colors && (
@@ -981,6 +988,9 @@ export default function ProductPage() {
                   </div>
                 )}
 
+                {/* Quantity + Action Buttons — fourth on mobile (right after price/variants), fifth on desktop */}
+                <div className="order-4 lg:order-5">
+
                 {/* Quantity */}
                 <div className="flex items-center gap-3 py-2">
                   <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -1082,8 +1092,10 @@ export default function ProductPage() {
                   </div>
                 </div>
 
+                </div>{/* end order-4: qty + CTA wrapper */}
+
                 {/* Payment trust badges */}
-                <div className="pt-3 border-t border-border/40" data-testid="container-payment-badges">
+                <div className="order-6 pt-3 border-t border-border/40" data-testid="container-payment-badges">
                   <p className="text-xs text-muted-foreground mb-2.5 flex items-center gap-1.5">
                     <Lock className="w-3 h-3" /> Secure Payment — powered by Razorpay
                   </p>
@@ -1102,7 +1114,7 @@ export default function ProductPage() {
                 </div>
 
                 {/* Shipping & Returns expandable */}
-                <div className="border border-border/50 rounded-2xl overflow-hidden" data-testid="container-shipping-returns">
+                <div className="order-7 border border-border/50 rounded-2xl overflow-hidden" data-testid="container-shipping-returns">
                   <button
                     onClick={() => setShippingOpen((o) => !o)}
                     className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-muted/30 transition-colors"
