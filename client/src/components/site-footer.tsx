@@ -24,8 +24,15 @@ const socialLinks = [
 const quickLinks = [
   { label: "All Products", href: "/products" },
   { label: "Bulk / Custom Enquiry", href: "/enquiry" },
-  { label: "About Us", href: "/page/about-us" },
+  { label: "About Us", href: "/page/about-ableys-sensory-tools" },
+  { label: "Affiliate Program", href: "/page/affiliate-program-for-sensory-products" },
   { label: "Contact Us", href: "/contact" },
+];
+
+const resourceLinks = [
+  { label: "Weighted Vest Size Chart", href: "/page/weighted-vest-size-chart" },
+  { label: "Body Sock Size Guide", href: "/page/sensory-body-sock-sizing-guide" },
+  { label: "Affiliate Program FAQ", href: "/page/ableys-affiliate-program-faq" },
 ];
 
 const policyLinks = [
@@ -39,8 +46,8 @@ export function SiteFooter() {
   return (
     <footer className="bg-gray-950 text-white" data-testid="footer">
       <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
-          <div className="lg:col-span-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
+          <div className="lg:col-span-3">
             <img
               src={logoPath}
               alt="Abley's Rehab"
@@ -68,12 +75,31 @@ export function SiteFooter() {
             </div>
           </div>
 
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-2">
             <h4 className="font-semibold text-sm text-white/90 mb-5 uppercase tracking-wider text-[13px]">
               Quick Links
             </h4>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-gray-400 hover:text-white transition-colors"
+                    data-testid={`link-footer-${link.label.toLowerCase().replace(/\s+/g, "-")}`}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="lg:col-span-2">
+            <h4 className="font-semibold text-sm text-white/90 mb-5 uppercase tracking-wider text-[13px]">
+              Resources
+            </h4>
+            <ul className="space-y-3">
+              {resourceLinks.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
