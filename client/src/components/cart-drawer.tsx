@@ -175,7 +175,7 @@ export function CartDrawer() {
   return (
     <>
       <Sheet open={isDrawerOpen} onOpenChange={(open) => { if (!open) closeDrawer(); }}>
-        <SheetContent side="right" className="flex flex-col p-0 sm:max-w-md">
+        <SheetContent side="right" className="flex flex-col p-0 sm:max-w-md h-full overflow-hidden">
           <SheetHeader className="px-6 pt-6 pb-2">
             <SheetTitle className="flex items-center gap-2" data-testid="text-cart-title">
               <ShoppingCart className="w-5 h-5" />
@@ -193,7 +193,7 @@ export function CartDrawer() {
             <EmptyCartState onClose={closeDrawer} />
           ) : (
             <>
-              <ScrollArea className="flex-1 px-6">
+              <ScrollArea className="flex-1 min-h-0 px-6">
                 <div className="divide-y divide-border">
                   {items.map((item) => (
                     <CartItemRow key={item.cartKey} item={item} />
