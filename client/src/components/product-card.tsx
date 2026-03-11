@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Eye, CheckCircle2, Package, Star } from "lucide-react";
+import { ShoppingCart, CheckCircle2, Package, Star, MessageSquare } from "lucide-react";
 import { Link } from "wouter";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { useShoppingCart } from "@/lib/shopping-cart";
@@ -136,7 +136,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="mt-3 space-y-2">
           <Button
             size="sm"
-            className="w-full text-xs gap-1.5"
+            className="w-full gap-1.5"
             onClick={() => addToCart({
               productId: product.id,
               productName: product.name,
@@ -151,38 +151,25 @@ export function ProductCard({ product }: ProductCardProps) {
             <ShoppingCart className="w-3.5 h-3.5" />
             Add to Cart
           </Button>
-          <div className="flex gap-2">
-            <Link href={`/product/${product.id}`} className="flex-1">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full text-xs gap-1.5"
-                data-testid={`button-view-${product.id}`}
-              >
-                <Eye className="w-3.5 h-3.5" />
-                View
-              </Button>
-            </Link>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex-1 text-xs gap-1.5 text-muted-foreground"
-              onClick={() => addItem(product.id, product.name, category?.title || "")}
-              data-testid={`button-add-enquiry-${product.id}`}
-            >
-              {inCart ? (
-                <>
-                  <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
-                  In Enquiry
-                </>
-              ) : (
-                <>
-                  <Package className="w-3.5 h-3.5" />
-                  Enquiry
-                </>
-              )}
-            </Button>
-          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full gap-1.5 text-muted-foreground"
+            onClick={() => addItem(product.id, product.name, category?.title || "")}
+            data-testid={`button-add-enquiry-${product.id}`}
+          >
+            {inCart ? (
+              <>
+                <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+                <span className="text-primary">Quote Added</span>
+              </>
+            ) : (
+              <>
+                <MessageSquare className="w-3.5 h-3.5" />
+                Get B2B Quote
+              </>
+            )}
+          </Button>
         </div>
       </div>
     </div>

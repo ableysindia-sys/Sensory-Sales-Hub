@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ShoppingCart, Minus, Plus, Trash2, ArrowRight, ShoppingBag, Package, ExternalLink } from "lucide-react";
+import { ShoppingCart, Minus, Plus, Trash2, ArrowRight, ShoppingBag, Package } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 function formatPrice(amount: number): string {
@@ -231,16 +231,10 @@ export function CartDrawer() {
                 >
                   {checkoutLoading ? (
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  ) : someShopify ? (
-                    <ExternalLink className="w-4 h-4" />
                   ) : (
                     <ArrowRight className="w-4 h-4" />
                   )}
-                  {checkoutLoading
-                    ? "Redirecting to Shopify..."
-                    : someShopify
-                      ? "Checkout on Shopify"
-                      : "Proceed to Checkout"}
+                  {checkoutLoading ? "Opening checkout…" : "Proceed to Checkout"}
                 </Button>
 
                 <div className="flex items-center justify-between gap-2 flex-wrap">

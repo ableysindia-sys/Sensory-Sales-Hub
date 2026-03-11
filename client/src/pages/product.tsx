@@ -36,6 +36,7 @@ import {
   CreditCard,
   Banknote,
   Smartphone,
+  MessageSquare,
 } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 
@@ -1016,11 +1017,7 @@ export default function ProductPage() {
                       ) : (
                         <Zap className="w-4 h-4" />
                       )}
-                      {checkoutLoading
-                        ? "Redirecting..."
-                        : product.shopifyHandle
-                        ? "Buy on Shopify"
-                        : "Buy Now"}
+                      {checkoutLoading ? "Opening checkout…" : "Buy Now"}
                     </Button>
                   </div>
                   <div className="flex gap-3">
@@ -1036,12 +1033,12 @@ export default function ProductPage() {
                       {inEnquiryCart ? (
                         <>
                           <CheckCircle2 className="w-4 h-4 text-primary" />
-                          Added to Enquiry
+                          <span className="text-primary">Quote Added</span>
                         </>
                       ) : (
                         <>
-                          <Package className="w-4 h-4" />
-                          Add to Enquiry
+                          <MessageSquare className="w-4 h-4" />
+                          Get B2B Quote
                         </>
                       )}
                     </Button>
@@ -1053,7 +1050,7 @@ export default function ProductPage() {
                         data-testid="button-bulk-quote"
                       >
                         <Send className="w-4 h-4" />
-                        Bulk/Custom Quote
+                        Bulk / Custom Order
                       </Button>
                     </Link>
                   </div>
