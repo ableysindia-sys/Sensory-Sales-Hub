@@ -42,6 +42,8 @@ import {
   ChevronUp,
   Box,
   AlertTriangle,
+  RefreshCw,
+  CheckCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -196,7 +198,7 @@ function LoginPage({ onLogin }: { onLogin: () => void }) {
 }
 
 function DashboardView() {
-  const { data: stats, isLoading } = useQuery<any>({
+  const { data: stats, isLoading, refetch: refetchStats } = useQuery<any>({
     queryKey: ["/api/admin/stats"],
     queryFn: () => adminFetch("/api/admin/stats"),
     refetchInterval: 30000,
@@ -205,6 +207,15 @@ function DashboardView() {
   const { data: recentLeads, isLoading: leadsLoading } = useQuery<Lead[]>({
     queryKey: ["/api/admin/leads"],
     queryFn: () => adminFetch("/api/admin/leads"),
+  });
+
+  const syncMutation = useMutation({
+    mutationFn: () => adminFetch("/api/admin/shopify-sync", { method: "POST" }),
+    onSuccess: () => {
+      refetchStats();
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+    },
   });
 
   const statCards = [
@@ -241,6 +252,43 @@ function DashboardView() {
             <p className="text-xs text-muted-foreground mt-0.5">{card.label}</p>
           </motion.div>
         ))}
+      </div>
+
+      {/* Shopify Sync Panel */}
+      <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col sm:flex-row sm:items-center gap-4" data-testid="section-shopify-sync">
+        <div className="flex items-center gap-3 flex-1">
+          <div className="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-950/30 flex items-center justify-center flex-shrink-0">
+            <RefreshCw className={`w-5 h-5 text-green-600 ${syncMutation.isPending ? "animate-spin" : ""}`} />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">Shopify Product Sync</p>
+            <p className="text-xs text-muted-foreground">
+              {syncMutation.isPending
+                ? "Syncing products from Shopify…"
+                : syncMutation.isSuccess
+                ? `Sync complete — ${(syncMutation.data as any)?.total ?? 0} products up to date`
+                : syncMutation.isError
+                ? "Sync failed — try again"
+                : "Auto-syncs every 10 minutes. Run manually to pick up newly published products immediately."}
+            </p>
+          </div>
+        </div>
+        <Button
+          size="sm"
+          variant={syncMutation.isSuccess ? "outline" : "default"}
+          className="rounded-full gap-2 flex-shrink-0"
+          onClick={() => syncMutation.mutate()}
+          disabled={syncMutation.isPending}
+          data-testid="button-sync-shopify"
+        >
+          {syncMutation.isPending ? (
+            <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Syncing…</>
+          ) : syncMutation.isSuccess ? (
+            <><CheckCircle className="w-3.5 h-3.5 text-green-600" /> Synced</>
+          ) : (
+            <><RefreshCw className="w-3.5 h-3.5" /> Sync Now</>
+          )}
+        </Button>
       </div>
 
       <div className="bg-card rounded-xl border border-border/50 p-5" data-testid="section-recent-leads">
