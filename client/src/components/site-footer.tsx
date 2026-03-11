@@ -23,7 +23,6 @@ const socialLinks = [
 
 const quickLinks = [
   { label: "All Products", href: "/products" },
-  { label: "Sensory Room Builder", href: "/sensory-room" },
   { label: "Bulk / Custom Enquiry", href: "/enquiry" },
   { label: "About Us", href: "/page/about-us" },
   { label: "Contact Us", href: "/contact" },
