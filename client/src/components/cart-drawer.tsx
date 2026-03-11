@@ -60,10 +60,11 @@ function CartItemRow({ item }: { item: CartItem }) {
         <Button
           size="icon"
           variant="ghost"
+          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 flex-shrink-0"
           onClick={() => removeFromCart(item.cartKey)}
           data-testid={`button-remove-item-${item.productId}`}
         >
-          <Trash2 className="w-3.5 h-3.5" />
+          <Trash2 className="w-4 h-4" />
         </Button>
       </div>
       <div className="flex items-center justify-between gap-2">
