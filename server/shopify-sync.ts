@@ -1,6 +1,6 @@
 import { db } from "./db";
 import { products as productsTable, categories as categoriesTable } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, isNotNull } from "drizzle-orm";
 
 const SHOPIFY_COLLECTION_TO_CATEGORY: Record<string, string> = {
   "weighted-sensory-products-for-kids": "deep-pressure",
@@ -270,7 +270,39 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
     }
   }
 
-  console.log(`[shopify-sync] Sync complete: ${added} added, ${updated} updated, ${shopifyProducts.length} total from Shopify`);
+  // Deactivate any Shopify-sourced products that were NOT returned in this sync
+  // (they've been unpublished or deleted in Shopify)
+  const fetchedHandles = new Set(shopifyProducts.map(sp => sp.handle));
+  const shopifyDbProducts = await db
+    .select({ shopifyHandle: productsTable.shopifyHandle, isActive: productsTable.isActive })
+    .from(productsTable)
+    .where(isNotNull(productsTable.shopifyHandle));
+
+  let deactivated = 0;
+  let reactivated = 0;
+  for (const dbProd of shopifyDbProducts) {
+    if (!dbProd.shopifyHandle) continue;
+    if (!fetchedHandles.has(dbProd.shopifyHandle)) {
+      if (dbProd.isActive) {
+        await db
+          .update(productsTable)
+          .set({ isActive: false })
+          .where(eq(productsTable.shopifyHandle, dbProd.shopifyHandle));
+        deactivated++;
+        console.log(`[shopify-sync] Deactivated unpublished product: ${dbProd.shopifyHandle}`);
+      }
+    } else if (!dbProd.isActive) {
+      await db
+        .update(productsTable)
+        .set({ isActive: true })
+        .where(eq(productsTable.shopifyHandle, dbProd.shopifyHandle));
+      reactivated++;
+      console.log(`[shopify-sync] Reactivated re-published product: ${dbProd.shopifyHandle}`);
+    }
+  }
+
+  const summary = `${added} added, ${updated} updated, ${deactivated} deactivated, ${reactivated} reactivated, ${shopifyProducts.length} total from Shopify`;
+  console.log(`[shopify-sync] Sync complete: ${summary}`);
   return { added, updated, total: shopifyProducts.length };
 }
 
