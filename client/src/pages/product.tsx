@@ -145,15 +145,17 @@ export default function ProductPage() {
   const handleBuyNow = async () => {
     const shopifyHandle = product?.shopifyHandle;
     if (shopifyHandle) {
+      const newTab = window.open("", "_blank");
       setCheckoutLoading(true);
       const checkoutUrl = await createShopifyCheckout(shopifyHandle, quantity);
       setCheckoutLoading(false);
-      if (checkoutUrl) {
-        window.open(checkoutUrl, "_blank");
+      if (checkoutUrl && newTab) {
+        newTab.location.href = checkoutUrl;
         return;
       }
+      if (newTab) newTab.close();
       if (product?.shopifyUrl) {
-        window.open(product.shopifyUrl, "_blank");
+        window.location.href = product.shopifyUrl;
         return;
       }
     }

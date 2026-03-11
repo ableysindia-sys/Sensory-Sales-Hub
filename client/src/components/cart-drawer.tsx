@@ -151,29 +151,17 @@ export function CartDrawer() {
   const someShopify = shopifyItems.length > 0;
 
   const handleCheckout = async () => {
-    if (allShopify) {
+    if (someShopify) {
+      const newTab = window.open("", "_blank");
       setCheckoutLoading(true);
       const checkoutUrl = await createShopifyMultiCheckout(shopifyItems);
       setCheckoutLoading(false);
-      if (checkoutUrl) {
+      if (checkoutUrl && newTab) {
         closeDrawer();
-        window.open(checkoutUrl, "_blank");
+        newTab.location.href = checkoutUrl;
         return;
       }
-      toast({
-        title: "Checkout unavailable",
-        description: "Could not connect to Shopify. Please try again.",
-        variant: "destructive",
-      });
-    } else if (someShopify) {
-      setCheckoutLoading(true);
-      const checkoutUrl = await createShopifyMultiCheckout(shopifyItems);
-      setCheckoutLoading(false);
-      if (checkoutUrl) {
-        closeDrawer();
-        window.open(checkoutUrl, "_blank");
-        return;
-      }
+      if (newTab) newTab.close();
       toast({
         title: "Checkout unavailable",
         description: "Could not connect to Shopify. Please try again.",
