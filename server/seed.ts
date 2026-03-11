@@ -328,19 +328,21 @@ const CMS_PAGES = [
 ];
 
 async function seedPages() {
-  const [{ value: pageCount }] = await db.select({ value: count() }).from(pagesTable);
-  if (pageCount >= CMS_PAGES.length) {
-    return;
-  }
-
-  console.log("Seeding CMS pages...");
+  console.log("Upserting CMS pages...");
   for (const page of CMS_PAGES) {
     await db.insert(pagesTable).values({
       slug: page.slug,
       title: page.title,
       content: page.content,
       isPublished: true,
-    }).onConflictDoNothing();
+    }).onConflictDoUpdate({
+      target: pagesTable.slug,
+      set: {
+        title: page.title,
+        content: page.content,
+        isPublished: true,
+      },
+    });
   }
-  console.log(`Seeded ${CMS_PAGES.length} CMS pages.`);
+  console.log(`Upserted ${CMS_PAGES.length} CMS pages.`);
 }
