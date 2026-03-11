@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, Link } from "wouter";
 import type { CatalogueProduct, ShopifyVariant } from "@/lib/catalogue-data";
 import { useProducts, calculateProductPrice, formatPrice } from "@/lib/product-provider";
@@ -437,8 +437,28 @@ export default function ProductPage() {
       ? [fallbackImg]
       : [];
 
-  const variantImage = selectedVariant?.image;
-  const activeImage = variantImage || productImages[activeImageIdx] || productImages[0];
+  // Merge variant-specific image into the gallery (deduplicated).
+  // This ensures thumbnails always work — clicking any thumbnail updates
+  // activeImageIdx and the main image responds, regardless of variant selection.
+  const displayImages = useMemo(() => {
+    const variantImg = selectedVariant?.image;
+    if (variantImg && !productImages.includes(variantImg)) {
+      return [variantImg, ...productImages];
+    }
+    return productImages;
+  }, [productImages, selectedVariant?.id]);
+
+  // When the selected variant changes, jump the gallery to that variant's image.
+  useEffect(() => {
+    const variantImg = selectedVariant?.image;
+    if (variantImg) {
+      const idx = displayImages.findIndex((img) => img === variantImg);
+      setActiveImageIdx(idx >= 0 ? idx : 0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedVariant?.id]);
+
+  const activeImage = displayImages[activeImageIdx] ?? displayImages[0];
 
   const variantTitle =
     selectedVariant && selectedVariant.title !== "Default Title"
@@ -462,7 +482,7 @@ export default function ProductPage() {
           addons: selectedAddons,
         },
         image:
-          variantImage ||
+          selectedVariant?.image ||
           product.images?.[0] ||
           generatedProductImages[product.id],
       },
@@ -544,52 +564,58 @@ export default function ProductPage() {
             <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
 
               {/* Image Gallery */}
-              <div className="space-y-4">
+              <div className="space-y-3">
+                {/* Main image — aspect-[4/3] on mobile keeps it compact; square on larger screens */}
                 <div
-                  className="aspect-square bg-card rounded-3xl border border-border/50 flex items-center justify-center relative overflow-hidden"
+                  className="w-full aspect-[4/3] sm:aspect-square bg-card rounded-2xl sm:rounded-3xl border border-border/50 relative overflow-hidden"
                   data-testid="container-product-image"
                 >
                   {activeImage ? (
                     <img
+                      key={activeImage}
                       src={activeImage}
                       alt={`${product.name}${variantTitle ? ` - ${variantTitle}` : ""}`}
-                      className="w-full h-full object-cover max-w-full"
+                      className="w-full h-full object-contain p-2 sm:p-4"
                       data-testid="img-product-main"
                     />
                   ) : (
-                    <div className="text-center p-12">
-                      <div className="w-28 h-28 mx-auto mb-6 rounded-3xl bg-primary/8 flex items-center justify-center">
-                        <Package className="w-14 h-14 text-primary/30" />
+                    <div className="flex flex-col items-center justify-center w-full h-full p-8">
+                      <div className="w-20 h-20 rounded-2xl bg-primary/8 flex items-center justify-center">
+                        <Package className="w-10 h-10 text-primary/30" />
                       </div>
-                      <p className="text-sm text-muted-foreground/50 font-medium">
+                      <p className="text-xs text-muted-foreground/50 font-medium mt-3">
                         Product Image
                       </p>
                     </div>
                   )}
                   {discountPct && (
-                    <div className="absolute top-4 left-4 bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                    <div className="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
                       -{discountPct}%
                     </div>
                   )}
                 </div>
 
-                {productImages.length > 1 && (
-                  <div className="flex items-center justify-center gap-2 overflow-x-auto pb-1">
-                    {productImages.map((img, i) => (
+                {/* Thumbnail strip — horizontally scrollable, touch-friendly */}
+                {displayImages.length > 1 && (
+                  <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide snap-x snap-mandatory" data-testid="container-thumbnails">
+                    {displayImages.map((img, i) => (
                       <button
-                        key={i}
+                        key={`${img}-${i}`}
+                        type="button"
                         onClick={() => setActiveImageIdx(i)}
-                        className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${
-                          !variantImage && activeImageIdx === i
-                            ? "border-primary ring-1 ring-primary/30"
-                            : "border-border/50 hover:border-primary/30"
+                        className={`w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 snap-start bg-card ${
+                          activeImageIdx === i
+                            ? "border-primary ring-2 ring-primary/20"
+                            : "border-border/50 hover:border-primary/40 active:border-primary"
                         }`}
                         data-testid={`button-image-thumb-${i}`}
+                        aria-label={`View image ${i + 1}`}
                       >
                         <img
                           src={img}
-                          alt={`${product.name} thumbnail ${i + 1}`}
+                          alt={`${product.name} view ${i + 1}`}
                           className="w-full h-full object-cover"
+                          loading="lazy"
                         />
                       </button>
                     ))}
