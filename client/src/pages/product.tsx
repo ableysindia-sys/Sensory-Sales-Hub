@@ -5,7 +5,7 @@ import { useProducts, calculateProductPrice, formatPrice } from "@/lib/product-p
 import { generatedProductImages } from "@/lib/product-images";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { useShoppingCart } from "@/lib/shopping-cart";
-import { hasShopifyListing, getShopifyHandle, createShopifyCheckout, getShopifyProductUrl } from "@/lib/shopify";
+import { createShopifyCheckout } from "@/lib/shopify";
 import { Navbar } from "@/components/navbar";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
@@ -131,6 +131,7 @@ export default function ProductPage() {
       productName: product.name,
       category: category?.title || "",
       unitPrice: computedPrice,
+      shopifyHandle: product.shopifyHandle,
       config: {
         color: selectedColor,
         material: selectedMaterial,
@@ -142,7 +143,7 @@ export default function ProductPage() {
   };
 
   const handleBuyNow = async () => {
-    const shopifyHandle = product ? getShopifyHandle(product.id) : null;
+    const shopifyHandle = product?.shopifyHandle;
     if (shopifyHandle) {
       setCheckoutLoading(true);
       const checkoutUrl = await createShopifyCheckout(shopifyHandle, quantity);
@@ -151,9 +152,8 @@ export default function ProductPage() {
         window.open(checkoutUrl, "_blank");
         return;
       }
-      const productUrl = getShopifyProductUrl(product!.id);
-      if (productUrl) {
-        window.open(productUrl, "_blank");
+      if (product?.shopifyUrl) {
+        window.open(product.shopifyUrl, "_blank");
         return;
       }
     }
@@ -458,7 +458,7 @@ export default function ProductPage() {
                       ) : (
                         <Zap className="w-4 h-4" />
                       )}
-                      {checkoutLoading ? "Redirecting..." : hasShopifyListing(product.id) ? "Buy on Shopify" : "Buy Now"}
+                      {checkoutLoading ? "Redirecting..." : product.shopifyHandle ? "Buy on Shopify" : "Buy Now"}
                     </Button>
                   </div>
                   <div className="flex gap-3">

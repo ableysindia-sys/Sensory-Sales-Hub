@@ -17,6 +17,7 @@ export interface CartItem {
   unitPrice: number;
   config: CartItemConfig;
   image?: string;
+  shopifyHandle?: string;
 }
 
 function generateCartKey(productId: string, config: CartItemConfig): string {

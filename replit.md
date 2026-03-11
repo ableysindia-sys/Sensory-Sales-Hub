@@ -68,9 +68,15 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 - Store domain: `2feec0-4.myshopify.com` (env: SHOPIFY_STORE_DOMAIN)
 - Storefront API token: env secret SHOPIFY_STOREFRONT_TOKEN
 - API version: 2024-10
-- Client-side product slug → Shopify handle mapping in `client/src/lib/shopify.ts`
-- "Buy on Shopify" button on product pages and cart drawer for products with Shopify listings
-- Checkout flow: server creates checkout via Storefront API GraphQL mutation → returns webUrl → frontend opens in new tab
+- **Auto-sync**: `server/shopify-sync.ts` syncs all Shopify products to DB on startup and every 30 minutes
+  - `syncShopifyProducts()` fetches all products via Storefront API (paginated), upserts to DB with collection→category mapping
+  - `startPeriodicSync()` called in `routes.ts` at server startup
+  - Admin manual trigger: `POST /api/admin/shopify-sync`
+- Products have `shopifyHandle` and `shopifyUrl` fields in DB (set by sync)
+- Client uses `product.shopifyHandle` from DB data (no more hardcoded slug→handle map)
+- Server checkout allowlist is dynamic (queries DB for products with shopifyHandle)
+- "Buy on Shopify" button on product pages and cart drawer for products with Shopify handle
+- Checkout flow: server creates cart via Storefront API Cart API (cartCreate mutation) → returns checkoutUrl → frontend opens in new tab
 
 ### Admin (Bearer token auth)
 - `POST /api/admin/login` - Admin login (returns bearer token)

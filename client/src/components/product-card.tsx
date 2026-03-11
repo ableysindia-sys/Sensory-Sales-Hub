@@ -142,6 +142,7 @@ export function ProductCard({ product }: ProductCardProps) {
               productName: product.name,
               category: category?.title || "",
               unitPrice: product.basePrice,
+              shopifyHandle: product.shopifyHandle,
               config: { addons: [] },
               image: product.images?.[0] || generatedProductImages[product.id],
             })}

@@ -5,6 +5,7 @@ import { api } from "@shared/routes";
 import { z } from "zod";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import crypto from "crypto";
+import { syncShopifyProducts, startPeriodicSync } from "./shopify-sync";
 
 const SYSTEM_PROMPT = `You are a friendly, knowledgeable assistant for Abley's Rehab — a professional therapy equipment company based in India. You help occupational therapists, physiotherapists, special educators, parents, and clinic owners find the right rehabilitation and sensory integration equipment.
 
@@ -393,24 +394,14 @@ export async function registerRoutes(
     }
   });
 
-  const ALLOWED_SHOPIFY_HANDLES = new Set([
-    "bolster-swing-soft-comfortable-baby-swing-indoor-hammock-style-bolster-jhula-for-kids",
-    "t-swing-therapeutic-sensory-swing-for-kids-balance-coordination-calming-vestibular-play",
-    "disc-swing-outdoor-rope-swing-seat-for-kids-fun-balance-coordination-play-equipment-for-gardens-therapy",
-    "platform-swing-heavy-duty-sensory-swing-for-kids-outdoor-indoor-therapy-balance-swing",
-    "abley-s-crash-pad-soft-landing-sensory-cushion-4x4-6x4-ft-for-safe-jumping-deep-pressure-play",
-    "interlocking-mats-soft-eva-foam-floor-tiles-non-slip-shock-absorbing-play-exercise-mats",
-    "wooden-balance-board-curved-wobble-board-for-kids-balance-core-strength-sensory-development",
-    "sensory-stepping-stones-for-kids",
-    "abley-s-ball-pool-soft-play-pit-with-colorful-balls-4x4-6x4-ft-for-sensory-motor-skill-development",
-    "gym-ball-65cm-anti-burst-exercise-ball-for-yoga-fitness-core-strength-training",
-    "abley-s-hexagon-touch-lights-for-autism-sensory-room-usb-rechargeable-modular-led-panels-tap-sensitive-calming-wall-lights-for-kids-with-spd-adhd-easy-install-soothing-night-light",
-    "weighted-vest-for-kids-2lbs-3lbs-blue",
-    "weighted-blanket-for-kids-5lb",
-    "compression-vest-for-sensory-needs",
-    "sensory-body-sock-for-kids",
-    "weighted-lap-pad-for-focus-minky-3lb",
-  ]);
+  async function getAllowedShopifyHandles(): Promise<Set<string>> {
+    const allProducts = await storage.getActiveProducts();
+    const handles = new Set<string>();
+    for (const p of allProducts) {
+      if (p.shopifyHandle) handles.add(p.shopifyHandle);
+    }
+    return handles;
+  }
 
   const shopifyCheckoutSchema = z.object({
     items: z.array(z.object({
@@ -480,8 +471,9 @@ export async function registerRoutes(
       }
       const { items } = parsed.data;
 
+      const allowedHandles = await getAllowedShopifyHandles();
       for (const item of items) {
-        if (!ALLOWED_SHOPIFY_HANDLES.has(item.handle)) {
+        if (!allowedHandles.has(item.handle)) {
           return res.status(400).json({ message: `Product not available for checkout: ${item.handle}` });
         }
       }
@@ -556,6 +548,18 @@ export async function registerRoutes(
       res.json({ message: "Page deleted" });
     } catch { res.status(500).json({ message: "Failed" }); }
   });
+
+  app.post("/api/admin/shopify-sync", requireAdmin, async (_req, res) => {
+    try {
+      const result = await syncShopifyProducts();
+      res.json(result);
+    } catch (err) {
+      console.error("Shopify sync error:", err);
+      res.status(500).json({ message: "Sync failed" });
+    }
+  });
+
+  startPeriodicSync();
 
   return httpServer;
 }

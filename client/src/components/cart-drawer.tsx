@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useShoppingCart, type CartItem } from "@/lib/shopping-cart";
 import { getShopifyItemsFromCart, createShopifyMultiCheckout } from "@/lib/shopify";
+import { useProducts } from "@/lib/product-provider";
 import {
   Sheet,
   SheetContent,
@@ -134,13 +135,17 @@ export function CartDrawer() {
     clearCart,
   } = useShoppingCart();
 
+  const { products } = useProducts();
   const subtotal = getSubtotal();
   const tax = getTaxAmount();
   const total = getTotal();
   const itemCount = getItemCount();
 
   const { shopifyItems, nonShopifyIds } = getShopifyItemsFromCart(
-    items.map(i => ({ productId: i.productId, quantity: i.quantity }))
+    items.map(i => {
+      const handle = i.shopifyHandle || products.find(p => p.id === i.productId)?.shopifyHandle;
+      return { productId: i.productId, quantity: i.quantity, shopifyHandle: handle };
+    })
   );
   const allShopify = nonShopifyIds.length === 0 && shopifyItems.length > 0;
   const someShopify = shopifyItems.length > 0;
