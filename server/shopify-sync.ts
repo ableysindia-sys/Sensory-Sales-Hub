@@ -23,9 +23,22 @@ const SHOPIFY_COLLECTION_TO_CATEGORY: Record<string, string> = {
   "the-general-foundational-explorer": "adl-kit",
 };
 
+export interface ShopifyVariant {
+  id: string;
+  title: string;
+  sku: string;
+  availableForSale: boolean;
+  price: number;
+  compareAtPrice: number | null;
+  options: Array<{ name: string; value: string }>;
+  image: string | null;
+}
+
 interface ShopifyProduct {
   handle: string;
   title: string;
+  vendor: string;
+  productType: string;
   descriptionHtml: string;
   tags: string[];
   collections: { edges: Array<{ node: { handle: string; title: string } }> };
@@ -35,8 +48,12 @@ interface ShopifyProduct {
       node: {
         id: string;
         title: string;
+        sku: string;
+        availableForSale: boolean;
         price: { amount: string; currencyCode: string };
         compareAtPrice: { amount: string; currencyCode: string } | null;
+        selectedOptions: Array<{ name: string; value: string }>;
+        image: { url: string; altText: string | null } | null;
       };
     }>;
   };
@@ -60,15 +77,32 @@ function extractShortDescription(html: string): string {
 }
 
 function shopifyToDbProduct(sp: ShopifyProduct) {
-  const variant = sp.variants.edges[0]?.node;
-  const priceInPaise = variant ? Math.round(parseFloat(variant.price.amount)) : 0;
-  const comparePrice = variant?.compareAtPrice
-    ? Math.round(parseFloat(variant.compareAtPrice.amount))
+  const firstVariantNode = sp.variants.edges[0]?.node;
+  const basePrice = firstVariantNode ? Math.round(parseFloat(firstVariantNode.price.amount)) : 0;
+  const comparePrice = firstVariantNode?.compareAtPrice
+    ? Math.round(parseFloat(firstVariantNode.compareAtPrice.amount))
     : null;
 
   const images = sp.images.edges.map(e => e.node.url);
   const categorySlug = resolveCategory(sp);
   const shortDesc = extractShortDescription(sp.descriptionHtml);
+
+  const shopifyVariants: ShopifyVariant[] = sp.variants.edges.map(e => ({
+    id: e.node.id,
+    title: e.node.title,
+    sku: e.node.sku || "",
+    availableForSale: e.node.availableForSale,
+    price: Math.round(parseFloat(e.node.price.amount)),
+    compareAtPrice: e.node.compareAtPrice
+      ? Math.round(parseFloat(e.node.compareAtPrice.amount))
+      : null,
+    options: e.node.selectedOptions,
+    image: e.node.image?.url || null,
+  }));
+
+  const isSingleDefaultVariant =
+    shopifyVariants.length === 1 &&
+    shopifyVariants[0].title === "Default Title";
 
   return {
     slug: sp.handle,
@@ -76,7 +110,7 @@ function shopifyToDbProduct(sp: ShopifyProduct) {
     categorySlug,
     shortDescription: shortDesc,
     longDescription: sp.descriptionHtml,
-    basePrice: priceInPaise,
+    basePrice,
     comparePrice,
     stock: null as number | null,
     images: JSON.stringify(images),
@@ -86,6 +120,10 @@ function shopifyToDbProduct(sp: ShopifyProduct) {
     configOptions: null as string | null,
     shopifyHandle: sp.handle,
     shopifyUrl: `https://www.ableys.in/products/${sp.handle}`,
+    shopifyVariants: isSingleDefaultVariant ? null : JSON.stringify(shopifyVariants),
+    productType: sp.productType || null,
+    vendor: sp.vendor || null,
+    sku: firstVariantNode?.sku || null,
     isActive: true,
   };
 }
@@ -113,21 +151,27 @@ async function fetchAllShopifyProducts(): Promise<ShopifyProduct[]> {
           node {
             handle
             title
+            vendor
+            productType
             descriptionHtml
             tags
             collections(first: 10) {
               edges { node { handle title } }
             }
-            images(first: 10) {
+            images(first: 20) {
               edges { node { url altText } }
             }
-            variants(first: 10) {
+            variants(first: 30) {
               edges {
                 node {
                   id
                   title
+                  sku
+                  availableForSale
                   price { amount currencyCode }
                   compareAtPrice { amount currencyCode }
+                  selectedOptions { name value }
+                  image { url altText }
                 }
               }
             }
@@ -202,6 +246,10 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
           applications: dbProduct.applications,
           shopifyHandle: dbProduct.shopifyHandle,
           shopifyUrl: dbProduct.shopifyUrl,
+          shopifyVariants: dbProduct.shopifyVariants,
+          productType: dbProduct.productType,
+          vendor: dbProduct.vendor,
+          sku: dbProduct.sku,
           isActive: true,
         })
         .where(eq(productsTable.slug, dbProduct.slug));

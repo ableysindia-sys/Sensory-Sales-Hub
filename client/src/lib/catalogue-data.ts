@@ -28,6 +28,17 @@ export interface ConfigOptions {
   addons?: AddonOption[];
 }
 
+export interface ShopifyVariant {
+  id: string;
+  title: string;
+  sku: string;
+  availableForSale: boolean;
+  price: number;
+  compareAtPrice: number | null;
+  options: Array<{ name: string; value: string }>;
+  image: string | null;
+}
+
 export interface CatalogueProduct {
   id: string;
   shopifyHandle?: string;
@@ -43,6 +54,10 @@ export interface CatalogueProduct {
   configOptions?: ConfigOptions;
   images?: string[];
   shopifyUrl?: string;
+  shopifyVariants?: ShopifyVariant[];
+  productType?: string;
+  vendor?: string;
+  sku?: string;
 }
 
 export interface Category {

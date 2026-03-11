@@ -72,7 +72,8 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
   - `syncShopifyProducts()` fetches all products via Storefront API (paginated), upserts to DB with collection→category mapping
   - `startPeriodicSync()` called in `routes.ts` at server startup
   - Admin manual trigger: `POST /api/admin/shopify-sync`
-- Products have `shopifyHandle` and `shopifyUrl` fields in DB (set by sync)
+- Products have `shopifyHandle`, `shopifyUrl`, `shopifyVariants` (JSON), `productType`, `vendor`, `sku` fields in DB (set by sync)
+- `shopifyVariants` stores all variant data: id, title, sku, price, compareAtPrice, options, image (null for single-variant products)
 - Client uses `product.shopifyHandle` from DB data (no more hardcoded slug→handle map)
 - Server checkout allowlist is dynamic (queries DB for products with shopifyHandle)
 - "Buy on Shopify" button on product pages and cart drawer for products with Shopify handle

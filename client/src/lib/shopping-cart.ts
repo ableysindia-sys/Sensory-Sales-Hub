@@ -18,6 +18,8 @@ export interface CartItem {
   config: CartItemConfig;
   image?: string;
   shopifyHandle?: string;
+  shopifyVariantId?: string;
+  variantTitle?: string;
 }
 
 function generateCartKey(productId: string, config: CartItemConfig): string {

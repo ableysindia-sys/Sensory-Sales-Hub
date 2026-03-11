@@ -27,11 +27,12 @@ function CartItemRow({ item }: { item: CartItem }) {
   const { updateQuantity, removeFromCart } = useShoppingCart();
 
   const configDetails: string[] = [];
-  if (item.config.color) configDetails.push(item.config.color);
-  if (item.config.material) configDetails.push(item.config.material);
-  if (item.config.size) configDetails.push(item.config.size);
-  if (item.config.addons.length > 0) {
-    configDetails.push(...item.config.addons);
+  if (item.variantTitle) configDetails.push(item.variantTitle);
+  else {
+    if (item.config.color) configDetails.push(item.config.color);
+    if (item.config.material) configDetails.push(item.config.material);
+    if (item.config.size) configDetails.push(item.config.size);
+    if (item.config.addons.length > 0) configDetails.push(...item.config.addons);
   }
 
   const lineTotal = item.unitPrice * item.quantity;
@@ -145,7 +146,7 @@ export function CartDrawer() {
   const { shopifyItems, nonShopifyIds } = getShopifyItemsFromCart(
     items.map(i => {
       const handle = i.shopifyHandle || products.find(p => p.id === i.productId)?.shopifyHandle;
-      return { productId: i.productId, quantity: i.quantity, shopifyHandle: handle };
+      return { productId: i.productId, quantity: i.quantity, shopifyHandle: handle, shopifyVariantId: i.shopifyVariantId };
     })
   );
   const allShopify = nonShopifyIds.length === 0 && shopifyItems.length > 0;

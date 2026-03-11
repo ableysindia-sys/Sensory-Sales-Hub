@@ -407,6 +407,7 @@ export async function registerRoutes(
     items: z.array(z.object({
       handle: z.string().min(1).max(300),
       quantity: z.number().int().min(1).max(10).default(1),
+      variantId: z.string().optional(),
     })).min(1).max(20),
   });
 
@@ -484,16 +485,20 @@ export async function registerRoutes(
         return res.status(500).json({ message: "Shopify not configured" });
       }
 
-      const uniqueHandles = [...new Set(items.map(i => i.handle))];
-      const variantMap = await resolveVariantIds(storeDomain, storefrontToken, uniqueHandles);
+      const handlesToResolve = [...new Set(
+        items.filter(i => !i.variantId).map(i => i.handle)
+      )];
+      const variantMap = handlesToResolve.length > 0
+        ? await resolveVariantIds(storeDomain, storefrontToken, handlesToResolve)
+        : new Map<string, string>();
 
-      const missingHandles = uniqueHandles.filter(h => !variantMap.has(h));
+      const missingHandles = handlesToResolve.filter(h => !variantMap.has(h));
       if (missingHandles.length > 0) {
         return res.status(404).json({ message: "Products not found on Shopify", missing: missingHandles });
       }
 
       const lines = items.map(item => ({
-        merchandiseId: variantMap.get(item.handle)!,
+        merchandiseId: item.variantId || variantMap.get(item.handle)!,
         quantity: item.quantity,
       }));
 

@@ -30,6 +30,10 @@ export const products = pgTable("products", {
   configOptions: text("config_options"),
   shopifyHandle: text("shopify_handle"),
   shopifyUrl: text("shopify_url"),
+  shopifyVariants: text("shopify_variants"),
+  productType: text("product_type"),
+  vendor: text("vendor"),
+  sku: text("sku"),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

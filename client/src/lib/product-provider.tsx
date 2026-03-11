@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Product as DbProduct, Category as DbCategory } from "@shared/schema";
 import { generatedProductImages, generatedCategoryImages } from "./product-images";
-import type { CatalogueProduct, Category, ProductSpec, ConfigOptions } from "./catalogue-data";
+import type { CatalogueProduct, Category, ProductSpec, ConfigOptions, ShopifyVariant } from "./catalogue-data";
 
 function parseJson<T>(val: string | null, fallback: T): T {
   if (!val) return fallback;
@@ -34,6 +34,10 @@ export function dbProductToCatalogue(p: DbProduct): CatalogueProduct {
     configOptions: parseJson<ConfigOptions | undefined>(p.configOptions, undefined),
     images,
     shopifyUrl: p.shopifyUrl || undefined,
+    shopifyVariants: parseJson<ShopifyVariant[] | undefined>(p.shopifyVariants ?? null, undefined),
+    productType: p.productType || undefined,
+    vendor: p.vendor || undefined,
+    sku: p.sku || undefined,
   };
 }
 

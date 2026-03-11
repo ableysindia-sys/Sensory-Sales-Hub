@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useParams, Link } from "wouter";
-import type { CatalogueProduct } from "@/lib/catalogue-data";
+import type { CatalogueProduct, ShopifyVariant } from "@/lib/catalogue-data";
 import { useProducts, calculateProductPrice, formatPrice } from "@/lib/product-provider";
 import { generatedProductImages } from "@/lib/product-images";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
@@ -25,6 +25,7 @@ import {
   Plus,
   Minus,
   Check,
+  Tag,
 } from "lucide-react";
 
 const qualityBadges = [
@@ -59,6 +60,26 @@ const storyCards = [
   },
 ];
 
+function findVariantByOptions(
+  variants: ShopifyVariant[],
+  selectedOptions: Record<string, string>
+): ShopifyVariant | null {
+  return variants.find(v =>
+    v.options.every(opt => selectedOptions[opt.name] === opt.value)
+  ) || null;
+}
+
+function getOptionGroups(variants: ShopifyVariant[]): Array<{ name: string; values: string[] }> {
+  const groups: Map<string, Set<string>> = new Map();
+  for (const v of variants) {
+    for (const opt of v.options) {
+      if (!groups.has(opt.name)) groups.set(opt.name, new Set());
+      groups.get(opt.name)!.add(opt.value);
+    }
+  }
+  return Array.from(groups.entries()).map(([name, values]) => ({ name, values: Array.from(values) }));
+}
+
 export default function ProductPage() {
   const params = useParams<{ slug: string }>();
   const { getProductBySlug, getProductCategory, isLoading } = useProducts();
@@ -70,16 +91,47 @@ export default function ProductPage() {
   const [selectedMaterial, setSelectedMaterial] = useState<string | undefined>(undefined);
   const [selectedSize, setSelectedSize] = useState<string | undefined>(undefined);
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState(1);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
+
+  const hasShopifyVariants = !!(product?.shopifyVariants && product.shopifyVariants.length > 0);
+  const optionGroups = useMemo(() => {
+    if (!product?.shopifyVariants) return [];
+    return getOptionGroups(product.shopifyVariants);
+  }, [product?.shopifyVariants]);
+
+  const selectedVariant = useMemo((): ShopifyVariant | null => {
+    if (!product?.shopifyVariants || !hasShopifyVariants) return null;
+    if (Object.keys(selectedOptions).length === 0) return product.shopifyVariants[0];
+    return findVariantByOptions(product.shopifyVariants, selectedOptions);
+  }, [product?.shopifyVariants, selectedOptions, hasShopifyVariants]);
+
+  const handleOptionSelect = (optionName: string, value: string) => {
+    setSelectedOptions(prev => ({ ...prev, [optionName]: value }));
+    setActiveImageIdx(0);
+  };
 
   const config = useMemo(
     () => ({ material: selectedMaterial, size: selectedSize, addons: selectedAddons }),
     [selectedMaterial, selectedSize, selectedAddons]
   );
 
-  const computedPrice = product ? calculateProductPrice(product, config) : 0;
+  const computedPrice = useMemo(() => {
+    if (selectedVariant) return selectedVariant.price;
+    if (product) return calculateProductPrice(product, config);
+    return 0;
+  }, [selectedVariant, product, config]);
+
+  const computedComparePrice = useMemo(() => {
+    if (selectedVariant) return selectedVariant.compareAtPrice;
+    return product?.comparePrice || null;
+  }, [selectedVariant, product]);
+
+  const currentSku = useMemo(() => {
+    return selectedVariant?.sku || product?.sku || null;
+  }, [selectedVariant, product]);
 
   if (isLoading) {
     return (
@@ -110,7 +162,7 @@ export default function ProductPage() {
 
   const category = getProductCategory(product);
   const inEnquiryCart = isInCart(product.id);
-  const hasConfig = !!(
+  const hasLegacyConfig = !!(
     product.configOptions?.colors ||
     product.configOptions?.materials ||
     product.configOptions?.sizes ||
@@ -125,6 +177,18 @@ export default function ProductPage() {
     );
   };
 
+  const fallbackImg = generatedProductImages[product.id];
+  const productImages = product.images && product.images.length > 0
+    ? product.images
+    : (fallbackImg ? [fallbackImg] : []);
+
+  const variantImage = selectedVariant?.image;
+  const activeImage = variantImage || productImages[activeImageIdx] || productImages[0];
+
+  const variantTitle = selectedVariant && selectedVariant.title !== "Default Title"
+    ? selectedVariant.title
+    : null;
+
   const handleAddToCart = () => {
     addToCart({
       productId: product.id,
@@ -132,13 +196,15 @@ export default function ProductPage() {
       category: category?.title || "",
       unitPrice: computedPrice,
       shopifyHandle: product.shopifyHandle,
+      shopifyVariantId: selectedVariant?.id,
+      variantTitle: variantTitle || undefined,
       config: {
         color: selectedColor,
         material: selectedMaterial,
         size: selectedSize,
         addons: selectedAddons,
       },
-      image: product.images?.[0] || generatedProductImages[product.id],
+      image: variantImage || product.images?.[0] || generatedProductImages[product.id],
     }, quantity);
   };
 
@@ -147,7 +213,7 @@ export default function ProductPage() {
     if (shopifyHandle) {
       const newTab = window.open("", "_blank");
       setCheckoutLoading(true);
-      const checkoutUrl = await createShopifyCheckout(shopifyHandle, quantity);
+      const checkoutUrl = await createShopifyCheckout(shopifyHandle, quantity, selectedVariant?.id);
       setCheckoutLoading(false);
       if (checkoutUrl && newTab) {
         newTab.location.href = checkoutUrl;
@@ -162,13 +228,15 @@ export default function ProductPage() {
     handleAddToCart();
   };
 
-  const fallbackImg = generatedProductImages[product.id];
-  const productImages = product.images && product.images.length > 0
-    ? product.images
-    : (fallbackImg ? [fallbackImg] : []);
   const imageDots = productImages.length > 0
     ? productImages.length
     : (product.configOptions?.colors?.length || 3);
+
+  const discountPct = computedComparePrice && computedComparePrice > computedPrice
+    ? Math.round(((computedComparePrice - computedPrice) / computedComparePrice) * 100)
+    : null;
+
+  const isHtmlDescription = product.description.trim().startsWith("<");
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
@@ -191,12 +259,14 @@ export default function ProductPage() {
         <section className="py-8 lg:py-12" data-testid="section-product-detail">
           <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
+
+              {/* Image Gallery */}
               <div className="space-y-4">
                 <div className="aspect-square bg-card rounded-3xl border border-border/50 flex items-center justify-center relative overflow-hidden" data-testid="container-product-image">
-                  {productImages.length > 0 ? (
+                  {activeImage ? (
                     <img
-                      src={productImages[activeImageIdx] || productImages[0]}
-                      alt={`${product.name} - Image ${activeImageIdx + 1}`}
+                      src={activeImage}
+                      alt={`${product.name}${variantTitle ? ` - ${variantTitle}` : ""}`}
                       className="w-full h-full object-cover max-w-full"
                       data-testid="img-product-main"
                     />
@@ -206,15 +276,12 @@ export default function ProductPage() {
                         <Package className="w-14 h-14 text-primary/30" />
                       </div>
                       <p className="text-sm text-muted-foreground/50 font-medium">Product Image</p>
-                      <p className="text-xs text-muted-foreground/30 mt-1">{product.name}</p>
                     </div>
                   )}
-                  {selectedColor && (
-                    <div
-                      className="absolute bottom-4 right-4 w-8 h-8 rounded-full border-2 border-white shadow-md"
-                      style={{ backgroundColor: product.configOptions?.colors?.find(c => c.name === selectedColor)?.hex }}
-                      data-testid="indicator-selected-color"
-                    />
+                  {discountPct && (
+                    <div className="absolute top-4 left-4 bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                      -{discountPct}%
+                    </div>
                   )}
                 </div>
                 {productImages.length > 1 ? (
@@ -222,9 +289,9 @@ export default function ProductPage() {
                     {productImages.map((img, i) => (
                       <button
                         key={i}
-                        onClick={() => setActiveImageIdx(i)}
-                        className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-all ${
-                          activeImageIdx === i
+                        onClick={() => { setActiveImageIdx(i); }}
+                        className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${
+                          !variantImage && activeImageIdx === i
                             ? "border-primary ring-1 ring-primary/30"
                             : "border-border/50 hover:border-primary/30"
                         }`}
@@ -235,49 +302,117 @@ export default function ProductPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center gap-2">
-                    {Array.from({ length: imageDots }).map((_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setActiveImageIdx(i)}
-                        className={`w-2.5 h-2.5 rounded-full transition-all ${
-                          activeImageIdx === i
-                            ? "bg-primary scale-110"
-                            : "bg-border hover:bg-muted-foreground/40"
-                        }`}
-                        data-testid={`button-image-dot-${i}`}
-                      />
-                    ))}
-                  </div>
+                  productImages.length === 0 && (
+                    <div className="flex items-center justify-center gap-2">
+                      {Array.from({ length: imageDots }).map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setActiveImageIdx(i)}
+                          className={`w-2.5 h-2.5 rounded-full transition-all ${
+                            activeImageIdx === i ? "bg-primary scale-110" : "bg-border hover:bg-muted-foreground/40"
+                          }`}
+                          data-testid={`button-image-dot-${i}`}
+                        />
+                      ))}
+                    </div>
+                  )
                 )}
               </div>
 
+              {/* Product Info */}
               <div className="lg:sticky lg:top-32 lg:self-start space-y-6">
                 <div>
+                  {product.productType && (
+                    <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1" data-testid="text-product-type">
+                      <Tag className="w-3 h-3" />
+                      {product.productType}
+                    </p>
+                  )}
                   <p className="text-sm font-semibold text-primary uppercase tracking-wider mb-2" data-testid="text-product-category">
                     {category?.title}
                   </p>
                   <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3" data-testid="heading-product-name">
                     {product.name}
                   </h1>
-                  <p className="text-lg text-muted-foreground leading-relaxed" data-testid="text-product-description">
+                  {product.vendor && (
+                    <p className="text-sm text-muted-foreground mb-2" data-testid="text-product-vendor">
+                      By <span className="font-medium text-foreground">{product.vendor}</span>
+                    </p>
+                  )}
+                  {currentSku && (
+                    <p className="text-xs text-muted-foreground mb-3" data-testid="text-product-sku">
+                      SKU: <span className="font-mono">{currentSku}</span>
+                    </p>
+                  )}
+                  <p className="text-base text-muted-foreground leading-relaxed" data-testid="text-product-description">
                     {product.shortDescription}
                   </p>
                 </div>
 
+                {/* Pricing */}
                 <div className="flex items-baseline gap-3">
                   <span className="text-3xl font-bold text-foreground tabular-nums" data-testid="text-product-price">
                     {formatPrice(computedPrice)}
                   </span>
-                  {computedPrice !== product.basePrice && (
-                    <span className="text-sm text-muted-foreground line-through tabular-nums" data-testid="text-base-price">
-                      {formatPrice(product.basePrice)}
+                  {computedComparePrice && computedComparePrice > computedPrice && (
+                    <span className="text-sm text-muted-foreground line-through tabular-nums" data-testid="text-compare-price">
+                      {formatPrice(computedComparePrice)}
                     </span>
                   )}
                   <span className="text-xs text-muted-foreground">excl. GST</span>
                 </div>
 
-                {hasConfig && (
+                {/* Shopify Variant Selectors */}
+                {hasShopifyVariants && optionGroups.length > 0 && (
+                  <div className="space-y-5 py-4 border-t border-border/40" data-testid="section-variant-selector">
+                    {optionGroups.map((group) => (
+                      <div key={group.name}>
+                        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">
+                          {group.name}
+                          {selectedOptions[group.name] && (
+                            <span className="normal-case text-foreground ml-1">— {selectedOptions[group.name]}</span>
+                          )}
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                          {group.values.map((value) => {
+                            const testOptions = { ...selectedOptions, [group.name]: value };
+                            const testVariant = findVariantByOptions(product.shopifyVariants!, testOptions);
+                            const isSelected = (selectedOptions[group.name] || product.shopifyVariants![0]?.options.find(o => o.name === group.name)?.value) === value;
+                            const isUnavailable = testVariant && !testVariant.availableForSale;
+                            return (
+                              <button
+                                key={value}
+                                onClick={() => handleOptionSelect(group.name, value)}
+                                disabled={isUnavailable || false}
+                                className={`px-4 py-2 rounded-xl border text-sm font-medium transition-all ${
+                                  isSelected
+                                    ? "border-primary bg-primary/8 text-primary"
+                                    : isUnavailable
+                                    ? "border-border/30 bg-muted/30 text-muted-foreground/50 line-through cursor-not-allowed"
+                                    : "border-border/50 bg-card hover:border-primary/30 text-foreground"
+                                }`}
+                                data-testid={`option-${group.name.toLowerCase().replace(/\s+/g, "-")}-${value.toLowerCase().replace(/\s+/g, "-")}`}
+                              >
+                                {value}
+                                {testVariant && testVariant.price !== product.shopifyVariants![0]?.price && (
+                                  <span className="ml-1 text-xs text-muted-foreground">
+                                    {formatPrice(testVariant.price)}
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                    {selectedVariant && !selectedVariant.availableForSale && (
+                      <p className="text-sm text-amber-600 font-medium">This variant is currently out of stock.</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Legacy Config Options (seeded products) */}
+                {!hasShopifyVariants && hasLegacyConfig && (
                   <div className="space-y-5 py-4 border-t border-border/40" data-testid="section-configurator">
                     {product.configOptions?.colors && (
                       <div>
@@ -302,91 +437,47 @@ export default function ProductPage() {
                         </div>
                       </div>
                     )}
-
                     {product.configOptions?.materials && (
                       <div>
-                        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">
-                          Material
-                        </label>
+                        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">Material</label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {product.configOptions.materials.map((mat) => (
-                            <button
-                              key={mat.name}
-                              onClick={() => setSelectedMaterial(mat.name)}
-                              className={`text-left px-4 py-3 rounded-xl border text-sm transition-all ${
-                                selectedMaterial === mat.name
-                                  ? "border-primary bg-primary/5 text-foreground"
-                                  : "border-border/50 bg-card hover:border-primary/20 text-muted-foreground"
-                              }`}
-                              data-testid={`option-material-${mat.name.toLowerCase().replace(/\s+/g, "-")}`}
-                            >
+                            <button key={mat.name} onClick={() => setSelectedMaterial(mat.name)}
+                              className={`text-left px-4 py-3 rounded-xl border text-sm transition-all ${selectedMaterial === mat.name ? "border-primary bg-primary/5 text-foreground" : "border-border/50 bg-card hover:border-primary/20 text-muted-foreground"}`}
+                              data-testid={`option-material-${mat.name.toLowerCase().replace(/\s+/g, "-")}`}>
                               <span className="font-medium block">{mat.name}</span>
-                              {mat.priceModifier !== 0 && (
-                                <span className="text-xs text-primary">
-                                  {mat.priceModifier > 0 ? "+" : ""}{formatPrice(mat.priceModifier)}
-                                </span>
-                              )}
+                              {mat.priceModifier !== 0 && <span className="text-xs text-primary">{mat.priceModifier > 0 ? "+" : ""}{formatPrice(mat.priceModifier)}</span>}
                             </button>
                           ))}
                         </div>
                       </div>
                     )}
-
                     {product.configOptions?.sizes && (
                       <div>
-                        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">
-                          Size / Variant
-                        </label>
+                        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">Size / Variant</label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {product.configOptions.sizes.map((sz) => (
-                            <button
-                              key={sz.name}
-                              onClick={() => setSelectedSize(sz.name)}
-                              className={`text-left px-4 py-3 rounded-xl border text-sm transition-all ${
-                                selectedSize === sz.name
-                                  ? "border-primary bg-primary/5 text-foreground"
-                                  : "border-border/50 bg-card hover:border-primary/20 text-muted-foreground"
-                              }`}
-                              data-testid={`option-size-${sz.name.toLowerCase().replace(/\s+/g, "-")}`}
-                            >
+                            <button key={sz.name} onClick={() => setSelectedSize(sz.name)}
+                              className={`text-left px-4 py-3 rounded-xl border text-sm transition-all ${selectedSize === sz.name ? "border-primary bg-primary/5 text-foreground" : "border-border/50 bg-card hover:border-primary/20 text-muted-foreground"}`}
+                              data-testid={`option-size-${sz.name.toLowerCase().replace(/\s+/g, "-")}`}>
                               <span className="font-medium block">{sz.name}</span>
-                              {sz.priceModifier !== 0 && (
-                                <span className="text-xs text-primary">
-                                  {sz.priceModifier > 0 ? "+" : ""}{formatPrice(sz.priceModifier)}
-                                </span>
-                              )}
+                              {sz.priceModifier !== 0 && <span className="text-xs text-primary">{sz.priceModifier > 0 ? "+" : ""}{formatPrice(sz.priceModifier)}</span>}
                             </button>
                           ))}
                         </div>
                       </div>
                     )}
-
                     {product.configOptions?.addons && (
                       <div>
-                        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">
-                          Add-ons
-                        </label>
+                        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">Add-ons</label>
                         <div className="space-y-2">
                           {product.configOptions.addons.map((addon) => (
-                            <button
-                              key={addon.name}
-                              onClick={() => toggleAddon(addon.name)}
-                              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border text-sm transition-all ${
-                                selectedAddons.includes(addon.name)
-                                  ? "border-primary bg-primary/5"
-                                  : "border-border/50 bg-card hover:border-primary/20"
-                              }`}
-                              data-testid={`option-addon-${addon.name.toLowerCase().replace(/\s+/g, "-")}`}
-                            >
+                            <button key={addon.name} onClick={() => toggleAddon(addon.name)}
+                              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border text-sm transition-all ${selectedAddons.includes(addon.name) ? "border-primary bg-primary/5" : "border-border/50 bg-card hover:border-primary/20"}`}
+                              data-testid={`option-addon-${addon.name.toLowerCase().replace(/\s+/g, "-")}`}>
                               <div className="flex items-center gap-2.5">
-                                <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
-                                  selectedAddons.includes(addon.name)
-                                    ? "bg-primary border-primary"
-                                    : "border-border"
-                                }`}>
-                                  {selectedAddons.includes(addon.name) && (
-                                    <Check className="w-3 h-3 text-primary-foreground" />
-                                  )}
+                                <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${selectedAddons.includes(addon.name) ? "bg-primary border-primary" : "border-border"}`}>
+                                  {selectedAddons.includes(addon.name) && <Check className="w-3 h-3 text-primary-foreground" />}
                                 </div>
                                 <span className="font-medium text-foreground">{addon.name}</span>
                               </div>
@@ -399,34 +490,23 @@ export default function ProductPage() {
                   </div>
                 )}
 
+                {/* Quantity */}
                 <div className="flex items-center gap-3 py-2">
                   <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Qty</label>
                   <div className="flex items-center gap-1 border border-border/50 rounded-full">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full h-8 w-8"
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      disabled={quantity <= 1}
-                      data-testid="button-qty-decrease"
-                    >
+                    <Button variant="ghost" size="icon" className="rounded-full h-8 w-8"
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={quantity <= 1} data-testid="button-qty-decrease">
                       <Minus className="w-3.5 h-3.5" />
                     </Button>
-                    <span className="w-8 text-center text-sm font-semibold tabular-nums" data-testid="text-quantity">
-                      {quantity}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full h-8 w-8"
-                      onClick={() => setQuantity(quantity + 1)}
-                      data-testid="button-qty-increase"
-                    >
+                    <span className="w-8 text-center text-sm font-semibold tabular-nums" data-testid="text-quantity">{quantity}</span>
+                    <Button variant="ghost" size="icon" className="rounded-full h-8 w-8"
+                      onClick={() => setQuantity(quantity + 1)} data-testid="button-qty-increase">
                       <Plus className="w-3.5 h-3.5" />
                     </Button>
                   </div>
                 </div>
 
+                {/* Quality Badges */}
                 <div className="grid grid-cols-2 gap-3 mb-2">
                   {qualityBadges.map((badge) => (
                     <div key={badge.label} className="flex items-center gap-2 p-2.5 rounded-xl bg-card border border-border/50" data-testid={`badge-${badge.label.toLowerCase().replace(/\s+/g, "-")}`}>
@@ -436,25 +516,16 @@ export default function ProductPage() {
                   ))}
                 </div>
 
+                {/* Action Buttons */}
                 <div className="flex flex-col gap-3 pt-2 border-t border-border/40">
                   <div className="flex gap-3">
-                    <Button
-                      size="lg"
-                      className="flex-1 rounded-full gap-2 shadow-lg shadow-primary/20"
-                      onClick={handleAddToCart}
-                      data-testid="button-add-to-cart"
-                    >
+                    <Button size="lg" className="flex-1 rounded-full gap-2 shadow-lg shadow-primary/20"
+                      onClick={handleAddToCart} data-testid="button-add-to-cart">
                       <ShoppingCart className="w-4 h-4" />
                       Add to Cart
                     </Button>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="flex-1 rounded-full gap-2 border-primary/20 hover:bg-primary/5"
-                      onClick={handleBuyNow}
-                      disabled={checkoutLoading}
-                      data-testid="button-buy-now"
-                    >
+                    <Button size="lg" variant="outline" className="flex-1 rounded-full gap-2 border-primary/20 hover:bg-primary/5"
+                      onClick={handleBuyNow} disabled={checkoutLoading} data-testid="button-buy-now">
                       {checkoutLoading ? (
                         <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
                       ) : (
@@ -464,32 +535,16 @@ export default function ProductPage() {
                     </Button>
                   </div>
                   <div className="flex gap-3">
-                    <Button
-                      size="lg"
-                      variant="ghost"
-                      className="flex-1 rounded-full gap-2 text-muted-foreground"
-                      onClick={() => addItem(product.id, product.name, category?.title || "")}
-                      data-testid="button-add-enquiry"
-                    >
+                    <Button size="lg" variant="ghost" className="flex-1 rounded-full gap-2 text-muted-foreground"
+                      onClick={() => addItem(product.id, product.name, category?.title || "")} data-testid="button-add-enquiry">
                       {inEnquiryCart ? (
-                        <>
-                          <CheckCircle2 className="w-4 h-4 text-primary" />
-                          Added to Enquiry
-                        </>
+                        <><CheckCircle2 className="w-4 h-4 text-primary" />Added to Enquiry</>
                       ) : (
-                        <>
-                          <Package className="w-4 h-4" />
-                          Add to Enquiry
-                        </>
+                        <><Package className="w-4 h-4" />Add to Enquiry</>
                       )}
                     </Button>
                     <Link href="/enquiry" className="flex-1">
-                      <Button
-                        size="lg"
-                        variant="ghost"
-                        className="w-full rounded-full gap-2 text-muted-foreground"
-                        data-testid="button-bulk-quote"
-                      >
+                      <Button size="lg" variant="ghost" className="w-full rounded-full gap-2 text-muted-foreground" data-testid="button-bulk-quote">
                         <Send className="w-4 h-4" />
                         Bulk/Custom Quote
                       </Button>
@@ -501,6 +556,7 @@ export default function ProductPage() {
           </div>
         </section>
 
+        {/* Story Cards */}
         <section className="py-16" data-testid="section-storytelling">
           <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid md:grid-cols-3 gap-6">
@@ -517,19 +573,36 @@ export default function ProductPage() {
           </div>
         </section>
 
+        {/* Full Description */}
         <section className="py-12" data-testid="section-full-description">
           <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl">
-              <h2 className="text-2xl font-bold text-foreground mb-4">About This Product</h2>
-              <div className="text-muted-foreground leading-relaxed space-y-2">
-                {product.description.split('\n').filter(l => l.trim()).map((line, i) => (
-                  <p key={i}>{line}</p>
-                ))}
-              </div>
+              <h2 className="text-2xl font-bold text-foreground mb-6">About This Product</h2>
+              {isHtmlDescription ? (
+                <div
+                  className="prose prose-sm sm:prose-base max-w-none text-muted-foreground leading-relaxed
+                    [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_h4]:text-foreground
+                    [&_strong]:text-foreground [&_b]:text-foreground
+                    [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5
+                    [&_li]:mb-1 [&_p]:mb-3 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-3
+                    [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2
+                    [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-border [&_td]:px-3 [&_td]:py-2
+                    [&_th]:border [&_th]:border-border [&_th]:px-3 [&_th]:py-2 [&_th]:bg-muted [&_th]:font-semibold"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                  data-testid="html-product-description"
+                />
+              ) : (
+                <div className="text-muted-foreground leading-relaxed space-y-2">
+                  {product.description.split('\n').filter(l => l.trim()).map((line, i) => (
+                    <p key={i}>{line}</p>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </section>
 
+        {/* Specs, Features, Applications */}
         <section className="py-12 bg-card/50" data-testid="section-product-specs">
           <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -560,30 +633,41 @@ export default function ProductPage() {
                       <p className="text-sm text-foreground">{product.specifications.useCase}</p>
                     </div>
                   )}
+                  {!product.specifications.dimensions && !product.specifications.material && !product.specifications.weightCapacity && !product.specifications.useCase && (
+                    <p className="text-sm text-muted-foreground">See description for full specifications.</p>
+                  )}
                 </div>
               </div>
 
               <div>
                 <h3 className="text-lg font-bold text-foreground mb-4">Features</h3>
-                <ul className="space-y-2">
-                  {product.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2 text-sm text-foreground">
-                      <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
+                {product.features.length > 0 ? (
+                  <ul className="space-y-2">
+                    {product.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-2 text-sm text-foreground">
+                        <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-muted-foreground">See product description for features.</p>
+                )}
               </div>
 
               <div className="md:col-span-2">
                 <h3 className="text-lg font-bold text-foreground mb-4">Applications</h3>
-                <div className="flex flex-wrap gap-2">
-                  {product.applications.map((app) => (
-                    <span key={app} className="text-xs px-3 py-1.5 rounded-full bg-primary/8 text-primary font-medium" data-testid={`app-tag-${app.toLowerCase().replace(/\s+/g, "-")}`}>
-                      {app}
-                    </span>
-                  ))}
-                </div>
+                {product.applications.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {product.applications.map((app) => (
+                      <span key={app} className="text-xs px-3 py-1.5 rounded-full bg-primary/8 text-primary font-medium capitalize" data-testid={`app-tag-${app.toLowerCase().replace(/\s+/g, "-")}`}>
+                        {app.replace(/-/g, " ")}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">See product description for applications.</p>
+                )}
               </div>
             </div>
           </div>
