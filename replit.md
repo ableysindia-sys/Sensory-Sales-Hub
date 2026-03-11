@@ -1,7 +1,7 @@
 # Abley's Rehab - B2B/B2C Hybrid E-Commerce Platform
 
 ## Overview
-Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional therapy equipment company. UI closely replicates the visual design of ableys.in (Shopify Dawn theme). Features product catalogue with 9 categories (42 professional B2B products), product configurator with dynamic pricing, Zustand shopping cart, mock Razorpay checkout, 3D sensory room builder, Gemini AI chat assistant, B2B enquiry system, and full admin panel with product CRUD, inventory, leads, and pages management.
+Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional therapy equipment company. UI closely replicates the visual design of ableys.in (Shopify Dawn theme). Features product catalogue with 9 categories (42 professional B2B products), product configurator with dynamic pricing, Zustand shopping cart, Shopify checkout, 3D sensory room builder, Gemini AI chat assistant, B2B enquiry system, and full admin panel with product CRUD, inventory, leads, and pages management.
 
 ## Architecture
 - **Frontend**: React + Tailwind CSS + shadcn/ui + Framer Motion + wouter (routing)
@@ -12,6 +12,7 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
   - B2C Shopping Cart: Zustand with `persist` middleware (localStorage key: `ableys-shopping-cart`)
   - B2B Enquiry Cart: React Context with localStorage (key: `ableys-enquiry-cart`)
   - Product Data: React Context (ProductsProvider) fetching from API with fallback to catalogue-data.ts
+- **Checkout**: Shopify Storefront API (Cart API) — no Razorpay
 - **3D**: react-three-fiber + @react-three/drei (sensory room builder)
 
 ## Brand
@@ -28,7 +29,6 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 - `/category/:slug` - Category page with sidebar category navigation, banner, sort dropdown, grid toggle, product grid
 - `/product/:slug` - Product detail page with configurator, dynamic pricing, B2C/B2B actions
 - `/enquiry` - Multi-step bulk order wizard (5 steps: Setup Type → Order Type → Category Selection → Budget & Timeline → Contact Form + Summary → Success page)
-- `/order-confirmation` - Order confirmation after successful checkout
 - `/contact` - Contact Us page (form, business hours, WhatsApp/phone quick connect, social links, Google Maps embed, bulk order CTA)
 - `/admin` - Admin panel (password-protected) with Dashboard, Leads, Products, and Pages tabs
 - `/sensory-room-builder` - 3D interactive room builder with product placement
@@ -69,7 +69,7 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 - Storefront API token: env secret SHOPIFY_STOREFRONT_TOKEN
 - API version: 2024-10
 - Client-side product slug → Shopify handle mapping in `client/src/lib/shopify.ts`
-- "Buy on Shopify" button on product pages for products with Shopify listings; falls back to Razorpay for others
+- "Buy on Shopify" button on product pages and cart drawer for products with Shopify listings
 - Checkout flow: server creates checkout via Storefront API GraphQL mutation → returns webUrl → frontend opens in new tab
 
 ### Admin (Bearer token auth)

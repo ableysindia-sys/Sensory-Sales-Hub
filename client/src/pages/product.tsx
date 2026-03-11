@@ -8,7 +8,6 @@ import { useShoppingCart } from "@/lib/shopping-cart";
 import { hasShopifyListing, getShopifyHandle, createShopifyCheckout, getShopifyProductUrl } from "@/lib/shopify";
 import { Navbar } from "@/components/navbar";
 import { SiteFooter } from "@/components/site-footer";
-import { RazorpayModal } from "@/components/razorpay-modal";
 import { Button } from "@/components/ui/button";
 import {
   ChevronRight,
@@ -72,7 +71,6 @@ export default function ProductPage() {
   const [selectedSize, setSelectedSize] = useState<string | undefined>(undefined);
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
   const [quantity, setQuantity] = useState(1);
-  const [showRazorpay, setShowRazorpay] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
 
@@ -160,7 +158,6 @@ export default function ProductPage() {
       }
     }
     handleAddToCart();
-    setShowRazorpay(true);
   };
 
   const fallbackImg = generatedProductImages[product.id];
@@ -591,7 +588,6 @@ export default function ProductPage() {
         </section>
       </main>
       <SiteFooter />
-      <RazorpayModal open={showRazorpay} onOpenChange={setShowRazorpay} />
     </div>
   );
 }

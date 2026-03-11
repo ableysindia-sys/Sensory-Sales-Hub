@@ -16,7 +16,6 @@ import CategoryPage from "./pages/category";
 import ProductPage from "./pages/product";
 import EnquiryCartPage from "./pages/enquiry-cart";
 import AllProducts from "./pages/all-products";
-import OrderConfirmation from "./pages/order-confirmation";
 import SensoryRoomBuilder from "./pages/sensory-room-builder";
 import ContactPage from "./pages/contact";
 import AdminPage from "./pages/admin";
@@ -40,7 +39,6 @@ function Router() {
         <Route path="/category/:slug" component={CategoryPage} />
         <Route path="/product/:slug" component={ProductPage} />
         <Route path="/enquiry" component={EnquiryCartPage} />
-        <Route path="/order-confirmation" component={OrderConfirmation} />
         <Route path="/contact" component={ContactPage} />
         <Route path="/sensory-room-builder" component={SensoryRoomBuilder} />
         <Route path="/admin" component={AdminPage} />

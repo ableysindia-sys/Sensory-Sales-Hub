@@ -11,7 +11,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { RazorpayModal } from "@/components/razorpay-modal";
 import { ShoppingCart, Minus, Plus, Trash2, ArrowRight, ShoppingBag, Package, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -122,7 +121,6 @@ function EmptyCartState({ onClose }: { onClose: () => void }) {
 }
 
 export function CartDrawer() {
-  const [showRazorpay, setShowRazorpay] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const { toast } = useToast();
   const {
@@ -176,9 +174,6 @@ export function CartDrawer() {
         description: "Could not connect to Shopify. Please try again.",
         variant: "destructive",
       });
-    } else {
-      closeDrawer();
-      setShowRazorpay(true);
     }
   };
 
@@ -261,7 +256,6 @@ export function CartDrawer() {
           )}
         </SheetContent>
       </Sheet>
-      <RazorpayModal open={showRazorpay} onOpenChange={setShowRazorpay} />
     </>
   );
 }
