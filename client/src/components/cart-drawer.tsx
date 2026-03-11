@@ -39,8 +39,9 @@ function CartItemRow({ item }: { item: CartItem }) {
 
   return (
     <div className="flex flex-col gap-3 py-4" data-testid={`cart-item-${item.productId}`}>
-      <div className="flex items-start justify-between gap-2">
-        <div className="w-14 h-14 rounded-xl overflow-hidden border border-border/50 flex-shrink-0 bg-muted/20 flex items-center justify-center">
+      {/* Top row: image + name + price */}
+      <div className="flex items-start gap-3">
+        <div className="w-16 h-16 rounded-xl overflow-hidden border border-border/50 flex-shrink-0 bg-muted/20 flex items-center justify-center">
           {item.image ? (
             <img src={item.image} alt={item.productName} className="w-full h-full object-cover" />
           ) : (
@@ -48,59 +49,63 @@ function CartItemRow({ item }: { item: CartItem }) {
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-medium leading-tight truncate" data-testid={`text-cart-item-name-${item.productId}`}>
+          <h4 className="text-sm font-medium leading-snug line-clamp-2 pr-1" data-testid={`text-cart-item-name-${item.productId}`}>
             {item.productName}
           </h4>
-          <p className="text-xs text-muted-foreground mt-0.5">{item.category}</p>
           {configDetails.length > 0 && (
             <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
               {configDetails.join(" · ")}
             </p>
           )}
+          <p className="text-sm font-semibold tabular-nums mt-1.5" data-testid={`text-line-total-${item.productId}`}>
+            {formatPrice(lineTotal)}
+            {item.quantity > 1 && (
+              <span className="text-xs font-normal text-muted-foreground ml-1.5">
+                ({formatPrice(item.unitPrice)} each)
+              </span>
+            )}
+          </p>
         </div>
-        <Button
-          size="icon"
-          variant="ghost"
-          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 flex-shrink-0"
-          onClick={() => removeFromCart(item.cartKey)}
-          data-testid={`button-remove-item-${item.productId}`}
-        >
-          <Trash2 className="w-4 h-4" />
-        </Button>
       </div>
+
+      {/* Bottom row: qty controls + remove */}
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1">
-          <Button
-            size="icon"
-            variant="outline"
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
             onClick={() => updateQuantity(item.cartKey, item.quantity - 1)}
             disabled={item.quantity <= 1}
+            className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-foreground disabled:opacity-30 disabled:cursor-not-allowed hover:bg-muted transition-colors"
             data-testid={`button-decrease-qty-${item.productId}`}
+            aria-label="Decrease quantity"
           >
-            <Minus className="w-3 h-3" />
-          </Button>
-          <span className="w-8 text-center text-sm font-medium tabular-nums" data-testid={`text-qty-${item.productId}`}>
+            <Minus className="w-3.5 h-3.5" />
+          </button>
+          <span className="w-8 text-center text-sm font-semibold tabular-nums" data-testid={`text-qty-${item.productId}`}>
             {item.quantity}
           </span>
-          <Button
-            size="icon"
-            variant="outline"
+          <button
+            type="button"
             onClick={() => updateQuantity(item.cartKey, item.quantity + 1)}
+            className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-foreground hover:bg-muted transition-colors"
             data-testid={`button-increase-qty-${item.productId}`}
+            aria-label="Increase quantity"
           >
-            <Plus className="w-3 h-3" />
-          </Button>
+            <Plus className="w-3.5 h-3.5" />
+          </button>
         </div>
-        <div className="text-right">
-          <p className="text-sm font-semibold tabular-nums" data-testid={`text-line-total-${item.productId}`}>
-            {formatPrice(lineTotal)}
-          </p>
-          {item.quantity > 1 && (
-            <p className="text-xs text-muted-foreground tabular-nums">
-              {formatPrice(item.unitPrice)} each
-            </p>
-          )}
-        </div>
+
+        {/* Remove button — always visible */}
+        <button
+          type="button"
+          onClick={() => removeFromCart(item.cartKey)}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 transition-colors"
+          data-testid={`button-remove-item-${item.productId}`}
+          aria-label={`Remove ${item.productName} from cart`}
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+          Remove
+        </button>
       </div>
     </div>
   );
