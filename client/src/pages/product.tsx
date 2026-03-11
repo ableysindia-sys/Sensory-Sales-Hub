@@ -571,7 +571,7 @@ export default function ProductPage() {
             <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
 
               {/* Image Gallery */}
-              <div className="space-y-3">
+              <div className="space-y-3 min-w-0 w-full">
                 {/* Main image — aspect-[4/3] on mobile keeps it compact; square on larger screens */}
                 <div
                   className="w-full aspect-[4/3] sm:aspect-square bg-card rounded-2xl sm:rounded-3xl border border-border/50 relative overflow-hidden"
@@ -650,10 +650,10 @@ export default function ProductPage() {
               </div>
 
               {/* Product Info Panel */}
-              <div className="flex flex-col gap-5 lg:sticky lg:top-32 lg:self-start">
+              <div className="flex flex-col gap-5 min-w-0 w-full lg:sticky lg:top-32 lg:self-start">
 
                 {/* Category + Rating */}
-                <div className="order-1">
+                <div className="order-1 min-w-0">
                   <p
                     className="text-sm font-semibold text-primary uppercase tracking-wider mb-2"
                     data-testid="text-product-category"
@@ -662,14 +662,14 @@ export default function ProductPage() {
                   </p>
 
                   <h1
-                    className="text-2xl sm:text-3xl font-bold text-foreground mb-3 leading-tight"
+                    className="text-lg sm:text-3xl font-bold text-foreground mb-3 leading-tight"
                     data-testid="heading-product-name"
                   >
                     {product.name}
                   </h1>
 
                   {/* Star rating */}
-                  <div className="flex items-center gap-2 mb-3" data-testid="container-ratings">
+                  <div className="flex items-center flex-wrap gap-x-2 gap-y-1 mb-3" data-testid="container-ratings">
                     <StarRow stars={Math.round(avgRating)} />
                     <span className="text-sm font-semibold text-foreground tabular-nums">
                       {avgRating.toFixed(1)}
@@ -720,7 +720,7 @@ export default function ProductPage() {
                   )}
 
                   <p
-                    className="text-sm text-muted-foreground leading-relaxed line-clamp-3 sm:line-clamp-none"
+                    className="text-sm text-muted-foreground leading-relaxed line-clamp-2 sm:line-clamp-none"
                     data-testid="text-product-description"
                   >
                     {product.shortDescription}
@@ -744,7 +744,7 @@ export default function ProductPage() {
                 </div>
 
                 {/* Price — second on mobile, third on desktop */}
-                <div className="order-2 lg:order-3 flex items-baseline gap-3">
+                <div className="order-2 lg:order-3 flex items-baseline flex-wrap gap-3">
                   <span
                     className="text-3xl font-bold text-foreground tabular-nums"
                     data-testid="text-product-price"
@@ -989,7 +989,7 @@ export default function ProductPage() {
                 )}
 
                 {/* Quantity + Action Buttons — fourth on mobile (right after price/variants), fifth on desktop */}
-                <div className="order-4 lg:order-5">
+                <div className="order-4 lg:order-5 min-w-0">
 
                 {/* Quantity */}
                 <div className="flex items-center gap-3 py-2">
@@ -1056,11 +1056,11 @@ export default function ProductPage() {
                       {checkoutLoading ? "Opening checkout…" : "Buy Now"}
                     </Button>
                   </div>
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Button
-                      size="lg"
+                      size="default"
                       variant="ghost"
-                      className="flex-1 rounded-full gap-2 text-muted-foreground"
+                      className="flex-1 rounded-full gap-2 text-muted-foreground text-sm"
                       onClick={() =>
                         addItem(product.id, product.name, category?.title || "")
                       }
@@ -1080,9 +1080,9 @@ export default function ProductPage() {
                     </Button>
                     <Link href="/enquiry" className="flex-1">
                       <Button
-                        size="lg"
+                        size="default"
                         variant="ghost"
-                        className="w-full rounded-full gap-2 text-muted-foreground"
+                        className="w-full rounded-full gap-2 text-muted-foreground text-sm"
                         data-testid="button-bulk-quote"
                       >
                         <Send className="w-4 h-4" />
