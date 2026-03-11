@@ -70,6 +70,7 @@ interface ProductContextValue {
   getProductBySlug: (slug: string) => CatalogueProduct | undefined;
   getCategoryBySlug: (slug: string) => Category | undefined;
   getProductCategory: (product: CatalogueProduct) => Category | undefined;
+  getProductsByCategory: (categorySlug: string) => CatalogueProduct[];
   getAllProducts: () => CatalogueProduct[];
   getNewArrivals: () => CatalogueProduct[];
   getBestSellers: () => CatalogueProduct[];
@@ -104,6 +105,7 @@ export function ProductsProvider({ children }: { children: React.ReactNode }) {
     getProductBySlug: (slug: string) => products.find(p => p.id === slug),
     getCategoryBySlug: (slug: string) => categories.find(c => c.slug === slug),
     getProductCategory: (product: CatalogueProduct) => categories.find(c => c.slug === product.categorySlug),
+    getProductsByCategory: (categorySlug: string) => products.filter(p => p.categorySlug === categorySlug),
     getAllProducts: () => products,
     getNewArrivals: () => {
       return products.filter(p => p.comparePrice && p.comparePrice > p.basePrice).slice(0, 8);
