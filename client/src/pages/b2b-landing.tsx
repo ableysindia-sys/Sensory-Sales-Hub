@@ -32,6 +32,11 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import logoPath from "@assets/ableys_rehab_logo.png";
+import heroBgImg from "@assets/generated_images/hero-banner.png";
+import swingImg from "@assets/generated_images/acrobat-swing.png";
+import crashMatImg from "@assets/generated_images/crash-mat.png";
+import therapyMatImg from "@assets/generated_images/therapy-mat.png";
+import ballpoolImg from "@assets/generated_images/ballpool-4x4.png";
 import {
   CheckCircle2,
   Clock,
@@ -249,53 +254,107 @@ export default function B2BLandingPage() {
 
       <main>
         {/* ── Hero ── */}
-        <section className="relative overflow-hidden bg-primary text-white">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(255,255,255,0.06),transparent_65%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(0,0,0,0.25),transparent_60%)]" />
+        <section className="relative overflow-hidden bg-gray-950 text-white" data-testid="section-b2b-hero">
+
+          {/* Background image */}
+          <img
+            src={heroBgImg}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+            style={{ opacity: 0.35 }}
+            loading="eager"
+          />
+
+          {/* Rich layered gradient — deep navy left, brand blue mid, transparent right */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0d1033] via-[#1f2880]/90 to-[#4A53A0]/50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40" />
+          {/* Subtle radial highlight top-right */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_90%_20%,rgba(255,255,255,0.04),transparent)]" />
+
+          {/* Content grid */}
           <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24 lg:py-28">
-            <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 text-white/90 text-xs font-semibold tracking-widest uppercase mb-6">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                For OT Clinics · Schools · Rehab Centres
-              </div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display leading-[1.1] mb-6">
-                Set Up a World-Class<br />
-                Sensory Room — <span className="italic text-amber-300">Without</span><br />
-                the Import Headache.
-              </h1>
-              <p className="text-lg sm:text-xl text-white/80 leading-relaxed mb-8 max-w-xl">
-                India's most trusted source for clinical-grade sensory and OT equipment. Bulk pricing, GST invoices, free pan-India shipping — tailored for institutions.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button
-                  size="lg"
-                  className="bg-white text-primary hover:bg-white/90 rounded-full px-8 font-semibold text-base shadow-xl"
-                  onClick={scrollToForm}
-                  data-testid="button-get-quote-hero"
-                >
-                  Get Your Custom Quote <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
-                <a
-                  href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20discuss%20bulk%20B2B%20pricing%20for%20my%20institution."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-testid="link-whatsapp-hero"
-                >
-                  <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10 rounded-full px-8 font-medium text-base w-full sm:w-auto">
-                    <MessageCircle className="mr-2 w-4 h-4" /> WhatsApp Us Now
+            <div className="grid lg:grid-cols-[1fr_420px] gap-10 lg:gap-16 items-center">
+
+              {/* Left: copy */}
+              <div>
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm text-white/90 text-xs font-semibold tracking-widest uppercase mb-6 border border-white/10">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                  For OT Clinics · Schools · Rehab Centres
+                </div>
+                <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-bold font-display leading-[1.08] mb-6 drop-shadow-xl">
+                  Set Up a World-Class<br />
+                  Sensory Room —{" "}
+                  <span className="italic text-amber-300">Without</span><br />
+                  the Import Headache.
+                </h1>
+                <p className="text-base sm:text-lg text-white/80 leading-relaxed mb-8 max-w-lg">
+                  India's most trusted source for clinical-grade sensory and OT equipment. Bulk pricing, GST invoices, free pan-India shipping — tailored for institutions.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button
+                    size="lg"
+                    className="bg-white text-gray-900 hover:bg-gray-50 rounded-full px-8 font-semibold text-base shadow-2xl shadow-black/40 border-0 w-full sm:w-auto"
+                    onClick={scrollToForm}
+                    data-testid="button-get-quote-hero"
+                  >
+                    Get Your Custom Quote <ArrowRight className="ml-2 w-4 h-4" />
                   </Button>
-                </a>
+                  <a
+                    href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20discuss%20bulk%20B2B%20pricing%20for%20my%20institution."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-testid="link-whatsapp-hero"
+                  >
+                    <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 rounded-full px-8 font-medium text-base w-full sm:w-auto backdrop-blur-sm">
+                      <MessageCircle className="mr-2 w-4 h-4" /> WhatsApp Us Now
+                    </Button>
+                  </a>
+                </div>
+
+                {/* Inline trust cues */}
+                <div className="flex flex-wrap gap-x-5 gap-y-1.5 mt-7">
+                  {[
+                    { icon: ShieldCheck, text: "OT-curated catalogue" },
+                    { icon: Truck, text: "Free shipping across India" },
+                    { icon: Receipt, text: "GST invoices included" },
+                  ].map(({ icon: Icon, text }) => (
+                    <span key={text} className="flex items-center gap-1.5 text-xs text-white/60">
+                      <Icon className="w-3.5 h-3.5 text-white/40" /> {text}
+                    </span>
+                  ))}
+                </div>
               </div>
+
+              {/* Right: product image mosaic (desktop only) */}
+              <div className="hidden lg:grid grid-cols-2 gap-3" aria-hidden="true">
+                <div className="col-span-2 rounded-2xl overflow-hidden aspect-[16/9] border border-white/10 shadow-2xl">
+                  <img src={swingImg} alt="Therapy swing" className="w-full h-full object-cover" />
+                </div>
+                <div className="rounded-2xl overflow-hidden aspect-square border border-white/10 shadow-xl">
+                  <img src={crashMatImg} alt="Crash mat" className="w-full h-full object-cover" />
+                </div>
+                <div className="rounded-2xl overflow-hidden aspect-square border border-white/10 shadow-xl">
+                  <img src={therapyMatImg} alt="Therapy mat" className="w-full h-full object-cover" />
+                </div>
+                <div className="col-span-2 rounded-2xl overflow-hidden aspect-[16/7] border border-white/10 shadow-xl">
+                  <img src={ballpoolImg} alt="Ball pool" className="w-full h-full object-cover" />
+                </div>
+                <div className="col-span-2 text-center">
+                  <p className="text-xs text-white/40 font-medium tracking-wider uppercase">116+ products in catalogue</p>
+                </div>
+              </div>
+
             </div>
           </div>
 
-          {/* Stats ribbon inside hero */}
-          <div className="relative border-t border-white/15 bg-black/20">
+          {/* Stats ribbon */}
+          <div className="relative border-t border-white/10 bg-black/35 backdrop-blur-sm">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
               {STATS.map((s) => (
                 <div key={s.label}>
                   <p className="text-2xl sm:text-3xl font-bold text-amber-300 font-display">{s.value}</p>
-                  <p className="text-xs text-white/70 mt-0.5">{s.label}</p>
+                  <p className="text-xs text-white/65 mt-0.5">{s.label}</p>
                 </div>
               ))}
             </div>

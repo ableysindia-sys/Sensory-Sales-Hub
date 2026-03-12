@@ -52,6 +52,20 @@ function Router() {
   );
 }
 
+function GlobalOverlays() {
+  const [location] = useLocation();
+  const isStandalonePage = location === "/lp";
+  return (
+    <>
+      {!isStandalonePage && <MobileBottomNav />}
+      {!isStandalonePage && <ChatWidget />}
+      {!isStandalonePage && <WhatsAppFab />}
+      <CartDrawer />
+      <Toaster />
+    </>
+  );
+}
+
 function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="ableys-rehab-theme">
@@ -60,11 +74,7 @@ function App() {
           <ProductsProvider>
             <EnquiryCartProvider>
               <Router />
-              <MobileBottomNav />
-              <CartDrawer />
-              <ChatWidget />
-              <WhatsAppFab />
-              <Toaster />
+              <GlobalOverlays />
             </EnquiryCartProvider>
           </ProductsProvider>
         </TooltipProvider>
