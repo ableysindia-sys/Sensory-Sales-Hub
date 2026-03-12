@@ -64,10 +64,32 @@ export const pages = pgTable("pages", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const sampleRequests = pgTable("sample_requests", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  phone: text("phone").notNull(),
+  city: text("city").notNull(),
+  role: text("role").notNull(),
+  institutionName: text("institution_name"),
+  setupType: text("setup_type").notNull(),
+  categories: text("categories").notNull(),
+  depositAmount: integer("deposit_amount").notNull().default(1499),
+  paymentStatus: text("payment_status").notNull().default("pending"),
+  razorpayOrderId: text("razorpay_order_id"),
+  razorpayPaymentId: text("razorpay_payment_id"),
+  status: text("status").notNull().default("new"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const insertCategorySchema = createInsertSchema(categories).omit({ id: true });
 export const insertProductSchema = createInsertSchema(products).omit({ id: true, createdAt: true });
 export const insertLeadSchema = createInsertSchema(leads).omit({ id: true, status: true, createdAt: true });
 export const insertPageSchema = createInsertSchema(pages).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertSampleRequestSchema = createInsertSchema(sampleRequests).omit({
+  id: true, paymentStatus: true, razorpayOrderId: true, razorpayPaymentId: true, status: true, createdAt: true,
+});
 
 export type Category = typeof categories.$inferSelect;
 export type InsertCategory = z.infer<typeof insertCategorySchema>;
@@ -77,3 +99,5 @@ export type Lead = typeof leads.$inferSelect;
 export type InsertLead = z.infer<typeof insertLeadSchema>;
 export type Page = typeof pages.$inferSelect;
 export type InsertPage = z.infer<typeof insertPageSchema>;
+export type SampleRequest = typeof sampleRequests.$inferSelect;
+export type InsertSampleRequest = z.infer<typeof insertSampleRequestSchema>;

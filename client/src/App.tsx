@@ -24,6 +24,7 @@ import AdminPage from "./pages/admin";
 import DynamicPage from "./pages/dynamic-page";
 import AboutPage from "./pages/about";
 import B2BLandingPage from "./pages/b2b-landing";
+import SampleRequestPage from "./pages/sample-request";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -47,6 +48,7 @@ function Router() {
         <Route path="/admin" component={AdminPage} />
         <Route path="/about" component={AboutPage} />
         <Route path="/lp" component={B2BLandingPage} />
+        <Route path="/sample" component={SampleRequestPage} />
         <Route path="/page/:slug" component={DynamicPage} />
         <Route component={NotFound} />
       </Switch>
@@ -56,7 +58,7 @@ function Router() {
 
 function GlobalOverlays() {
   const [location] = useLocation();
-  const isStandalonePage = location === "/lp";
+  const isStandalonePage = location === "/lp" || location === "/sample";
   return (
     <>
       {!isStandalonePage && <MobileBottomNav />}

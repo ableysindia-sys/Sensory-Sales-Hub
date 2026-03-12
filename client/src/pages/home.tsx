@@ -8,7 +8,7 @@ import { BulkEnquiryForm } from "@/components/bulk-enquiry-form";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowRight, Building2, GraduationCap, Heart, ShieldCheck, Truck, BadgeIndianRupee } from "lucide-react";
+import { ArrowRight, Building2, GraduationCap, Heart, ShieldCheck, Truck, BadgeIndianRupee, Gift, RotateCcw, Package } from "lucide-react";
 import featuredSwingsImg from "@assets/generated_images/featured-swings-banner.png";
 import { useProducts } from "@/lib/product-provider";
 
@@ -64,6 +64,40 @@ function AudienceChooser() {
               </div>
             </Link>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SampleKitBanner() {
+  return (
+    <section className="bg-gradient-to-r from-primary/8 via-primary/5 to-primary/8 border-y border-primary/15 py-8 sm:py-10" data-testid="section-sample-kit-banner">
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10">
+          <div className="flex-1 text-center sm:text-left">
+            <div className="inline-flex items-center gap-2 text-xs font-semibold text-primary uppercase tracking-widest mb-2">
+              <Gift className="w-3.5 h-3.5" /> OT Trial Kit Programme
+            </div>
+            <h3 className="text-xl sm:text-2xl font-bold text-foreground font-display mb-2">
+              Try our equipment before committing
+            </h3>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto sm:mx-0 leading-relaxed">
+              Request a curated 5-item sample kit for your clinic or school. Pay a <strong>₹1,499 refundable deposit</strong> — fully credited on your first order.
+            </p>
+            <div className="flex flex-wrap gap-4 mt-4 justify-center sm:justify-start text-xs text-muted-foreground">
+              <span className="flex items-center gap-1.5"><RotateCcw className="w-3.5 h-3.5 text-primary" /> 100% refundable</span>
+              <span className="flex items-center gap-1.5"><Package className="w-3.5 h-3.5 text-primary" /> Dispatched in 48 hrs</span>
+              <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-primary" /> OT-curated items</span>
+            </div>
+          </div>
+          <div className="shrink-0">
+            <Link href="/sample">
+              <Button size="lg" className="rounded-full px-7 gap-2 h-12 shadow-lg shadow-primary/25 font-semibold" data-testid="button-sample-kit-homepage">
+                Request Sample Kit <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </section>
@@ -185,6 +219,7 @@ export default function Home() {
       <main id="main-content" className="pb-16 lg:pb-0">
         <Hero />
         <AudienceChooser />
+        <SampleKitBanner />
         <QuickTrustBar />
         <CategoryGrid />
         <FeaturedSwings />

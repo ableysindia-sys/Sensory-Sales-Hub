@@ -1,12 +1,14 @@
 import {
   leads, categories as categoriesTable, products as productsTable, pages as pagesTable,
+  sampleRequests as sampleRequestsTable,
   type Lead, type InsertLead,
   type Category, type InsertCategory,
   type Product, type InsertProduct,
   type Page, type InsertPage,
+  type SampleRequest, type InsertSampleRequest,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, count, asc, sql } from "drizzle-orm";
+import { eq, desc, count, asc } from "drizzle-orm";
 
 export interface IStorage {
   createLead(lead: InsertLead): Promise<Lead>;
@@ -40,6 +42,12 @@ export interface IStorage {
   createPage(page: InsertPage): Promise<Page>;
   updatePage(id: number, data: Partial<InsertPage>): Promise<Page | undefined>;
   deletePage(id: number): Promise<boolean>;
+
+  createSampleRequest(req: InsertSampleRequest): Promise<SampleRequest>;
+  getSampleRequests(): Promise<SampleRequest[]>;
+  getSampleRequest(id: number): Promise<SampleRequest | undefined>;
+  updateSampleRequestPayment(id: number, paymentStatus: string, razorpayOrderId?: string, razorpayPaymentId?: string): Promise<SampleRequest | undefined>;
+  updateSampleRequestStatus(id: number, status: string): Promise<SampleRequest | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -162,6 +170,29 @@ export class DatabaseStorage implements IStorage {
   async deletePage(id: number): Promise<boolean> {
     const result = await db.delete(pagesTable).where(eq(pagesTable.id, id)).returning();
     return result.length > 0;
+  }
+
+  async createSampleRequest(req: InsertSampleRequest): Promise<SampleRequest> {
+    const [created] = await db.insert(sampleRequestsTable).values(req).returning();
+    return created;
+  }
+  async getSampleRequests(): Promise<SampleRequest[]> {
+    return db.select().from(sampleRequestsTable).orderBy(desc(sampleRequestsTable.createdAt));
+  }
+  async getSampleRequest(id: number): Promise<SampleRequest | undefined> {
+    const [req] = await db.select().from(sampleRequestsTable).where(eq(sampleRequestsTable.id, id));
+    return req;
+  }
+  async updateSampleRequestPayment(id: number, paymentStatus: string, razorpayOrderId?: string, razorpayPaymentId?: string): Promise<SampleRequest | undefined> {
+    const data: Partial<SampleRequest> = { paymentStatus };
+    if (razorpayOrderId) data.razorpayOrderId = razorpayOrderId;
+    if (razorpayPaymentId) data.razorpayPaymentId = razorpayPaymentId;
+    const [updated] = await db.update(sampleRequestsTable).set(data).where(eq(sampleRequestsTable.id, id)).returning();
+    return updated;
+  }
+  async updateSampleRequestStatus(id: number, status: string): Promise<SampleRequest | undefined> {
+    const [updated] = await db.update(sampleRequestsTable).set({ status }).where(eq(sampleRequestsTable.id, id)).returning();
+    return updated;
   }
 }
 

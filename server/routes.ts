@@ -7,6 +7,10 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import crypto from "crypto";
 import { syncShopifyProducts, startPeriodicSync } from "./shopify-sync";
 
+const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
+const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
+const DEPOSIT_AMOUNT_PAISE = 149900; // ₹1,499 in paise
+
 const SYSTEM_PROMPT = `You are a friendly, knowledgeable assistant for Abley's Rehab — a professional therapy equipment company based in India. You help occupational therapists, physiotherapists, special educators, parents, and clinic owners find the right rehabilitation and sensory integration equipment.
 
 Key facts about Abley's Rehab:
@@ -561,6 +565,92 @@ export async function registerRoutes(
     } catch (err) {
       console.error("Shopify sync error:", err);
       res.status(500).json({ message: "Sync failed" });
+    }
+  });
+
+  // ── Sample Request routes ──────────────────────────────────────────────
+  const sampleRequestSchema = z.object({
+    name: z.string().min(2),
+    email: z.string().email(),
+    phone: z.string().min(10),
+    city: z.string().min(2),
+    role: z.string().min(2),
+    institutionName: z.string().optional(),
+    setupType: z.string().min(2),
+    categories: z.string().min(1),
+    depositAmount: z.number().default(1499),
+    notes: z.string().optional(),
+  });
+
+  app.post("/api/sample-requests", async (req, res) => {
+    try {
+      const data = sampleRequestSchema.parse(req.body);
+      const sampleReq = await storage.createSampleRequest(data);
+      res.json({ id: sampleReq.id, success: true });
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: "Invalid data", errors: err.errors });
+      res.status(500).json({ message: "Failed to submit request" });
+    }
+  });
+
+  app.get("/api/admin/sample-requests", requireAdmin, async (_req, res) => {
+    try {
+      const requests = await storage.getSampleRequests();
+      res.json(requests);
+    } catch { res.status(500).json({ message: "Failed" }); }
+  });
+
+  app.patch("/api/admin/sample-requests/:id/status", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id as string);
+      const { status } = req.body as { status: string };
+      const updated = await storage.updateSampleRequestStatus(id, status);
+      if (!updated) return res.status(404).json({ message: "Not found" });
+      res.json(updated);
+    } catch { res.status(500).json({ message: "Failed" }); }
+  });
+
+  // ── Razorpay deposit order ──────────────────────────────────────────────
+  app.post("/api/razorpay/create-order", async (req, res) => {
+    if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
+      return res.json({ manual: true, message: "Payment gateway not configured — we'll send a WhatsApp payment link within 2 hours." });
+    }
+    try {
+      const { sampleRequestId } = req.body as { sampleRequestId: number };
+      const Razorpay = (await import("razorpay")).default;
+      const rzp = new Razorpay({ key_id: RAZORPAY_KEY_ID, key_secret: RAZORPAY_KEY_SECRET });
+      const order = await rzp.orders.create({
+        amount: DEPOSIT_AMOUNT_PAISE,
+        currency: "INR",
+        receipt: `sample_${sampleRequestId}`,
+        notes: { sampleRequestId: String(sampleRequestId) },
+      });
+      await storage.updateSampleRequestPayment(sampleRequestId, "order_created", order.id as string);
+      res.json({ orderId: order.id, amount: DEPOSIT_AMOUNT_PAISE, currency: "INR", keyId: RAZORPAY_KEY_ID });
+    } catch (err) {
+      console.error("Razorpay order error:", err);
+      res.status(500).json({ message: "Failed to create payment order" });
+    }
+  });
+
+  app.post("/api/razorpay/verify", async (req, res) => {
+    if (!RAZORPAY_KEY_SECRET) return res.status(400).json({ message: "Payment gateway not configured" });
+    try {
+      const { razorpay_order_id, razorpay_payment_id, razorpay_signature, sampleRequestId } = req.body as {
+        razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string; sampleRequestId: number;
+      };
+      const generated = crypto
+        .createHmac("sha256", RAZORPAY_KEY_SECRET)
+        .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+        .digest("hex");
+      if (generated !== razorpay_signature) {
+        return res.status(400).json({ message: "Payment verification failed" });
+      }
+      await storage.updateSampleRequestPayment(sampleRequestId, "paid", razorpay_order_id, razorpay_payment_id);
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Razorpay verify error:", err);
+      res.status(500).json({ message: "Verification failed" });
     }
   });
 

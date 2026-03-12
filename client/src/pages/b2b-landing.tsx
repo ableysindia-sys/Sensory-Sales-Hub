@@ -308,7 +308,7 @@ export default function B2BLandingPage() {
                 </div>
 
                 {/* Secondary CTAs */}
-                <div className="flex flex-wrap gap-3 items-center mb-5 sm:mb-0">
+                <div className="flex flex-wrap gap-3 items-center mb-3 sm:mb-0">
                   <button
                     onClick={scrollToForm}
                     className="text-white/70 hover:text-white text-sm font-medium underline underline-offset-2 transition-colors"
@@ -325,6 +325,18 @@ export default function B2BLandingPage() {
                     data-testid="link-whatsapp-hero"
                   >
                     <MessageCircle className="w-3.5 h-3.5" /> WhatsApp us
+                  </a>
+                </div>
+                {/* Sample Kit CTA */}
+                <div className="flex items-center gap-2 mb-5 sm:mb-0">
+                  <div className="h-px w-4 bg-white/20" />
+                  <a
+                    href="/sample"
+                    className="flex items-center gap-1.5 text-xs text-white/60 hover:text-white font-medium transition-colors group"
+                    data-testid="link-sample-kit-b2b"
+                  >
+                    <span className="text-white/40">🎁</span>
+                    Not sure yet? <span className="underline underline-offset-2 group-hover:no-underline">Try our ₹1,499 OT Sample Kit first →</span>
                   </a>
                 </div>
 
@@ -848,6 +860,13 @@ export default function B2BLandingPage() {
             </div>
 
             <div className="flex flex-wrap gap-4 justify-center">
+              <a
+                href="/sample"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white text-primary font-semibold text-sm hover:bg-white/90 transition-colors shadow-lg"
+                data-testid="button-sample-kit-b2b-final"
+              >
+                🎁 Try OT Sample Kit — ₹1,499 deposit
+              </a>
               <button
                 onClick={scrollToForm}
                 className="text-white/65 hover:text-white text-sm font-medium underline underline-offset-2 transition-colors"
