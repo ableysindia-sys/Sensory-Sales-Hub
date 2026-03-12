@@ -764,7 +764,7 @@ export default function ProductPage() {
                       {discountPct}% off
                     </span>
                   )}
-                  <span className="text-xs text-muted-foreground ml-auto">excl. GST</span>
+                  <span className="text-xs text-muted-foreground ml-auto">incl. GST</span>
                 </div>
 
                 {/* Shopify Variant Selectors */}

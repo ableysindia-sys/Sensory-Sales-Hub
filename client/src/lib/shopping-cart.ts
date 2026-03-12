@@ -49,8 +49,6 @@ interface ShoppingCartState {
   toggleDrawer: () => void;
 }
 
-const GST_RATE = 0.18;
-
 export const useShoppingCart = create<ShoppingCartState>()(
   persist(
     (set, get) => ({
@@ -97,14 +95,9 @@ export const useShoppingCart = create<ShoppingCartState>()(
         return get().items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
       },
 
-      getTaxAmount: () => {
-        return Math.round(get().getSubtotal() * GST_RATE);
-      },
+      getTaxAmount: () => 0,
 
-      getTotal: () => {
-        const subtotal = get().getSubtotal();
-        return subtotal + Math.round(subtotal * GST_RATE);
-      },
+      getTotal: () => get().getSubtotal(),
 
       getItemCount: () => {
         return get().items.reduce((sum, item) => sum + item.quantity, 0);

@@ -136,7 +136,6 @@ export function CartDrawer() {
     isDrawerOpen,
     closeDrawer,
     getSubtotal,
-    getTaxAmount,
     getTotal,
     getItemCount,
     clearCart,
@@ -144,7 +143,6 @@ export function CartDrawer() {
 
   const { products } = useProducts();
   const subtotal = getSubtotal();
-  const tax = getTaxAmount();
   const total = getTotal();
   const itemCount = getItemCount();
 
@@ -208,13 +206,9 @@ export function CartDrawer() {
 
               <div className="border-t px-6 py-4 space-y-3 mt-auto">
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Subtotal</span>
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <span>Subtotal (incl. GST)</span>
                     <span className="tabular-nums" data-testid="text-subtotal">{formatPrice(subtotal)}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">GST (18%)</span>
-                    <span className="tabular-nums" data-testid="text-tax">{formatPrice(tax)}</span>
                   </div>
                   <Separator />
                   <div className="flex items-center justify-between text-base font-semibold">
