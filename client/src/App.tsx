@@ -20,6 +20,7 @@ import ContactPage from "./pages/contact";
 import AdminPage from "./pages/admin";
 import DynamicPage from "./pages/dynamic-page";
 import AboutPage from "./pages/about";
+import B2BLandingPage from "./pages/b2b-landing";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -42,6 +43,7 @@ function Router() {
         <Route path="/contact" component={ContactPage} />
         <Route path="/admin" component={AdminPage} />
         <Route path="/about" component={AboutPage} />
+        <Route path="/lp" component={B2BLandingPage} />
         <Route path="/page/:slug" component={DynamicPage} />
         <Route component={NotFound} />
       </Switch>
