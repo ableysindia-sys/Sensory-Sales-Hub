@@ -7,6 +7,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { EnquiryCartProvider } from "@/lib/enquiry-cart";
 import { ProductsProvider } from "@/lib/product-provider";
+import { AuthProvider } from "@/lib/auth-context";
+import { AuthDrawer } from "@/components/auth-drawer";
 import { CartDrawer } from "@/components/cart-drawer";
 import { ChatWidget } from "@/components/chat-widget";
 import { WhatsAppFab } from "@/components/whatsapp-fab";
@@ -61,6 +63,7 @@ function GlobalOverlays() {
       {!isStandalonePage && <ChatWidget />}
       {!isStandalonePage && <WhatsAppFab />}
       <CartDrawer />
+      <AuthDrawer />
       <Toaster />
     </>
   );
@@ -71,12 +74,14 @@ function App() {
     <ThemeProvider defaultTheme="light" storageKey="ableys-rehab-theme">
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <ProductsProvider>
-            <EnquiryCartProvider>
-              <Router />
-              <GlobalOverlays />
-            </EnquiryCartProvider>
-          </ProductsProvider>
+          <AuthProvider>
+            <ProductsProvider>
+              <EnquiryCartProvider>
+                <Router />
+                <GlobalOverlays />
+              </EnquiryCartProvider>
+            </ProductsProvider>
+          </AuthProvider>
         </TooltipProvider>
       </QueryClientProvider>
     </ThemeProvider>
