@@ -24,7 +24,7 @@ const socialLinks = [
 const quickLinks = [
   { label: "All Products", href: "/products" },
   { label: "Bulk / Custom Enquiry", href: "/enquiry" },
-  { label: "About Us", href: "/page/about-ableys-sensory-tools" },
+  { label: "About Us", href: "/about" },
   { label: "Affiliate Program", href: "/page/affiliate-program-for-sensory-products" },
   { label: "Contact Us", href: "/contact" },
 ];

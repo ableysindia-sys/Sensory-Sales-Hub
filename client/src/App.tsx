@@ -19,6 +19,7 @@ import AllProducts from "./pages/all-products";
 import ContactPage from "./pages/contact";
 import AdminPage from "./pages/admin";
 import DynamicPage from "./pages/dynamic-page";
+import AboutPage from "./pages/about";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -40,6 +41,7 @@ function Router() {
         <Route path="/enquiry" component={EnquiryCartPage} />
         <Route path="/contact" component={ContactPage} />
         <Route path="/admin" component={AdminPage} />
+        <Route path="/about" component={AboutPage} />
         <Route path="/page/:slug" component={DynamicPage} />
         <Route component={NotFound} />
       </Switch>
