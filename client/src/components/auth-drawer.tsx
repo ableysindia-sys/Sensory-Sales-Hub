@@ -84,7 +84,15 @@ function OtpInput({
 }
 
 export function AuthDrawer() {
-  const { isAuthDrawerOpen, setIsAuthDrawerOpen, authSuccessCallback } = useAuth();
+  const {
+    isAuthDrawerOpen,
+    setIsAuthDrawerOpen,
+    authSuccessCallback,
+    pendingConfirmation,
+    setPendingConfirmation,
+    pendingPhone,
+    setPendingPhone,
+  } = useAuth();
   const [step, setStep] = useState<Step>("method");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
@@ -92,6 +100,16 @@ export function AuthDrawer() {
   const [error, setError] = useState("");
   const [confirmResult, setConfirmResult] = useState<ConfirmationResult | null>(null);
   const recaptchaRef = useRef<RecaptchaVerifier | null>(null);
+
+  useEffect(() => {
+    if (isAuthDrawerOpen && pendingConfirmation) {
+      setConfirmResult(pendingConfirmation);
+      setPhone(pendingPhone);
+      setStep("otp");
+      setPendingConfirmation(null);
+      setPendingPhone("");
+    }
+  }, [isAuthDrawerOpen, pendingConfirmation]);
 
   useEffect(() => {
     if (!isAuthDrawerOpen) {

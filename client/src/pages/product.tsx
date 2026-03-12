@@ -8,6 +8,7 @@ import { useShoppingCart } from "@/lib/shopping-cart";
 import { createShopifyCheckout } from "@/lib/shopify";
 import { Navbar } from "@/components/navbar";
 import { SiteFooter } from "@/components/site-footer";
+import { PhoneSignupInline } from "@/components/phone-signup-inline";
 import { Button } from "@/components/ui/button";
 import {
   ChevronRight,
@@ -1093,6 +1094,16 @@ export default function ProductPage() {
                 </div>
 
                 </div>{/* end order-4: qty + CTA wrapper */}
+
+                {/* Lead capture — phone signup */}
+                <div className="order-5 rounded-2xl border border-border/50 bg-muted/20 p-4">
+                  <PhoneSignupInline
+                    variant="light"
+                    label="Get B2B pricing & stock alerts"
+                    sublabel="Register free — we notify you of deals and restock"
+                    containerId="recaptcha-product"
+                  />
+                </div>
 
                 {/* Payment trust badges */}
                 <div className="order-6 pt-3 border-t border-border/40" data-testid="container-payment-badges">

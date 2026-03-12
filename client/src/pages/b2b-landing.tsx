@@ -8,6 +8,7 @@ import { api } from "@shared/routes";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { PhoneSignupInline } from "@/components/phone-signup-inline";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -288,32 +289,43 @@ export default function B2BLandingPage() {
                   <span className="italic text-amber-300">Without</span><br />
                   the Import Headache.
                 </h1>
-                <p className="text-base sm:text-lg text-white/80 leading-relaxed mb-8 max-w-lg">
+                <p className="text-base sm:text-lg text-white/80 leading-relaxed mb-7 max-w-lg">
                   India's most trusted source for clinical-grade sensory and OT equipment. Bulk pricing, GST invoices, free pan-India shipping — tailored for institutions.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Button
-                    size="lg"
-                    className="bg-white text-gray-900 hover:bg-gray-50 rounded-full px-8 font-semibold text-base shadow-2xl shadow-black/40 border-0 w-full sm:w-auto"
+
+                {/* ── Primary lead capture ── */}
+                <div className="rounded-2xl bg-white/8 backdrop-blur-sm border border-white/12 p-4 sm:p-5 mb-5">
+                  <PhoneSignupInline
+                    variant="dark"
+                    label="Register to get your custom quote"
+                    sublabel="Bulk pricing · GST invoice · 24-hr turnaround"
+                    containerId="recaptcha-lp-hero"
+                  />
+                </div>
+
+                {/* Secondary CTAs */}
+                <div className="flex flex-wrap gap-3 items-center">
+                  <button
                     onClick={scrollToForm}
+                    className="text-white/70 hover:text-white text-sm font-medium underline underline-offset-2 transition-colors"
                     data-testid="button-get-quote-hero"
                   >
-                    Get Your Custom Quote <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
+                    Fill detailed enquiry form →
+                  </button>
+                  <span className="text-white/30 hidden sm:inline">·</span>
                   <a
                     href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20discuss%20bulk%20B2B%20pricing%20for%20my%20institution."
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-sm text-white/70 hover:text-white font-medium transition-colors"
                     data-testid="link-whatsapp-hero"
                   >
-                    <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 rounded-full px-8 font-medium text-base w-full sm:w-auto backdrop-blur-sm">
-                      <MessageCircle className="mr-2 w-4 h-4" /> WhatsApp Us Now
-                    </Button>
+                    <MessageCircle className="w-3.5 h-3.5" /> WhatsApp us
                   </a>
                 </div>
 
                 {/* Inline trust cues */}
-                <div className="flex flex-wrap gap-x-5 gap-y-1.5 mt-7">
+                <div className="flex flex-wrap gap-x-5 gap-y-1.5 mt-6">
                   {[
                     { icon: ShieldCheck, text: "OT-curated catalogue" },
                     { icon: Truck, text: "Free shipping across India" },
@@ -818,27 +830,35 @@ export default function B2BLandingPage() {
               Ready to Equip Your<br />
               <span className="italic text-amber-300">Facility the Right Way?</span>
             </h2>
-            <p className="text-lg text-white/75 mb-10 max-w-xl mx-auto leading-relaxed">
-              Get a custom quote — free, no commitment, within 24 hours. Or message us directly on WhatsApp right now.
+            <p className="text-lg text-white/75 mb-8 max-w-xl mx-auto leading-relaxed">
+              Register with your phone — we'll send you a custom quote within 24 hours, no commitment needed.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                className="bg-white text-primary hover:bg-white/90 rounded-full px-10 font-semibold text-base shadow-xl"
+
+            <div className="max-w-md mx-auto mb-6">
+              <PhoneSignupInline
+                variant="dark"
+                label="Register for your free quote"
+                sublabel="Get bulk pricing, GST invoice, and free shipping info"
+                containerId="recaptcha-lp-final"
+              />
+            </div>
+
+            <div className="flex flex-wrap gap-4 justify-center">
+              <button
                 onClick={scrollToForm}
+                className="text-white/65 hover:text-white text-sm font-medium underline underline-offset-2 transition-colors"
                 data-testid="button-get-quote-final"
               >
-                Get My Free Quote <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
+                Fill detailed enquiry form instead →
+              </button>
               <a
                 href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20a%20bulk%20B2B%20quote%20from%20Abley%27s%20Rehab."
                 target="_blank"
                 rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-white/65 hover:text-white text-sm font-medium transition-colors"
                 data-testid="link-whatsapp-final"
               >
-                <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10 rounded-full px-10 font-medium text-base w-full sm:w-auto">
-                  <MessageCircle className="mr-2 w-4 h-4" /> Chat on WhatsApp
-                </Button>
+                <MessageCircle className="w-3.5 h-3.5" /> Chat on WhatsApp
               </a>
             </div>
           </div>

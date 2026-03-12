@@ -3,6 +3,7 @@ import {
   User,
   onAuthStateChanged,
   signOut,
+  ConfirmationResult,
 } from "firebase/auth";
 import { auth } from "./firebase";
 
@@ -14,6 +15,10 @@ interface AuthContextType {
   isAuthDrawerOpen: boolean;
   setIsAuthDrawerOpen: (open: boolean) => void;
   authSuccessCallback: (() => void) | null;
+  pendingConfirmation: ConfirmationResult | null;
+  setPendingConfirmation: (r: ConfirmationResult | null) => void;
+  pendingPhone: string;
+  setPendingPhone: (p: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -24,6 +29,10 @@ const AuthContext = createContext<AuthContextType>({
   isAuthDrawerOpen: false,
   setIsAuthDrawerOpen: () => {},
   authSuccessCallback: null,
+  pendingConfirmation: null,
+  setPendingConfirmation: () => {},
+  pendingPhone: "",
+  setPendingPhone: () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -31,6 +40,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [isAuthDrawerOpen, setIsAuthDrawerOpen] = useState(false);
   const [authSuccessCallback, setAuthSuccessCallback] = useState<(() => void) | null>(null);
+  const [pendingConfirmation, setPendingConfirmation] = useState<ConfirmationResult | null>(null);
+  const [pendingPhone, setPendingPhone] = useState<string>("");
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
@@ -57,6 +68,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthDrawerOpen,
         setIsAuthDrawerOpen,
         authSuccessCallback,
+        pendingConfirmation,
+        setPendingConfirmation,
+        pendingPhone,
+        setPendingPhone,
       }}
     >
       {children}
