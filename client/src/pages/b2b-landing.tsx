@@ -66,6 +66,14 @@ import {
   Loader2,
   TrendingUp,
   Heart,
+  Stethoscope,
+  Hospital,
+  FileText,
+  RotateCcw,
+  CreditCard,
+  Gift,
+  CalendarClock,
+  Video,
 } from "lucide-react";
 
 const formSchema = api.leads.create.input.extend({
@@ -143,6 +151,67 @@ const AUDIENCES = [
   { icon: Heart, label: "Child Development Centres", color: "text-rose-600 bg-rose-50 dark:bg-rose-950/30" },
   { icon: Dumbbell, label: "Rehab Gyms", color: "text-orange-600 bg-orange-50 dark:bg-orange-950/30" },
   { icon: Users, label: "NGOs & Institutions", color: "text-teal-600 bg-teal-50 dark:bg-teal-950/30" },
+];
+
+const STAKEHOLDERS = [
+  {
+    id: "ot-therapist",
+    icon: Stethoscope,
+    label: "OT / Therapist",
+    concern: "\"I need to try a product before recommending it to my clinic.\"",
+    needs: ["Hands-on product evaluation", "Peer-recommended brands", "Clinical evidence & specs"],
+    solution: "Request a curated trial kit first — curated for your caseload.",
+    cta: "Try OT Sample Kit",
+    ctaHref: "/sample",
+    color: "text-blue-600 bg-blue-50 dark:bg-blue-950/30",
+    accent: "border-blue-200 dark:border-blue-800",
+  },
+  {
+    id: "school",
+    icon: GraduationCap,
+    label: "School / SPED",
+    concern: "\"We need equipment but the grant approval process is complicated.\"",
+    needs: ["Grant-ready documentation", "Safety certifications", "Multi-student durability"],
+    solution: "Download our school grant letter template — pre-filled, OT-approved.",
+    cta: "Get Grant Template",
+    ctaHref: "https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20download%20the%20Abley%27s%20school%20grant%20letter%20template%20for%20our%20institution.",
+    ctaExternal: true,
+    color: "text-green-600 bg-green-50 dark:bg-green-950/30",
+    accent: "border-green-200 dark:border-green-800",
+  },
+  {
+    id: "hospital",
+    icon: Hospital,
+    label: "Hospital / Rehab",
+    concern: "\"Our procurement team needs a formal PO-compatible quotation.\"",
+    needs: ["Official GST quotation", "Purchase Order acceptance", "Institutional credit terms"],
+    solution: "We issue formal quotes accepted by hospital purchase committees.",
+    cta: "Request Formal Quote",
+    ctaHref: "#enquiry-form",
+    color: "text-rose-600 bg-rose-50 dark:bg-rose-950/30",
+    accent: "border-rose-200 dark:border-rose-800",
+  },
+  {
+    id: "clinic-owner",
+    icon: Building2,
+    label: "Clinic Owner",
+    concern: "\"I want the best value — bulk pricing, warranty, and reliable supply.\"",
+    needs: ["Volume-tiered pricing", "30-day exchange guarantee", "Ongoing supply reliability"],
+    solution: "Dedicated B2B account with custom pricing tiers and WhatsApp support.",
+    cta: "Get Bulk Pricing",
+    ctaHref: "#enquiry-form",
+    color: "text-violet-600 bg-violet-50 dark:bg-violet-950/30",
+    accent: "border-violet-200 dark:border-violet-800",
+  },
+];
+
+const INSTITUTIONAL_GUARANTEES = [
+  { icon: Receipt, title: "GST Invoice on Every Order", desc: "Full GSTIN-compliant invoice — accepted by hospitals, schools, and government institutions. Ready for your ITC claim.", badge: "Finance ✓" },
+  { icon: FileText, title: "Purchase Orders Accepted", desc: "We accept institutional POs from schools, hospitals, and NGOs. No need to pay upfront — order on your standard procurement process.", badge: "Procurement ✓" },
+  { icon: Truck, title: "48–72 Hr Pan-India Dispatch", desc: "Most orders dispatched within 48 hours. Tracked delivery across India — metros and Tier-3 cities.", badge: "Operations ✓" },
+  { icon: RotateCcw, title: "30-Day Exchange Guarantee", desc: "If any product doesn't meet your clinical expectations, exchange it within 30 days. No questions, no hassle.", badge: "Risk-free ✓" },
+  { icon: CreditCard, title: "Net-30 for Institutions", desc: "Established schools and hospitals can order on Net-30 credit terms after your first completed order.", badge: "Cash flow ✓" },
+  { icon: ShieldCheck, title: "OT-Curated & Warranted", desc: "Every product vetted by certified OTs. Manufacturer warranty included. We stand behind every item in our catalogue.", badge: "Quality ✓" },
 ];
 
 function usePageMeta(title: string, description: string) {
@@ -327,7 +396,7 @@ export default function B2BLandingPage() {
                     <MessageCircle className="w-3.5 h-3.5" /> WhatsApp us
                   </a>
                 </div>
-                {/* Sample Kit CTA */}
+                {/* Sample Kit CTA with urgency */}
                 <div className="flex items-center gap-2 mb-5 sm:mb-0">
                   <div className="h-px w-4 bg-white/20" />
                   <a
@@ -336,7 +405,11 @@ export default function B2BLandingPage() {
                     data-testid="link-sample-kit-b2b"
                   >
                     <span className="text-white/40">🎁</span>
-                    Not sure yet? <span className="underline underline-offset-2 group-hover:no-underline">Try our ₹1,499 OT Sample Kit first →</span>
+                    Not sure yet?&nbsp;
+                    <span className="underline underline-offset-2 group-hover:no-underline">
+                      Try our ₹1,499 OT Sample Kit first →
+                    </span>
+                    <span className="ml-1 text-amber-400 font-semibold">Q2 — 43 kits left</span>
                   </a>
                 </div>
 
@@ -389,20 +462,29 @@ export default function B2BLandingPage() {
           </div>
         </section>
 
-        {/* ── Trust Signals ── */}
-        <section className="border-b bg-muted/40">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
-            <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm text-muted-foreground">
-              {[
-                { icon: ShieldCheck, text: "OT-Approved Products" },
-                { icon: Receipt, text: "GST-Compliant Invoices" },
-                { icon: Truck, text: "Free Shipping Across India" },
-                { icon: Star, text: "Trusted by 500+ Therapists" },
-                { icon: Award, text: "Made for Indian Clinical Settings" },
-              ].map(({ icon: Icon, text }) => (
-                <div key={text} className="flex items-center gap-2">
-                  <Icon className="w-4 h-4 text-primary shrink-0" />
-                  <span>{text}</span>
+        {/* ── Institutional Guarantee Stack ── */}
+        <section className="border-b bg-background" data-testid="section-institutional-guarantees">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+            <div className="text-center mb-8">
+              <span className="text-xs font-semibold uppercase tracking-widest text-primary mb-2 block">Built for Institutions</span>
+              <h2 className="text-2xl sm:text-3xl font-bold font-display text-foreground">
+                We've Solved Every Institutional Procurement Pain Point
+              </h2>
+              <p className="text-sm text-muted-foreground mt-2 max-w-lg mx-auto">
+                The 6 reasons institutional orders stall — and how Abley's eliminates every one.
+              </p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {INSTITUTIONAL_GUARANTEES.map(({ icon: Icon, title, desc, badge }) => (
+                <div key={title} className="group relative rounded-2xl border border-border bg-card p-5 hover:border-primary/40 hover:shadow-sm transition-all">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                      <Icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <span className="text-[10px] font-bold text-primary bg-primary/8 px-2 py-0.5 rounded-full">{badge}</span>
+                  </div>
+                  <h3 className="font-semibold text-sm text-foreground mb-1.5">{title}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
                 </div>
               ))}
             </div>
@@ -442,25 +524,64 @@ export default function B2BLandingPage() {
           </div>
         </section>
 
-        {/* ── Solution / Who It's For ── */}
-        <section className="bg-primary/5 border-y">
+        {/* ── Stakeholder Navigator ── */}
+        <section className="bg-muted/40 border-y" data-testid="section-stakeholder-navigator">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
             <div className="text-center mb-12">
               <span className="text-xs font-semibold uppercase tracking-widest text-primary mb-3 block">Who This Is For</span>
               <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground leading-tight">
-                Built for Every Professional on the Path.
+                We Understand Your Specific Buying Situation.
               </h2>
               <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
-                Whether you're stocking a single therapy room or outfitting an entire institution, we've done this before.
+                Different institutions have different blockers. We've built a path for each of them.
               </p>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-              {AUDIENCES.map(({ icon: Icon, label, color }) => (
-                <div key={label} className="rounded-xl border bg-card p-4 text-center hover:shadow-md transition-shadow cursor-default">
-                  <div className={`w-10 h-10 rounded-lg ${color} flex items-center justify-center mx-auto mb-3`}>
-                    <Icon className="w-5 h-5" />
+            <div className="grid sm:grid-cols-2 gap-5">
+              {STAKEHOLDERS.map(({ id, icon: Icon, label, concern, needs, solution, cta, ctaHref, ctaExternal, color, accent }) => (
+                <div key={id} className={`bg-card rounded-2xl border-2 ${accent} p-6 flex flex-col`} data-testid={`card-stakeholder-${id}`}>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className={`w-10 h-10 rounded-xl ${color} flex items-center justify-center shrink-0`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <p className="font-bold text-foreground">{label}</p>
                   </div>
-                  <p className="text-xs font-semibold text-foreground leading-tight">{label}</p>
+                  <p className="text-sm text-muted-foreground italic mb-4 leading-relaxed border-l-2 border-border pl-3">{concern}</p>
+                  <div className="space-y-1.5 mb-4 flex-1">
+                    {needs.map((need) => (
+                      <div key={need} className="flex items-center gap-2 text-xs text-foreground/80">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" />
+                        {need}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed mb-4 bg-muted/60 rounded-xl px-3 py-2.5">{solution}</p>
+                  {ctaExternal ? (
+                    <a
+                      href={ctaHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-sm font-semibold text-primary hover:gap-2.5 transition-all"
+                      data-testid={`link-stakeholder-${id}`}
+                    >
+                      {cta} <ArrowRight className="w-3.5 h-3.5" />
+                    </a>
+                  ) : ctaHref.startsWith("#") ? (
+                    <button
+                      onClick={scrollToForm}
+                      className="flex items-center gap-1.5 text-sm font-semibold text-primary hover:gap-2.5 transition-all"
+                      data-testid={`button-stakeholder-${id}`}
+                    >
+                      {cta} <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  ) : (
+                    <a
+                      href={ctaHref}
+                      className="flex items-center gap-1.5 text-sm font-semibold text-primary hover:gap-2.5 transition-all"
+                      data-testid={`link-stakeholder-${id}`}
+                    >
+                      {cta} <ArrowRight className="w-3.5 h-3.5" />
+                    </a>
+                  )}
                 </div>
               ))}
             </div>
@@ -565,6 +686,42 @@ export default function B2BLandingPage() {
           </div>
         </section>
 
+        {/* ── Free Consultation CTA ── */}
+        <section className="bg-gradient-to-r from-primary/6 via-primary/4 to-primary/6 border-y border-primary/15" data-testid="section-free-consultation">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+            <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+              <div className="flex-1 text-center lg:text-left">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest mb-4">
+                  <CalendarClock className="w-3.5 h-3.5" /> Free Service
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold font-display text-foreground mb-3">
+                  Book a Free 30-Min Sensory Room Consultation
+                </h2>
+                <p className="text-muted-foreground leading-relaxed mb-4 max-w-lg mx-auto lg:mx-0">
+                  Our OT specialist will review your space, diagnoses served, and budget — then recommend an exact product list with pricing. You get a personalised Room Plan PDF, free.
+                </p>
+                <div className="flex flex-wrap gap-4 text-xs text-muted-foreground justify-center lg:justify-start">
+                  <span className="flex items-center gap-1.5"><Video className="w-3.5 h-3.5 text-primary" /> Video or WhatsApp call</span>
+                  <span className="flex items-center gap-1.5"><FileText className="w-3.5 h-3.5 text-primary" /> Room Plan PDF included</span>
+                  <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-primary" /> No obligation to buy</span>
+                </div>
+              </div>
+              <div className="flex flex-col gap-3 shrink-0 w-full lg:w-auto">
+                <a
+                  href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%2030-minute%20sensory%20room%20consultation%20with%20Abley%27s%20Rehab."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 bg-primary text-white px-7 py-3.5 rounded-xl font-semibold text-sm hover:bg-primary/90 transition-colors shadow-lg shadow-primary/25"
+                  data-testid="button-book-consultation"
+                >
+                  <MessageCircle className="w-4 h-4" /> Book on WhatsApp — It's Free
+                </a>
+                <p className="text-center text-xs text-muted-foreground">Usually responds within 2 hours · Mon–Sat 9am–7pm</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ── Lead Form ── */}
         <section ref={formRef} className="bg-muted/50 border-y" id="enquiry-form">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
@@ -595,16 +752,17 @@ export default function B2BLandingPage() {
                   ))}
                 </div>
                 <div className="mt-8 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
-                  <p className="text-sm text-amber-900 dark:text-amber-300 font-medium mb-1">Prefer WhatsApp?</p>
+                  <p className="text-sm text-amber-900 dark:text-amber-300 font-medium mb-1">Prefer to talk first?</p>
                   <a
-                    href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20a%20bulk%20B2B%20quote%20from%20Abley%27s%20Rehab."
+                    href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20chat%20with%20your%20OT%20specialist%20about%20bulk%20B2B%20pricing%20for%20my%20institution."
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-amber-700 dark:text-amber-400 font-semibold hover:underline flex items-center gap-1"
                     data-testid="link-whatsapp-form-aside"
                   >
-                    <MessageCircle className="w-4 h-4" /> Message us on +91 70421 80166
+                    <MessageCircle className="w-4 h-4" /> Chat with our OT specialist on WhatsApp
                   </a>
+                  <p className="text-xs text-amber-700/70 dark:text-amber-500/70 mt-1">Usually responds within 2 hours</p>
                 </div>
               </div>
 
@@ -810,6 +968,41 @@ export default function B2BLandingPage() {
                 <p className="text-xs text-muted-foreground">{role}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* ── Referral Program ── */}
+        <section className="bg-background border-b" data-testid="section-referral">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-14 sm:py-16">
+            <div className="rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/20 border border-amber-200 dark:border-amber-800 p-8 sm:p-10">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                <div className="flex-1">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 text-xs font-bold uppercase tracking-widest mb-4">
+                    <Gift className="w-3.5 h-3.5" /> Recommend Abley's — Earn Clinic Credits
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold font-display text-foreground mb-2">
+                    OTs Trust Each Other. Help a Colleague — Earn ₹1,000 Credits.
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                    Refer a colleague or institution to Abley's. When they place their first qualifying order, you earn <strong>₹1,000 in Abley's credits</strong> — they get <strong>₹500 off their first order</strong>. Everyone wins.
+                  </p>
+                  <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1.5"><BadgeIndianRupee className="w-3.5 h-3.5 text-amber-600" /> ₹1,000 for you per qualifying referral</span>
+                    <span className="flex items-center gap-1.5"><BadgeIndianRupee className="w-3.5 h-3.5 text-amber-600" /> ₹500 off for the new institution</span>
+                    <span className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5 text-amber-600" /> No limit on referrals</span>
+                  </div>
+                </div>
+                <a
+                  href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20refer%20a%20colleague%20to%20Abley%27s%20Rehab%20and%20learn%20about%20the%20referral%20programme."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-colors shadow-lg shrink-0"
+                  data-testid="button-referral-cta"
+                >
+                  <MessageCircle className="w-4 h-4" /> Refer a Colleague
+                </a>
+              </div>
+            </div>
           </div>
         </section>
 

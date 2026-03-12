@@ -13,7 +13,7 @@ import {
   Stethoscope, GraduationCap, Building2, Home, Hospital, Users,
   ArrowRight, ArrowLeft, CheckCircle2, Package, Loader2,
   CreditCard, MessageCircle, ShieldCheck, RotateCcw, Gift,
-  Sparkles, Dumbbell, Eye, Hand, Brain,
+  Sparkles, Dumbbell, Eye, Hand, Brain, Clock, Send, FileText, Star,
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -316,6 +316,34 @@ export default function SampleRequestPage() {
               </div>
             </div>
 
+            {/* What happens next timeline */}
+            <div className="bg-muted/30 rounded-2xl border border-border/50 p-5 mb-6 text-left">
+              <p className="text-xs font-bold text-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5 text-primary" /> What Happens Next
+              </p>
+              <div className="space-y-3">
+                {[
+                  { day: "Now", icon: CheckCircle2, text: "Your request is confirmed. Our OT specialist has been notified.", color: "text-green-500" },
+                  { day: "Day 1", icon: Send, text: "We send a WhatsApp video showing your kit items being used in a real clinic.", color: "text-primary" },
+                  { day: "Day 3", icon: MessageCircle, text: "Our OT specialist checks in — answers your questions, explains each item.", color: "text-primary" },
+                  { day: "Day 14", icon: FileText, text: "Your personalised bulk quote PDF is ready — valid for 7 days.", color: "text-primary" },
+                  { day: "Day 21", icon: Star, text: "Final nudge: reserve your institution's allocation at the quoted price.", color: "text-amber-500" },
+                ].map(({ day, icon: Icon, text, color }) => (
+                  <div key={day} className="flex items-start gap-3">
+                    <div className="flex flex-col items-center shrink-0">
+                      <div className={`w-7 h-7 rounded-full bg-muted flex items-center justify-center`}>
+                        <Icon className={`w-3.5 h-3.5 ${color}`} />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-foreground">{day}</p>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{text}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <a
                 href="https://wa.me/917042180166?text=Hi%2C%20I%20just%20requested%20a%20sample%20kit%20from%20Abley's%20Rehab%21"
@@ -324,7 +352,7 @@ export default function SampleRequestPage() {
                 className="flex items-center justify-center gap-2 bg-[#25D366] text-white px-5 py-2.5 rounded-full text-sm font-semibold shadow hover:bg-[#22c15e] transition-colors"
                 data-testid="link-whatsapp-success"
               >
-                <MessageCircle className="w-4 h-4" /> Chat on WhatsApp
+                <MessageCircle className="w-4 h-4" /> Chat with our OT Specialist
               </a>
               <Link href="/products">
                 <button className="flex items-center justify-center gap-2 border border-border px-5 py-2.5 rounded-full text-sm font-medium hover:bg-muted/40 transition-colors">
@@ -345,8 +373,13 @@ export default function SampleRequestPage() {
 
       {/* Hero */}
       <div className="bg-gradient-to-br from-primary via-primary/90 to-[#3a4280] text-white pt-24 pb-10 px-4 sm:px-6 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 border border-white/15 text-xs font-semibold tracking-widest uppercase mb-4">
-          <Gift className="w-3.5 h-3.5" /> OT Trial Kit Programme
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 border border-white/15 text-xs font-semibold tracking-widest uppercase">
+            <Gift className="w-3.5 h-3.5" /> OT Trial Kit Programme
+          </div>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-400/20 border border-amber-400/30 text-xs font-semibold text-amber-300">
+            <Clock className="w-3 h-3" /> Q2 2026 — 43 of 50 kits remaining
+          </div>
         </div>
         <h1 className="text-2xl sm:text-4xl font-bold font-display mb-3">
           Try Before You Buy — ₹{DEPOSIT_AMOUNT.toLocaleString("en-IN")} Deposit
@@ -355,6 +388,11 @@ export default function SampleRequestPage() {
           We curate a personalised 5-item sample kit for your clinic or school.
           Pay a fully refundable deposit — credited back on your first order.
         </p>
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 mt-5 text-xs text-white/60">
+          <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-white/40" /> OT-curated items</span>
+          <span className="flex items-center gap-1.5"><RotateCcw className="w-3.5 h-3.5 text-white/40" /> 100% refundable</span>
+          <span className="flex items-center gap-1.5"><MessageCircle className="w-3.5 h-3.5 text-white/40" /> Dispatched in 48 hrs</span>
+        </div>
       </div>
 
       <div className="max-w-2xl mx-auto px-4 sm:px-6 w-full py-10">
