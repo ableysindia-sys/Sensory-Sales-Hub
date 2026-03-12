@@ -121,36 +121,40 @@ export function PhoneSignupInline({
         </p>
       )}
 
-      {/* Phone row */}
-      <div className="flex gap-2">
-        <div className={cn(
-          "flex items-center gap-1.5 px-3 rounded-xl text-sm font-semibold shrink-0 border",
-          isDark
-            ? "bg-white/10 text-white border-white/15 backdrop-blur-sm"
-            : "bg-muted border-border text-foreground"
-        )}>
-          🇮🇳 +91
-        </div>
-        <input
-          type="tel"
-          inputMode="numeric"
-          placeholder="98765 43210"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-          onKeyDown={(e) => e.key === "Enter" && sendOtp()}
-          className={cn(
-            "flex-1 h-11 px-3.5 rounded-xl text-sm border outline-none transition-all tracking-wider min-w-0",
+      {/* Phone row — stacks on mobile, inline on sm+ */}
+      <div className="flex flex-col sm:flex-row gap-2">
+        {/* +91 + number input share one row */}
+        <div className="flex gap-2 flex-1">
+          <div className={cn(
+            "flex items-center gap-1.5 px-3 h-11 rounded-xl text-sm font-semibold shrink-0 border",
             isDark
-              ? "bg-white/10 border-white/15 text-white placeholder:text-white/35 focus:border-white/40 focus:bg-white/15 backdrop-blur-sm"
-              : "bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-1 focus:ring-primary/20"
-          )}
-          data-testid="input-inline-phone"
-        />
+              ? "bg-white/10 text-white border-white/15 backdrop-blur-sm"
+              : "bg-muted border-border text-foreground"
+          )}>
+            🇮🇳 +91
+          </div>
+          <input
+            type="tel"
+            inputMode="numeric"
+            placeholder="98765 43210"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+            onKeyDown={(e) => e.key === "Enter" && sendOtp()}
+            className={cn(
+              "flex-1 h-11 px-3.5 rounded-xl text-sm border outline-none transition-all tracking-wider min-w-0",
+              isDark
+                ? "bg-white/10 border-white/15 text-white placeholder:text-white/35 focus:border-white/40 focus:bg-white/15 backdrop-blur-sm"
+                : "bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-1 focus:ring-primary/20"
+            )}
+            data-testid="input-inline-phone"
+          />
+        </div>
+        {/* Send OTP button — full-width on mobile, auto-width on sm+ */}
         <button
           onClick={sendOtp}
           disabled={phone.replace(/\D/g, "").length !== 10 || loading}
           className={cn(
-            "h-11 px-4 rounded-xl text-sm font-semibold flex items-center gap-1.5 shrink-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed",
+            "h-11 px-5 rounded-xl text-sm font-semibold flex items-center justify-center gap-1.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto",
             isDark
               ? "bg-white text-gray-900 hover:bg-white/90 shadow-lg shadow-black/30"
               : "bg-primary text-primary-foreground hover:bg-primary/90"

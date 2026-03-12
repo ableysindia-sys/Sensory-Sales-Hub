@@ -267,34 +267,38 @@ export default function B2BLandingPage() {
             loading="eager"
           />
 
-          {/* Rich layered gradient — deep navy left, brand blue mid, transparent right */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0d1033] via-[#1f2880]/90 to-[#4A53A0]/50" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40" />
-          {/* Subtle radial highlight top-right */}
+          {/* Mobile: top-down dark overlay so copy is readable */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-[#0d1033]/85 to-[#0d1033]/95 sm:hidden" />
+          {/* Desktop: side + depth gradients */}
+          <div className="absolute inset-0 hidden sm:block bg-gradient-to-r from-[#0d1033] via-[#1f2880]/90 to-[#4A53A0]/50" />
+          <div className="absolute inset-0 hidden sm:block bg-gradient-to-b from-black/30 via-transparent to-black/40" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_90%_20%,rgba(255,255,255,0.04),transparent)]" />
 
           {/* Content grid */}
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24 lg:py-28">
-            <div className="grid lg:grid-cols-[1fr_420px] gap-10 lg:gap-16 items-center">
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-20 lg:py-28">
+            <div className="grid lg:grid-cols-[1fr_420px] gap-8 lg:gap-16 items-center">
 
               {/* Left: copy */}
               <div>
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm text-white/90 text-xs font-semibold tracking-widest uppercase mb-6 border border-white/10">
+                {/* Eyebrow */}
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm text-white/90 text-[10px] sm:text-xs font-semibold tracking-widest uppercase mb-4 sm:mb-6 border border-white/10">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
                   For OT Clinics · Schools · Rehab Centres
                 </div>
-                <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-bold font-display leading-[1.08] mb-6 drop-shadow-xl">
-                  Set Up a World-Class<br />
-                  Sensory Room —{" "}
-                  <span className="italic text-amber-300">Without</span><br />
+
+                {/* Headline — 2 sizes: mobile tight, desktop large */}
+                <h1 className="text-[1.85rem] leading-[1.15] sm:text-5xl sm:leading-[1.08] lg:text-[3.4rem] font-bold font-display mb-4 sm:mb-6 drop-shadow-xl">
+                  Set Up a World-Class Sensory Room —{" "}
+                  <span className="italic text-amber-300">Without</span>{" "}
                   the Import Headache.
                 </h1>
-                <p className="text-base sm:text-lg text-white/80 leading-relaxed mb-7 max-w-lg">
-                  India's most trusted source for clinical-grade sensory and OT equipment. Bulk pricing, GST invoices, free pan-India shipping — tailored for institutions.
+
+                <p className="text-[0.9rem] sm:text-lg text-white/80 leading-relaxed mb-5 sm:mb-7 max-w-lg">
+                  India's most trusted source for clinical-grade sensory &amp; OT equipment. Bulk pricing, GST invoices, free pan-India shipping — tailored for institutions.
                 </p>
 
                 {/* ── Primary lead capture ── */}
-                <div className="rounded-2xl bg-white/8 backdrop-blur-sm border border-white/12 p-4 sm:p-5 mb-5">
+                <div className="rounded-2xl bg-black/30 backdrop-blur-md border border-white/15 p-4 sm:p-5 mb-4 sm:mb-5">
                   <PhoneSignupInline
                     variant="dark"
                     label="Register to get your custom quote"
@@ -304,7 +308,7 @@ export default function B2BLandingPage() {
                 </div>
 
                 {/* Secondary CTAs */}
-                <div className="flex flex-wrap gap-3 items-center">
+                <div className="flex flex-wrap gap-3 items-center mb-5 sm:mb-0">
                   <button
                     onClick={scrollToForm}
                     className="text-white/70 hover:text-white text-sm font-medium underline underline-offset-2 transition-colors"
@@ -312,7 +316,7 @@ export default function B2BLandingPage() {
                   >
                     Fill detailed enquiry form →
                   </button>
-                  <span className="text-white/30 hidden sm:inline">·</span>
+                  <span className="text-white/30">·</span>
                   <a
                     href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20discuss%20bulk%20B2B%20pricing%20for%20my%20institution."
                     target="_blank"
@@ -324,8 +328,8 @@ export default function B2BLandingPage() {
                   </a>
                 </div>
 
-                {/* Inline trust cues */}
-                <div className="flex flex-wrap gap-x-5 gap-y-1.5 mt-6">
+                {/* Trust cues — hidden on mobile, shown sm+ */}
+                <div className="hidden sm:flex flex-wrap gap-x-5 gap-y-1.5 mt-6">
                   {[
                     { icon: ShieldCheck, text: "OT-curated catalogue" },
                     { icon: Truck, text: "Free shipping across India" },
@@ -362,11 +366,11 @@ export default function B2BLandingPage() {
 
           {/* Stats ribbon */}
           <div className="relative border-t border-white/10 bg-black/35 backdrop-blur-sm">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-5 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 text-center">
               {STATS.map((s) => (
                 <div key={s.label}>
-                  <p className="text-2xl sm:text-3xl font-bold text-amber-300 font-display">{s.value}</p>
-                  <p className="text-xs text-white/65 mt-0.5">{s.label}</p>
+                  <p className="text-xl sm:text-3xl font-bold text-amber-300 font-display">{s.value}</p>
+                  <p className="text-[10px] sm:text-xs text-white/65 mt-0.5">{s.label}</p>
                 </div>
               ))}
             </div>
