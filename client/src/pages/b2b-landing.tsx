@@ -222,7 +222,7 @@ export default function B2BLandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
 
       {/* ── Announcement Bar ── */}
       <div className="bg-primary text-white text-center text-xs font-medium py-2 px-4 tracking-wide">
