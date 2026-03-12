@@ -116,7 +116,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main id="main-content">
+      <main id="main-content" className="pb-16 lg:pb-0">
         <div className="relative h-48 sm:h-56 lg:h-64 mt-[6.5rem] overflow-hidden" data-testid="section-contact-banner">
           <img
             src={SITE_IMAGES.workshop}

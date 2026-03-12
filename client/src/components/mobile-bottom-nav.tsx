@@ -1,0 +1,48 @@
+import { Link, useLocation } from "wouter";
+import { Home, Grid3x3, Send, MessageCircle } from "lucide-react";
+
+const tabs = [
+  { label: "Home", icon: Home, href: "/" },
+  { label: "Products", icon: Grid3x3, href: "/products" },
+  { label: "Get a Quote", icon: Send, href: "/enquiry", primary: true },
+  { label: "WhatsApp", icon: MessageCircle, href: "https://wa.me/917042180166", external: true },
+];
+
+export function MobileBottomNav() {
+  const [location] = useLocation();
+
+  return (
+    <nav
+      className="fixed bottom-0 inset-x-0 z-50 lg:hidden bg-background/95 backdrop-blur-md border-t border-border safe-area-bottom"
+      data-testid="mobile-bottom-nav"
+    >
+      <div className="grid grid-cols-4 h-16">
+        {tabs.map(({ label, icon: Icon, href, primary, external }) => {
+          const isActive = !external && (href === "/" ? location === "/" : location.startsWith(href));
+          const cls = `flex flex-col items-center justify-center gap-1 text-[10px] font-semibold transition-colors touch-manipulation ${
+            primary
+              ? "text-primary-foreground bg-primary mx-1.5 my-2 rounded-xl shadow-lg shadow-primary/30"
+              : isActive
+              ? "text-primary"
+              : "text-muted-foreground hover:text-foreground"
+          }`;
+
+          if (external) {
+            return (
+              <a key={label} href={href} target="_blank" rel="noopener noreferrer" className={cls} data-testid={`tab-${label.toLowerCase().replace(/\s+/g, "-")}`}>
+                <Icon className="w-5 h-5" />
+                <span>{label}</span>
+              </a>
+            );
+          }
+          return (
+            <Link key={label} href={href} className={cls} data-testid={`tab-${label.toLowerCase().replace(/\s+/g, "-")}`}>
+              <Icon className={`w-5 h-5 ${primary ? "text-primary-foreground" : ""}`} />
+              <span>{label}</span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}

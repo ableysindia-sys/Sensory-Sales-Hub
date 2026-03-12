@@ -1,12 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ShoppingCart, ChevronDown, Send } from "lucide-react";
-import { SiFacebook, SiInstagram, SiYoutube } from "react-icons/si";
+import { Menu, X, ShoppingCart, ChevronDown, Send, ArrowRight } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { useShoppingCart } from "@/lib/shopping-cart";
 import { useProducts } from "@/lib/product-provider";
 import logoPath from "@assets/ableys_rehab_logo.png";
+
+const ANNOUNCEMENTS = [
+  "🚚 Free Shipping All Over India",
+  "🏷️ GST Invoices for All Institutional Orders",
+  "💬 Bulk pricing for OT Clinics & Schools — Chat with us",
+  "⭐ Trusted by 500+ Occupational Therapists Across India",
+];
 
 const navLinks = [
   { label: "Products", href: "#products", hasDropdown: true },
@@ -15,24 +21,30 @@ const navLinks = [
 ];
 
 export function AnnouncementBar() {
+  const [idx, setIdx] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setIdx((i) => (i + 1) % ANNOUNCEMENTS.length);
+        setVisible(true);
+      }, 300);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="bg-foreground text-background text-xs py-2 px-4" data-testid="announcement-bar">
-      <div className="max-w-page mx-auto flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <a href="https://www.facebook.com/ableysrehab" target="_blank" rel="noopener noreferrer" aria-label="Facebook" data-testid="link-social-facebook" className="opacity-70 hover:opacity-100 transition-opacity p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center">
-            <SiFacebook className="w-3.5 h-3.5" />
-          </a>
-          <a href="https://www.instagram.com/ableysrehab" target="_blank" rel="noopener noreferrer" aria-label="Instagram" data-testid="link-social-instagram" className="opacity-70 hover:opacity-100 transition-opacity p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center">
-            <SiInstagram className="w-3.5 h-3.5" />
-          </a>
-          <a href="https://www.youtube.com/@ableysrehab" target="_blank" rel="noopener noreferrer" aria-label="YouTube" data-testid="link-social-youtube" className="opacity-70 hover:opacity-100 transition-opacity p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center">
-            <SiYoutube className="w-3.5 h-3.5" />
-          </a>
-        </div>
-        <p className="font-medium tracking-wide text-center flex-1" data-testid="text-announcement">
-          Free Shipping All Over India
+    <div className="bg-primary text-primary-foreground text-xs py-2 px-4 overflow-hidden" data-testid="announcement-bar">
+      <div className="max-w-page mx-auto text-center">
+        <p
+          className="font-medium tracking-wide transition-opacity duration-300"
+          style={{ opacity: visible ? 1 : 0 }}
+          data-testid="text-announcement"
+        >
+          {ANNOUNCEMENTS[idx]}
         </p>
-        <div className="w-[72px] hidden sm:block" />
       </div>
     </div>
   );
@@ -173,34 +185,26 @@ export function Navbar() {
               </Link>
             </div>
 
-            <div className="flex items-center gap-2 lg:hidden">
+            <div className="flex items-center gap-1 lg:hidden">
               <button
                 onClick={openDrawer}
-                className="relative p-2 text-foreground/60"
+                className="relative p-2.5 text-foreground/60 hover:text-foreground transition-colors"
                 data-testid="button-mobile-shopping-cart"
+                aria-label="Shopping cart"
               >
                 <ShoppingCart className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-primary-foreground text-[9px] font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-primary text-primary-foreground text-[9px] font-bold rounded-full flex items-center justify-center">
                     {cartCount}
                   </span>
                 )}
               </button>
-              <Link href="/enquiry">
-                <button className="relative p-2 text-foreground/60" aria-label="Get a Quote" data-testid="button-mobile-cart">
-                  <Send className="w-5 h-5" />
-                  {enquiryCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-primary-foreground text-[9px] font-bold rounded-full flex items-center justify-center">
-                      {enquiryCount}
-                    </span>
-                  )}
-                </button>
-              </Link>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setMobileOpen(!mobileOpen)}
                 data-testid="button-mobile-menu"
+                aria-label="Menu"
               >
                 {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </Button>

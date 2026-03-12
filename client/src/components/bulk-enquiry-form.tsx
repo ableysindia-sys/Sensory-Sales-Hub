@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
@@ -79,29 +79,43 @@ const TIMELINE_OPTIONS = [
 ];
 
 const TOTAL_STEPS = 5;
+const STEP_LABELS = ["Setup Type", "Requirement", "Products", "Budget", "Contact"];
+
+const LS_KEY = "ableys_enquiry_contact";
 
 function StepIndicator({ current, total }: { current: number; total: number }) {
   return (
-    <div className="flex items-center gap-1.5 sm:gap-2" data-testid="home-step-indicator">
-      {Array.from({ length: total }).map((_, i) => (
-        <div key={i} className="flex items-center gap-1.5 sm:gap-2">
-          <div
-            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-              i < current
-                ? "bg-primary text-primary-foreground"
-                : i === current
-                ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
-                : "bg-muted text-muted-foreground"
-            }`}
-            data-testid={`home-step-dot-${i}`}
-          >
-            {i < current ? <Check className="w-3.5 h-3.5" /> : i + 1}
+    <div className="w-full" data-testid="home-step-indicator">
+      <div className="flex items-center justify-between mb-2">
+        {Array.from({ length: total }).map((_, i) => (
+          <div key={i} className="flex flex-col items-center flex-1 relative">
+            {i < total - 1 && (
+              <div
+                className={`absolute top-3.5 left-1/2 w-full h-0.5 transition-colors ${i < current ? "bg-primary" : "bg-muted"}`}
+                style={{ zIndex: 0 }}
+              />
+            )}
+            <div
+              className={`relative z-10 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                i < current
+                  ? "bg-primary text-primary-foreground"
+                  : i === current
+                  ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
+                  : "bg-muted text-muted-foreground"
+              }`}
+              data-testid={`home-step-dot-${i}`}
+            >
+              {i < current ? <Check className="w-3 h-3" /> : i + 1}
+            </div>
+            <span className={`text-[9px] mt-1 font-medium whitespace-nowrap hidden sm:block transition-colors ${i === current ? "text-primary" : i < current ? "text-primary/60" : "text-muted-foreground/50"}`}>
+              {STEP_LABELS[i]}
+            </span>
           </div>
-          {i < total - 1 && (
-            <div className={`w-4 sm:w-8 h-0.5 rounded ${i < current ? "bg-primary" : "bg-muted"}`} />
-          )}
-        </div>
-      ))}
+        ))}
+      </div>
+      <p className="text-xs text-center text-muted-foreground sm:hidden">
+        Step {current + 1} of {total}: <span className="font-semibold text-foreground">{STEP_LABELS[current]}</span>
+      </p>
     </div>
   );
 }
@@ -242,6 +256,20 @@ export function BulkEnquiryForm() {
     },
   });
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(LS_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as Partial<EnquiryFormValues>;
+        if (parsed.name) form.setValue("name", parsed.name);
+        if (parsed.email) form.setValue("email", parsed.email);
+        if (parsed.phone) form.setValue("phone", parsed.phone);
+        if (parsed.organisation) form.setValue("organisation", parsed.organisation);
+        if (parsed.city) form.setValue("city", parsed.city);
+      }
+    } catch {}
+  }, []);
+
   const toggleCategory = (cat: string) => {
     setSelectedCategories((prev) =>
       prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
@@ -260,6 +288,13 @@ export function BulkEnquiryForm() {
   }, [step, setupType, orderType, selectedCategories, budget, timeline]);
 
   const onSubmit = async (data: EnquiryFormValues) => {
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify({
+        name: data.name, email: data.email, phone: data.phone,
+        organisation: data.organisation, city: data.city,
+      }));
+    } catch {}
+
     const setupLabel = SETUP_TYPES.find((s) => s.id === setupType)?.label || setupType;
     const orderLabel = ORDER_TYPES.find((o) => o.id === orderType)?.label || orderType;
 
@@ -346,6 +381,27 @@ export function BulkEnquiryForm() {
             viewport={{ once: true }}
             className="lg:col-span-3"
           >
+            {!submitted && step === 0 && (
+              <div className="px-6 sm:px-8 pt-5 pb-0">
+                <a
+                  href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20a%20bulk%20quote%20for%20therapy%20equipment."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3.5 rounded-xl bg-[#25D366]/10 border border-[#25D366]/30 text-sm group hover:bg-[#25D366]/15 transition-colors"
+                  data-testid="link-quick-contact-whatsapp"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#25D366] text-white flex items-center justify-center flex-shrink-0">
+                    <Phone className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-foreground text-xs">In a hurry? Skip the form</p>
+                    <p className="text-xs text-muted-foreground">Chat directly on WhatsApp — we respond within minutes</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-[#25D366] transition-colors flex-shrink-0" />
+                </a>
+              </div>
+            )}
+
             {submitted ? (
               <div className="bg-card rounded-2xl border border-border/50 p-8 sm:p-10 shadow-sm text-center">
                 <motion.div

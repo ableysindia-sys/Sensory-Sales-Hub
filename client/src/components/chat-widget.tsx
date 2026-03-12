@@ -75,16 +75,16 @@ export function ChatWidget() {
         <button
           data-testid="button-open-chat"
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center hover:scale-105 active:scale-95"
+          className="fixed bottom-[5.5rem] right-5 z-40 w-12 h-12 rounded-full bg-primary text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center hover:scale-105 active:scale-95 lg:bottom-6 lg:right-6 lg:w-14 lg:h-14"
         >
-          <MessageCircle className="w-6 h-6" />
+          <MessageCircle className="w-5 h-5 lg:w-6 lg:h-6" />
         </button>
       )}
 
       {isOpen && (
         <div
           data-testid="chat-panel"
-          className="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 z-50 w-full sm:w-[380px] sm:max-w-[calc(100vw-2rem)] h-[100dvh] sm:h-[540px] sm:max-h-[calc(100vh-6rem)] bg-white dark:bg-gray-900 sm:rounded-2xl shadow-2xl border-0 sm:border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300"
+          className="fixed bottom-0 right-0 sm:bottom-20 sm:right-5 z-50 w-full sm:w-[380px] sm:max-w-[calc(100vw-2rem)] h-[85dvh] sm:h-[520px] sm:max-h-[calc(100vh-6rem)] bg-white dark:bg-gray-900 sm:rounded-2xl shadow-2xl border-0 sm:border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300 lg:bottom-6 lg:right-6"
         >
           <div className="flex items-center justify-between px-5 py-4 bg-primary text-white rounded-t-2xl">
             <div className="flex items-center gap-3">

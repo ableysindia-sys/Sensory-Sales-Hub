@@ -10,6 +10,7 @@ import { ProductsProvider } from "@/lib/product-provider";
 import { CartDrawer } from "@/components/cart-drawer";
 import { ChatWidget } from "@/components/chat-widget";
 import { WhatsAppFab } from "@/components/whatsapp-fab";
+import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import NotFound from "@/pages/not-found";
 import Home from "./pages/home";
 import CategoryPage from "./pages/category";
@@ -59,6 +60,7 @@ function App() {
           <ProductsProvider>
             <EnquiryCartProvider>
               <Router />
+              <MobileBottomNav />
               <CartDrawer />
               <ChatWidget />
               <WhatsAppFab />

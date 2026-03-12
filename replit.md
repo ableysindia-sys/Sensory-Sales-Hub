@@ -24,7 +24,7 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 - Social: Facebook, Instagram, YouTube (react-icons/si)
 
 ## Pages & Routes
-- `/` - Home (announcement bar, hero slideshow, top collections grid, featured swings banner, product showcase with "Just In" / "Best-Sellers" tabs, manufacturing section, client logos, testimonials, trust badges, commitment section, sensory room CTA, bulk enquiry wizard, footer)
+- `/` - Home (rotating announcement bar, hero with single primary CTA, "Who are you shopping for?" audience chooser, category grid, featured swings banner, product showcase with "Best Sellers"/"New In" tabs, testimonials, bulk enquiry wizard, footer)
 - `/products` - All products with sidebar filters (Product Type accordion, Price accordion, active filter chips), search, sort, grid density toggle, "Why Choose Us" features section at bottom
 - `/category/:slug` - Category page with sidebar category navigation, banner, sort dropdown, grid toggle, product grid
 - `/product/:slug` - Product detail page with configurator, dynamic pricing, B2C/B2B actions
@@ -33,6 +33,14 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 - `/admin` - Admin panel (password-protected) with Dashboard, Leads, Products, and Pages tabs
 - `/sensory-room-builder` - 3D interactive room builder with product placement
 - `/page/:slug` - Dynamic pages (CMS-managed content pages)
+
+## UX Components (v2 Overhaul)
+- **Mobile Bottom Nav**: `client/src/components/mobile-bottom-nav.tsx` — Fixed bottom nav for mobile (Home, Products, Get a Quote [primary], WhatsApp). Only shows on screens <lg.
+- **Rotating Announcement Bar**: Part of `navbar.tsx` — rotates through 4 messages every 4s (no social icons)
+- **Audience Chooser**: Inline component in `home.tsx` — 3 cards (Family, OT Clinic, School/NGO) after hero
+- **Product Cards**: Simplified to 1 primary CTA (Add to Cart) + 1 secondary (Get B2B Quote as text link)
+- **Enquiry Wizard**: Step labels in stepper, localStorage pre-fills contact details, WhatsApp quick-contact bypass at step 0
+- **FAB Positioning**: WhatsApp FAB at `bottom-20 right-5` (above mobile nav), Chat widget at `bottom-[5.5rem] right-5` (above WA FAB)
 
 ## Key Files
 - `shared/schema.ts` - Database models (products, categories, leads, pages)

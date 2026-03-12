@@ -54,7 +54,7 @@ export default function AboutPage() {
   return (
     <>
       <Navbar />
-      <main className="pt-[6.5rem] min-h-screen bg-background">
+      <main className="pt-[6.5rem] min-h-screen bg-background pb-16 lg:pb-0">
 
         {/* ── Hero ── */}
         <section className="relative overflow-hidden bg-primary text-white">

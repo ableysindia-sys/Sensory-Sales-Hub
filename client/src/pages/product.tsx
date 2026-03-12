@@ -533,7 +533,7 @@ export default function ProductPage() {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <Navbar />
-      <main id="main-content">
+      <main id="main-content" className="pb-16 lg:pb-0">
 
         {/* ── Breadcrumb ────────────────────────────────────────── */}
         <section className="pt-36 pb-4">

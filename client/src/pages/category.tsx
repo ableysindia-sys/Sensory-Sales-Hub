@@ -70,7 +70,7 @@ export default function CategoryPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main id="main-content">
+      <main id="main-content" className="pb-16 lg:pb-0">
         {category.image && (
           <div className="relative h-48 sm:h-56 lg:h-72 mt-[6.5rem] overflow-hidden" data-testid="section-category-banner">
             <img
