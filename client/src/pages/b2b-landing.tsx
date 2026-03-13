@@ -370,50 +370,29 @@ export default function B2BLandingPage() {
                   India's most trusted source for clinical-grade sensory &amp; OT equipment. Bulk pricing, GST invoices, free pan-India shipping — tailored for institutions.
                 </p>
 
-                {/* ── Primary lead capture ── */}
-                <div className="rounded-2xl bg-black/30 backdrop-blur-md border border-white/15 p-4 sm:p-5 mb-4 sm:mb-5">
-                  <PhoneSignupInline
-                    variant="dark"
-                    label="Register to get your custom quote"
-                    sublabel="Bulk pricing · GST invoice · 24-hr turnaround"
-                    containerId="recaptcha-lp-hero"
-                  />
-                </div>
-
-                {/* Secondary CTAs */}
-                <div className="flex flex-wrap gap-3 items-center mb-3 sm:mb-0">
-                  <button
+                {/* CTAs — one primary, one ghost secondary */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
+                  <Button
+                    size="lg"
+                    className="bg-white text-gray-900 hover:bg-gray-50 rounded-full text-sm px-8 h-12 gap-2 font-semibold shadow-xl shadow-black/30 border-0"
                     onClick={scrollToForm}
-                    className="text-white/70 hover:text-white text-sm font-medium underline underline-offset-2 transition-colors"
                     data-testid="button-get-quote-hero"
                   >
-                    Fill detailed enquiry form →
-                  </button>
-                  <span className="text-white/30">·</span>
+                    Get a Bulk Quote <ArrowRight className="w-4 h-4" />
+                  </Button>
                   <a
                     href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20discuss%20bulk%20B2B%20pricing%20for%20my%20institution."
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-sm text-white/70 hover:text-white font-medium transition-colors"
                     data-testid="link-whatsapp-hero"
                   >
-                    <MessageCircle className="w-3.5 h-3.5" /> WhatsApp us
-                  </a>
-                </div>
-                {/* Sample Kit CTA with urgency */}
-                <div className="flex items-center gap-2 mb-5 sm:mb-0">
-                  <div className="h-px w-4 bg-white/20" />
-                  <a
-                    href="/sample"
-                    className="flex items-center gap-1.5 text-xs text-white/60 hover:text-white font-medium transition-colors group"
-                    data-testid="link-sample-kit-b2b"
-                  >
-                    <span className="text-white/40">🎁</span>
-                    Not sure yet?&nbsp;
-                    <span className="underline underline-offset-2 group-hover:no-underline">
-                      Try our ₹1,499 OT Sample Kit first →
-                    </span>
-                    <span className="ml-1 text-amber-400 font-semibold">Q2 — 43 kits left</span>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="rounded-full px-8 h-12 border-white/40 text-white bg-white/10 hover:bg-white/20 hover:border-white/60 text-sm font-medium w-full sm:w-auto gap-2"
+                    >
+                      <MessageCircle className="w-4 h-4" /> Chat on WhatsApp
+                    </Button>
                   </a>
                 </div>
 
