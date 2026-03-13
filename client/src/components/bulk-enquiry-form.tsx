@@ -339,8 +339,9 @@ export function BulkEnquiryForm() {
   };
 
   return (
-    <section id="enquiry" className="py-20 sm:py-28" data-testid="section-enquiry">
-      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="enquiry" className="relative overflow-hidden bg-gradient-to-br from-primary/8 via-background to-muted/20 py-20 sm:py-28 border-t" data-testid="section-enquiry">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_40%_50%_at_0%_100%,rgba(74,83,160,0.12),transparent)]" />
+      <div className="relative max-w-page mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-5 gap-10 lg:gap-16 items-start">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -348,39 +349,39 @@ export function BulkEnquiryForm() {
             viewport={{ once: true }}
             className="lg:col-span-2"
           >
-            <p className="text-sm font-semibold text-primary uppercase tracking-wider mb-4">For Clinics & Institutions</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-5 font-display" data-testid="heading-enquiry">
-              Bulk Orders & Custom Setups
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-primary mb-5 bg-primary/10 px-3 py-1.5 rounded-full">🏢 For Clinics &amp; Institutions</span>
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 font-display leading-tight" data-testid="heading-enquiry">
+              Bulk Orders &amp; Custom Setups
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-10" data-testid="text-enquiry-desc">
               Whether you're setting up a rehab centre, sensory gym, or institutional program — tell us your requirements and we'll prepare a custom quote.
             </p>
 
-            <div className="space-y-5 mb-8">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-primary/[0.06] border border-primary/[0.1] flex items-center justify-center flex-shrink-0">
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-card border border-border/50 shadow-sm">
+                <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
                   <Clock className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <p className="font-semibold text-foreground text-sm">Response within 24 hours</p>
+                  <p className="font-bold text-foreground text-sm">Response within 24 hours</p>
                   <p className="text-xs text-muted-foreground">Our team reviews every enquiry personally</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-primary/[0.06] border border-primary/[0.1] flex items-center justify-center flex-shrink-0">
-                  <FileText className="w-5 h-5 text-primary" />
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-card border border-border/50 shadow-sm">
+                <div className="w-11 h-11 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center flex-shrink-0">
+                  <FileText className="w-5 h-5 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="font-semibold text-foreground text-sm">Custom quotes for institutions</p>
+                  <p className="font-bold text-foreground text-sm">Custom quotes for institutions</p>
                   <p className="text-xs text-muted-foreground">Tailored pricing for your requirements</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-primary/[0.06] border border-primary/[0.1] flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-5 h-5 text-primary" />
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-card border border-border/50 shadow-sm">
+                <div className="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
+                  <Phone className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                 </div>
                 <div>
-                  <p className="font-semibold text-foreground text-sm">Dedicated support</p>
+                  <p className="font-bold text-foreground text-sm">Dedicated support</p>
                   <p className="text-xs text-muted-foreground">Speak directly with our product specialists</p>
                 </div>
               </div>

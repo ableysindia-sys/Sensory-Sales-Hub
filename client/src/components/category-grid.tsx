@@ -49,10 +49,11 @@ export function CategoryGrid() {
   }, [activeSetup, products]);
 
   return (
-    <section id="categories" className="py-16 sm:py-20 bg-muted/20" data-testid="section-categories">
+    <section id="categories" className="py-16 sm:py-20 bg-gradient-to-b from-muted/30 via-background to-background border-y" data-testid="section-categories">
       <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
 
         <div className="text-center mb-10">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-4 bg-primary/10 px-3 py-1.5 rounded-full">🧩 Explore by Setup</span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2 font-display" data-testid="heading-categories">
             Shop by Setup Type
           </h2>

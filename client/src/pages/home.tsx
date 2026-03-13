@@ -13,53 +13,63 @@ import featuredSwingsImg from "@assets/generated_images/featured-swings-banner.p
 import { useProducts } from "@/lib/product-provider";
 
 function AudienceChooser() {
+  const cards = [
+    {
+      icon: Heart,
+      label: "My Child / Family",
+      desc: "Home therapy tools, sensory toys & calming equipment",
+      href: "/products",
+      cta: "Browse products",
+      card: "from-rose-500/12 to-rose-500/4 border-rose-200 dark:border-rose-800 hover:border-rose-400/60",
+      icon_cls: "bg-rose-100 dark:bg-rose-950/60 text-rose-500",
+      cta_cls: "text-rose-600 dark:text-rose-400",
+    },
+    {
+      icon: Building2,
+      label: "My OT Clinic",
+      desc: "Clinical-grade equipment, bulk pricing & GST invoices",
+      href: "/enquiry",
+      cta: "Get a bulk quote →",
+      card: "from-primary/15 to-primary/5 border-primary/40 hover:border-primary/70 ring-2 ring-primary/10",
+      icon_cls: "bg-primary/15 text-primary",
+      cta_cls: "text-primary",
+      highlight: true,
+    },
+    {
+      icon: GraduationCap,
+      label: "My School / NGO",
+      desc: "Sensory rooms, inclusive classroom tools & custom setups",
+      href: "/enquiry",
+      cta: "Get a setup quote",
+      card: "from-indigo-500/12 to-indigo-500/4 border-indigo-200 dark:border-indigo-800 hover:border-indigo-400/60",
+      icon_cls: "bg-indigo-100 dark:bg-indigo-950/60 text-indigo-500",
+      cta_cls: "text-indigo-600 dark:text-indigo-400",
+    },
+  ];
   return (
-    <section className="py-10 sm:py-14 bg-muted/40 border-y" data-testid="section-audience-chooser">
+    <section className="py-12 sm:py-16 bg-gradient-to-b from-background to-muted/20 border-b" data-testid="section-audience-chooser">
       <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-center text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-6">
-          Who are you shopping for?
-        </p>
+        <div className="text-center mb-8">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-3 bg-primary/10 px-3 py-1.5 rounded-full">Who are you shopping for?</span>
+          <h2 className="text-2xl sm:text-3xl font-bold font-display text-foreground">Find the Right Equipment for You</h2>
+        </div>
         <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
-          {[
-            {
-              icon: Heart,
-              label: "My Child / Family",
-              desc: "Home therapy tools, sensory toys & calming equipment",
-              href: "/products",
-              color: "text-rose-500 bg-rose-50 dark:bg-rose-950/30",
-            },
-            {
-              icon: Building2,
-              label: "My OT Clinic",
-              desc: "Clinical-grade equipment, bulk pricing & GST invoices",
-              href: "/enquiry",
-              color: "text-primary bg-primary/10",
-              highlight: true,
-            },
-            {
-              icon: GraduationCap,
-              label: "My School / NGO",
-              desc: "Sensory rooms, inclusive classroom tools & custom setups",
-              href: "/enquiry",
-              color: "text-indigo-500 bg-indigo-50 dark:bg-indigo-950/30",
-            },
-          ].map(({ icon: Icon, label, desc, href, color, highlight }) => (
+          {cards.map(({ icon: Icon, label, desc, href, cta, card, icon_cls, cta_cls, highlight }) => (
             <Link key={label} href={href}>
               <div
-                className={`group rounded-2xl border-2 p-5 cursor-pointer transition-all hover:shadow-md h-full ${
-                  highlight
-                    ? "border-primary/40 bg-primary/5 hover:border-primary/60"
-                    : "border-border hover:border-primary/30 bg-card"
-                }`}
+                className={`group rounded-2xl border-2 bg-gradient-to-br p-5 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-0.5 h-full ${card}`}
                 data-testid={`card-audience-${label.toLowerCase().replace(/\s+/g, "-")}`}
               >
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${color}`}>
+                {highlight && (
+                  <span className="inline-block text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full mb-3 uppercase tracking-wide">Most Popular</span>
+                )}
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-3 ${icon_cls}`}>
                   <Icon className="w-5 h-5" />
                 </div>
-                <p className="font-semibold text-foreground text-sm mb-1">{label}</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
-                <div className="mt-3 text-xs font-semibold text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
-                  {highlight ? "Get a bulk quote" : "Browse products"} <ArrowRight className="w-3 h-3" />
+                <p className="font-bold text-foreground text-sm mb-1.5">{label}</p>
+                <p className="text-xs text-muted-foreground leading-relaxed mb-3">{desc}</p>
+                <div className={`text-xs font-semibold flex items-center gap-1 group-hover:gap-2 transition-all ${cta_cls}`}>
+                  {cta} <ArrowRight className="w-3 h-3" />
                 </div>
               </div>
             </Link>
@@ -72,28 +82,31 @@ function AudienceChooser() {
 
 function SampleKitBanner() {
   return (
-    <section className="bg-gradient-to-r from-primary/8 via-primary/5 to-primary/8 border-y border-primary/15 py-8 sm:py-10" data-testid="section-sample-kit-banner">
-      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10">
+    <section className="relative overflow-hidden bg-[#070d2a] text-white py-10 sm:py-14" data-testid="section-sample-kit-banner">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_70%_at_80%_50%,rgba(74,83,160,0.45),transparent)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_30%_50%_at_10%_50%,rgba(251,191,36,0.08),transparent)]" />
+      <div className="relative max-w-page mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row items-center gap-8 sm:gap-12">
           <div className="flex-1 text-center sm:text-left">
-            <div className="inline-flex items-center gap-2 text-xs font-semibold text-primary uppercase tracking-widest mb-2">
+            <div className="inline-flex items-center gap-2 text-xs font-bold text-amber-300 uppercase tracking-widest mb-4 bg-amber-400/15 px-3 py-1.5 rounded-full border border-amber-400/20">
               <Gift className="w-3.5 h-3.5" /> OT Trial Kit Programme
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-foreground font-display mb-2">
-              Try our equipment before committing
+            <h3 className="text-2xl sm:text-3xl font-bold text-white font-display mb-3 leading-tight">
+              Try Before You Commit —<br className="hidden sm:block" />
+              <span className="text-amber-300 italic">₹1,499 Refundable Deposit</span>
             </h3>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto sm:mx-0 leading-relaxed">
-              Request a curated 5-item sample kit for your clinic or school. Pay a <strong>₹1,499 refundable deposit</strong> — fully credited on your first order.
+            <p className="text-sm text-white/65 max-w-md mx-auto sm:mx-0 leading-relaxed">
+              Request a curated 5-item sample kit for your clinic or school. Deposit fully credited on your first bulk order.
             </p>
-            <div className="flex flex-wrap gap-4 mt-4 justify-center sm:justify-start text-xs text-muted-foreground">
-              <span className="flex items-center gap-1.5"><RotateCcw className="w-3.5 h-3.5 text-primary" /> 100% refundable</span>
-              <span className="flex items-center gap-1.5"><Package className="w-3.5 h-3.5 text-primary" /> Dispatched in 48 hrs</span>
-              <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-primary" /> OT-curated items</span>
+            <div className="flex flex-wrap gap-5 mt-5 justify-center sm:justify-start text-xs text-white/50">
+              <span className="flex items-center gap-1.5"><RotateCcw className="w-3.5 h-3.5 text-amber-300" /> 100% refundable</span>
+              <span className="flex items-center gap-1.5"><Package className="w-3.5 h-3.5 text-amber-300" /> Dispatched in 48 hrs</span>
+              <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-amber-300" /> OT-curated items</span>
             </div>
           </div>
           <div className="shrink-0">
             <Link href="/sample">
-              <Button size="lg" className="rounded-full px-7 gap-2 h-12 shadow-lg shadow-primary/25 font-semibold" data-testid="button-sample-kit-homepage">
+              <Button size="lg" className="rounded-2xl px-8 gap-2 h-13 shadow-2xl shadow-black/30 font-bold bg-white text-gray-900 hover:bg-amber-50 border-0 text-sm" data-testid="button-sample-kit-homepage">
                 Request Sample Kit <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
@@ -106,16 +119,16 @@ function SampleKitBanner() {
 
 function QuickTrustBar() {
   return (
-    <section className="border-b bg-background" data-testid="section-quick-trust">
-      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
+    <section className="bg-primary" data-testid="section-quick-trust">
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-xs text-white/85 font-medium">
           {[
             { icon: Truck, text: "Free shipping pan-India" },
-            { icon: ShieldCheck, text: "OT-curated products" },
+            { icon: ShieldCheck, text: "OT-curated & clinically validated" },
             { icon: BadgeIndianRupee, text: "Bulk pricing for institutions" },
           ].map(({ icon: Icon, text }) => (
-            <span key={text} className="flex items-center gap-1.5">
-              <Icon className="w-3.5 h-3.5 text-primary" /> {text}
+            <span key={text} className="flex items-center gap-2">
+              <Icon className="w-3.5 h-3.5 text-white/70" /> {text}
             </span>
           ))}
         </div>
@@ -126,7 +139,7 @@ function QuickTrustBar() {
 
 function FeaturedSwings() {
   return (
-    <section className="py-10 sm:py-14" data-testid="section-featured-swings">
+    <section className="py-10 sm:py-14 bg-gradient-to-b from-background via-muted/10 to-background" data-testid="section-featured-swings">
       <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
         <Link href="/category/swings">
           <div className="relative overflow-hidden rounded-2xl group cursor-pointer">
@@ -169,10 +182,11 @@ function ProductShowcase() {
   const active = activeTab === "new" ? newArrivals : bestSellers;
 
   return (
-    <section className="py-12 sm:py-16" data-testid="section-product-showcase">
+    <section className="py-14 sm:py-20 bg-gradient-to-b from-muted/20 to-background border-t" data-testid="section-product-showcase">
       <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
           <div>
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-3 bg-primary/10 px-3 py-1.5 rounded-full">🏆 Editor's Pick</span>
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground font-display" data-testid="heading-product-showcase">
               Our Products
             </h2>
@@ -180,17 +194,17 @@ function ProductShowcase() {
               Trusted by OT clinics and families across India
             </p>
           </div>
-          <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1 self-start sm:self-auto">
+          <div className="flex items-center gap-1 bg-muted/60 rounded-xl p-1 self-start sm:self-auto border border-border/40">
             <button
               onClick={() => setActiveTab("best")}
-              className={`px-4 py-2 text-sm font-semibold rounded-md transition-all ${activeTab === "best" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"}`}
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === "best" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
               data-testid="tab-best-sellers"
             >
               Best Sellers
             </button>
             <button
               onClick={() => setActiveTab("new")}
-              className={`px-4 py-2 text-sm font-semibold rounded-md transition-all ${activeTab === "new" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"}`}
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === "new" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
               data-testid="tab-new-arrivals"
             >
               New In
@@ -200,9 +214,9 @@ function ProductShowcase() {
 
         <ProductCarousel products={active} hideHeader />
 
-        <div className="text-center mt-8">
+        <div className="text-center mt-10">
           <Link href="/products">
-            <Button variant="outline" className="rounded-full px-8" data-testid="button-see-all-products">
+            <Button variant="outline" className="rounded-full px-8 border-primary/30 hover:border-primary/60" data-testid="button-see-all-products">
               See All 116+ Products <ArrowRight className="ml-1.5 w-4 h-4" />
             </Button>
           </Link>
