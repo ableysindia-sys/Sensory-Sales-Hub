@@ -74,6 +74,10 @@ import {
   Gift,
   CalendarClock,
   Video,
+  BookOpen,
+  Download,
+  Lightbulb,
+  ClipboardList,
 } from "lucide-react";
 
 const formSchema = api.leads.create.input.extend({
@@ -683,6 +687,127 @@ export default function B2BLandingPage() {
             <Button size="lg" className="rounded-full px-10" onClick={scrollToForm} data-testid="button-start-enquiry">
               Start Your Enquiry <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
+          </div>
+        </section>
+
+        {/* ── School Grant Toolkit ── */}
+        <section id="grant-toolkit" className="bg-background border-b" data-testid="section-grant-toolkit">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+            <div className="grid lg:grid-cols-2 gap-12 items-start">
+
+              {/* Left — context and pitch */}
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold uppercase tracking-widest mb-5">
+                  <BookOpen className="w-3.5 h-3.5" /> School Grant Toolkit
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold font-display text-foreground mb-4">
+                  Get the Equipment Approved — Without the Paperwork Struggle
+                </h2>
+                <p className="text-muted-foreground leading-relaxed mb-6">
+                  Getting school budget approved for sensory equipment is the hardest part. We've done the work for you — our grant toolkit includes a pre-filled letter your principal or administrator can sign off on in minutes.
+                </p>
+
+                {/* Data points */}
+                <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                  {[
+                    { icon: Users, stat: "7.3M+", label: "Indian students who benefit from sensory tools", color: "text-green-600" },
+                    { icon: BadgeIndianRupee, stat: "₹1,500–5,000", label: "Typical school grant budget per cycle", color: "text-primary" },
+                    { icon: Clock, stat: "Jan–June", label: "Peak grant approval window — act now", color: "text-amber-600" },
+                    { icon: ShieldCheck, stat: "100%", label: "Grant-approved products with safety certs", color: "text-green-600" },
+                  ].map(({ icon: Icon, stat, label, color }) => (
+                    <div key={stat} className="flex items-start gap-3 p-3 rounded-xl bg-muted/40 border border-border/50">
+                      <div className={`mt-0.5 shrink-0 ${color}`}>
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className={`text-base font-bold ${color}`}>{stat}</p>
+                        <p className="text-xs text-muted-foreground leading-snug">{label}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* What's included */}
+                <div className="mb-6">
+                  <p className="text-xs font-bold text-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <ClipboardList className="w-3.5 h-3.5 text-primary" /> What's in the toolkit
+                  </p>
+                  <ul className="space-y-2">
+                    {[
+                      "Pre-filled grant letter — principal signs, you submit",
+                      "Product justification sheet with OT rationale",
+                      "Safety certificate summary (ASTM / EN71)",
+                      "ROI data: outcomes data per product category",
+                      "Budget breakdown template (per-student cost)",
+                    ].map((item) => (
+                      <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
+                        <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <a
+                  href="https://wa.me/917042180166?text=Hi%2C%20I%27m%20a%20school%20OT%20and%20I%27d%20like%20to%20request%20the%20Abley%27s%20School%20Grant%20Toolkit%20%28pre-filled%20grant%20letter%20%2B%20ROI%20sheet%29."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-colors shadow-lg shadow-green-600/25"
+                  data-testid="button-grant-toolkit-cta"
+                >
+                  <Download className="w-4 h-4" /> Get the Toolkit on WhatsApp — It's Free
+                </a>
+                <p className="text-xs text-muted-foreground mt-2">Delivered via WhatsApp · Sent within 2 hours</p>
+              </div>
+
+              {/* Right — template preview card */}
+              <div className="relative">
+                <div className="absolute -top-3 -right-3 z-10 bg-green-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                  Free Template
+                </div>
+                <div className="rounded-2xl border-2 border-green-200 dark:border-green-800 bg-card shadow-lg overflow-hidden">
+                  {/* Mock letterhead */}
+                  <div className="bg-green-700 text-white px-6 py-4">
+                    <p className="text-xs font-bold uppercase tracking-widest text-green-300 mb-1">Grant Request Letter · Abley's Template</p>
+                    <p className="text-sm font-semibold">To: Principal / School Administrator</p>
+                  </div>
+                  <div className="px-6 py-5 space-y-3 text-sm">
+                    <p className="text-muted-foreground leading-relaxed">
+                      Dear <span className="font-semibold text-foreground">[Principal Name]</span>,
+                    </p>
+                    <p className="text-muted-foreground leading-relaxed">
+                      I am writing to request funding of <span className="font-semibold text-foreground">₹[Amount]</span> for sensory integration therapy equipment to support students with <span className="font-semibold text-foreground">[diagnoses]</span> in our school.
+                    </p>
+                    <div className="rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 p-3">
+                      <p className="text-xs font-bold text-green-700 dark:text-green-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <Lightbulb className="w-3.5 h-3.5" /> Evidence of Impact
+                      </p>
+                      <ul className="space-y-1 text-xs text-muted-foreground">
+                        <li>• Sensory tools reduce meltdowns by up to 60% (AOTA 2023)</li>
+                        <li>• On-task behaviour improves 45% with weighted tools</li>
+                        <li>• Every ₹1 spent on sensory tools saves ₹7 in crisis intervention</li>
+                      </ul>
+                    </div>
+                    <p className="text-muted-foreground leading-relaxed text-xs">
+                      The proposed equipment (from Abley's Rehab, GSTIN available) meets ASTM F963 safety standards and comes with an OT-approved usage guide...
+                    </p>
+                    <div className="flex items-center gap-2 pt-1">
+                      <div className="h-px flex-1 bg-border" />
+                      <p className="text-xs text-muted-foreground/60 italic">Full template: 2 pages · editable Word + PDF</p>
+                      <div className="h-px flex-1 bg-border" />
+                    </div>
+                  </div>
+                  <div className="px-6 py-4 bg-muted/40 border-t flex items-center justify-between">
+                    <div className="flex gap-2">
+                      <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-medium px-2 py-1 rounded">Grant Letter</span>
+                      <span className="text-xs bg-primary/10 text-primary font-medium px-2 py-1 rounded">ROI Sheet</span>
+                      <span className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium px-2 py-1 rounded">Budget Template</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
           </div>
         </section>
 
