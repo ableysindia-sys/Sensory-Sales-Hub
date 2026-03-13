@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ShoppingCart, ChevronDown, Send, LogIn, LogOut, User, FileDown } from "lucide-react";
+import { Menu, X, ShoppingCart, ChevronDown, Send, LogIn, LogOut, FileDown, Building2, FlaskConical, Info, Phone } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { useShoppingCart } from "@/lib/shopping-cart";
@@ -13,11 +13,6 @@ const ANNOUNCEMENTS = [
   "🏷️ GST Invoices for All Institutional Orders",
   "💬 Bulk pricing for OT Clinics & Schools — Chat with us",
   "⭐ Trusted by 500+ Occupational Therapists Across India",
-];
-
-const navLinks = [
-  { label: "Products", href: "#products", hasDropdown: true },
-  { label: "Contact", href: "/contact" },
 ];
 
 export function AnnouncementBar() {
@@ -142,23 +137,11 @@ export function Navbar() {
   const handleNavClick = (href: string) => {
     setMobileOpen(false);
     setProductsOpen(false);
-    if (href.startsWith("/#")) {
-      if (location !== "/") {
-        navigate("/");
-        setTimeout(() => {
-          document.getElementById(href.replace("/#", ""))?.scrollIntoView({ behavior: "smooth" });
-        }, 100);
-      } else {
-        document.getElementById(href.replace("/#", ""))?.scrollIntoView({ behavior: "smooth" });
-      }
-    } else {
-      navigate(href);
-    }
+    navigate(href);
   };
 
   const isActive = (href: string) => {
     if (href === "/") return location === "/";
-    if (href.startsWith("/#")) return false;
     return location.startsWith(href);
   };
 
@@ -171,79 +154,132 @@ export function Navbar() {
       <nav className="bg-background/95 backdrop-blur-md border-b border-border supports-[backdrop-filter]:bg-background/80">
         <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
+
+            {/* Logo */}
             <Link href="/" className="flex items-center gap-2 flex-shrink-0" data-testid="link-home">
               <img src={logoPath} alt="Abley's Rehab" className="h-11 lg:h-14 w-auto" data-testid="img-logo" />
             </Link>
 
+            {/* Desktop nav links */}
             <div className="hidden lg:flex items-center gap-0.5">
-              {navLinks.map((link) =>
-                link.hasDropdown ? (
-                  <div key={link.label} className="relative">
-                    <button
-                      onClick={() => setProductsOpen(!productsOpen)}
-                      className={`flex items-center gap-1 px-4 py-2 text-[13px] font-semibold uppercase tracking-wider transition-colors ${
-                        location.startsWith("/product") || location.startsWith("/category")
-                          ? "text-primary"
-                          : "text-foreground/70 hover:text-foreground"
-                      }`}
-                      data-testid="link-nav-products"
-                    >
-                      {link.label}
-                      <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${productsOpen ? "rotate-180" : ""}`} />
-                    </button>
-                    {productsOpen && (
-                      <>
-                        <div className="fixed inset-0 z-40" onClick={() => setProductsOpen(false)} />
-                        <div className="absolute top-full left-0 mt-1 w-64 bg-background border border-border rounded-md shadow-lg z-50 py-1" data-testid="dropdown-products">
-                          <Link
-                            href="/products"
-                            onClick={() => setProductsOpen(false)}
-                            className="flex items-center justify-between px-4 py-2.5 text-sm hover:bg-muted transition-colors"
-                            data-testid="link-dropdown-all"
-                          >
-                            <span className="font-semibold text-foreground">All Products</span>
-                            <span className="text-xs text-muted-foreground">View All</span>
-                          </Link>
-                          <div className="border-t border-border my-1" />
-                          {categories.map((cat) => (
-                            <Link
-                              key={cat.slug}
-                              href={`/category/${cat.slug}`}
-                              onClick={() => setProductsOpen(false)}
-                              className="flex items-center justify-between px-4 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                              data-testid={`link-dropdown-${cat.slug}`}
-                            >
-                              <span>{cat.title}</span>
-                              <span className="text-xs">{cat.products?.length ?? ""}</span>
-                            </Link>
-                          ))}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                ) : (
-                  <button
-                    key={link.label}
-                    onClick={() => handleNavClick(link.href)}
-                    className={`px-4 py-2 text-[13px] font-semibold uppercase tracking-wider transition-colors ${
-                      isActive(link.href)
-                        ? "text-primary"
-                        : "text-foreground/70 hover:text-foreground"
-                    }`}
-                    data-testid={`link-nav-${link.label.toLowerCase().replace(/\s+/g, "-")}`}
-                  >
-                    {link.label}
-                  </button>
-                )
-              )}
+
+              {/* Products dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setProductsOpen(!productsOpen)}
+                  className={`flex items-center gap-1 px-3.5 py-2 text-[13px] font-semibold transition-colors rounded-md ${
+                    location.startsWith("/product") || location.startsWith("/category")
+                      ? "text-primary"
+                      : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
+                  }`}
+                  data-testid="link-nav-products"
+                >
+                  Products
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${productsOpen ? "rotate-180" : ""}`} />
+                </button>
+                {productsOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setProductsOpen(false)} />
+                    <div className="absolute top-full left-0 mt-1 w-64 bg-background border border-border rounded-xl shadow-xl z-50 py-2 overflow-hidden" data-testid="dropdown-products">
+                      <Link
+                        href="/products"
+                        onClick={() => setProductsOpen(false)}
+                        className="flex items-center justify-between px-4 py-2.5 text-sm hover:bg-muted transition-colors"
+                        data-testid="link-dropdown-all"
+                      >
+                        <span className="font-semibold text-foreground">All Products</span>
+                        <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">116+</span>
+                      </Link>
+                      <div className="border-t border-border my-1.5 mx-3" />
+                      <p className="px-4 py-1 text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Browse by Category</p>
+                      {categories.map((cat) => (
+                        <Link
+                          key={cat.slug}
+                          href={`/category/${cat.slug}`}
+                          onClick={() => setProductsOpen(false)}
+                          className="flex items-center justify-between px-4 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                          data-testid={`link-dropdown-${cat.slug}`}
+                        >
+                          <span>{cat.title}</span>
+                          <span className="text-xs text-muted-foreground/60">{cat.products?.length ?? ""}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* B2B / Bulk Orders */}
+              <Link href="/lp">
+                <button
+                  className={`flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-semibold transition-colors rounded-md ${
+                    isActive("/lp") ? "text-primary" : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
+                  }`}
+                  data-testid="link-nav-b2b"
+                >
+                  <Building2 className="w-3.5 h-3.5" />
+                  B2B / Bulk
+                </button>
+              </Link>
+
+              {/* Sample Kit */}
+              <Link href="/sample">
+                <button
+                  className={`flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-semibold transition-colors rounded-md ${
+                    isActive("/sample") ? "text-primary" : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
+                  }`}
+                  data-testid="link-nav-sample"
+                >
+                  <FlaskConical className="w-3.5 h-3.5" />
+                  Sample Kit
+                </button>
+              </Link>
+
+              {/* About */}
+              <Link href="/about">
+                <button
+                  className={`flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-semibold transition-colors rounded-md ${
+                    isActive("/about") ? "text-primary" : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
+                  }`}
+                  data-testid="link-nav-about"
+                >
+                  <Info className="w-3.5 h-3.5" />
+                  About
+                </button>
+              </Link>
+
+              {/* Contact */}
+              <Link href="/contact">
+                <button
+                  className={`flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-semibold transition-colors rounded-md ${
+                    isActive("/contact") ? "text-primary" : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
+                  }`}
+                  data-testid="link-nav-contact"
+                >
+                  <Phone className="w-3.5 h-3.5" />
+                  Contact
+                </button>
+              </Link>
             </div>
 
-            <div className="hidden lg:flex items-center gap-3">
+            {/* Desktop right actions */}
+            <div className="hidden lg:flex items-center gap-2">
+              <a
+                href="/api/catalog"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-md transition-colors border border-border"
+                data-testid="link-nav-catalogue-pdf"
+              >
+                <FileDown className="w-3.5 h-3.5" />
+                Catalogue
+              </a>
               <UserAvatar />
               <button
                 onClick={openDrawer}
-                className="relative p-2 text-foreground/60 hover:text-foreground transition-colors"
+                className="relative p-2 text-foreground/60 hover:text-foreground transition-colors rounded-md hover:bg-muted/50"
                 data-testid="button-nav-shopping-cart"
+                aria-label="Shopping cart"
               >
                 <ShoppingCart className="w-5 h-5" />
                 {cartCount > 0 && (
@@ -252,22 +288,12 @@ export function Navbar() {
                   </span>
                 )}
               </button>
-              <a
-                href="/api/catalog"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hidden xl:inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-                data-testid="link-nav-catalogue-pdf"
-              >
-                <FileDown className="w-3.5 h-3.5" />
-                Catalogue
-              </a>
               <Link href="/enquiry">
-                <Button size="sm" className="gap-2 rounded-none text-xs font-semibold uppercase tracking-wider" data-testid="button-nav-bulk-enquiry">
+                <Button size="sm" className="gap-1.5 rounded-full text-xs font-semibold px-4" data-testid="button-nav-bulk-enquiry">
                   <Send className="w-3.5 h-3.5" />
                   Get a Quote
                   {enquiryCount > 0 && (
-                    <span className="ml-1 w-5 h-5 bg-white/20 text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center" data-testid="badge-cart-count">
+                    <span className="ml-0.5 w-4 h-4 bg-white/25 text-[10px] font-bold rounded-full flex items-center justify-center" data-testid="badge-cart-count">
                       {enquiryCount}
                     </span>
                   )}
@@ -275,6 +301,7 @@ export function Navbar() {
               </Link>
             </div>
 
+            {/* Mobile right: cart + hamburger */}
             <div className="flex items-center gap-1 lg:hidden">
               <button
                 onClick={openDrawer}
@@ -302,59 +329,67 @@ export function Navbar() {
           </div>
         </div>
 
+        {/* Mobile menu drawer */}
         {mobileOpen && (
-          <div className="lg:hidden bg-background border-t border-border px-4 pb-6">
-            <div className="py-2 space-y-1">
-              {user && (
-                <div className="flex items-center gap-3 px-4 py-3 mb-1 bg-primary/5 rounded-xl border border-primary/10">
-                  {user.photoURL ? (
-                    <img src={user.photoURL} alt="" className="w-8 h-8 rounded-full object-cover" />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center justify-center">
-                      {user.displayName?.[0]?.toUpperCase() ?? user.phoneNumber?.slice(-2, -1) ?? user.email?.[0]?.toUpperCase() ?? "U"}
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground truncate">
-                      {user.displayName ?? user.phoneNumber ?? user.email ?? "User"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">Signed in</p>
-                  </div>
-                </div>
-              )}
+          <div className="lg:hidden bg-background border-t border-border">
 
+            {/* User info if signed in */}
+            {user && (
+              <div className="flex items-center gap-3 px-5 py-3 border-b border-border bg-primary/5">
+                {user.photoURL ? (
+                  <img src={user.photoURL} alt="" className="w-8 h-8 rounded-full object-cover" />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center justify-center">
+                    {user.displayName?.[0]?.toUpperCase() ?? user.phoneNumber?.slice(-2, -1) ?? user.email?.[0]?.toUpperCase() ?? "U"}
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground truncate">
+                    {user.displayName ?? user.phoneNumber ?? user.email ?? "User"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Signed in</p>
+                </div>
+              </div>
+            )}
+
+            <div className="px-3 py-3 space-y-0.5">
+              {/* Home */}
               <button
                 onClick={() => handleNavClick("/")}
-                className="block w-full text-left px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+                className={`flex items-center w-full px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${isActive("/") && location === "/" ? "text-primary bg-primary/8" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
                 data-testid="link-mobile-home"
               >
                 Home
               </button>
+
+              {/* Products expandable */}
               <div>
                 <button
                   onClick={() => setProductsOpen(!productsOpen)}
-                  className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+                  className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted rounded-lg transition-colors"
                   data-testid="link-mobile-products"
                 >
                   Products
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${productsOpen ? "rotate-180" : ""}`} />
                 </button>
                 {productsOpen && (
-                  <div className="pl-4 pb-2 space-y-0.5">
+                  <div className="pl-3 pb-1 space-y-0.5 mt-0.5">
                     <Link
                       href="/products"
                       onClick={() => { setMobileOpen(false); setProductsOpen(false); }}
-                      className="block px-4 py-2.5 text-sm font-medium text-foreground rounded-md transition-colors"
+                      className="flex items-center justify-between px-3 py-2 text-sm font-semibold text-foreground hover:bg-muted rounded-lg transition-colors"
                       data-testid="link-mobile-all-products"
                     >
                       All Products
+                      <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">116+</span>
                     </Link>
+                    <p className="px-3 pt-1 text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Categories</p>
                     {categories.map((cat) => (
                       <Link
                         key={cat.slug}
                         href={`/category/${cat.slug}`}
                         onClick={() => { setMobileOpen(false); setProductsOpen(false); }}
-                        className="block px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground rounded-md transition-colors"
+                        className="block px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
                         data-testid={`link-mobile-category-${cat.slug}`}
                       >
                         {cat.title}
@@ -363,54 +398,94 @@ export function Navbar() {
                   </div>
                 )}
               </div>
+
+              {/* B2B / Bulk */}
+              <button
+                onClick={() => handleNavClick("/lp")}
+                className={`flex items-center gap-2.5 w-full px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${isActive("/lp") ? "text-primary bg-primary/8" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
+                data-testid="link-mobile-b2b"
+              >
+                <Building2 className="w-4 h-4 shrink-0" />
+                B2B / Bulk Orders
+              </button>
+
+              {/* Sample Kit */}
+              <button
+                onClick={() => handleNavClick("/sample")}
+                className={`flex items-center gap-2.5 w-full px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${isActive("/sample") ? "text-primary bg-primary/8" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
+                data-testid="link-mobile-sample"
+              >
+                <FlaskConical className="w-4 h-4 shrink-0" />
+                Sample Kit — ₹1,499
+              </button>
+
+              {/* About */}
+              <button
+                onClick={() => handleNavClick("/about")}
+                className={`flex items-center gap-2.5 w-full px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${isActive("/about") ? "text-primary bg-primary/8" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
+                data-testid="link-mobile-about"
+              >
+                <Info className="w-4 h-4 shrink-0" />
+                About Us
+              </button>
+
+              {/* Contact */}
+              <button
+                onClick={() => handleNavClick("/contact")}
+                className={`flex items-center gap-2.5 w-full px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${isActive("/contact") ? "text-primary bg-primary/8" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
+                data-testid="link-mobile-contact"
+              >
+                <Phone className="w-4 h-4 shrink-0" />
+                Contact
+              </button>
+
+              {/* Catalogue PDF */}
               <a
                 href="/api/catalog"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-2 w-full px-4 py-3 text-sm font-medium text-primary hover:text-primary/80 hover:bg-primary/5 rounded-md transition-colors"
+                className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm font-medium text-primary hover:bg-primary/8 rounded-lg transition-colors"
                 data-testid="link-mobile-catalogue-pdf"
               >
-                <FileDown className="w-4 h-4" />
-                Download Product Catalogue PDF
+                <FileDown className="w-4 h-4 shrink-0" />
+                Download Product Catalogue
               </a>
-              <button
-                onClick={() => handleNavClick("/contact")}
-                className="block w-full text-left px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-                data-testid="link-mobile-contact"
-              >
-                Contact
-              </button>
 
-              {user ? (
-                <button
-                  onClick={() => { logout(); setMobileOpen(false); }}
-                  className="flex items-center gap-2 w-full px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-md transition-colors"
-                  data-testid="button-mobile-sign-out"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Sign Out
-                </button>
-              ) : (
-                <button
-                  onClick={() => { openAuthDrawer(); setMobileOpen(false); }}
-                  className="flex items-center gap-2 w-full px-4 py-3 text-sm font-medium text-primary hover:bg-primary/5 rounded-md transition-colors"
-                  data-testid="button-mobile-sign-in"
-                >
-                  <LogIn className="w-4 h-4" />
-                  Sign In / Register
-                </button>
-              )}
+              {/* Auth */}
+              <div className="pt-1 border-t border-border mt-1">
+                {user ? (
+                  <button
+                    onClick={() => { logout(); setMobileOpen(false); }}
+                    className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors"
+                    data-testid="button-mobile-sign-out"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => { openAuthDrawer(); setMobileOpen(false); }}
+                    className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm font-medium text-primary hover:bg-primary/8 rounded-lg transition-colors"
+                    data-testid="button-mobile-sign-in"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    Sign In / Register
+                  </button>
+                )}
+              </div>
             </div>
-            <div className="px-4 pt-4 border-t border-border">
+
+            {/* CTA button at bottom */}
+            <div className="px-4 py-4 border-t border-border">
               <Button
                 size="lg"
-                className="w-full gap-2 rounded-none font-semibold uppercase tracking-wider"
+                className="w-full gap-2 rounded-full font-semibold"
                 onClick={() => handleNavClick("/enquiry")}
                 data-testid="button-mobile-bulk-enquiry"
               >
                 <Send className="w-4 h-4" />
-                Get a Quote
+                Get a Bulk Quote
               </Button>
             </div>
           </div>
