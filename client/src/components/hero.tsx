@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ShieldCheck, Truck, Users } from "lucide-react";
 import { Link } from "wouter";
-import { PhoneSignupInline } from "@/components/phone-signup-inline";
 import heroBannerImg from "@assets/generated_images/hero-banner.png";
 
 export function Hero() {
@@ -58,11 +57,11 @@ export function Hero() {
             Premium sensory &amp; rehab equipment for OT clinics, schools, and families across India.
           </p>
 
-          {/* Shop CTA — full-width pill on mobile */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 mb-5 sm:mb-6">
+          {/* CTAs — one primary, one ghost secondary */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
             <Button
               size="lg"
-              className="bg-white text-gray-900 hover:bg-gray-50 rounded-full text-sm px-7 h-11 gap-2 font-semibold shadow-xl shadow-black/30 border-0"
+              className="bg-white text-gray-900 hover:bg-gray-50 rounded-full text-sm px-8 h-12 gap-2 font-semibold shadow-xl shadow-black/30 border-0"
               data-testid="button-hero-cta"
               onClick={() =>
                 document.getElementById("categories")?.scrollIntoView({ behavior: "smooth" })
@@ -71,21 +70,14 @@ export function Hero() {
               Shop Products <ArrowRight className="w-4 h-4" />
             </Button>
             <Link href="/enquiry" data-testid="link-hero-b2b">
-              <span className="text-white/80 hover:text-white text-sm font-medium underline underline-offset-2 flex items-center justify-center sm:justify-start gap-1 transition-colors">
-                Institution or clinic? Bulk quote →
-              </span>
+              <Button
+                size="lg"
+                variant="outline"
+                className="rounded-full px-8 h-12 border-white/40 text-white bg-white/10 hover:bg-white/20 hover:border-white/60 text-sm font-medium w-full sm:w-auto"
+              >
+                Bulk / Institution Quote
+              </Button>
             </Link>
-          </div>
-
-          {/* ── Phone signup — primary lead capture ── */}
-          <div className="rounded-2xl bg-black/30 backdrop-blur-md border border-white/15 p-4 mb-5">
-            <PhoneSignupInline
-              variant="dark"
-              label="Get offers, new arrivals & order updates"
-              sublabel="Register free — no spam, cancel any time"
-              containerId="recaptcha-hero"
-              className="w-full"
-            />
           </div>
 
           {/* Trust strip — hidden on xs, shown sm+ */}
