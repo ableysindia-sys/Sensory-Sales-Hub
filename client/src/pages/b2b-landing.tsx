@@ -453,28 +453,30 @@ export default function B2BLandingPage() {
         </section>
 
         {/* ── Institutional Guarantee Stack ── */}
-        <section className="border-b bg-background" data-testid="section-institutional-guarantees">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-            <div className="text-center mb-8">
-              <span className="text-xs font-semibold uppercase tracking-widest text-primary mb-2 block">Built for Institutions</span>
-              <h2 className="text-2xl sm:text-3xl font-bold font-display text-foreground">
+        <section className="relative overflow-hidden border-b bg-[#070d2a] text-white" data-testid="section-institutional-guarantees">
+          {/* Subtle grid overlay */}
+          <div className="absolute pointer-events-none inset-0 opacity-[0.03]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.8) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.8) 1px,transparent 1px)", backgroundSize: "40px 40px" }} />
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
+            <div className="text-center mb-10">
+              <span className="text-xs font-semibold uppercase tracking-widest text-amber-400 mb-3 block">Built for Institutions</span>
+              <h2 className="text-2xl sm:text-3xl font-bold font-display text-white">
                 We've Solved Every Institutional Procurement Pain Point
               </h2>
-              <p className="text-sm text-muted-foreground mt-2 max-w-lg mx-auto">
+              <p className="text-sm text-white/55 mt-3 max-w-lg mx-auto">
                 The 6 reasons institutional orders stall — and how Abley's eliminates every one.
               </p>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {INSTITUTIONAL_GUARANTEES.map(({ icon: Icon, title, desc, badge }) => (
-                <div key={title} className="group relative rounded-2xl border border-border bg-card p-5 hover:border-primary/40 hover:shadow-sm transition-all">
+                <div key={title} className="group relative rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 hover:border-amber-400/40 transition-all duration-200">
                   <div className="flex items-start justify-between mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                      <Icon className="w-5 h-5 text-primary" />
+                    <div className="w-11 h-11 rounded-xl bg-amber-400/15 flex items-center justify-center group-hover:bg-amber-400/25 transition-colors">
+                      <Icon className="w-5 h-5 text-amber-300" />
                     </div>
-                    <span className="text-[10px] font-bold text-primary bg-primary/8 px-2 py-0.5 rounded-full">{badge}</span>
+                    <span className="text-[10px] font-bold text-amber-300 bg-amber-400/15 px-2 py-0.5 rounded-full">{badge}</span>
                   </div>
-                  <h3 className="font-semibold text-sm text-foreground mb-1.5">{title}</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
+                  <h3 className="font-semibold text-sm text-white mb-1.5">{title}</h3>
+                  <p className="text-xs text-white/55 leading-relaxed">{desc}</p>
                 </div>
               ))}
             </div>
@@ -482,10 +484,11 @@ export default function B2BLandingPage() {
         </section>
 
         {/* ── Pain Points ── */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+        <section className="bg-gradient-to-br from-red-50/80 via-background to-orange-50/40 dark:from-red-950/20 dark:via-background dark:to-orange-950/10 border-b">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
           <div className="grid sm:grid-cols-2 gap-12 items-center">
             <div>
-              <span className="text-xs font-semibold uppercase tracking-widest text-primary mb-3 block">Sound Familiar?</span>
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-red-600 dark:text-red-400 mb-4 bg-red-100 dark:bg-red-950/40 px-3 py-1.5 rounded-full">😓 Sound Familiar?</span>
               <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground mb-6 leading-tight">
                 Sourcing OT Equipment in India Has Always Been Painful.
               </h2>
@@ -496,7 +499,7 @@ export default function B2BLandingPage() {
                 Meanwhile, your clients need intervention <em>today</em> — and your budget doesn't stretch to premium imports.
               </p>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {[
                 "Overpriced imports with 3-month lead times",
                 "No single vendor for a complete sensory room setup",
@@ -505,20 +508,23 @@ export default function B2BLandingPage() {
                 "Inconsistent quality with zero after-sale support",
                 "Having to source from 5 different vendors for one setup",
               ].map((pain) => (
-                <div key={pain} className="flex items-start gap-3 p-3 rounded-lg bg-destructive/5 border border-destructive/10">
-                  <span className="text-destructive mt-0.5 shrink-0">✕</span>
-                  <p className="text-sm text-foreground/80">{pain}</p>
+                <div key={pain} className="flex items-center gap-3 p-3.5 rounded-xl bg-white dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 shadow-sm">
+                  <div className="w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center shrink-0">
+                    <span className="text-red-500 dark:text-red-400 text-xs font-bold leading-none">✕</span>
+                  </div>
+                  <p className="text-sm text-foreground/85 font-medium">{pain}</p>
                 </div>
               ))}
             </div>
           </div>
+          </div>
         </section>
 
         {/* ── Stakeholder Navigator ── */}
-        <section className="bg-muted/40 border-y" data-testid="section-stakeholder-navigator">
+        <section className="bg-gradient-to-b from-slate-50 via-blue-50/30 to-background dark:from-slate-900/60 dark:via-blue-950/20 dark:to-background border-y" data-testid="section-stakeholder-navigator">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
             <div className="text-center mb-12">
-              <span className="text-xs font-semibold uppercase tracking-widest text-primary mb-3 block">Who This Is For</span>
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-4 bg-primary/10 px-3 py-1.5 rounded-full">🎯 Who This Is For</span>
               <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground leading-tight">
                 We Understand Your Specific Buying Situation.
               </h2>
@@ -579,9 +585,10 @@ export default function B2BLandingPage() {
         </section>
 
         {/* ── Setup Types ── */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+        <section className="bg-gradient-to-b from-background to-primary/3 border-b">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
           <div className="text-center mb-12">
-            <span className="text-xs font-semibold uppercase tracking-widest text-primary mb-3 block">Our Catalogue</span>
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-4 bg-primary/10 px-3 py-1.5 rounded-full">📦 Our Catalogue</span>
             <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground leading-tight">
               Equipment for Every Setup Type
             </h2>
@@ -590,58 +597,75 @@ export default function B2BLandingPage() {
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {SETUP_TYPES.map(({ id, label, icon: Icon, desc, count }) => (
-              <div
-                key={id}
-                className="group rounded-2xl border bg-card p-6 hover:border-primary/40 hover:shadow-lg transition-all duration-200 cursor-default"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                    <Icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <span className="text-xs font-medium text-primary bg-primary/8 px-2 py-1 rounded-full">{count}</span>
-                </div>
-                <h3 className="font-semibold text-foreground mb-2">{label}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">{desc}</p>
-                <button
-                  onClick={scrollToForm}
-                  className="text-xs font-semibold text-primary flex items-center gap-1 hover:gap-2 transition-all"
-                  data-testid={`button-enquire-${id}`}
+            {SETUP_TYPES.map(({ id, label, icon: Icon, desc, count }, idx) => {
+              const accents = [
+                { card: "from-blue-500/15 to-blue-500/5 border-blue-200 dark:border-blue-800", icon: "text-blue-600 dark:text-blue-400", iconBg: "bg-blue-100 dark:bg-blue-950/60" },
+                { card: "from-violet-500/15 to-violet-500/5 border-violet-200 dark:border-violet-800", icon: "text-violet-600 dark:text-violet-400", iconBg: "bg-violet-100 dark:bg-violet-950/60" },
+                { card: "from-green-500/15 to-green-500/5 border-green-200 dark:border-green-800", icon: "text-green-600 dark:text-green-400", iconBg: "bg-green-100 dark:bg-green-950/60" },
+                { card: "from-amber-500/15 to-amber-500/5 border-amber-200 dark:border-amber-800", icon: "text-amber-600 dark:text-amber-400", iconBg: "bg-amber-100 dark:bg-amber-950/60" },
+                { card: "from-rose-500/15 to-rose-500/5 border-rose-200 dark:border-rose-800", icon: "text-rose-600 dark:text-rose-400", iconBg: "bg-rose-100 dark:bg-rose-950/60" },
+                { card: "from-teal-500/15 to-teal-500/5 border-teal-200 dark:border-teal-800", icon: "text-teal-600 dark:text-teal-400", iconBg: "bg-teal-100 dark:bg-teal-950/60" },
+              ];
+              const a = accents[idx % accents.length];
+              return (
+                <div
+                  key={id}
+                  className={`group rounded-2xl border bg-gradient-to-br ${a.card} p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-default`}
                 >
-                  Get a quote <ArrowRight className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`w-11 h-11 rounded-xl ${a.iconBg} flex items-center justify-center`}>
+                      <Icon className={`w-5 h-5 ${a.icon}`} />
+                    </div>
+                    <span className={`text-xs font-semibold ${a.icon} ${a.iconBg} px-2.5 py-1 rounded-full`}>{count}</span>
+                  </div>
+                  <h3 className="font-bold text-foreground mb-2">{label}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">{desc}</p>
+                  <button
+                    onClick={scrollToForm}
+                    className={`text-xs font-semibold ${a.icon} flex items-center gap-1 hover:gap-2 transition-all`}
+                    data-testid={`button-enquire-${id}`}
+                  >
+                    Get a quote <ArrowRight className="w-3 h-3" />
+                  </button>
+                </div>
+              );
+            })}
             {/* Browse all CTA card */}
-            <div className="rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 p-6 flex flex-col items-center justify-center text-center hover:border-primary/60 transition-colors cursor-pointer" onClick={scrollToForm}>
-              <Package className="w-8 h-8 text-primary mb-3" />
-              <p className="font-semibold text-foreground mb-1">Have a Custom Need?</p>
+            <div className="rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 p-6 flex flex-col items-center justify-center text-center hover:border-primary/70 hover:bg-primary/8 transition-colors cursor-pointer" onClick={scrollToForm}>
+              <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center mb-3">
+                <Package className="w-6 h-6 text-primary" />
+              </div>
+              <p className="font-bold text-foreground mb-1">Have a Custom Need?</p>
               <p className="text-sm text-muted-foreground mb-3">Describe your requirement and we'll sort it out.</p>
               <span className="text-xs font-bold text-primary uppercase tracking-wide">Tell us more →</span>
             </div>
           </div>
+          </div>
         </section>
 
         {/* ── B2B Benefits ── */}
-        <section className="bg-primary text-white">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+        <section className="relative overflow-hidden bg-primary text-white">
+          {/* Mesh pattern overlay */}
+          <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1) 1px,transparent 1px)", backgroundSize: "32px 32px" }} />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_100%,rgba(0,0,0,0.3),transparent)]" />
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
             <div className="text-center mb-12">
               <span className="text-xs font-semibold uppercase tracking-widest text-amber-300 mb-3 block">Why Abley's Rehab</span>
               <h2 className="text-3xl sm:text-4xl font-bold font-display leading-tight">
                 The Institutional Advantage
               </h2>
-              <p className="mt-4 text-white/75 max-w-xl mx-auto">
+              <p className="mt-4 text-white/70 max-w-xl mx-auto">
                 We've built our entire operation around making life easier for institutions — not individual retail buyers.
               </p>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {BENEFITS.map(({ icon: Icon, title, desc }) => (
-                <div key={title} className="rounded-xl bg-white/10 border border-white/15 p-6 hover:bg-white/15 transition-colors">
-                  <div className="w-10 h-10 rounded-lg bg-amber-400/20 flex items-center justify-center mb-4">
-                    <Icon className="w-5 h-5 text-amber-300" />
+                <div key={title} className="rounded-2xl bg-white/8 border border-white/12 p-6 hover:bg-white/14 hover:border-amber-400/30 transition-all duration-200 backdrop-blur-sm">
+                  <div className="w-12 h-12 rounded-xl bg-amber-400/20 border border-amber-400/20 flex items-center justify-center mb-4">
+                    <Icon className="w-6 h-6 text-amber-300" />
                   </div>
-                  <h3 className="font-semibold mb-2">{title}</h3>
-                  <p className="text-sm text-white/70 leading-relaxed">{desc}</p>
+                  <h3 className="font-bold mb-2 text-white">{title}</h3>
+                  <p className="text-sm text-white/65 leading-relaxed">{desc}</p>
                 </div>
               ))}
             </div>
@@ -649,35 +673,38 @@ export default function B2BLandingPage() {
         </section>
 
         {/* ── How It Works ── */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
-          <div className="text-center mb-12">
-            <span className="text-xs font-semibold uppercase tracking-widest text-primary mb-3 block">The Process</span>
+        <section className="relative overflow-hidden bg-gradient-to-br from-primary/8 via-primary/4 to-background border-b">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_60%_at_50%_0%,rgba(74,83,160,0.15),transparent)]" />
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+          <div className="text-center mb-14">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-4 bg-primary/10 px-3 py-1.5 rounded-full">⚡ The Process</span>
             <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground leading-tight">
               From Enquiry to Delivery in 3 Steps
             </h2>
           </div>
           <div className="grid sm:grid-cols-3 gap-8 relative">
             {/* connector line desktop */}
-            <div className="hidden sm:block absolute top-12 left-[calc(16.67%+1rem)] right-[calc(16.67%+1rem)] h-px border-t-2 border-dashed border-primary/25" />
+            <div className="hidden sm:block absolute top-11 left-[calc(16.67%+2rem)] right-[calc(16.67%+2rem)] h-px border-t-2 border-dashed border-primary/30" />
             {HOW_IT_WORKS.map(({ step, title, desc }) => (
               <div key={step} className="text-center relative">
-                <div className="w-20 h-20 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center mx-auto mb-5">
-                  <span className="text-2xl font-bold text-primary font-display">{step}</span>
+                <div className="w-22 h-22 rounded-full bg-primary shadow-lg shadow-primary/30 border-4 border-primary/20 flex items-center justify-center mx-auto mb-5" style={{ width: "5.5rem", height: "5.5rem" }}>
+                  <span className="text-3xl font-bold text-white font-display">{step}</span>
                 </div>
-                <h3 className="font-semibold text-foreground text-lg mb-2">{title}</h3>
+                <h3 className="font-bold text-foreground text-lg mb-2">{title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
           <div className="text-center mt-12">
-            <Button size="lg" className="rounded-full px-10" onClick={scrollToForm} data-testid="button-start-enquiry">
+            <Button size="lg" className="rounded-full px-10 shadow-lg shadow-primary/25" onClick={scrollToForm} data-testid="button-start-enquiry">
               Start Your Enquiry <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
+          </div>
           </div>
         </section>
 
         {/* ── School Grant Toolkit ── */}
-        <section id="grant-toolkit" className="bg-background border-b" data-testid="section-grant-toolkit">
+        <section id="grant-toolkit" className="bg-gradient-to-br from-green-50/60 via-background to-background dark:from-green-950/20 dark:via-background dark:to-background border-b" data-testid="section-grant-toolkit">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
             <div className="grid lg:grid-cols-2 gap-12 items-start">
 
@@ -798,23 +825,25 @@ export default function B2BLandingPage() {
         </section>
 
         {/* ── Free Consultation CTA ── */}
-        <section className="bg-gradient-to-r from-primary/6 via-primary/4 to-primary/6 border-y border-primary/15" data-testid="section-free-consultation">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-            <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+        <section className="relative overflow-hidden bg-[#070d2a] text-white" data-testid="section-free-consultation">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_70%_at_30%_50%,rgba(74,83,160,0.4),transparent)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_40%_60%_at_80%_30%,rgba(251,191,36,0.08),transparent)]" />
+          <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-14 sm:py-18">
+            <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-14">
               <div className="flex-1 text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest mb-4">
-                  <CalendarClock className="w-3.5 h-3.5" /> Free Service
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-400/15 text-amber-300 text-xs font-bold uppercase tracking-widest mb-5 border border-amber-400/20">
+                  <CalendarClock className="w-3.5 h-3.5" /> Free Service — No Commitment
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-bold font-display text-foreground mb-3">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-display text-white mb-4 leading-tight">
                   Book a Free 30-Min Sensory Room Consultation
                 </h2>
-                <p className="text-muted-foreground leading-relaxed mb-4 max-w-lg mx-auto lg:mx-0">
+                <p className="text-white/70 leading-relaxed mb-6 max-w-lg mx-auto lg:mx-0">
                   Our OT specialist will review your space, diagnoses served, and budget — then recommend an exact product list with pricing. You get a personalised Room Plan PDF, free.
                 </p>
-                <div className="flex flex-wrap gap-4 text-xs text-muted-foreground justify-center lg:justify-start">
-                  <span className="flex items-center gap-1.5"><Video className="w-3.5 h-3.5 text-primary" /> Video or WhatsApp call</span>
-                  <span className="flex items-center gap-1.5"><FileText className="w-3.5 h-3.5 text-primary" /> Room Plan PDF included</span>
-                  <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-primary" /> No obligation to buy</span>
+                <div className="flex flex-wrap gap-5 text-xs text-white/55 justify-center lg:justify-start">
+                  <span className="flex items-center gap-1.5"><Video className="w-3.5 h-3.5 text-amber-300" /> Video or WhatsApp call</span>
+                  <span className="flex items-center gap-1.5"><FileText className="w-3.5 h-3.5 text-amber-300" /> Room Plan PDF included</span>
+                  <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-amber-300" /> No obligation to buy</span>
                 </div>
               </div>
               <div className="flex flex-col gap-3 shrink-0 w-full lg:w-auto">
@@ -822,19 +851,19 @@ export default function B2BLandingPage() {
                   href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%2030-minute%20sensory%20room%20consultation%20with%20Abley%27s%20Rehab."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 bg-primary text-white px-7 py-3.5 rounded-xl font-semibold text-sm hover:bg-primary/90 transition-colors shadow-lg shadow-primary/25"
+                  className="flex items-center justify-center gap-2 bg-white text-gray-900 px-8 py-4 rounded-2xl font-bold text-sm hover:bg-amber-50 transition-colors shadow-2xl shadow-black/40"
                   data-testid="button-book-consultation"
                 >
-                  <MessageCircle className="w-4 h-4" /> Book on WhatsApp — It's Free
+                  <MessageCircle className="w-4 h-4 text-green-600" /> Book on WhatsApp — It's Free
                 </a>
-                <p className="text-center text-xs text-muted-foreground">Usually responds within 2 hours · Mon–Sat 9am–7pm</p>
+                <p className="text-center text-xs text-white/40">Usually responds within 2 hours · Mon–Sat 9am–7pm</p>
               </div>
             </div>
           </div>
         </section>
 
         {/* ── Lead Form ── */}
-        <section ref={formRef} className="bg-muted/50 border-y" id="enquiry-form">
+        <section ref={formRef} className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-muted/30 border-y" id="enquiry-form">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
             <div className="grid lg:grid-cols-2 gap-12 items-start">
 
@@ -1061,36 +1090,52 @@ export default function B2BLandingPage() {
         </section>
 
         {/* ── Social Proof / Testimonial Strip ── */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+        <section className="bg-gradient-to-b from-muted/30 to-background border-b">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-16">
+          <div className="text-center mb-10">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-3 bg-primary/10 px-3 py-1.5 rounded-full">⭐ What Institutions Say</span>
+            <h2 className="text-2xl sm:text-3xl font-bold font-display text-foreground">Trusted by India's Leading OT Professionals</h2>
+          </div>
           <div className="grid sm:grid-cols-3 gap-6">
             {[
               {
                 quote: "Abley's made it incredibly easy to stock our sensory room. The bulk pricing was fair and the GST invoice was ready within the hour.",
                 author: "Ruchika M.",
                 role: "Occupational Therapist, Mumbai",
+                avatar: "RM",
               },
               {
                 quote: "We set up our school's entire sensory corner through Abley's. Quick delivery, great quality — and they even recommended the right products for our budget.",
                 author: "Ananya K.",
                 role: "Special Educator, Bengaluru",
+                avatar: "AK",
               },
               {
                 quote: "Finally, a reliable Indian vendor for OT equipment that doesn't cut corners on quality. Our clinic swears by Abley's Rehab.",
                 author: "Dr. Suresh P.",
                 role: "Rehab Consultant, Delhi NCR",
+                avatar: "SP",
               },
-            ].map(({ quote, author, role }) => (
-              <div key={author} className="rounded-2xl border bg-card p-6 shadow-sm">
+            ].map(({ quote, author, role, avatar }) => (
+              <div key={author} className="rounded-2xl border border-border/60 bg-card p-6 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
                 <div className="flex gap-0.5 mb-4">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
                   ))}
                 </div>
-                <p className="text-sm text-foreground/85 leading-relaxed mb-4 italic">"{quote}"</p>
-                <p className="text-sm font-semibold text-foreground">{author}</p>
-                <p className="text-xs text-muted-foreground">{role}</p>
+                <p className="text-sm text-foreground/80 leading-relaxed mb-5 italic">"{quote}"</p>
+                <div className="flex items-center gap-3 pt-3 border-t border-border/40">
+                  <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center text-xs font-bold text-primary shrink-0">
+                    {avatar}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">{author}</p>
+                    <p className="text-xs text-muted-foreground">{role}</p>
+                  </div>
+                </div>
               </div>
             ))}
+          </div>
           </div>
         </section>
 
