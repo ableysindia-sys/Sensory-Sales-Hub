@@ -106,7 +106,7 @@ function SampleKitBanner() {
           </div>
           <div className="shrink-0">
             <Link href="/sample">
-              <Button size="lg" className="rounded-2xl px-8 gap-2 h-13 shadow-2xl shadow-black/30 font-bold bg-white text-gray-900 hover:bg-amber-50 border-0 text-sm" data-testid="button-sample-kit-homepage">
+              <Button size="lg" className="rounded-2xl px-8 gap-2 h-13 shadow-2xl shadow-black/30 font-bold !bg-white !text-gray-900 hover:!bg-amber-50 !border-0 text-sm" data-testid="button-sample-kit-homepage">
                 Request Sample Kit <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>

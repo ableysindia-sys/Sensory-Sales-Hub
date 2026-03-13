@@ -381,7 +381,7 @@ export default function B2BLandingPage() {
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
                   <Button
                     size="lg"
-                    className="bg-white text-gray-900 hover:bg-gray-50 rounded-full text-sm px-8 h-12 gap-2 font-semibold shadow-xl shadow-black/30 border-0"
+                    className="!bg-white !text-gray-900 hover:!bg-gray-50 rounded-full text-sm px-8 h-12 gap-2 font-semibold shadow-xl shadow-black/30 !border-0"
                     onClick={scrollToForm}
                     data-testid="button-get-quote-hero"
                   >

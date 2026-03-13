@@ -60,7 +60,7 @@ export function Hero() {
           <div className="flex items-center gap-3 mb-6">
             <Button
               size="lg"
-              className="bg-white text-gray-900 hover:bg-gray-50 rounded-full text-sm px-8 h-12 gap-2 font-semibold shadow-xl shadow-black/30 border-0"
+              className="!bg-white !text-gray-900 hover:!bg-gray-50 rounded-full text-sm px-8 h-12 gap-2 font-semibold shadow-xl shadow-black/30 !border-0"
               data-testid="button-hero-cta"
               onClick={() =>
                 document.getElementById("categories")?.scrollIntoView({ behavior: "smooth" })
