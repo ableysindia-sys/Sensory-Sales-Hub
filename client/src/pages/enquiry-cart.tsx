@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@shared/routes";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/lib/auth-context";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { Navbar } from "@/components/navbar";
 import { SiteFooter } from "@/components/site-footer";
@@ -34,8 +35,10 @@ import {
   ChevronRight,
   FileDown,
   Loader2,
+  Phone,
   Send,
   CheckCircle2,
+  Smartphone,
   Trash2,
   Plus,
   Minus,
@@ -259,6 +262,7 @@ export default function EnquiryCartPage() {
   const { items, removeItem, updateQuantity, updateNotes, clearCart, getItemCount } = useEnquiryCart();
   const { categories } = useProducts();
   const { toast } = useToast();
+  const { user, openAuthDrawer } = useAuth();
   const [step, setStep] = useState(0);
   const [setupType, setSetupType] = useState<string>("");
   const [orderType, setOrderType] = useState<string>("");
@@ -277,10 +281,10 @@ export default function EnquiryCartPage() {
   const form = useForm<EnquiryFormValues>({
     resolver: zodResolver(api.leads.create.input),
     defaultValues: {
-      name: "",
-      email: "",
+      name: user?.displayName || "",
+      email: user?.email || "",
       organisation: "",
-      phone: "",
+      phone: user?.phoneNumber || "",
       city: "",
       category: "",
       requirementType: "",
@@ -305,16 +309,25 @@ export default function EnquiryCartPage() {
     );
   };
 
+  // Prefill form when user signs in mid-flow
+  useEffect(() => {
+    if (user) {
+      if (user.phoneNumber) form.setValue("phone", user.phoneNumber);
+      if (user.displayName) form.setValue("name", user.displayName);
+      if (user.email) form.setValue("email", user.email);
+    }
+  }, [user, form]);
+
   const canProceed = useMemo(() => {
     switch (step) {
       case 0: return !!setupType;
       case 1: return !!orderType;
       case 2: return selectedCategories.length > 0;
       case 3: return !!budget && !!timeline;
-      case 4: return true;
+      case 4: return !!user;
       default: return false;
     }
-  }, [step, setupType, orderType, selectedCategories, budget, timeline]);
+  }, [step, setupType, orderType, selectedCategories, budget, timeline, user]);
 
   const onSubmit = async (data: EnquiryFormValues) => {
     const cartData = items.map((item) => ({
@@ -730,17 +743,51 @@ export default function EnquiryCartPage() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -40 }}
                   transition={{ duration: 0.25 }}
-                  className="p-6 sm:p-8"
+                  className={!user ? "" : "p-6 sm:p-8"}
                 >
+                  {!user ? (
+                    /* ── Auth gate ── */
+                    <div className="p-6 sm:p-10 flex flex-col items-center text-center">
+                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-5">
+                        <Smartphone className="w-8 h-8 text-primary" />
+                      </div>
+                      <h2 className="text-lg font-bold mb-2" data-testid="heading-step-4">
+                        Verify your mobile number to receive your quote
+                      </h2>
+                      <p className="text-sm text-muted-foreground mb-6 max-w-xs">
+                        A one-time OTP will be sent to your phone. Your verified number will be used to send the customised quote and for WhatsApp follow-up.
+                      </p>
+                      <Button
+                        onClick={() => openAuthDrawer()}
+                        className="gap-2 w-full sm:w-auto px-8"
+                        data-testid="button-verify-phone-enquiry"
+                      >
+                        <Phone className="w-4 h-4" />
+                        Verify via OTP
+                      </Button>
+                      <p className="text-xs text-muted-foreground mt-4">
+                        You can also sign in with Google or Facebook
+                      </p>
+                    </div>
+                  ) : (
+                  <>
                   <div className="flex items-center gap-3 mb-1">
                     <UserCircle className="w-5 h-5 text-primary" />
                     <h2 className="text-lg font-bold text-foreground" data-testid="heading-step-4">
                       Almost done — your contact details
                     </h2>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-6">
+                  <p className="text-sm text-muted-foreground mb-4">
                     We'll use this to send you a customised quote.
                   </p>
+                  {/* Verified badge */}
+                  <div className="flex items-center gap-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-xl px-4 py-3 mb-5" data-testid="badge-phone-verified-enquiry">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
+                    <div className="text-left">
+                      <p className="text-sm font-semibold text-green-700 dark:text-green-400">Phone verified</p>
+                      <p className="text-xs text-green-600 dark:text-green-500">{user.phoneNumber || user.email}</p>
+                    </div>
+                  </div>
 
                   <div className="mb-6 p-4 rounded-xl bg-muted/30 border border-border/30">
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Your selections</p>
@@ -883,6 +930,8 @@ export default function EnquiryCartPage() {
                       </Button>
                     </form>
                   </Form>
+                  </>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>

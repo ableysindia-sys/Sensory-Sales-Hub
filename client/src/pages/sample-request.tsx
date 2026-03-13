@@ -14,6 +14,7 @@ import {
   ArrowRight, ArrowLeft, CheckCircle2, Package, Loader2,
   CreditCard, MessageCircle, ShieldCheck, RotateCcw, Gift,
   Sparkles, Dumbbell, Eye, Hand, Brain, Clock, Send, FileText, Star,
+  Smartphone, Phone,
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -168,7 +169,7 @@ function loadRazorpayScript(): Promise<boolean> {
 }
 
 export default function SampleRequestPage() {
-  const { user } = useAuth();
+  const { user, openAuthDrawer } = useAuth();
   const { toast } = useToast();
 
   const [step, setStep] = useState(0);
@@ -197,7 +198,7 @@ export default function SampleRequestPage() {
     if (step === 0) return !!role;
     if (step === 1) return !!setupType && !!city;
     if (step === 2) return selectedCategories.length > 0;
-    if (step === 3) return name.length >= 2 && phone.replace(/\D/g, "").length === 10 && email.includes("@");
+    if (step === 3) return !!user && name.length >= 2 && email.includes("@");
     return false;
   }
 
@@ -505,36 +506,56 @@ export default function SampleRequestPage() {
               </motion.div>
             )}
 
-            {/* ── Step 3: Contact details ── */}
+            {/* ── Step 3: Phone verification + Contact details ── */}
             {step === 3 && (
-              <motion.div key="s3" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.22 }} className="p-6 sm:p-8">
-                <h2 className="text-lg font-bold mb-1" data-testid="heading-step-3">Your contact details</h2>
-                <p className="text-sm text-muted-foreground mb-6">We'll use these to dispatch your kit and follow up on WhatsApp.</p>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="name">Full name <span className="text-destructive">*</span></Label>
-                    <Input id="name" placeholder="Your full name" value={name} onChange={(e) => setName(e.target.value)} className="mt-1.5" data-testid="input-name" />
+              <motion.div key="s3" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.22 }}>
+                {!user ? (
+                  /* ── Not logged in → phone auth gate ── */
+                  <div className="p-6 sm:p-10 flex flex-col items-center text-center">
+                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-5">
+                      <Smartphone className="w-8 h-8 text-primary" />
+                    </div>
+                    <h2 className="text-lg font-bold mb-2" data-testid="heading-step-3">Verify your mobile number</h2>
+                    <p className="text-sm text-muted-foreground mb-6 max-w-xs">
+                      We'll send a one-time OTP to your phone. Your verified number is used to dispatch the kit and for WhatsApp follow-up.
+                    </p>
+                    <Button
+                      onClick={() => openAuthDrawer()}
+                      className="gap-2 w-full sm:w-auto px-8"
+                      data-testid="button-verify-phone"
+                    >
+                      <Phone className="w-4 h-4" />
+                      Verify via OTP
+                    </Button>
+                    <p className="text-xs text-muted-foreground mt-4">
+                      You can also sign in with Google or Facebook
+                    </p>
                   </div>
-                  <div>
-                    <Label htmlFor="phone">Mobile number <span className="text-destructive">*</span></Label>
-                    <div className="flex gap-2 mt-1.5">
-                      <div className="flex items-center px-3 rounded-xl border border-border bg-muted text-sm font-semibold shrink-0">🇮🇳 +91</div>
-                      <Input
-                        id="phone"
-                        inputMode="numeric"
-                        placeholder="98765 43210"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                        className="flex-1"
-                        data-testid="input-phone"
-                      />
+                ) : (
+                  /* ── Logged in → show verified badge + name/email ── */
+                  <div className="p-6 sm:p-8">
+                    <h2 className="text-lg font-bold mb-1" data-testid="heading-step-3">Your contact details</h2>
+                    <p className="text-sm text-muted-foreground mb-5">We'll use these to dispatch your kit and follow up on WhatsApp.</p>
+                    {/* Verified phone badge */}
+                    <div className="flex items-center gap-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-xl px-4 py-3 mb-5" data-testid="badge-phone-verified">
+                      <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
+                      <div className="text-left">
+                        <p className="text-sm font-semibold text-green-700 dark:text-green-400">Phone verified</p>
+                        <p className="text-xs text-green-600 dark:text-green-500">{user.phoneNumber || user.email}</p>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="name">Full name <span className="text-destructive">*</span></Label>
+                        <Input id="name" placeholder="Your full name" value={name} onChange={(e) => setName(e.target.value)} className="mt-1.5" data-testid="input-name" />
+                      </div>
+                      <div>
+                        <Label htmlFor="email">Email address <span className="text-destructive">*</span></Label>
+                        <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1.5" data-testid="input-email" />
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <Label htmlFor="email">Email address <span className="text-destructive">*</span></Label>
-                    <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1.5" data-testid="input-email" />
-                  </div>
-                </div>
+                )}
               </motion.div>
             )}
 
