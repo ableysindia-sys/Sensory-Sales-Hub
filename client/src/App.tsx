@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -15,16 +15,28 @@ import { WhatsAppFab } from "@/components/whatsapp-fab";
 import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import NotFound from "@/pages/not-found";
 import Home from "./pages/home";
-import CategoryPage from "./pages/category";
-import ProductPage from "./pages/product";
-import EnquiryCartPage from "./pages/enquiry-cart";
-import AllProducts from "./pages/all-products";
-import ContactPage from "./pages/contact";
-import AdminPage from "./pages/admin";
-import DynamicPage from "./pages/dynamic-page";
-import AboutPage from "./pages/about";
-import B2BLandingPage from "./pages/b2b-landing";
-import SampleRequestPage from "./pages/sample-request";
+
+const CategoryPage = lazy(() => import("./pages/category"));
+const ProductPage = lazy(() => import("./pages/product"));
+const EnquiryCartPage = lazy(() => import("./pages/enquiry-cart"));
+const AllProducts = lazy(() => import("./pages/all-products"));
+const ContactPage = lazy(() => import("./pages/contact"));
+const AdminPage = lazy(() => import("./pages/admin"));
+const DynamicPage = lazy(() => import("./pages/dynamic-page"));
+const AboutPage = lazy(() => import("./pages/about"));
+const B2BLandingPage = lazy(() => import("./pages/b2b-landing"));
+const SampleRequestPage = lazy(() => import("./pages/sample-request"));
+
+function PageLoader() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        <p className="text-xs text-muted-foreground">Loading…</p>
+      </div>
+    </div>
+  );
+}
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -36,7 +48,7 @@ function ScrollToTop() {
 
 function Router() {
   return (
-    <>
+    <Suspense fallback={<PageLoader />}>
       <ScrollToTop />
       <Switch>
         <Route path="/" component={Home} />
@@ -52,7 +64,7 @@ function Router() {
         <Route path="/page/:slug" component={DynamicPage} />
         <Route component={NotFound} />
       </Switch>
-    </>
+    </Suspense>
   );
 }
 
