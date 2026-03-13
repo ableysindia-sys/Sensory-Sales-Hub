@@ -17,7 +17,6 @@ const ANNOUNCEMENTS = [
 
 const navLinks = [
   { label: "Products", href: "#products", hasDropdown: true },
-  { label: "Bulk Orders", href: "/enquiry" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -354,13 +353,6 @@ export function Navbar() {
                   </div>
                 )}
               </div>
-              <button
-                onClick={() => handleNavClick("/enquiry")}
-                className="block w-full text-left px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-                data-testid="link-mobile-bulk-orders"
-              >
-                Bulk Orders
-              </button>
               <button
                 onClick={() => handleNavClick("/contact")}
                 className="block w-full text-left px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
