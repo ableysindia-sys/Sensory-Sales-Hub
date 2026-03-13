@@ -328,46 +328,53 @@ export default function B2BLandingPage() {
 
       <main>
         {/* ── Hero ── */}
-        <section className="relative overflow-hidden bg-gray-950 text-white" data-testid="section-b2b-hero">
+        <section className="relative overflow-hidden bg-[#070d2a] text-white min-h-[520px] sm:min-h-[640px] lg:min-h-[700px]" data-testid="section-b2b-hero">
 
-          {/* Background image */}
+          {/* Background image — higher opacity, richer presence */}
           <img
             src={heroBgImg}
             alt=""
             aria-hidden="true"
             className="absolute inset-0 w-full h-full object-cover object-center"
-            style={{ opacity: 0.35 }}
+            style={{ opacity: 0.42 }}
             loading="eager"
           />
 
-          {/* Mobile: top-down dark overlay so copy is readable */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-[#0d1033]/85 to-[#0d1033]/95 sm:hidden" />
-          {/* Desktop: side + depth gradients */}
-          <div className="absolute inset-0 hidden sm:block bg-gradient-to-r from-[#0d1033] via-[#1f2880]/90 to-[#4A53A0]/50" />
-          <div className="absolute inset-0 hidden sm:block bg-gradient-to-b from-black/30 via-transparent to-black/40" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_90%_20%,rgba(255,255,255,0.04),transparent)]" />
+          {/* Layered gradient system */}
+          {/* Mobile: strong top-to-bottom dark curtain */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#070d2a]/90 via-[#0d1540]/88 to-[#0d1540]/96 sm:hidden" />
+          {/* Desktop layer 1: left-side reading lane */}
+          <div className="absolute inset-0 hidden sm:block bg-gradient-to-r from-[#070d2a] via-[#0d1540]/92 to-transparent" style={{ backgroundSize: "70% 100%", backgroundRepeat: "no-repeat" }} />
+          {/* Desktop layer 2: bottom vignette */}
+          <div className="absolute inset-0 hidden sm:block bg-gradient-to-t from-[#070d2a]/80 via-transparent to-[#070d2a]/40" />
+          {/* Brand-colour radial glow — behind the headline */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_55%_60%_at_18%_40%,rgba(74,83,160,0.35),transparent)]" />
+          {/* Warm accent glow on right — lifts product mosaic */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_45%_55%_at_85%_30%,rgba(251,191,36,0.07),transparent)]" />
+          {/* Subtle grid texture */}
+          <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.6) 1px,transparent 1px)", backgroundSize: "48px 48px" }} />
 
           {/* Content grid */}
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-20 lg:py-28">
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-22 lg:py-28">
             <div className="grid lg:grid-cols-[1fr_420px] gap-8 lg:gap-16 items-center">
 
               {/* Left: copy */}
               <div>
                 {/* Eyebrow */}
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm text-white/90 text-[10px] sm:text-xs font-semibold tracking-widest uppercase mb-4 sm:mb-6 border border-white/10">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white/90 text-[10px] sm:text-xs font-semibold tracking-widest uppercase mb-5 sm:mb-7 border border-white/15">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                  For OT Clinics · Schools · Rehab Centres
+                  Trusted B2B Partner · 500+ Institutions · OT-Curated
                 </div>
 
-                {/* Headline — 2 sizes: mobile tight, desktop large */}
-                <h1 className="text-[1.85rem] leading-[1.15] sm:text-5xl sm:leading-[1.08] lg:text-[3.4rem] font-bold font-display mb-4 sm:mb-6 drop-shadow-xl">
-                  Set Up a World-Class Sensory Room —{" "}
-                  <span className="italic text-amber-300">Without</span>{" "}
-                  the Import Headache.
+                {/* Headline */}
+                <h1 className="text-[2rem] leading-[1.12] sm:text-[2.9rem] sm:leading-[1.07] lg:text-[3.6rem] lg:leading-[1.06] font-bold font-display mb-5 sm:mb-6 drop-shadow-2xl">
+                  Premium OT &amp; Sensory Equipment —{" "}
+                  <span className="italic text-amber-300">Built</span>{" "}
+                  for India's Leading Institutions.
                 </h1>
 
-                <p className="text-[0.9rem] sm:text-lg text-white/80 leading-relaxed mb-5 sm:mb-7 max-w-lg">
-                  India's most trusted source for clinical-grade sensory &amp; OT equipment. Bulk pricing, GST invoices, free pan-India shipping — tailored for institutions.
+                <p className="text-[0.92rem] sm:text-[1.08rem] text-white/75 leading-relaxed mb-6 sm:mb-8 max-w-xl">
+                  From sensory rooms and therapy gyms to ADL kits and custom setups — Abley's Rehab is India's most trusted B2B equipment partner. Bulk pricing, GST invoices, and pan-India delivery included.
                 </p>
 
                 {/* CTAs — one primary, one ghost secondary */}
