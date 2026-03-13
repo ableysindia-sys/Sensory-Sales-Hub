@@ -8,7 +8,7 @@ import { BulkEnquiryForm } from "@/components/bulk-enquiry-form";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowRight, Building2, GraduationCap, Heart, ShieldCheck, Truck, BadgeIndianRupee, Gift, RotateCcw, Package } from "lucide-react";
+import { ArrowRight, Building2, GraduationCap, Heart, ShieldCheck, Truck, BadgeIndianRupee, Gift, RotateCcw, Package, Users } from "lucide-react";
 import featuredSwingsImg from "@assets/generated_images/featured-swings-banner.png";
 import { useProducts } from "@/lib/product-provider";
 
@@ -61,7 +61,7 @@ function AudienceChooser() {
                 data-testid={`card-audience-${label.toLowerCase().replace(/\s+/g, "-")}`}
               >
                 {highlight && (
-                  <span className="inline-block text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full mb-3 uppercase tracking-wide">Most Popular</span>
+                  <span className="inline-block text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full mb-3 uppercase tracking-wide">500+ Institutions</span>
                 )}
                 <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-3 ${icon_cls}`}>
                   <Icon className="w-5 h-5" />
@@ -123,9 +123,10 @@ function QuickTrustBar() {
       <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-xs text-white/85 font-medium">
           {[
-            { icon: Truck, text: "Free shipping pan-India" },
-            { icon: ShieldCheck, text: "OT-curated & clinically validated" },
-            { icon: BadgeIndianRupee, text: "Bulk pricing for institutions" },
+            { icon: Truck, text: "Free shipping across India" },
+            { icon: ShieldCheck, text: "Clinically validated by OTs" },
+            { icon: BadgeIndianRupee, text: "GST invoices · Bulk discounts" },
+            { icon: Users, text: "500+ institutions trust us" },
           ].map(({ icon: Icon, text }) => (
             <span key={text} className="flex items-center gap-2">
               <Icon className="w-3.5 h-3.5 text-white/70" /> {text}
@@ -139,8 +140,12 @@ function QuickTrustBar() {
 
 function FeaturedSwings() {
   return (
-    <section className="py-10 sm:py-14 bg-gradient-to-b from-background via-muted/10 to-background" data-testid="section-featured-swings">
+    <section className="py-10 sm:py-14 bg-gradient-to-b from-muted/10 via-background to-muted/5" data-testid="section-featured-swings">
       <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-6">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-2 bg-primary/10 px-3 py-1.5 rounded-full">Spotlight Collection</span>
+          <h2 className="text-xl sm:text-2xl font-bold font-display text-foreground">India's Most-Loved Sensory Swing Range</h2>
+        </div>
         <Link href="/category/swings">
           <div className="relative overflow-hidden rounded-2xl group cursor-pointer">
             <div className="aspect-[21/9] sm:aspect-[3/1]">
@@ -186,12 +191,12 @@ function ProductShowcase() {
       <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
           <div>
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-3 bg-primary/10 px-3 py-1.5 rounded-full">🏆 Editor's Pick</span>
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-3 bg-primary/10 px-3 py-1.5 rounded-full">🏆 OT-Approved Selection</span>
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground font-display" data-testid="heading-product-showcase">
-              Our Products
+              Top-Rated Therapy Equipment
             </h2>
             <p className="text-sm text-muted-foreground mt-1">
-              Trusted by OT clinics and families across India
+              Handpicked by occupational therapists — loved by clinics & families
             </p>
           </div>
           <div className="flex items-center gap-1 bg-muted/60 rounded-xl p-1 self-start sm:self-auto border border-border/40">
@@ -231,14 +236,23 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main id="main-content" className="pb-16 lg:pb-0">
+        {/* 1. ARRIVE — Impact, single CTA */}
         <Hero />
-        <AudienceChooser />
-        <SampleKitBanner />
+        {/* 2. REASSURE — Reduce bounce immediately with trust signals */}
         <QuickTrustBar />
+        {/* 3. SEGMENT — Route visitors to the right experience */}
+        <AudienceChooser />
+        {/* 4. DISCOVER — Browse by setup type, see what exists */}
         <CategoryGrid />
-        <FeaturedSwings />
+        {/* 5. CURATE — Handpicked best sellers & new arrivals */}
         <ProductShowcase />
+        {/* 6. FEATURE — Editorial spotlight on a marquee collection */}
+        <FeaturedSwings />
+        {/* 7. TRY — Conversion offer once interest has formed */}
+        <SampleKitBanner />
+        {/* 8. VALIDATE — Social proof closes the decision */}
         <Testimonials />
+        {/* 9. CONVERT — B2B capture for high-intent scrollers */}
         <BulkEnquiryForm />
       </main>
       <SiteFooter />
