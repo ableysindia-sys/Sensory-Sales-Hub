@@ -92,11 +92,11 @@ const formSchema = api.leads.create.input.extend({
 type FormValues = z.infer<typeof formSchema>;
 
 const SETUP_TYPES = [
-  { id: "therapy-centre", label: "Therapy Centre / Clinic", icon: Building2, desc: "OT clinics, rehab facilities, physiotherapy centres", count: "43+ products" },
-  { id: "school", label: "School / Institution", icon: GraduationCap, desc: "Special education schools, inclusive classrooms", count: "30+ products" },
-  { id: "sensory-room", label: "Sensory Room Setup", icon: Sparkles, desc: "Complete sensory integration room design", count: "43 products" },
-  { id: "home-setup", label: "Home Therapy Setup", icon: Home, desc: "Home-based therapy corners for families", count: "25+ products" },
-  { id: "gym-fitness", label: "Rehab Gym / Centre", icon: Dumbbell, desc: "Rehabilitation gyms and motor skill centres", count: "20+ products" },
+  { id: "therapy-centre", label: "Therapy Centre / Clinic", icon: Building2,     desc: "OT clinics, rehab facilities, physiotherapy centres", count: "43+ products", browseHref: "/category/swings" },
+  { id: "school",         label: "School / Institution",    icon: GraduationCap, desc: "Special education schools, inclusive classrooms",     count: "30+ products", browseHref: "/category/adl-kit" },
+  { id: "sensory-room",   label: "Sensory Room Setup",      icon: Sparkles,      desc: "Complete sensory integration room design",            count: "43 products",  browseHref: "/category/swings" },
+  { id: "home-setup",     label: "Home Therapy Setup",      icon: Home,          desc: "Home-based therapy corners for families",             count: "25+ products", browseHref: "/category/deep-pressure" },
+  { id: "gym-fitness",    label: "Rehab Gym / Centre",      icon: Dumbbell,      desc: "Rehabilitation gyms and motor skill centres",         count: "20+ products", browseHref: "/category/climbing" },
 ];
 
 const BENEFITS = [
@@ -597,47 +597,68 @@ export default function B2BLandingPage() {
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {SETUP_TYPES.map(({ id, label, icon: Icon, desc, count }, idx) => {
+            {SETUP_TYPES.map(({ id, label, icon: Icon, desc, count, browseHref }, idx) => {
               const accents = [
-                { card: "from-blue-500/15 to-blue-500/5 border-blue-200 dark:border-blue-800", icon: "text-blue-600 dark:text-blue-400", iconBg: "bg-blue-100 dark:bg-blue-950/60" },
-                { card: "from-violet-500/15 to-violet-500/5 border-violet-200 dark:border-violet-800", icon: "text-violet-600 dark:text-violet-400", iconBg: "bg-violet-100 dark:bg-violet-950/60" },
-                { card: "from-green-500/15 to-green-500/5 border-green-200 dark:border-green-800", icon: "text-green-600 dark:text-green-400", iconBg: "bg-green-100 dark:bg-green-950/60" },
-                { card: "from-amber-500/15 to-amber-500/5 border-amber-200 dark:border-amber-800", icon: "text-amber-600 dark:text-amber-400", iconBg: "bg-amber-100 dark:bg-amber-950/60" },
-                { card: "from-rose-500/15 to-rose-500/5 border-rose-200 dark:border-rose-800", icon: "text-rose-600 dark:text-rose-400", iconBg: "bg-rose-100 dark:bg-rose-950/60" },
-                { card: "from-teal-500/15 to-teal-500/5 border-teal-200 dark:border-teal-800", icon: "text-teal-600 dark:text-teal-400", iconBg: "bg-teal-100 dark:bg-teal-950/60" },
+                { card: "from-blue-500/15 to-blue-500/5 border-blue-200 dark:border-blue-800", icon: "text-blue-600 dark:text-blue-400", iconBg: "bg-blue-100 dark:bg-blue-950/60", divider: "border-blue-200/60 dark:border-blue-800/60" },
+                { card: "from-violet-500/15 to-violet-500/5 border-violet-200 dark:border-violet-800", icon: "text-violet-600 dark:text-violet-400", iconBg: "bg-violet-100 dark:bg-violet-950/60", divider: "border-violet-200/60 dark:border-violet-800/60" },
+                { card: "from-green-500/15 to-green-500/5 border-green-200 dark:border-green-800", icon: "text-green-600 dark:text-green-400", iconBg: "bg-green-100 dark:bg-green-950/60", divider: "border-green-200/60 dark:border-green-800/60" },
+                { card: "from-amber-500/15 to-amber-500/5 border-amber-200 dark:border-amber-800", icon: "text-amber-600 dark:text-amber-400", iconBg: "bg-amber-100 dark:bg-amber-950/60", divider: "border-amber-200/60 dark:border-amber-800/60" },
+                { card: "from-rose-500/15 to-rose-500/5 border-rose-200 dark:border-rose-800", icon: "text-rose-600 dark:text-rose-400", iconBg: "bg-rose-100 dark:bg-rose-950/60", divider: "border-rose-200/60 dark:border-rose-800/60" },
+                { card: "from-teal-500/15 to-teal-500/5 border-teal-200 dark:border-teal-800", icon: "text-teal-600 dark:text-teal-400", iconBg: "bg-teal-100 dark:bg-teal-950/60", divider: "border-teal-200/60 dark:border-teal-800/60" },
               ];
               const a = accents[idx % accents.length];
               return (
                 <div
                   key={id}
-                  className={`group rounded-2xl border bg-gradient-to-br ${a.card} p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-default`}
+                  className={`group rounded-2xl border bg-gradient-to-br ${a.card} p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col`}
+                  data-testid={`card-setup-${id}`}
                 >
+                  {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className={`w-11 h-11 rounded-xl ${a.iconBg} flex items-center justify-center`}>
                       <Icon className={`w-5 h-5 ${a.icon}`} />
                     </div>
-                    <span className={`text-xs font-semibold ${a.icon} ${a.iconBg} px-2.5 py-1 rounded-full`}>{count}</span>
+                    <Link href={browseHref}>
+                      <span className={`text-xs font-semibold ${a.icon} ${a.iconBg} px-2.5 py-1 rounded-full cursor-pointer hover:underline`} data-testid={`badge-count-${id}`}>
+                        {count}
+                      </span>
+                    </Link>
                   </div>
+
+                  {/* Content */}
                   <h3 className="font-bold text-foreground mb-2">{label}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">{desc}</p>
-                  <button
-                    onClick={scrollToForm}
-                    className={`text-xs font-semibold ${a.icon} flex items-center gap-1 hover:gap-2 transition-all`}
-                    data-testid={`button-enquire-${id}`}
-                  >
-                    Get a quote <ArrowRight className="w-3 h-3" />
-                  </button>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1">{desc}</p>
+
+                  {/* Actions */}
+                  <div className={`flex items-center justify-between pt-4 border-t ${a.divider}`}>
+                    <Link href={browseHref} data-testid={`link-browse-${id}`}>
+                      <span className={`text-xs font-semibold ${a.icon} flex items-center gap-1 group-hover:gap-2 transition-all cursor-pointer`}>
+                        Browse products <ArrowRight className="w-3 h-3" />
+                      </span>
+                    </Link>
+                    <button
+                      onClick={scrollToForm}
+                      className="text-xs font-medium text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+                      data-testid={`button-enquire-${id}`}
+                    >
+                      Get a quote
+                    </button>
+                  </div>
                 </div>
               );
             })}
             {/* Browse all CTA card */}
-            <div className="rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 p-6 flex flex-col items-center justify-center text-center hover:border-primary/70 hover:bg-primary/8 transition-colors cursor-pointer" onClick={scrollToForm}>
+            <div
+              className="rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 p-6 flex flex-col items-center justify-center text-center hover:border-primary/70 hover:bg-primary/8 transition-colors cursor-pointer"
+              onClick={scrollToForm}
+              data-testid="card-setup-custom"
+            >
               <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center mb-3">
                 <Package className="w-6 h-6 text-primary" />
               </div>
               <p className="font-bold text-foreground mb-1">Have a Custom Need?</p>
               <p className="text-sm text-muted-foreground mb-3">Describe your requirement and we'll sort it out.</p>
-              <span className="text-xs font-bold text-primary uppercase tracking-wide">Tell us more →</span>
+              <span className="text-xs font-bold text-primary uppercase tracking-wide flex items-center gap-1">Tell us more <ArrowRight className="w-3 h-3" /></span>
             </div>
           </div>
           </div>
