@@ -6,6 +6,7 @@ import { z } from "zod";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import crypto from "crypto";
 import { syncShopifyProducts, startPeriodicSync } from "./shopify-sync";
+import { generateCatalogPDF } from "./catalog-pdf";
 
 const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
 const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
@@ -135,6 +136,14 @@ export async function registerRoutes(
         return res.status(400).json({ message: err.errors[0].message, field: err.errors[0].path.join('.') });
       }
       res.status(500).json({ message: "Failed to submit enquiry" });
+    }
+  });
+
+  app.get("/api/catalog", (_req, res) => {
+    try {
+      generateCatalogPDF(res);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to generate catalogue PDF" });
     }
   });
 

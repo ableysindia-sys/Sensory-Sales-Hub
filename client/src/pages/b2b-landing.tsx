@@ -868,6 +868,18 @@ export default function B2BLandingPage() {
                   </a>
                   <p className="text-xs text-amber-700/70 dark:text-amber-500/70 mt-1">Usually responds within 2 hours</p>
                 </div>
+
+                <a
+                  href="/api/catalog"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-6 flex items-center gap-2.5 text-sm text-primary font-semibold hover:underline"
+                  data-testid="link-download-catalogue-b2b"
+                >
+                  <Download className="w-4 h-4" />
+                  Download Full Product Catalogue (PDF)
+                  <span className="text-xs font-normal text-muted-foreground">120+ products · 7 pages</span>
+                </a>
               </div>
 
               {/* Right — form or success state */}

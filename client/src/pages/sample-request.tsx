@@ -344,7 +344,7 @@ export default function SampleRequestPage() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center flex-wrap">
               <a
                 href="https://wa.me/917042180166?text=Hi%2C%20I%20just%20requested%20a%20sample%20kit%20from%20Abley's%20Rehab%21"
                 target="_blank"
@@ -353,6 +353,15 @@ export default function SampleRequestPage() {
                 data-testid="link-whatsapp-success"
               >
                 <MessageCircle className="w-4 h-4" /> Chat with our OT Specialist
+              </a>
+              <a
+                href="/api/catalog"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 border border-primary/40 text-primary bg-primary/5 px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-primary/10 transition-colors"
+                data-testid="link-download-catalogue-success"
+              >
+                <FileText className="w-4 h-4" /> Download Catalogue PDF
               </a>
               <Link href="/products">
                 <button className="flex items-center justify-center gap-2 border border-border px-5 py-2.5 rounded-full text-sm font-medium hover:bg-muted/40 transition-colors">
@@ -392,6 +401,17 @@ export default function SampleRequestPage() {
           <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-white/40" /> OT-curated items</span>
           <span className="flex items-center gap-1.5"><RotateCcw className="w-3.5 h-3.5 text-white/40" /> 100% refundable</span>
           <span className="flex items-center gap-1.5"><MessageCircle className="w-3.5 h-3.5 text-white/40" /> Dispatched in 48 hrs</span>
+        </div>
+        <div className="mt-5">
+          <a
+            href="/api/catalog"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/10 border border-white/25 text-white/80 hover:bg-white/20 hover:text-white text-xs font-semibold transition-colors"
+            data-testid="link-download-catalogue-hero"
+          >
+            <FileText className="w-3.5 h-3.5" /> Download Full Product Catalogue (PDF)
+          </a>
         </div>
       </div>
 
