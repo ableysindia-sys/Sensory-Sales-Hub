@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ShoppingCart, ChevronDown, Send, LogIn, LogOut, User } from "lucide-react";
+import { Menu, X, ShoppingCart, ChevronDown, Send, LogIn, LogOut, User, FileDown } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { useShoppingCart } from "@/lib/shopping-cart";
@@ -252,6 +252,16 @@ export function Navbar() {
                   </span>
                 )}
               </button>
+              <a
+                href="/api/catalog"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden xl:inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                data-testid="link-nav-catalogue-pdf"
+              >
+                <FileDown className="w-3.5 h-3.5" />
+                Catalogue
+              </a>
               <Link href="/enquiry">
                 <Button size="sm" className="gap-2 rounded-none text-xs font-semibold uppercase tracking-wider" data-testid="button-nav-bulk-enquiry">
                   <Send className="w-3.5 h-3.5" />
@@ -353,6 +363,17 @@ export function Navbar() {
                   </div>
                 )}
               </div>
+              <a
+                href="/api/catalog"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-2 w-full px-4 py-3 text-sm font-medium text-primary hover:text-primary/80 hover:bg-primary/5 rounded-md transition-colors"
+                data-testid="link-mobile-catalogue-pdf"
+              >
+                <FileDown className="w-4 h-4" />
+                Download Product Catalogue PDF
+              </a>
               <button
                 onClick={() => handleNavClick("/contact")}
                 className="block w-full text-left px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"

@@ -32,6 +32,7 @@ import {
   ArrowLeft,
   Check,
   ChevronRight,
+  FileDown,
   Loader2,
   Send,
   CheckCircle2,
@@ -420,9 +421,19 @@ export default function EnquiryCartPage() {
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-3 font-display" data-testid="heading-bulk-orders">
                 Bulk Orders & Custom Setups
               </h1>
-              <p className="text-white/80 text-sm sm:text-base max-w-xl mx-auto">
+              <p className="text-white/80 text-sm sm:text-base max-w-xl mx-auto mb-4">
                 Professional therapy equipment tailored to your facility's needs — tell us your requirements and we'll prepare a custom quote
               </p>
+              <a
+                href="/api/catalog"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/30 text-white text-xs font-semibold px-4 py-2 rounded-full transition-colors backdrop-blur-sm"
+                data-testid="link-enquiry-catalogue-pdf"
+              >
+                <FileDown className="w-3.5 h-3.5" />
+                Download Product Catalogue PDF
+              </a>
             </motion.div>
           </div>
         </div>

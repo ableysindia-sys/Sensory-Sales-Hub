@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import logoPath from "@assets/ableys_rehab_logo.png";
 import { SiFacebook, SiInstagram, SiYoutube } from "react-icons/si";
-import { Building2, Mail, MapPin, Phone } from "lucide-react";
+import { Building2, FileDown, Mail, MapPin, Phone } from "lucide-react";
 
 const socialLinks = [
   {
@@ -99,6 +99,18 @@ export function SiteFooter() {
               Resources
             </h4>
             <ul className="space-y-3">
+              <li>
+                <a
+                  href="/api/catalog"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm text-primary-foreground/80 hover:text-white transition-colors font-medium"
+                  data-testid="link-footer-product-catalogue-pdf"
+                >
+                  <FileDown className="w-3.5 h-3.5 shrink-0" />
+                  Product Catalogue PDF
+                </a>
+              </li>
               {resourceLinks.map((link) => (
                 <li key={link.label}>
                   <Link
