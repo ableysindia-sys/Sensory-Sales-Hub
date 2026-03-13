@@ -306,7 +306,7 @@ export default function B2BLandingPage() {
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/">
-            <img src={logoPath} alt="Abley's Rehab" className="h-9 object-contain" data-testid="img-logo-header" />
+            <img src={logoPath} alt="Abley's Rehab" className="h-12 object-contain" data-testid="img-logo-header" />
           </Link>
           <div className="flex items-center gap-3">
             <a

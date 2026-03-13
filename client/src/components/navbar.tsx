@@ -172,7 +172,7 @@ export function Navbar() {
         <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2 flex-shrink-0" data-testid="link-home">
-              <img src={logoPath} alt="Abley's Rehab" className="h-8 lg:h-10 w-auto" data-testid="img-logo" />
+              <img src={logoPath} alt="Abley's Rehab" className="h-11 lg:h-14 w-auto" data-testid="img-logo" />
             </Link>
 
             <div className="hidden lg:flex items-center gap-0.5">
