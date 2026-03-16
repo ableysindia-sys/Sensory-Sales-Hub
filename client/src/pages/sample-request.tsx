@@ -17,6 +17,7 @@ import {
   Smartphone, Phone,
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { PhoneSignupInline } from "@/components/phone-signup-inline";
 
 const DEPOSIT_AMOUNT = 1499;
 const TOTAL_STEPS = 5;
@@ -511,7 +512,7 @@ export default function SampleRequestPage() {
               <motion.div key="s3" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.22 }}>
                 {!user ? (
                   /* ── Not logged in → phone auth gate ── */
-                  <div className="p-6 sm:p-10 flex flex-col items-center text-center">
+                  <div className="p-6 sm:p-8 flex flex-col items-center text-center">
                     <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-5">
                       <Smartphone className="w-8 h-8 text-primary" />
                     </div>
@@ -519,17 +520,14 @@ export default function SampleRequestPage() {
                     <p className="text-sm text-muted-foreground mb-6 max-w-xs">
                       We'll send a one-time OTP to your phone. Your verified number is used to dispatch the kit and for WhatsApp follow-up.
                     </p>
-                    <Button
-                      onClick={() => openAuthDrawer()}
-                      className="gap-2 w-full sm:w-auto px-8"
-                      data-testid="button-verify-phone"
-                    >
-                      <Phone className="w-4 h-4" />
-                      Verify via OTP
-                    </Button>
-                    <p className="text-xs text-muted-foreground mt-4">
-                      You can also sign in with Google or Apple
-                    </p>
+                    <div className="w-full max-w-sm">
+                      <PhoneSignupInline
+                        variant="light"
+                        label=""
+                        sublabel=""
+                        containerId="recaptcha-sample"
+                      />
+                    </div>
                   </div>
                 ) : (
                   /* ── Logged in → show verified badge + name/email ── */
