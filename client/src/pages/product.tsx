@@ -747,7 +747,7 @@ export default function ProductPage() {
                     </div>
                   )}
                   {discountPct && (
-                    <div className="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                    <div className="absolute top-3 left-3 bg-emerald-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
                       -{discountPct}%
                     </div>
                   )}
@@ -1178,10 +1178,11 @@ export default function ProductPage() {
           const hasHowItWorks = !!howItWorksHtml;
           const overviewHtml = hasHowItWorks ? removeHowItWorksSection(_decodedDescription) : _decodedDescription;
           return (
-            <section className="py-10 border-b border-border/30" data-testid="section-product-tabs">
+            <section className="py-12 border-b border-border/30" data-testid="section-product-tabs">
               <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
                 <Tabs defaultValue="overview">
                   <div className="border-b border-border/40 mb-8">
+                    <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-4">Product Details</p>
                     <TabsList className="h-auto bg-transparent p-0 gap-0 rounded-none">
                       <TabsTrigger
                         value="overview"
@@ -1246,6 +1247,10 @@ export default function ProductPage() {
 
                   {/* Key Features tab */}
                   <TabsContent value="features" className="mt-0" data-testid="tabpanel-features">
+                    <div className="mb-6">
+                      <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">Why Choose This</p>
+                      <h2 className="text-2xl font-bold text-foreground">Key Features & Benefits</h2>
+                    </div>
                     <div className="grid lg:grid-cols-5 gap-10">
                       <div className="lg:col-span-3">
                         <div className="rounded-2xl border border-border/50 bg-card p-5">
@@ -1284,6 +1289,10 @@ export default function ProductPage() {
                   {/* Specifications tab */}
                   {hasSpecs && (
                     <TabsContent value="specs" className="mt-0" data-testid="tabpanel-specs">
+                      <div className="mb-6">
+                        <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">Technical Details</p>
+                        <h2 className="text-2xl font-bold text-foreground">Product Specifications</h2>
+                      </div>
                       <div className={`grid gap-8 ${specSections.length === 1 ? "max-w-lg" : specSections.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3"}`}>
                         {specSections.map(({ groupLabel, entries }) => (
                           <SpecGroupTable key={groupLabel} groupLabel={groupLabel} entries={entries} />
@@ -1294,11 +1303,9 @@ export default function ProductPage() {
                   {hasHowItWorks && (
                     <TabsContent value="how-it-works" className="mt-0" data-testid="tabpanel-how-it-works">
                       <div className="max-w-3xl">
-                        <div className="flex items-center gap-2 mb-6">
-                          <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <Zap className="w-3.5 h-3.5 text-primary" />
-                          </div>
-                          <h3 className="text-sm font-bold text-foreground">How it Works</h3>
+                        <div className="mb-6">
+                          <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">Step by Step</p>
+                          <h2 className="text-2xl font-bold text-foreground">How it Works</h2>
                         </div>
                         <div
                           className="prose prose-sm sm:prose-base max-w-none text-muted-foreground leading-relaxed
@@ -1324,7 +1331,12 @@ export default function ProductPage() {
           data-testid="section-reviews"
         >
           <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Summary header */}
+            {/* Section heading */}
+            <div className="mb-8">
+              <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">Verified Purchases</p>
+              <h2 className="text-2xl font-bold text-foreground">Customer Reviews</h2>
+            </div>
+            {/* Rating summary */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-10">
               <div className="flex-shrink-0 text-center sm:text-left">
                 <div className="text-6xl font-bold text-foreground tabular-nums">
@@ -1402,6 +1414,7 @@ export default function ProductPage() {
         <section className="py-16 bg-card/50" data-testid="section-faq">
           <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto">
+              <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">Got Questions?</p>
               <h2 className="text-2xl font-bold text-foreground mb-2">
                 Frequently Asked Questions
               </h2>
@@ -1441,6 +1454,7 @@ export default function ProductPage() {
             <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between mb-8">
                 <div>
+                  <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">Explore More</p>
                   <h2 className="text-2xl font-bold text-foreground">
                     You Might Also Like
                   </h2>
