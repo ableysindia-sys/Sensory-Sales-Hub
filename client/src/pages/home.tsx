@@ -14,9 +14,9 @@ import { useProducts } from "@/lib/product-provider";
 
 function SampleKitBanner() {
   return (
-    <section className="relative overflow-hidden bg-[#070d2a] text-white py-10 sm:py-14" data-testid="section-sample-kit-banner">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_70%_at_80%_50%,rgba(74,83,160,0.45),transparent)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_30%_50%_at_10%_50%,rgba(251,191,36,0.08),transparent)]" />
+    <section className="relative overflow-hidden bg-primary text-white py-10 sm:py-14" data-testid="section-sample-kit-banner">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_70%_at_80%_50%,rgba(0,0,0,0.25),transparent)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_35%_55%_at_8%_50%,rgba(251,191,36,0.14),transparent)]" />
       <div className="relative max-w-page mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row items-center gap-8 sm:gap-12">
           <div className="flex-1 text-center sm:text-left">
