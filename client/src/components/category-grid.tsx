@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
 import { ArrowRight, Hospital, GraduationCap, Sparkles, Home, Dumbbell, Building2, MessageSquare, ShoppingCart, CheckCircle2 } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useProducts } from "@/lib/product-provider";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { useShoppingCart } from "@/lib/shopping-cart";
 import { Button } from "@/components/ui/button";
 import type { CatalogueProduct } from "@/lib/catalogue-data";
+import { useToast } from "@/hooks/use-toast";
 
 const SETUP_TYPES = [
   { id: "sensory-room",   label: "Sensory Room",   shortLabel: "Sensory",  icon: Sparkles,       color: "from-violet-500 to-purple-600", desc: "Complete sensory integration rooms" },
@@ -38,6 +39,8 @@ function SetupProductCard({ product, catTitle }: { product: CatalogueProduct; ca
   const { addItem, isInCart } = useEnquiryCart();
   const { addToCart, items: cartItems } = useShoppingCart();
   const [cartAdded, setCartAdded] = useState(false);
+  const [, navigate] = useLocation();
+  const { toast } = useToast();
   const inEnquiry = isInCart(product.id);
   const inCart = cartItems.some((i) => i.productId === product.id);
   const hasDiscount = product.comparePrice && product.comparePrice > product.basePrice;
@@ -45,7 +48,21 @@ function SetupProductCard({ product, catTitle }: { product: CatalogueProduct; ca
   const handleQuote = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem(product.id, product.name, catTitle);
+    if (!inEnquiry) {
+      addItem(product.id, product.name, catTitle);
+      toast({
+        title: "Added to your B2B quote",
+        description: "Review all selected products and submit your enquiry.",
+        action: (
+          <button
+            onClick={() => navigate("/enquiry")}
+            className="shrink-0 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground ring-offset-background transition-opacity hover:opacity-90"
+          >
+            View Quote →
+          </button>
+        ),
+      } as Parameters<typeof toast>[0]);
+    }
   };
 
   const handleCart = (e: React.MouseEvent) => {

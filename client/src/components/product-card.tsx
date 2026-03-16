@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, CheckCircle2, Package, Star, MessageSquare } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { useShoppingCart } from "@/lib/shopping-cart";
 import type { CatalogueProduct } from "@/lib/catalogue-data";
 import { useProducts, formatPrice, getDiscountPercent } from "@/lib/product-provider";
 import { generatedProductImages } from "@/lib/product-images";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProductCardProps {
   product: CatalogueProduct;
@@ -39,6 +40,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const { addToCart, items: cartItems } = useShoppingCart();
   const { getProductCategory } = useProducts();
   const [added, setAdded] = useState(false);
+  const [, navigate] = useLocation();
+  const { toast } = useToast();
   const category = getProductCategory(product);
   const inEnquiry = isInCart(product.id);
   const inCart = cartItems.some((i) => i.productId === product.id);
@@ -137,7 +140,21 @@ export function ProductCard({ product }: ProductCardProps) {
             }`}
             onClick={(e) => {
               e.preventDefault();
-              addItem(product.id, product.name, category?.title || "");
+              if (!inEnquiry) {
+                addItem(product.id, product.name, category?.title || "");
+                toast({
+                  title: "Added to your B2B quote",
+                  description: "Review all selected products and submit your enquiry.",
+                  action: (
+                    <button
+                      onClick={() => navigate("/enquiry")}
+                      className="shrink-0 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground ring-offset-background transition-opacity hover:opacity-90"
+                    >
+                      View Quote →
+                    </button>
+                  ),
+                } as Parameters<typeof toast>[0]);
+              }
             }}
             data-testid={`button-add-enquiry-${product.id}`}
           >
