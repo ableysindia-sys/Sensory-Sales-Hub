@@ -1,11 +1,11 @@
 import { Link, useLocation } from "wouter";
-import { Home, Grid3x3, Send, MessageCircle } from "lucide-react";
+import { Home, Grid3x3, Send, FileDown } from "lucide-react";
 
 const tabs = [
-  { label: "Home", icon: Home, href: "/" },
-  { label: "Products", icon: Grid3x3, href: "/products" },
-  { label: "Get a Quote", icon: Send, href: "/enquiry", primary: true },
-  { label: "WhatsApp", icon: MessageCircle, href: "https://wa.me/917042180166", external: true },
+  { label: "Home",      icon: Home,     href: "/",        external: false },
+  { label: "Products",  icon: Grid3x3,  href: "/products", external: false },
+  { label: "Get a Quote", icon: Send,   href: "/enquiry",  external: false, primary: true },
+  { label: "Catalogue", icon: FileDown, href: "/api/catalog", external: true },
 ];
 
 export function MobileBottomNav() {
