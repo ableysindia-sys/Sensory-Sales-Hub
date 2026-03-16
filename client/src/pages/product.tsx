@@ -18,7 +18,6 @@ import {
   Shield,
   Zap,
   Heart,
-  Layers,
   Send,
   Plus,
   Minus,
@@ -28,13 +27,13 @@ import {
   RotateCcw,
   Lock,
   PhoneCall,
-  ChevronDown,
-  ChevronUp,
   MapPin,
   BadgeCheck,
   MessageSquare,
 } from "lucide-react";
 import paymentBadgesImg from "@assets/payment-badges.jpg";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { ProductCard } from "@/components/product-card";
 
 /* ─── Helper types ─────────────────────────────────────────────────────── */
@@ -417,27 +416,6 @@ function SuitableForDisplay({ applications }: { applications: string[] }) {
   );
 }
 
-function FAQItem({ faq, isOpen, onToggle }: { faq: FAQ; isOpen: boolean; onToggle: () => void }) {
-  return (
-    <div className="border-b border-border/50 last:border-0">
-      <button
-        onClick={onToggle}
-        className="w-full flex items-center justify-between py-4 text-left gap-4 hover:text-primary transition-colors"
-        data-testid={`faq-toggle-${faq.q.slice(0, 20).toLowerCase().replace(/\s+/g, "-")}`}
-      >
-        <span className="text-sm font-semibold text-foreground">{faq.q}</span>
-        {isOpen ? (
-          <ChevronUp className="w-4 h-4 flex-shrink-0 text-primary" />
-        ) : (
-          <ChevronDown className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
-        )}
-      </button>
-      {isOpen && (
-        <p className="pb-4 text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
-      )}
-    </div>
-  );
-}
 
 /* ─── Main Page ─────────────────────────────────────────────────────────── */
 
@@ -456,7 +434,6 @@ export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
-  const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(null);
 
 
   const hasShopifyVariants = !!(product?.shopifyVariants && product.shopifyVariants.length > 0);
@@ -1148,91 +1125,116 @@ export default function ProductPage() {
           </div>
         </section>
 
-        {/* ── Description + Key Features ───────────────────────── */}
-        <section className="py-14 border-b border-border/30" data-testid="section-full-description">
-          <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
-
-              {/* LEFT: Full description */}
-              <div className="lg:col-span-3">
-                <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-3">About this product</p>
-                <h2 className="text-2xl font-bold text-foreground mb-6 leading-snug">{product.name.split("|")[0].trim()}</h2>
-                {isHtmlDescription ? (
-                  <div
-                    className="prose prose-sm sm:prose-base max-w-none text-muted-foreground leading-relaxed
-                      [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_h4]:text-foreground
-                      [&_strong]:text-foreground [&_b]:text-foreground
-                      [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5
-                      [&_li]:mb-1.5 [&_p]:mb-3 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-2
-                      [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2"
-                    dangerouslySetInnerHTML={{ __html: product.description }}
-                    data-testid="html-product-description"
-                  />
-                ) : (
-                  <div className="text-muted-foreground leading-relaxed space-y-3">
-                    {product.description.split("\n").filter((l) => l.trim()).map((line, i) => (
-                      <p key={i}>{line}</p>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* RIGHT: Key Features + Suitable For */}
-              <div className="lg:col-span-2 space-y-8 lg:pt-14">
-                {/* Key Features card */}
-                <div className="rounded-2xl border border-border/50 bg-card p-5">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
-                    </div>
-                    <h3 className="text-sm font-bold text-foreground">Key Features</h3>
-                  </div>
-                  <KeyFeaturesDisplay features={product.features} />
-                </div>
-
-                {/* Suitable For */}
-                {product.applications.length > 0 && (
-                  <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Heart className="w-3.5 h-3.5 text-primary" />
-                      </div>
-                      <h3 className="text-sm font-bold text-foreground">Suitable For</h3>
-                    </div>
-                    <SuitableForDisplay applications={product.applications} />
-                  </div>
-                )}
-
-                {/* OT badge */}
-                <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-primary/5 border border-primary/10">
-                  <BadgeCheck className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    <span className="font-semibold text-foreground">OT-Recommended.</span>{" "}
-                    Trusted by occupational therapists across clinics and schools in India.
-                  </p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </section>
-
-        {/* ── Specifications ────────────────────────────────────── */}
+        {/* ── Tabs: Overview / Features / Specs ─────────────────── */}
         {(() => {
           const specSections = resolveSpecSections(product.specifications);
-          if (specSections.length === 0) return null;
+          const hasSpecs = specSections.length > 0;
           return (
-            <section className="py-12 bg-muted/30" data-testid="section-product-specs">
+            <section className="py-10 border-b border-border/30" data-testid="section-product-tabs">
               <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center gap-2 mb-8">
-                  <Layers className="w-4 h-4 text-primary" />
-                  <h2 className="text-lg font-bold text-foreground">Product Specifications</h2>
-                </div>
-                <div className={`grid gap-8 ${specSections.length === 1 ? "max-w-lg" : specSections.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3"}`}>
-                  {specSections.map(({ groupLabel, entries }) => (
-                    <SpecGroupTable key={groupLabel} groupLabel={groupLabel} entries={entries} />
-                  ))}
-                </div>
+                <Tabs defaultValue="overview">
+                  <div className="border-b border-border/40 mb-8">
+                    <TabsList className="h-auto bg-transparent p-0 gap-0 rounded-none">
+                      <TabsTrigger
+                        value="overview"
+                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary"
+                        data-testid="tab-overview"
+                      >
+                        Overview
+                      </TabsTrigger>
+                      <TabsTrigger
+                        value="features"
+                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary"
+                        data-testid="tab-features"
+                      >
+                        Key Features
+                      </TabsTrigger>
+                      {hasSpecs && (
+                        <TabsTrigger
+                          value="specs"
+                          className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary"
+                          data-testid="tab-specs"
+                        >
+                          Specifications
+                        </TabsTrigger>
+                      )}
+                    </TabsList>
+                  </div>
+
+                  {/* Overview tab */}
+                  <TabsContent value="overview" className="mt-0" data-testid="tabpanel-overview">
+                    <div className="max-w-3xl">
+                      <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-3">About this product</p>
+                      <h2 className="text-2xl font-bold text-foreground mb-6 leading-snug">{product.name.split("|")[0].trim()}</h2>
+                      {isHtmlDescription ? (
+                        <div
+                          className="prose prose-sm sm:prose-base max-w-none text-muted-foreground leading-relaxed
+                            [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_h4]:text-foreground
+                            [&_strong]:text-foreground [&_b]:text-foreground
+                            [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5
+                            [&_li]:mb-1.5 [&_p]:mb-3 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-2
+                            [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2"
+                          dangerouslySetInnerHTML={{ __html: product.description }}
+                          data-testid="html-product-description"
+                        />
+                      ) : (
+                        <div className="text-muted-foreground leading-relaxed space-y-3">
+                          {product.description.split("\n").filter((l) => l.trim()).map((line, i) => (
+                            <p key={i}>{line}</p>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
+
+                  {/* Key Features tab */}
+                  <TabsContent value="features" className="mt-0" data-testid="tabpanel-features">
+                    <div className="grid lg:grid-cols-5 gap-10">
+                      <div className="lg:col-span-3">
+                        <div className="rounded-2xl border border-border/50 bg-card p-5">
+                          <div className="flex items-center gap-2 mb-4">
+                            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+                            </div>
+                            <h3 className="text-sm font-bold text-foreground">Key Features</h3>
+                          </div>
+                          <KeyFeaturesDisplay features={product.features} />
+                        </div>
+                      </div>
+                      <div className="lg:col-span-2 space-y-6">
+                        {product.applications.length > 0 && (
+                          <div>
+                            <div className="flex items-center gap-2 mb-3">
+                              <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <Heart className="w-3.5 h-3.5 text-primary" />
+                              </div>
+                              <h3 className="text-sm font-bold text-foreground">Suitable For</h3>
+                            </div>
+                            <SuitableForDisplay applications={product.applications} />
+                          </div>
+                        )}
+                        <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-primary/5 border border-primary/10">
+                          <BadgeCheck className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            <span className="font-semibold text-foreground">OT-Recommended.</span>{" "}
+                            Trusted by occupational therapists across clinics and schools in India.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  {/* Specifications tab */}
+                  {hasSpecs && (
+                    <TabsContent value="specs" className="mt-0" data-testid="tabpanel-specs">
+                      <div className={`grid gap-8 ${specSections.length === 1 ? "max-w-lg" : specSections.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3"}`}>
+                        {specSections.map(({ groupLabel, entries }) => (
+                          <SpecGroupTable key={groupLabel} groupLabel={groupLabel} entries={entries} />
+                        ))}
+                      </div>
+                    </TabsContent>
+                  )}
+                </Tabs>
               </div>
             </section>
           );
@@ -1336,16 +1338,21 @@ export default function ProductPage() {
                 </a>
               </p>
               <div className="bg-background border border-border/50 rounded-2xl px-6" data-testid="container-faq-list">
-                {faqs.map((faq, i) => (
-                  <FAQItem
-                    key={i}
-                    faq={faq}
-                    isOpen={openFaqIdx === i}
-                    onToggle={() =>
-                      setOpenFaqIdx((prev) => (prev === i ? null : i))
-                    }
-                  />
-                ))}
+                <Accordion type="single" collapsible>
+                  {faqs.map((faq, i) => (
+                    <AccordionItem key={i} value={`faq-${i}`} className="border-border/50 last:border-0">
+                      <AccordionTrigger
+                        className="text-sm font-semibold text-foreground py-4 hover:no-underline hover:text-primary text-left"
+                        data-testid={`faq-toggle-${faq.q.slice(0, 20).toLowerCase().replace(/\s+/g, "-")}`}
+                      >
+                        {faq.q}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+                        {faq.a}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
               </div>
             </div>
           </div>
