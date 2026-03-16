@@ -394,27 +394,6 @@ export function BulkEnquiryForm() {
             viewport={{ once: true }}
             className="lg:col-span-3"
           >
-            {!submitted && step === 0 && (
-              <div className="px-6 sm:px-8 pt-5 pb-0">
-                <a
-                  href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20a%20bulk%20quote%20for%20therapy%20equipment."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3.5 rounded-xl bg-[#25D366]/10 border border-[#25D366]/30 text-sm group hover:bg-[#25D366]/15 transition-colors"
-                  data-testid="link-quick-contact-whatsapp"
-                >
-                  <div className="w-8 h-8 rounded-full bg-[#25D366] text-white flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-4 h-4" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-foreground text-xs">In a hurry? Skip the form</p>
-                    <p className="text-xs text-muted-foreground">Chat directly on WhatsApp — we respond within minutes</p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-[#25D366] transition-colors flex-shrink-0" />
-                </a>
-              </div>
-            )}
-
             {submitted ? (
               <div className="bg-card rounded-2xl border border-border/50 p-8 sm:p-10 shadow-sm text-center">
                 <motion.div
