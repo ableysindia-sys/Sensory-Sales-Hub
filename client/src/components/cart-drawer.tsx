@@ -29,9 +29,9 @@ function CartItemRow({ item }: { item: CartItem }) {
   const configDetails: string[] = [];
   if (item.variantTitle) configDetails.push(item.variantTitle);
   else {
-    if (item.config.color) configDetails.push(item.config.color);
+    if (item.config.color) configDetails.push(`Colour: ${item.config.color}`);
     if (item.config.material) configDetails.push(item.config.material);
-    if (item.config.size) configDetails.push(item.config.size);
+    if (item.config.size) configDetails.push(`Size: ${item.config.size}`);
     if (item.config.addons.length > 0) configDetails.push(...item.config.addons);
   }
 
@@ -55,6 +55,11 @@ function CartItemRow({ item }: { item: CartItem }) {
           {configDetails.length > 0 && (
             <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
               {configDetails.join(" · ")}
+            </p>
+          )}
+          {item.config.customizationNote && (
+            <p className="text-xs text-primary/70 mt-1 italic line-clamp-2" data-testid={`text-customisation-note-${item.productId}`}>
+              "{item.config.customizationNote}"
             </p>
           )}
           <p className="text-sm font-semibold tabular-nums mt-1.5" data-testid={`text-line-total-${item.productId}`}>

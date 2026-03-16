@@ -6,6 +6,7 @@ export interface CartItemConfig {
   material?: string;
   size?: string;
   addons: string[];
+  customizationNote?: string;
 }
 
 export interface CartItem {
