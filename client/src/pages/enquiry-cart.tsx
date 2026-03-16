@@ -129,7 +129,7 @@ const TIMELINE_OPTIONS = [
   "Just exploring",
 ];
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 function StepIndicator({ current, total }: { current: number; total: number }) {
   return (
@@ -310,25 +310,27 @@ export default function EnquiryCartPage() {
     );
   };
 
-  // Prefill form when user signs in mid-flow
+  // Prefill form when user signs in mid-flow; auto-advance from sign-in step
   useEffect(() => {
     if (user) {
       if (user.phoneNumber) form.setValue("phone", user.phoneNumber);
       if (user.displayName) form.setValue("name", user.displayName);
       if (user.email) form.setValue("email", user.email);
+      if (step === 0) setStep(1);
     }
   }, [user, form]);
 
   const canProceed = useMemo(() => {
     switch (step) {
-      case 0: return !!setupType;
-      case 1: return !!orderType;
-      case 2: return selectedCategories.length > 0;
-      case 3: return !!budget && !!timeline;
-      case 4: return !!user;
+      case 0: return true;
+      case 1: return !!setupType;
+      case 2: return !!orderType;
+      case 3: return selectedCategories.length > 0;
+      case 4: return !!budget && !!timeline;
+      case 5: return true;
       default: return false;
     }
-  }, [step, setupType, orderType, selectedCategories, budget, timeline, user]);
+  }, [step, setupType, orderType, selectedCategories, budget, timeline]);
 
   const onSubmit = async (data: EnquiryFormValues) => {
     const cartData = items.map((item) => ({
@@ -462,6 +464,35 @@ export default function EnquiryCartPage() {
             <AnimatePresence mode="wait">
               {step === 0 && (
                 <motion.div
+                  key="step-signin"
+                  initial={{ opacity: 0, x: 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -40 }}
+                  transition={{ duration: 0.25 }}
+                  className="p-6 sm:p-8 flex flex-col items-center text-center"
+                >
+                  <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <Smartphone className="w-7 h-7 text-primary" />
+                  </div>
+                  <h2 className="text-lg font-bold text-foreground mb-1" data-testid="heading-step-signin">
+                    Verify your number to receive your quote
+                  </h2>
+                  <p className="text-sm text-muted-foreground mb-6 max-w-xs">
+                    A one-time OTP will be sent to your phone. Your verified number is used to send the customised quote and for WhatsApp follow-up.
+                  </p>
+                  <div className="w-full max-w-sm">
+                    <PhoneSignupInline
+                      variant="light"
+                      label=""
+                      sublabel=""
+                      containerId="recaptcha-enquiry"
+                    />
+                  </div>
+                </motion.div>
+              )}
+
+              {step === 1 && (
+                <motion.div
                   key="step-0"
                   initial={{ opacity: 0, x: 40 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -491,7 +522,7 @@ export default function EnquiryCartPage() {
                 </motion.div>
               )}
 
-              {step === 1 && (
+              {step === 2 && (
                 <motion.div
                   key="step-1"
                   initial={{ opacity: 0, x: 40 }}
@@ -522,7 +553,7 @@ export default function EnquiryCartPage() {
                 </motion.div>
               )}
 
-              {step === 2 && (
+              {step === 3 && (
                 <motion.div
                   key="step-2"
                   initial={{ opacity: 0, x: 40 }}
@@ -689,7 +720,7 @@ export default function EnquiryCartPage() {
                 </motion.div>
               )}
 
-              {step === 3 && (
+              {step === 4 && (
                 <motion.div
                   key="step-3"
                   initial={{ opacity: 0, x: 40 }}
@@ -737,38 +768,15 @@ export default function EnquiryCartPage() {
                 </motion.div>
               )}
 
-              {step === 4 && (
+              {step === 5 && (
                 <motion.div
                   key="step-4"
                   initial={{ opacity: 0, x: 40 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -40 }}
                   transition={{ duration: 0.25 }}
-                  className={!user ? "" : "p-6 sm:p-8"}
+                  className="p-6 sm:p-8"
                 >
-                  {!user ? (
-                    /* ── Auth gate ── */
-                    <div className="p-6 sm:p-8 flex flex-col items-center text-center">
-                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-5">
-                        <Smartphone className="w-8 h-8 text-primary" />
-                      </div>
-                      <h2 className="text-lg font-bold mb-2" data-testid="heading-step-4">
-                        Verify your mobile number to receive your quote
-                      </h2>
-                      <p className="text-sm text-muted-foreground mb-6 max-w-xs">
-                        A one-time OTP will be sent to your phone. Your verified number will be used to send the customised quote and for WhatsApp follow-up.
-                      </p>
-                      <div className="w-full max-w-sm">
-                        <PhoneSignupInline
-                          variant="light"
-                          label=""
-                          sublabel=""
-                          containerId="recaptcha-enquiry"
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                  <>
                   <div className="flex items-center gap-3 mb-1">
                     <UserCircle className="w-5 h-5 text-primary" />
                     <h2 className="text-lg font-bold text-foreground" data-testid="heading-step-4">
@@ -778,7 +786,7 @@ export default function EnquiryCartPage() {
                   <p className="text-sm text-muted-foreground mb-4">
                     We'll use this to send you a customised quote.
                   </p>
-                  {/* Verified badge */}
+                  {user && (
                   <div className="flex items-center gap-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-xl px-4 py-3 mb-5" data-testid="badge-phone-verified-enquiry">
                     <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
                     <div className="text-left">
@@ -786,6 +794,7 @@ export default function EnquiryCartPage() {
                       <p className="text-xs text-green-600 dark:text-green-500">{user.phoneNumber || user.email}</p>
                     </div>
                   </div>
+                  )}
 
                   <div className="mb-6 p-4 rounded-xl bg-muted/30 border border-border/30">
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Your selections</p>
@@ -928,8 +937,6 @@ export default function EnquiryCartPage() {
                       </Button>
                     </form>
                   </Form>
-                  </>
-                  )}
                 </motion.div>
               )}
             </AnimatePresence>

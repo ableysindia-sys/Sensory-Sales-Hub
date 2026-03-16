@@ -20,7 +20,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { PhoneSignupInline } from "@/components/phone-signup-inline";
 
 const DEPOSIT_AMOUNT = 1499;
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 const ROLES = [
   { id: "ot-therapist", label: "Occupational Therapist", icon: Stethoscope, desc: "Practising OT in a clinic or hospital" },
@@ -195,11 +195,16 @@ export default function SampleRequestPage() {
     );
   }
 
+  useEffect(() => {
+    if (user && step === 0) setStep(1);
+  }, [user]);
+
   function canNext() {
-    if (step === 0) return !!role;
-    if (step === 1) return !!setupType && !!city;
-    if (step === 2) return selectedCategories.length > 0;
-    if (step === 3) return !!user && name.length >= 2 && email.includes("@");
+    if (step === 0) return !!user;
+    if (step === 1) return !!role;
+    if (step === 2) return !!setupType && !!city;
+    if (step === 3) return selectedCategories.length > 0;
+    if (step === 4) return name.length >= 2 && email.includes("@");
     return false;
   }
 
@@ -431,8 +436,29 @@ export default function SampleRequestPage() {
         <div className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden">
           <AnimatePresence mode="wait">
 
-            {/* ── Step 0: Role ── */}
+            {/* ── Step 0: Sign In ── */}
             {step === 0 && (
+              <motion.div key="s-signin" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.22 }} className="p-6 sm:p-8 flex flex-col items-center text-center">
+                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <Smartphone className="w-7 h-7 text-primary" />
+                </div>
+                <h2 className="text-lg font-bold mb-1" data-testid="heading-step-signin">Verify your mobile number</h2>
+                <p className="text-sm text-muted-foreground mb-6 max-w-xs">
+                  We'll send a one-time OTP to your phone. Your verified number is used to dispatch the kit and for WhatsApp follow-up.
+                </p>
+                <div className="w-full max-w-sm">
+                  <PhoneSignupInline
+                    variant="light"
+                    label=""
+                    sublabel=""
+                    containerId="recaptcha-sample"
+                  />
+                </div>
+              </motion.div>
+            )}
+
+            {/* ── Step 1: Role ── */}
+            {step === 1 && (
               <motion.div key="s0" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.22 }} className="p-6 sm:p-8">
                 <h2 className="text-lg font-bold mb-1" data-testid="heading-step-0">What best describes you?</h2>
                 <p className="text-sm text-muted-foreground mb-6">We'll tailor your sample kit to your setting.</p>
@@ -444,8 +470,8 @@ export default function SampleRequestPage() {
               </motion.div>
             )}
 
-            {/* ── Step 1: Setup + City ── */}
-            {step === 1 && (
+            {/* ── Step 2: Setup + City ── */}
+            {step === 2 && (
               <motion.div key="s1" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.22 }} className="p-6 sm:p-8">
                 <h2 className="text-lg font-bold mb-1" data-testid="heading-step-1">Tell us about your setup</h2>
                 <p className="text-sm text-muted-foreground mb-6">Helps us choose equipment matched to your environment.</p>
@@ -483,7 +509,7 @@ export default function SampleRequestPage() {
             )}
 
             {/* ── Step 2: Categories ── */}
-            {step === 2 && (
+            {step === 3 && (
               <motion.div key="s2" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.22 }} className="p-6 sm:p-8">
                 <h2 className="text-lg font-bold mb-1" data-testid="heading-step-2">Which categories interest you?</h2>
                 <p className="text-sm text-muted-foreground mb-6">Select all that apply — we'll include relevant samples.</p>
@@ -508,57 +534,34 @@ export default function SampleRequestPage() {
             )}
 
             {/* ── Step 3: Phone verification + Contact details ── */}
-            {step === 3 && (
-              <motion.div key="s3" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.22 }}>
-                {!user ? (
-                  /* ── Not logged in → phone auth gate ── */
-                  <div className="p-6 sm:p-8 flex flex-col items-center text-center">
-                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-5">
-                      <Smartphone className="w-8 h-8 text-primary" />
-                    </div>
-                    <h2 className="text-lg font-bold mb-2" data-testid="heading-step-3">Verify your mobile number</h2>
-                    <p className="text-sm text-muted-foreground mb-6 max-w-xs">
-                      We'll send a one-time OTP to your phone. Your verified number is used to dispatch the kit and for WhatsApp follow-up.
-                    </p>
-                    <div className="w-full max-w-sm">
-                      <PhoneSignupInline
-                        variant="light"
-                        label=""
-                        sublabel=""
-                        containerId="recaptcha-sample"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  /* ── Logged in → show verified badge + name/email ── */
-                  <div className="p-6 sm:p-8">
-                    <h2 className="text-lg font-bold mb-1" data-testid="heading-step-3">Your contact details</h2>
-                    <p className="text-sm text-muted-foreground mb-5">We'll use these to dispatch your kit and follow up on WhatsApp.</p>
-                    {/* Verified phone badge */}
-                    <div className="flex items-center gap-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-xl px-4 py-3 mb-5" data-testid="badge-phone-verified">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
-                      <div className="text-left">
-                        <p className="text-sm font-semibold text-green-700 dark:text-green-400">Phone verified</p>
-                        <p className="text-xs text-green-600 dark:text-green-500">{user.phoneNumber || user.email}</p>
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="name">Full name <span className="text-destructive">*</span></Label>
-                        <Input id="name" placeholder="Dr. Jane Smith" value={name} onChange={(e) => setName(e.target.value)} className="mt-1.5" data-testid="input-name" />
-                      </div>
-                      <div>
-                        <Label htmlFor="email">Email address <span className="text-destructive">*</span></Label>
-                        <Input id="email" type="email" placeholder="jane@clinic.com" value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1.5" data-testid="input-email" />
-                      </div>
+            {step === 4 && (
+              <motion.div key="s3" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.22 }} className="p-6 sm:p-8">
+                <h2 className="text-lg font-bold mb-1" data-testid="heading-step-3">Your contact details</h2>
+                <p className="text-sm text-muted-foreground mb-5">We'll use these to dispatch your kit and follow up on WhatsApp.</p>
+                {user && (
+                  <div className="flex items-center gap-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-xl px-4 py-3 mb-5" data-testid="badge-phone-verified">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
+                    <div className="text-left">
+                      <p className="text-sm font-semibold text-green-700 dark:text-green-400">Phone verified</p>
+                      <p className="text-xs text-green-600 dark:text-green-500">{user.phoneNumber || user.email}</p>
                     </div>
                   </div>
                 )}
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="name">Full name <span className="text-destructive">*</span></Label>
+                    <Input id="name" placeholder="Dr. Jane Smith" value={name} onChange={(e) => setName(e.target.value)} className="mt-1.5" data-testid="input-name" />
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email address <span className="text-destructive">*</span></Label>
+                    <Input id="email" type="email" placeholder="jane@clinic.com" value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1.5" data-testid="input-email" />
+                  </div>
+                </div>
               </motion.div>
             )}
 
             {/* ── Step 4: Kit preview + Pay ── */}
-            {step === 4 && (
+            {step === 5 && (
               <motion.div key="s4" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.22 }} className="p-6 sm:p-8">
                 <h2 className="text-lg font-bold mb-1" data-testid="heading-step-4">Your personalised sample kit</h2>
                 <p className="text-sm text-muted-foreground mb-6">

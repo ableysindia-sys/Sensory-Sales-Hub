@@ -38,7 +38,9 @@ import {
   Clock,
   FileText,
   Phone,
+  Smartphone,
 } from "lucide-react";
+import { PhoneSignupInline } from "@/components/phone-signup-inline";
 import type { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -79,8 +81,8 @@ const TIMELINE_OPTIONS = [
   "Just exploring",
 ];
 
-const TOTAL_STEPS = 5;
-const STEP_LABELS = ["Setup Type", "Requirement", "Products", "Budget", "Contact"];
+const TOTAL_STEPS = 6;
+const STEP_LABELS = ["Sign In", "Setup Type", "Requirement", "Products", "Budget", "Contact"];
 
 const LS_KEY = "ableys_enquiry_contact";
 
@@ -226,7 +228,7 @@ function CategoryCheckbox({
 export function BulkEnquiryForm() {
   const { categories } = useProducts();
   const { toast } = useToast();
-  const { user, openAuthDrawer } = useAuth();
+  const { user } = useAuth();
   const [step, setStep] = useState(0);
   const [setupType, setSetupType] = useState<string>("");
   const [orderType, setOrderType] = useState<string>("");
@@ -280,6 +282,7 @@ export function BulkEnquiryForm() {
       const cleaned = user.phoneNumber.replace("+91", "").trim();
       form.setValue("phone", cleaned);
     }
+    if (step === 0) setStep(1);
   }, [user]);
 
   const toggleCategory = (cat: string) => {
@@ -290,11 +293,12 @@ export function BulkEnquiryForm() {
 
   const canProceed = useMemo(() => {
     switch (step) {
-      case 0: return !!setupType;
-      case 1: return !!orderType;
-      case 2: return selectedCategories.length > 0;
-      case 3: return !!budget && !!timeline;
-      case 4: return true;
+      case 0: return true;
+      case 1: return !!setupType;
+      case 2: return !!orderType;
+      case 3: return selectedCategories.length > 0;
+      case 4: return !!budget && !!timeline;
+      case 5: return true;
       default: return false;
     }
   }, [step, setupType, orderType, selectedCategories, budget, timeline]);
@@ -427,6 +431,43 @@ export function BulkEnquiryForm() {
                 <AnimatePresence mode="wait">
                   {step === 0 && (
                     <motion.div
+                      key="home-step-signin"
+                      initial={{ opacity: 0, x: 40 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -40 }}
+                      transition={{ duration: 0.25 }}
+                      className="p-6 sm:p-8 flex flex-col items-center text-center"
+                    >
+                      <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                        <Smartphone className="w-7 h-7 text-primary" />
+                      </div>
+                      <h3 className="text-base font-bold text-foreground mb-1" data-testid="home-heading-step-signin">
+                        Verify your number to get started
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-6 max-w-xs">
+                        Sign in with your mobile number so we can auto-fill your details and send your quote directly.
+                      </p>
+                      <div className="w-full max-w-sm">
+                        <PhoneSignupInline
+                          variant="light"
+                          label=""
+                          sublabel=""
+                          containerId="recaptcha-home-enquiry"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setStep(1)}
+                        className="mt-5 text-xs text-muted-foreground hover:text-foreground underline underline-offset-4 cursor-pointer touch-manipulation"
+                        data-testid="home-button-skip-signin"
+                      >
+                        Skip — I'll fill in my details manually →
+                      </button>
+                    </motion.div>
+                  )}
+
+                  {step === 1 && (
+                    <motion.div
                       key="home-step-0"
                       initial={{ opacity: 0, x: 40 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -456,7 +497,7 @@ export function BulkEnquiryForm() {
                     </motion.div>
                   )}
 
-                  {step === 1 && (
+                  {step === 2 && (
                     <motion.div
                       key="home-step-1"
                       initial={{ opacity: 0, x: 40 }}
@@ -487,7 +528,7 @@ export function BulkEnquiryForm() {
                     </motion.div>
                   )}
 
-                  {step === 2 && (
+                  {step === 3 && (
                     <motion.div
                       key="home-step-2"
                       initial={{ opacity: 0, x: 40 }}
@@ -516,7 +557,7 @@ export function BulkEnquiryForm() {
                     </motion.div>
                   )}
 
-                  {step === 3 && (
+                  {step === 4 && (
                     <motion.div
                       key="home-step-3"
                       initial={{ opacity: 0, x: 40 }}
@@ -562,7 +603,7 @@ export function BulkEnquiryForm() {
                     </motion.div>
                   )}
 
-                  {step === 4 && (
+                  {step === 5 && (
                     <motion.div
                       key="home-step-4"
                       initial={{ opacity: 0, x: 40 }}
@@ -581,7 +622,7 @@ export function BulkEnquiryForm() {
                         We'll use this to send you a customised quote.
                       </p>
 
-                      {user ? (
+                      {user && (
                         <div className="flex items-center gap-2.5 mb-4 px-3.5 py-2.5 rounded-xl bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800">
                           <div className="w-7 h-7 rounded-full bg-green-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
                             {user.displayName?.[0]?.toUpperCase() ?? user.phoneNumber?.slice(-2, -1) ?? user.email?.[0]?.toUpperCase() ?? "✓"}
@@ -593,19 +634,6 @@ export function BulkEnquiryForm() {
                             </p>
                           </div>
                         </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => openAuthDrawer()}
-                          className="flex items-center justify-between w-full mb-4 px-3.5 py-2.5 rounded-xl bg-primary/5 border border-primary/20 hover:bg-primary/10 transition-colors text-left"
-                          data-testid="button-enquiry-sign-in"
-                        >
-                          <div>
-                            <p className="text-xs font-semibold text-primary">Sign in to auto-fill your details</p>
-                            <p className="text-xs text-muted-foreground">Save time on future enquiries</p>
-                          </div>
-                          <span className="text-xs font-semibold text-primary shrink-0 ml-2">Sign In →</span>
-                        </button>
                       )}
 
                       <div className="mb-5 p-3.5 rounded-xl bg-muted/30 border border-border/30">
