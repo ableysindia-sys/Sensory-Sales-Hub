@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, CheckCircle2, Package, Star, MessageSquare } from "lucide-react";
+import { ShoppingCart, CheckCircle2, Package, Star } from "lucide-react";
 import { Link } from "wouter";
-import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { useShoppingCart } from "@/lib/shopping-cart";
 import type { CatalogueProduct } from "@/lib/catalogue-data";
 import { useProducts, formatPrice, getDiscountPercent } from "@/lib/product-provider";
@@ -35,12 +34,10 @@ function getSeededRating(id: string): { rating: number; count: number } {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { addItem, isInCart } = useEnquiryCart();
   const { addToCart, items: cartItems } = useShoppingCart();
   const { getProductCategory } = useProducts();
   const [added, setAdded] = useState(false);
   const category = getProductCategory(product);
-  const inEnquiry = isInCart(product.id);
   const inCart = cartItems.some((i) => i.productId === product.id);
   const discount = getDiscountPercent(product);
   const { rating, count } = getSeededRating(product.id);
@@ -96,7 +93,6 @@ export function ProductCard({ product }: ProductCardProps) {
 
       {/* Content */}
       <div className="p-3.5 flex flex-col flex-1">
-        {/* Category tag */}
         {category && (
           <span className="text-[10px] font-semibold text-primary uppercase tracking-wider mb-1">
             {category.title}
@@ -124,11 +120,11 @@ export function ProductCard({ product }: ProductCardProps) {
               {formatPrice(product.comparePrice)}
             </span>
           )}
-          <span className="text-[10px] text-muted-foreground/70 ml-auto">incl. GST</span>
+          <span className="text-[10px] text-green-600 font-medium ml-auto">Free shipping</span>
         </div>
 
-        {/* CTA — single smart button */}
-        <div className="mt-3 space-y-1.5">
+        {/* CTA */}
+        <div className="mt-3">
           <button
             className={`w-full h-9 rounded-lg text-sm font-semibold flex items-center justify-center gap-1.5 transition-all ${
               added || inCart
@@ -146,26 +142,6 @@ export function ProductCard({ product }: ProductCardProps) {
               <>
                 <ShoppingCart className="w-3.5 h-3.5" /> Add to Cart
               </>
-            )}
-          </button>
-
-          {/* B2B quote — subtle text button */}
-          <button
-            className={`w-full h-8 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-all border ${
-              inEnquiry
-                ? "text-primary border-primary/30 bg-primary/5"
-                : "text-muted-foreground border-border/60 hover:text-primary hover:border-primary/30 hover:bg-primary/5"
-            }`}
-            onClick={(e) => {
-              e.preventDefault();
-              addItem(product.id, product.name, category?.title || "");
-            }}
-            data-testid={`button-add-enquiry-${product.id}`}
-          >
-            {inEnquiry ? (
-              <><CheckCircle2 className="w-3 h-3" /> In Quote List</>
-            ) : (
-              <><MessageSquare className="w-3 h-3" /> Get B2B Quote</>
             )}
           </button>
         </div>
