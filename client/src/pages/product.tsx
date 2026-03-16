@@ -34,7 +34,7 @@ import {
   BadgeCheck,
   MessageSquare,
 } from "lucide-react";
-import { SiVisa, SiMastercard, SiRazorpay, SiPhonepe, SiGooglepay, SiPaytm } from "react-icons/si";
+import paymentBadgesImg from "@assets/payment-badges.jpg";
 import { ProductCard } from "@/components/product-card";
 
 /* ─── Helper types ─────────────────────────────────────────────────────── */
@@ -224,16 +224,6 @@ const FAQS_BY_CATEGORY: Record<string, FAQ[]> = {
   "deep-pressure": DEEP_PRESSURE_FAQS,
 };
 
-/* ─── Payment badges ────────────────────────────────────────────────────── */
-
-const PAYMENT_ICONS = [
-  { label: "Visa",       Icon: SiVisa,       color: "#1A1F71" },
-  { label: "Mastercard", Icon: SiMastercard, color: "#EB001B" },
-  { label: "Razorpay",   Icon: SiRazorpay,   color: "#3395FF" },
-  { label: "PhonePe",    Icon: SiPhonepe,    color: "#5F259F" },
-  { label: "Google Pay", Icon: SiGooglepay,  color: "#4285F4" },
-  { label: "Paytm",      Icon: SiPaytm,      color: "#00BAF2" },
-];
 
 /* ─── Utility ───────────────────────────────────────────────────────────── */
 
@@ -1122,22 +1112,11 @@ export default function ProductPage() {
 
                 {/* ── Payment methods ── */}
                 <div className="pt-3 border-t border-border/30" data-testid="container-payment-badges">
-                  <p className="text-[10px] text-muted-foreground mb-2.5 flex items-center gap-1.5 font-medium">
-                    <Lock className="w-3 h-3" /> Secured by Razorpay
-                  </p>
-                  <div className="flex items-center gap-3 flex-wrap">
-                    {PAYMENT_ICONS.map(({ label, Icon, color }) => (
-                      <Icon
-                        key={label}
-                        style={{ color }}
-                        className="w-auto h-5 flex-shrink-0"
-                        aria-label={label}
-                        title={label}
-                        data-testid={`badge-payment-${label.toLowerCase().replace(/\s+/g, "-")}`}
-                      />
-                    ))}
-                    <span className="text-[10px] text-muted-foreground/70 font-medium">+ UPI · Net Banking · COD</span>
-                  </div>
+                  <img
+                    src={paymentBadgesImg}
+                    alt="Accepted payment methods — Visa, Mastercard, Razorpay, UPI, PhonePe, Google Pay, Paytm, Net Banking, COD"
+                    className="w-full max-w-xs object-contain"
+                  />
                 </div>
 
                 {/* ── Trust strip (Pebble-style 4-item grid) ── */}

@@ -1,16 +1,8 @@
 import { Link } from "wouter";
 import logoPath from "@assets/ableys_rehab_logo.png";
-import { SiFacebook, SiInstagram, SiYoutube, SiVisa, SiMastercard, SiRazorpay, SiPhonepe, SiGooglepay, SiPaytm } from "react-icons/si";
-import { Building2, FileDown, Lock, Mail, MapPin, Phone } from "lucide-react";
-
-const FOOTER_PAYMENT_ICONS = [
-  { label: "Visa",       Icon: SiVisa,       color: "#8a9bb5" },
-  { label: "Mastercard", Icon: SiMastercard, color: "#c0c8d4" },
-  { label: "Razorpay",   Icon: SiRazorpay,   color: "#7ab0e8" },
-  { label: "PhonePe",    Icon: SiPhonepe,    color: "#9b80c4" },
-  { label: "Google Pay", Icon: SiGooglepay,  color: "#8ab2e8" },
-  { label: "Paytm",      Icon: SiPaytm,      color: "#6abfd6" },
-];
+import { SiFacebook, SiInstagram, SiYoutube } from "react-icons/si";
+import { Building2, FileDown, Mail, MapPin, Phone } from "lucide-react";
+import paymentBadgesImg from "@assets/payment-badges.jpg";
 
 const socialLinks = [
   {
@@ -193,25 +185,13 @@ export function SiteFooter() {
 
       <div className="border-t border-gray-800/50">
         {/* Payment trust strip */}
-        <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-4 border-b border-gray-800/30">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="flex items-center gap-1.5 text-xs text-gray-500">
-              <Lock className="w-3 h-3" /> Secured &amp; powered by Razorpay
-            </p>
-            <div className="flex items-center gap-4 flex-wrap justify-center sm:justify-end">
-              {FOOTER_PAYMENT_ICONS.map(({ label, Icon, color }) => (
-                <Icon
-                  key={label}
-                  style={{ color }}
-                  className="h-5 w-auto flex-shrink-0"
-                  aria-label={label}
-                  title={label}
-                  data-testid={`badge-footer-payment-${label.toLowerCase().replace(/\s+/g, "-")}`}
-                />
-              ))}
-              <span className="text-xs text-gray-600">UPI · Net Banking · COD</span>
-            </div>
-          </div>
+        <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-4 border-b border-gray-800/30 flex justify-center">
+          <img
+            src={paymentBadgesImg}
+            alt="Accepted payment methods — Visa, Mastercard, Razorpay, UPI, PhonePe, Google Pay, Paytm, Net Banking, COD"
+            className="h-8 w-auto object-contain opacity-80"
+            data-testid="img-footer-payment-badges"
+          />
         </div>
         {/* Copyright bar */}
         <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
