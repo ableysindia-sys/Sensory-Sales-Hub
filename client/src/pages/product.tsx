@@ -23,7 +23,6 @@ import {
   Plus,
   Minus,
   Check,
-  Tag,
   Star,
   Truck,
   RotateCcw,
@@ -33,12 +32,9 @@ import {
   ChevronUp,
   MapPin,
   BadgeCheck,
-  Clock,
-  CreditCard,
-  Banknote,
-  Smartphone,
   MessageSquare,
 } from "lucide-react";
+import { SiVisa, SiMastercard, SiRazorpay, SiPhonepe, SiGooglepay, SiPaytm } from "react-icons/si";
 import { ProductCard } from "@/components/product-card";
 
 /* ─── Helper types ─────────────────────────────────────────────────────── */
@@ -230,12 +226,13 @@ const FAQS_BY_CATEGORY: Record<string, FAQ[]> = {
 
 /* ─── Payment badges ────────────────────────────────────────────────────── */
 
-const PAYMENT_METHODS = [
-  { label: "UPI", icon: Smartphone },
-  { label: "Visa", icon: CreditCard },
-  { label: "Mastercard", icon: CreditCard },
-  { label: "Net Banking", icon: Banknote },
-  { label: "COD", icon: Banknote },
+const PAYMENT_ICONS = [
+  { label: "Visa",       Icon: SiVisa,       color: "#1A1F71" },
+  { label: "Mastercard", Icon: SiMastercard, color: "#EB001B" },
+  { label: "Razorpay",   Icon: SiRazorpay,   color: "#3395FF" },
+  { label: "PhonePe",    Icon: SiPhonepe,    color: "#5F259F" },
+  { label: "Google Pay", Icon: SiGooglepay,  color: "#4285F4" },
+  { label: "Paytm",      Icon: SiPaytm,      color: "#00BAF2" },
 ];
 
 /* ─── Utility ───────────────────────────────────────────────────────────── */
@@ -1123,6 +1120,26 @@ export default function ProductPage() {
                   </div>
                 </div>
 
+                {/* ── Payment methods ── */}
+                <div className="pt-3 border-t border-border/30" data-testid="container-payment-badges">
+                  <p className="text-[10px] text-muted-foreground mb-2.5 flex items-center gap-1.5 font-medium">
+                    <Lock className="w-3 h-3" /> Secured by Razorpay
+                  </p>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    {PAYMENT_ICONS.map(({ label, Icon, color }) => (
+                      <Icon
+                        key={label}
+                        style={{ color }}
+                        className="w-auto h-5 flex-shrink-0"
+                        aria-label={label}
+                        title={label}
+                        data-testid={`badge-payment-${label.toLowerCase().replace(/\s+/g, "-")}`}
+                      />
+                    ))}
+                    <span className="text-[10px] text-muted-foreground/70 font-medium">+ UPI · Net Banking · COD</span>
+                  </div>
+                </div>
+
                 {/* ── Trust strip (Pebble-style 4-item grid) ── */}
                 <div className="grid grid-cols-2 gap-x-4 gap-y-3 pt-4 border-t border-border/30" data-testid="container-trust-strip">
                   {[
@@ -1146,19 +1163,6 @@ export default function ProductPage() {
                   <PhoneSignupInline variant="light" label="Get B2B pricing & stock alerts" sublabel="Register free — we notify you of deals and restock" containerId="recaptcha-product" />
                 </div>
 
-                {/* ── Payment badges ── */}
-                <div className="border-t border-border/30 pt-3" data-testid="container-payment-badges">
-                  <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1.5">
-                    <Lock className="w-3 h-3" /> Secure payment — Razorpay
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {PAYMENT_METHODS.map((m) => (
-                      <span key={m.label} className="flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-lg border border-border/50 bg-muted/20 text-muted-foreground" data-testid={`badge-payment-${m.label.toLowerCase().replace(/\s+/g, "-")}`}>
-                        <m.icon className="w-3 h-3" /> {m.label}
-                      </span>
-                    ))}
-                  </div>
-                </div>
 
               </div>{/* end right panel */}
             </div>
