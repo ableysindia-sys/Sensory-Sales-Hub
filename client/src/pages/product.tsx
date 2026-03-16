@@ -1097,15 +1097,15 @@ export default function ProductPage() {
                     </div>
                   </div>
 
-                  {/* Primary: Add to Cart */}
-                  <Button size="lg" className="w-full h-12 rounded-2xl gap-2 text-base" onClick={handleAddToCart} data-testid="button-add-to-cart">
-                    <ShoppingCart className="w-4 h-4" /> Add to Cart
+                  {/* Primary: Buy Now */}
+                  <Button size="lg" className="w-full h-12 rounded-2xl gap-2 text-base" onClick={handleBuyNow} disabled={checkoutLoading} data-testid="button-buy-now">
+                    {checkoutLoading ? <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Zap className="w-4 h-4" />}
+                    {checkoutLoading ? "Opening checkout…" : "Buy Now"}
                   </Button>
 
-                  {/* Secondary: Buy Now */}
-                  <Button size="lg" variant="outline" className="w-full h-12 rounded-2xl gap-2 border-border/60 hover:border-primary/40" onClick={handleBuyNow} disabled={checkoutLoading} data-testid="button-buy-now">
-                    {checkoutLoading ? <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" /> : <Zap className="w-4 h-4" />}
-                    {checkoutLoading ? "Opening checkout…" : "Buy Now"}
+                  {/* Secondary: Add to Cart */}
+                  <Button size="lg" variant="outline" className="w-full h-12 rounded-2xl gap-2 border-border/60 hover:border-primary/40" onClick={handleAddToCart} data-testid="button-add-to-cart">
+                    <ShoppingCart className="w-4 h-4" /> Add to Cart
                   </Button>
 
                   {/* B2B row */}
