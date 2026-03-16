@@ -75,7 +75,7 @@ export function ChatWidget() {
         <button
           data-testid="button-open-chat"
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-[5.5rem] right-5 z-40 w-12 h-12 rounded-full bg-primary text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center hover:scale-105 active:scale-95 lg:bottom-6 lg:right-6 lg:w-14 lg:h-14"
+          className="fixed bottom-36 right-5 z-40 w-12 h-12 rounded-full bg-primary text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center hover:scale-105 active:scale-95 lg:bottom-6 lg:right-6 lg:w-14 lg:h-14"
         >
           <MessageCircle className="w-5 h-5 lg:w-6 lg:h-6" />
         </button>
