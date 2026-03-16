@@ -33,10 +33,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import logoPath from "@assets/ableys_rehab_logo.png";
-import swingImg from "@assets/generated_images/acrobat-swing.png";
-import crashMatImg from "@assets/generated_images/crash-mat.png";
-import therapyMatImg from "@assets/generated_images/therapy-mat.png";
-import ballpoolImg from "@assets/generated_images/ballpool-4x4.png";
+import featuredSwingsImg from "@assets/generated_images/featured-swings-banner.png";
 import {
   CheckCircle2,
   Clock,
@@ -327,107 +324,179 @@ export default function B2BLandingPage() {
 
       <main>
         {/* ── Hero ── */}
-        <section className="relative overflow-hidden bg-[#070d2a] text-white min-h-[520px] sm:min-h-[640px] lg:min-h-[700px]" data-testid="section-b2b-hero">
+        <section className="relative overflow-hidden bg-[#070d2a] text-white" data-testid="section-b2b-hero">
 
-          {/* Brand-colour radial glow — behind the headline */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_55%_60%_at_15%_40%,rgba(74,83,160,0.40),transparent)] pointer-events-none" />
-          {/* Warm accent glow on right — lifts product mosaic */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_45%_55%_at_85%_30%,rgba(251,191,36,0.08),transparent)] pointer-events-none" />
-          {/* Subtle grid texture */}
-          <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.6) 1px,transparent 1px)", backgroundSize: "48px 48px" }} />
+          {/* Background: brand radial glow + grid texture */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_70%_at_10%_50%,rgba(74,83,160,0.45),transparent)] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_40%_50%_at_90%_20%,rgba(251,191,36,0.07),transparent)] pointer-events-none" />
+          <div className="absolute inset-0 opacity-[0.035] pointer-events-none" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.6) 1px,transparent 1px)", backgroundSize: "48px 48px" }} />
 
-          {/* Content grid */}
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-22 lg:py-28">
-            <div className="grid lg:grid-cols-[1fr_420px] gap-8 lg:gap-16 items-center">
+          {/* ── Desktop: split layout ── */}
+          <div className="hidden lg:flex min-h-[680px]">
 
-              {/* Left: copy */}
-              <div>
-                {/* Eyebrow */}
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white/90 text-[10px] sm:text-xs font-semibold tracking-widest uppercase mb-5 sm:mb-7 border border-white/15">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                  Trusted B2B Partner · 500+ Institutions · OT-Curated
-                </div>
+            {/* Left text panel */}
+            <div className="flex-1 flex flex-col justify-center pl-12 xl:pl-20 pr-10 py-24 max-w-[620px]">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white/90 text-[10px] font-semibold tracking-widest uppercase mb-7 border border-white/15 self-start">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                India's B2B OT Equipment Partner
+              </div>
 
-                {/* Headline */}
-                <h1 className="text-[2rem] leading-[1.12] sm:text-[2.9rem] sm:leading-[1.07] lg:text-[3.6rem] lg:leading-[1.06] font-bold font-display mb-5 sm:mb-6 drop-shadow-2xl">
-                  Premium OT &amp; Sensory Equipment —{" "}
-                  <span className="italic text-amber-300">Built</span>{" "}
-                  for India's Leading Institutions.
-                </h1>
+              <h1 className="text-[3rem] xl:text-[3.6rem] leading-[1.06] font-bold font-display mb-6">
+                Premium Sensory &amp; OT Equipment —{" "}
+                <span className="italic text-amber-300">Built</span>{" "}
+                for India's Institutions.
+              </h1>
 
-                <p className="text-[0.92rem] sm:text-[1.08rem] text-white/75 leading-relaxed mb-6 sm:mb-8 max-w-xl">
-                  From sensory rooms and therapy gyms to ADL kits and custom setups — Abley's Rehab is India's most trusted B2B equipment partner. Bulk pricing, GST invoices, and pan-India delivery included.
-                </p>
+              <p className="text-[1.05rem] text-white/70 leading-relaxed mb-8 max-w-[480px]">
+                Sensory rooms, therapy gyms, ADL kits and more — with bulk pricing, GST invoices, and free pan-India shipping.
+              </p>
 
-                {/* CTAs — one primary, one ghost secondary */}
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
+              <div className="flex items-center gap-3 mb-10">
+                <Button
+                  size="lg"
+                  className="!bg-white !text-gray-900 hover:!bg-gray-50 rounded-full text-sm px-8 h-12 gap-2 font-semibold shadow-xl shadow-black/30 !border-0"
+                  onClick={scrollToForm}
+                  data-testid="button-get-quote-hero"
+                >
+                  Get a Bulk Quote <ArrowRight className="w-4 h-4" />
+                </Button>
+                <a
+                  href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20discuss%20bulk%20B2B%20pricing%20for%20my%20institution."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="link-whatsapp-hero"
+                >
                   <Button
                     size="lg"
-                    className="!bg-white !text-gray-900 hover:!bg-gray-50 rounded-full text-sm px-8 h-12 gap-2 font-semibold shadow-xl shadow-black/30 !border-0"
-                    onClick={scrollToForm}
-                    data-testid="button-get-quote-hero"
+                    variant="ghost"
+                    className="!text-white/80 hover:!text-white hover:!bg-white/10 rounded-full text-sm px-6 h-12 font-medium !border border-white/20 gap-2"
                   >
-                    Get a Bulk Quote <ArrowRight className="w-4 h-4" />
+                    <MessageCircle className="w-4 h-4" /> WhatsApp Us
                   </Button>
-                  <a
-                    href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20discuss%20bulk%20B2B%20pricing%20for%20my%20institution."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    data-testid="link-whatsapp-hero"
-                  >
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="rounded-full px-8 h-12 border-white/40 text-white bg-white/10 hover:bg-white/20 hover:border-white/60 text-sm font-medium w-full sm:w-auto gap-2"
-                    >
-                      <MessageCircle className="w-4 h-4" /> Chat on WhatsApp
-                    </Button>
-                  </a>
-                </div>
-
-                {/* Trust cues — hidden on mobile, shown sm+ */}
-                <div className="hidden sm:flex flex-wrap gap-x-5 gap-y-1.5 mt-6">
-                  {[
-                    { icon: ShieldCheck, text: "OT-curated catalogue" },
-                    { icon: Truck, text: "Free shipping across India" },
-                    { icon: Receipt, text: "GST invoices included" },
-                  ].map(({ icon: Icon, text }) => (
-                    <span key={text} className="flex items-center gap-1.5 text-xs text-white/60">
-                      <Icon className="w-3.5 h-3.5 text-white/40" /> {text}
-                    </span>
-                  ))}
-                </div>
+                </a>
               </div>
 
-              {/* Right: product image mosaic (desktop only) */}
-              <div className="hidden lg:grid grid-cols-2 gap-3" aria-hidden="true">
-                <div className="col-span-2 rounded-2xl overflow-hidden aspect-[16/9] border border-white/10 shadow-2xl">
-                  <img src={swingImg} alt="Therapy swing" className="w-full h-full object-cover" />
-                </div>
-                <div className="rounded-2xl overflow-hidden aspect-square border border-white/10 shadow-xl">
-                  <img src={crashMatImg} alt="Crash mat" className="w-full h-full object-cover" />
-                </div>
-                <div className="rounded-2xl overflow-hidden aspect-square border border-white/10 shadow-xl">
-                  <img src={therapyMatImg} alt="Therapy mat" className="w-full h-full object-cover" />
-                </div>
-                <div className="col-span-2 rounded-2xl overflow-hidden aspect-[16/7] border border-white/10 shadow-xl">
-                  <img src={ballpoolImg} alt="Ball pool" className="w-full h-full object-cover" />
-                </div>
-                <div className="col-span-2 text-center">
-                  <p className="text-xs text-white/40 font-medium tracking-wider uppercase">116+ products in catalogue</p>
-                </div>
+              <div className="flex flex-wrap gap-x-6 gap-y-2">
+                {[
+                  { icon: ShieldCheck, text: "OT-curated catalogue" },
+                  { icon: Truck,       text: "Free shipping pan-India" },
+                  { icon: Receipt,     text: "GST invoices included" },
+                ].map(({ icon: Icon, text }) => (
+                  <span key={text} className="flex items-center gap-1.5 text-xs text-white/55">
+                    <Icon className="w-3.5 h-3.5 text-white/35" /> {text}
+                  </span>
+                ))}
               </div>
+            </div>
 
+            {/* Right image panel */}
+            <div className="relative flex-1 overflow-hidden">
+              {/* left-edge fade into navy */}
+              <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#070d2a] to-transparent z-10" />
+              {/* bottom fade */}
+              <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#070d2a]/90 to-transparent z-10" />
+              <img
+                src={featuredSwingsImg}
+                alt="Professional OT therapy room with sensory swings and equipment"
+                className="w-full h-full object-cover object-center"
+                loading="eager"
+              />
+              {/* Floating product count badge */}
+              <div className="absolute top-8 right-8 z-20 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-3 text-center">
+                <p className="text-2xl font-bold text-white font-display leading-none">116+</p>
+                <p className="text-[10px] text-white/65 mt-0.5 uppercase tracking-wider">Products</p>
+              </div>
+              {/* Bottom catalogue CTA */}
+              <div className="absolute bottom-6 right-8 z-20">
+                <a
+                  href="/api/catalog"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-xs text-white/70 border border-white/25 bg-black/30 backdrop-blur-sm rounded-full px-4 py-2 hover:bg-white/10 hover:text-white transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" /> Download Catalogue PDF
+                </a>
+              </div>
             </div>
           </div>
 
+          {/* ── Mobile layout ── */}
+          <div className="lg:hidden px-5 pt-20 pb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-white/90 text-[10px] font-semibold tracking-widest uppercase mb-5 border border-white/15">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              India's B2B OT Equipment Partner
+            </div>
+
+            <h1 className="text-[1.9rem] leading-[1.1] font-bold font-display mb-4">
+              Premium OT Equipment —{" "}
+              <span className="italic text-amber-300">Built</span>{" "}
+              for Institutions.
+            </h1>
+
+            <p className="text-sm text-white/70 leading-relaxed mb-6">
+              Bulk pricing · GST invoices · Free pan-India shipping · 116+ products
+            </p>
+
+            <div className="flex flex-col gap-3 mb-6">
+              <Button
+                size="lg"
+                className="!bg-white !text-gray-900 hover:!bg-gray-50 rounded-full text-sm px-8 h-12 gap-2 font-semibold shadow-xl shadow-black/30 !border-0 w-full justify-center"
+                onClick={scrollToForm}
+                data-testid="button-get-quote-hero-mobile"
+              >
+                Get a Bulk Quote <ArrowRight className="w-4 h-4" />
+              </Button>
+              <a
+                href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20discuss%20bulk%20B2B%20pricing%20for%20my%20institution."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full"
+              >
+                <Button
+                  size="lg"
+                  variant="ghost"
+                  className="!text-white/80 hover:!text-white hover:!bg-white/10 rounded-full text-sm px-6 h-12 font-medium !border border-white/20 w-full justify-center gap-2"
+                >
+                  <MessageCircle className="w-4 h-4" /> WhatsApp Us
+                </Button>
+              </a>
+            </div>
+
+            {/* Mobile trust pills */}
+            <div className="grid grid-cols-3 gap-2 mb-0">
+              {[
+                { icon: ShieldCheck, text: "OT-\ncurated" },
+                { icon: Truck,       text: "Free\nshipping" },
+                { icon: Receipt,     text: "GST\ninvoices" },
+              ].map(({ icon: Icon, text }) => (
+                <div key={text} className="flex flex-col items-center gap-1.5 rounded-xl bg-white/[0.06] border border-white/10 py-3 px-2 text-center">
+                  <Icon className="w-4 h-4 text-amber-400/80 flex-shrink-0" />
+                  <span className="text-[10px] leading-tight text-white/55 whitespace-pre-line">{text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Mobile image strip */}
+          <div className="lg:hidden relative h-48 overflow-hidden">
+            <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-[#070d2a] to-transparent z-10" />
+            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#070d2a]/90 to-transparent z-10" />
+            <img
+              src={featuredSwingsImg}
+              alt=""
+              aria-hidden="true"
+              className="w-full h-full object-cover object-[center_25%]"
+              loading="eager"
+            />
+          </div>
+
           {/* Stats ribbon */}
-          <div className="relative border-t border-white/10 bg-black/35 backdrop-blur-sm">
+          <div className="relative border-t border-white/10 bg-black/30 backdrop-blur-sm">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-5 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 text-center">
               {STATS.map((s) => (
                 <div key={s.label}>
                   <p className="text-xl sm:text-3xl font-bold text-amber-300 font-display">{s.value}</p>
-                  <p className="text-[10px] sm:text-xs text-white/65 mt-0.5">{s.label}</p>
+                  <p className="text-[10px] sm:text-xs text-white/60 mt-0.5">{s.label}</p>
                 </div>
               ))}
             </div>
