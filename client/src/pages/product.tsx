@@ -332,19 +332,14 @@ const SPEC_GROUPS: { label: string; keys: string[] }[] = [
   },
 ];
 
-function SpecificationsDisplay({ specs }: { specs: Record<string, string> }) {
+function resolveSpecSections(specs: Record<string, string>): { groupLabel: string; entries: [string, string][] }[] {
   const LEGACY_LABELS: Record<string, string> = {
     dimensions: "Dimensions", material: "Material",
     weightCapacity: "Weight Capacity", useCase: "Use Case", weight: "Weight",
   };
   const allEntries = Object.entries(specs).filter(([, v]) => !!v);
-  if (allEntries.length === 0) {
-    return <p className="text-sm text-muted-foreground">See product description for specifications.</p>;
-  }
-
   const assignedKeys = new Set<string>();
   const sections: { groupLabel: string; entries: [string, string][] }[] = [];
-
   for (const group of SPEC_GROUPS) {
     const entries: [string, string][] = [];
     for (const [k, v] of allEntries) {
@@ -355,61 +350,77 @@ function SpecificationsDisplay({ specs }: { specs: Record<string, string> }) {
     }
     if (entries.length > 0) sections.push({ groupLabel: group.label, entries });
   }
-  // Ungrouped remainder
   const remainder = allEntries.filter(([k]) => !assignedKeys.has(k));
   if (remainder.length > 0) {
-    sections.push({ groupLabel: "", entries: remainder.map(([k, v]) => [LEGACY_LABELS[k] || k, v]) });
+    sections.push({ groupLabel: "Additional Info", entries: remainder.map(([k, v]) => [LEGACY_LABELS[k] || k, v]) });
   }
+  return sections;
+}
 
+function SpecGroupTable({ groupLabel, entries }: { groupLabel: string; entries: [string, string][] }) {
   return (
-    <div className="space-y-5">
-      {sections.map(({ groupLabel, entries }) => (
-        <div key={groupLabel}>
-          {groupLabel && (
-            <p className="text-[10px] font-semibold text-primary/70 uppercase tracking-widest mb-2">{groupLabel}</p>
-          )}
-          <div className="space-y-2.5">
-            {entries.map(([label, val]) => (
-              <div key={label} data-testid={`spec-${label.toLowerCase().replace(/\s+/g, "-")}`}>
-                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-0.5">{label}</p>
-                <p className="text-sm text-foreground whitespace-pre-line">{val}</p>
-              </div>
-            ))}
+    <div>
+      <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-3 pb-1.5 border-b border-border/50">
+        {groupLabel}
+      </p>
+      <dl className="space-y-0">
+        {entries.map(([label, val], i) => (
+          <div
+            key={label}
+            className={`grid grid-cols-[auto_1fr] gap-x-4 py-2.5 text-sm ${i < entries.length - 1 ? "border-b border-border/30" : ""}`}
+            data-testid={`spec-${label.toLowerCase().replace(/\s+/g, "-")}`}
+          >
+            <dt className="text-muted-foreground font-medium w-36 flex-shrink-0 leading-snug">{label}</dt>
+            <dd className="text-foreground whitespace-pre-line leading-snug">{val}</dd>
           </div>
-        </div>
-      ))}
+        ))}
+      </dl>
     </div>
   );
 }
 
+function decodeEntities(str: string): string {
+  return str
+    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, " ");
+}
+
 function KeyFeaturesDisplay({ features }: { features: string[] }) {
-  const realFeatures = features.filter(f => !isTagSlug(f) || f.includes(" "));
-  const displayFeatures = realFeatures.length > 0 ? realFeatures : features.filter(f => !isTagSlug(f));
+  const displayFeatures = features.filter(f => !isTagSlug(f) && f.length > 10);
   if (displayFeatures.length === 0) {
-    return <p className="text-sm text-muted-foreground">See product description above for full feature details.</p>;
+    return <p className="text-sm text-muted-foreground">See product description for feature details.</p>;
   }
   return (
-    <ul className="space-y-2">
-      {displayFeatures.map((feature, i) => (
-        <li key={i} className="flex items-start gap-2 text-sm text-foreground">
-          <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-          {feature}
-        </li>
-      ))}
+    <ul className="space-y-3">
+      {displayFeatures.map((feature, i) => {
+        const decoded = decodeEntities(feature);
+        const colonIdx = decoded.indexOf(":");
+        const hasTitle = colonIdx > 0 && colonIdx < 50;
+        const title = hasTitle ? decoded.slice(0, colonIdx).trim() : "";
+        const body = hasTitle ? decoded.slice(colonIdx + 1).trim() : decoded;
+        return (
+          <li key={i} className="flex gap-3">
+            <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+            <span className="text-sm text-foreground leading-snug">
+              {hasTitle ? (
+                <><span className="font-semibold">{title}:</span> {body}</>
+              ) : decoded}
+            </span>
+          </li>
+        );
+      })}
     </ul>
   );
 }
 
 function SuitableForDisplay({ applications }: { applications: string[] }) {
-  if (applications.length === 0) {
-    return <p className="text-sm text-muted-foreground">See product description for suitability details.</p>;
-  }
+  if (applications.length === 0) return null;
   return (
     <div className="flex flex-wrap gap-2">
       {applications.map((app) => (
         <span
           key={app}
-          className="text-xs px-3 py-1.5 rounded-full bg-primary/8 text-primary font-medium"
+          className="text-xs px-3 py-1.5 rounded-full bg-primary/8 text-primary font-medium border border-primary/10"
           data-testid={`app-tag-${app.toLowerCase().replace(/\s+/g, "-")}`}
         >
           {humanizeTag(app)}
@@ -1322,117 +1333,95 @@ export default function ProductPage() {
           </div>
         </section>
 
-        {/* ── Key Highlights (3-card strip) ────────────────────── */}
-        <section className="py-10 bg-primary/5" data-testid="section-highlights">
+        {/* ── Description + Key Features ───────────────────────── */}
+        <section className="py-14 border-b border-border/30" data-testid="section-full-description">
           <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid sm:grid-cols-3 gap-4">
-              <div className="flex items-start gap-3 p-4 rounded-2xl bg-background border border-border/50">
-                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Heart className="w-4.5 h-4.5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground mb-0.5">Therapeutic Benefits</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {product.applications.length > 0
-                      ? `Designed for ${product.applications
-                          .slice(0, 2)
-                          .map((a) => a.replace(/-/g, " "))
-                          .join(" & ")}.`
-                      : "Developed with OTs for measurable sensory outcomes."}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-4 rounded-2xl bg-background border border-border/50">
-                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Layers className="w-4.5 h-4.5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground mb-0.5">Material & Build</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {product.specifications.material
-                      ? `Crafted with ${product.specifications.material.toLowerCase()} for durability.`
-                      : "Professional-grade materials for clinical environments."}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-4 rounded-2xl bg-background border border-border/50">
-                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <BadgeCheck className="w-4.5 h-4.5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground mb-0.5">OT-Recommended</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Trusted by occupational therapists in clinics and schools across India.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+            <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
 
-        {/* ── Full Description ─────────────────────────────────── */}
-        <section className="py-14" data-testid="section-full-description">
-          <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-3xl">
-              <h2 className="text-2xl font-bold text-foreground mb-6">
-                About This Product
-              </h2>
-              {isHtmlDescription ? (
-                <div
-                  className="prose prose-sm sm:prose-base max-w-none text-muted-foreground leading-relaxed
-                    [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_h4]:text-foreground
-                    [&_strong]:text-foreground [&_b]:text-foreground
-                    [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5
-                    [&_li]:mb-1 [&_p]:mb-3 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-3
-                    [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2
-                    [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-border [&_td]:px-3 [&_td]:py-2
-                    [&_th]:border [&_th]:border-border [&_th]:px-3 [&_th]:py-2 [&_th]:bg-muted [&_th]:font-semibold"
-                  dangerouslySetInnerHTML={{ __html: product.description }}
-                  data-testid="html-product-description"
-                />
-              ) : (
-                <div className="text-muted-foreground leading-relaxed space-y-2">
-                  {product.description
-                    .split("\n")
-                    .filter((l) => l.trim())
-                    .map((line, i) => (
+              {/* LEFT: Full description */}
+              <div className="lg:col-span-3">
+                <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-3">About this product</p>
+                <h2 className="text-2xl font-bold text-foreground mb-6 leading-snug">{product.name.split("|")[0].trim()}</h2>
+                {isHtmlDescription ? (
+                  <div
+                    className="prose prose-sm sm:prose-base max-w-none text-muted-foreground leading-relaxed
+                      [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_h4]:text-foreground
+                      [&_strong]:text-foreground [&_b]:text-foreground
+                      [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5
+                      [&_li]:mb-1.5 [&_p]:mb-3 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-2
+                      [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2"
+                    dangerouslySetInnerHTML={{ __html: product.description }}
+                    data-testid="html-product-description"
+                  />
+                ) : (
+                  <div className="text-muted-foreground leading-relaxed space-y-3">
+                    {product.description.split("\n").filter((l) => l.trim()).map((line, i) => (
                       <p key={i}>{line}</p>
                     ))}
+                  </div>
+                )}
+              </div>
+
+              {/* RIGHT: Key Features + Suitable For */}
+              <div className="lg:col-span-2 space-y-8 lg:pt-14">
+                {/* Key Features card */}
+                <div className="rounded-2xl border border-border/50 bg-card p-5">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <h3 className="text-sm font-bold text-foreground">Key Features</h3>
+                  </div>
+                  <KeyFeaturesDisplay features={product.features} />
                 </div>
-              )}
-            </div>
-          </div>
-        </section>
 
-        {/* ── Specs, Features, Applications ───────────────────── */}
-        <section
-          className="py-12 bg-card/50"
-          data-testid="section-product-specs"
-        >
-          <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {/* Suitable For */}
+                {product.applications.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Heart className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                      <h3 className="text-sm font-bold text-foreground">Suitable For</h3>
+                    </div>
+                    <SuitableForDisplay applications={product.applications} />
+                  </div>
+                )}
 
-              {/* Specifications */}
-              <div>
-                <h3 className="text-lg font-bold text-foreground mb-4">Specifications</h3>
-                <SpecificationsDisplay specs={product.specifications} />
-              </div>
-
-              {/* Key Features */}
-              <div>
-                <h3 className="text-lg font-bold text-foreground mb-4">Key Features</h3>
-                <KeyFeaturesDisplay features={product.features} />
-              </div>
-
-              {/* Suitable For */}
-              <div className="md:col-span-2">
-                <h3 className="text-lg font-bold text-foreground mb-4">Suitable For</h3>
-                <SuitableForDisplay applications={product.applications} />
+                {/* OT badge */}
+                <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-primary/5 border border-primary/10">
+                  <BadgeCheck className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <span className="font-semibold text-foreground">OT-Recommended.</span>{" "}
+                    Trusted by occupational therapists across clinics and schools in India.
+                  </p>
+                </div>
               </div>
 
             </div>
           </div>
         </section>
+
+        {/* ── Specifications ────────────────────────────────────── */}
+        {(() => {
+          const specSections = resolveSpecSections(product.specifications);
+          if (specSections.length === 0) return null;
+          return (
+            <section className="py-12 bg-muted/30" data-testid="section-product-specs">
+              <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center gap-2 mb-8">
+                  <Layers className="w-4 h-4 text-primary" />
+                  <h2 className="text-lg font-bold text-foreground">Product Specifications</h2>
+                </div>
+                <div className={`grid gap-8 ${specSections.length === 1 ? "max-w-lg" : specSections.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3"}`}>
+                  {specSections.map(({ groupLabel, entries }) => (
+                    <SpecGroupTable key={groupLabel} groupLabel={groupLabel} entries={entries} />
+                  ))}
+                </div>
+              </div>
+            </section>
+          );
+        })()}
 
         {/* ── Reviews ──────────────────────────────────────────── */}
         <section
