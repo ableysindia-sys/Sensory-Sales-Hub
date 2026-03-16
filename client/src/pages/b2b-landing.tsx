@@ -341,13 +341,13 @@ export default function B2BLandingPage() {
                 India's B2B OT Equipment Partner
               </div>
 
-              <h1 className="text-[3rem] xl:text-[3.6rem] leading-[1.06] font-bold font-display mb-6">
+              <h1 className="!text-white text-[3rem] xl:text-[3.6rem] leading-[1.06] font-bold font-display mb-6">
                 Premium Sensory &amp; OT Equipment —{" "}
                 <span className="italic text-amber-300">Built</span>{" "}
                 for India's Institutions.
               </h1>
 
-              <p className="text-[1.05rem] text-white/70 leading-relaxed mb-8 max-w-[480px]">
+              <p className="!text-white/70 text-[1.05rem] leading-relaxed mb-8 max-w-[480px]">
                 Sensory rooms, therapy gyms, ADL kits and more — with bulk pricing, GST invoices, and free pan-India shipping.
               </p>
 
@@ -427,7 +427,7 @@ export default function B2BLandingPage() {
               India's B2B OT Equipment Partner
             </div>
 
-            <h1 className="text-[1.9rem] leading-[1.1] font-bold font-display mb-4">
+            <h1 className="!text-white text-[1.9rem] leading-[1.1] font-bold font-display mb-4">
               Premium OT Equipment —{" "}
               <span className="italic text-amber-300">Built</span>{" "}
               for Institutions.
