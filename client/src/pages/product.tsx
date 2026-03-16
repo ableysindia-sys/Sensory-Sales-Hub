@@ -1198,42 +1198,45 @@ export default function ProductPage() {
             <section className="py-12 border-b border-border/30" data-testid="section-product-tabs">
               <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
                 <Tabs defaultValue="overview">
-                  <div className="border-b border-border/40 mb-8">
+                  <div className="mb-8">
                     <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-4">Product Details</p>
-                    <TabsList className="h-auto bg-transparent p-0 gap-0 rounded-none">
-                      <TabsTrigger
-                        value="overview"
-                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary"
-                        data-testid="tab-overview"
-                      >
-                        Overview
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="features"
-                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary"
-                        data-testid="tab-features"
-                      >
-                        Key Features
-                      </TabsTrigger>
-                      {hasSpecs && (
+                    {/* Tab bar: scrolls horizontally on mobile so all tabs are reachable */}
+                    <div className="overflow-x-auto scrollbar-hide border-b border-border/40 -mx-4 sm:-mx-6 lg:-mx-8">
+                      <TabsList className="h-auto bg-transparent p-0 gap-0 rounded-none flex-nowrap min-w-max px-4 sm:px-6 lg:px-8">
                         <TabsTrigger
-                          value="specs"
-                          className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary"
-                          data-testid="tab-specs"
+                          value="overview"
+                          className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary whitespace-nowrap flex-shrink-0"
+                          data-testid="tab-overview"
                         >
-                          Specifications
+                          Overview
                         </TabsTrigger>
-                      )}
-                      {hasHowItWorks && (
                         <TabsTrigger
-                          value="how-it-works"
-                          className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary"
-                          data-testid="tab-how-it-works"
+                          value="features"
+                          className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary whitespace-nowrap flex-shrink-0"
+                          data-testid="tab-features"
                         >
-                          How it Works
+                          Key Features
                         </TabsTrigger>
-                      )}
-                    </TabsList>
+                        {hasSpecs && (
+                          <TabsTrigger
+                            value="specs"
+                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary whitespace-nowrap flex-shrink-0"
+                            data-testid="tab-specs"
+                          >
+                            Specifications
+                          </TabsTrigger>
+                        )}
+                        {hasHowItWorks && (
+                          <TabsTrigger
+                            value="how-it-works"
+                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary whitespace-nowrap flex-shrink-0"
+                            data-testid="tab-how-it-works"
+                          >
+                            How it Works
+                          </TabsTrigger>
+                        )}
+                      </TabsList>
+                    </div>
                   </div>
 
                   {/* Overview tab */}
