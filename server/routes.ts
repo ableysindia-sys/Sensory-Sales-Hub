@@ -664,8 +664,8 @@ export async function registerRoutes(
   });
 
   // ── Shopify OAuth Install Flow ──────────────────────────────────────────────
-  const SHOPIFY_CLIENT_ID = process.env.SHOPIFY_CLIENT_ID || "036dead5df86a6f8d45f0628174fb770";
-  const SHOPIFY_CLIENT_SECRET = process.env.SHOPIFY_APP_SHARED_SECRET;
+  const SHOPIFY_CLIENT_ID = process.env.SHOPIFY_CLIENT_ID || "5fe3346c671b4ddd7d761e2f6a34b2fd";
+  const SHOPIFY_CLIENT_SECRET = process.env.SHOPIFY_CLIENT_SECRET || process.env.SHOPIFY_APP_SHARED_SECRET;
   const SHOPIFY_INSTALL_SHOP = "ableys.myshopify.com";
   const SHOPIFY_SCOPES = [
     "read_all_orders", "read_analytics",
