@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ShoppingCart, Minus, Plus, Trash2, ArrowRight, ShoppingBag, Package } from "lucide-react";
+import { ShoppingCart, Minus, Plus, Trash2, ArrowRight, ShoppingBag, Package, NotebookPen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 function formatPrice(amount: number): string {
@@ -130,6 +130,7 @@ function EmptyCartState({ onClose }: { onClose: () => void }) {
 
 export function CartDrawer() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [orderNote, setOrderNote] = useState("");
   const { toast } = useToast();
   const {
     items,
@@ -159,7 +160,7 @@ export function CartDrawer() {
     if (someShopify) {
       const newTab = window.open("", "_blank");
       setCheckoutLoading(true);
-      const checkoutUrl = await createShopifyMultiCheckout(shopifyItems);
+      const checkoutUrl = await createShopifyMultiCheckout(shopifyItems, orderNote.trim() || undefined);
       setCheckoutLoading(false);
       if (checkoutUrl && newTab) {
         closeDrawer();
@@ -201,6 +202,34 @@ export function CartDrawer() {
                   {items.map((item) => (
                     <CartItemRow key={item.cartKey} item={item} />
                   ))}
+                </div>
+
+                {/* Order note section */}
+                <div className="py-4 border-t border-border/50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <NotebookPen className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                    <label
+                      htmlFor="cart-order-note"
+                      className="text-xs font-semibold text-muted-foreground uppercase tracking-wider"
+                    >
+                      Additional Requests / Notes
+                    </label>
+                  </div>
+                  <textarea
+                    id="cart-order-note"
+                    rows={3}
+                    maxLength={2000}
+                    placeholder="Bulk order requirements, delivery instructions, customisation requests…"
+                    value={orderNote}
+                    onChange={(e) => setOrderNote(e.target.value)}
+                    className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 resize-none outline-none focus:ring-2 focus:ring-ring transition-shadow leading-relaxed"
+                    data-testid="textarea-order-note"
+                  />
+                  {orderNote.length > 0 && (
+                    <p className="text-[11px] text-muted-foreground mt-1 text-right tabular-nums">
+                      {orderNote.length}/2000
+                    </p>
+                  )}
                 </div>
               </ScrollArea>
 

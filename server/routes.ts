@@ -423,6 +423,7 @@ export async function registerRoutes(
       quantity: z.number().int().min(1).max(10).default(1),
       variantId: z.string().optional(),
     })).min(1).max(20),
+    note: z.string().max(2000).optional(),
   });
 
   const checkoutRateLimit = new Map<string, number[]>();
@@ -484,7 +485,7 @@ export async function registerRoutes(
       if (!parsed.success) {
         return res.status(400).json({ message: "Invalid request: " + parsed.error.issues[0]?.message });
       }
-      const { items } = parsed.data;
+      const { items, note } = parsed.data;
 
       const allowedHandles = await getAllowedShopifyHandles();
       for (const item of items) {
@@ -536,7 +537,7 @@ export async function registerRoutes(
                 }
               }
             }`,
-            variables: { input: { lines } },
+            variables: { input: { lines, ...(note ? { note } : {}) } },
           }),
         }
       );

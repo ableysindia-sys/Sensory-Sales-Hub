@@ -13,13 +13,14 @@ export async function createShopifyCheckout(
 }
 
 export async function createShopifyMultiCheckout(
-  items: ShopifyCartItem[]
+  items: ShopifyCartItem[],
+  note?: string
 ): Promise<string | null> {
   try {
     const res = await fetch("/api/shopify/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items }),
+      body: JSON.stringify({ items, ...(note ? { note } : {}) }),
     });
 
     if (!res.ok) return null;
