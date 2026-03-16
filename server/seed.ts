@@ -67,6 +67,140 @@ export async function seedDatabase(catalogueCategories: any[]) {
 
 const CMS_PAGES = [
   {
+    slug: "affiliate-program-for-sensory-products",
+    title: "Affiliate Program",
+    content: `<p class="text-lg mb-8" style="color: var(--muted-foreground);">Earn 10% commission on every sale — and reward your audience with an automatic 5% discount.</p>
+<h2>Commission</h2>
+<p>✅ Earn <strong>10% commission</strong> on the sale price of every product sold through your unique affiliate link.</p>
+<p>🎁 Customers shopping through your affiliate link will automatically receive a <strong>5% discount</strong> — no manual code required.</p>
+<h2>Rewards</h2>
+<ul>
+<li>🏅 <strong>Level 1 Reward – ₹1,000:</strong> Upon reaching a total of ₹20,000 in sales since joining.</li>
+<li>🏆 <strong>Level 2 Reward – ₹2,000:</strong> Upon reaching total sales of ₹50,000.</li>
+<li>🥇 <strong>Level 3 Reward – ₹5,000:</strong> Upon achieving ₹1,00,000 in total sales.</li>
+</ul>
+<h2>How to Join</h2>
+<p>Sign up as an affiliate, fill in your details, and wait for profile approval. Once approved, you'll receive your unique affiliate link and can start earning immediately.</p>
+<h2>Payouts</h2>
+<p>🏦 Withdraw your commission once earnings reach ₹1,000 or more. Payments are processed via bank transfer once every month.</p>
+<h2>Questions?</h2>
+<p>Email us at <a href="mailto:team@ableys.in">team@ableys.in</a> — our team will get back to you promptly.</p>`,
+  },
+  {
+    slug: "ableys-affiliate-program-faq",
+    title: "Affiliate Program FAQ",
+    content: `<p class="text-lg mb-8" style="color: var(--muted-foreground);">Everything you need to know about Abley's affiliate program.</p>
+<h2>Frequently Asked Questions</h2>
+<h3>1) How can I join the affiliate program?</h3>
+<p>👉 Simply sign up as an affiliate, fill in your details, and wait for profile approval. Once approved, you're ready to start!</p>
+<h3>2) What commission and rewards will I earn?</h3>
+<p>💰 You'll earn <strong>10% commission</strong> on the sale price of every order. Plus, unlock exclusive rewards as you reach different sales milestones.</p>
+<h3>3) Do customers get a discount through my affiliate link?</h3>
+<p>🎁 Yes! Customers using your affiliate link will automatically receive a <strong>5% discount</strong> — no coupon code needed.</p>
+<h3>4) How and when can I withdraw my earnings?</h3>
+<p>🏦 You can withdraw your commission once your earnings reach ₹1,000 or more. Payments are processed via bank transfer once every month.</p>
+<h3>5) How can I contact customer support?</h3>
+<p>📧 Email us at <a href="mailto:team@ableys.in">team@ableys.in</a>. Our support team will get back to you promptly.</p>
+<h3>6) How can I track my sales and commission?</h3>
+<p>📊 You can view all your sales and earned commission directly from your Affiliate Dashboard in your profile.</p>`,
+  },
+  {
+    slug: "weighted-vest-size-chart",
+    title: "Weighted Vest Size Chart",
+    content: `<p class="text-lg mb-8" style="color: var(--muted-foreground);">Find the right size for the perfect fit and therapeutic benefit.</p>
+<h2>How to Choose the Right Size</h2>
+<p>A weighted vest should weigh approximately <strong>5–10% of the user's body weight</strong> for optimal therapeutic input. Measure the chest circumference snugly and refer to the table below.</p>
+<div style="overflow-x: auto; margin: 2rem 0;">
+<table style="width:100%; border-collapse: collapse; font-size: 14px;">
+<thead>
+<tr style="background-color: #f5f5f5;">
+<th style="border: 1px solid #ddd; padding: 10px 14px; text-align: left;">Size</th>
+<th style="border: 1px solid #ddd; padding: 10px 14px; text-align: left;">Age Range</th>
+<th style="border: 1px solid #ddd; padding: 10px 14px; text-align: left;">Chest (cm)</th>
+<th style="border: 1px solid #ddd; padding: 10px 14px; text-align: left;">User Height</th>
+<th style="border: 1px solid #ddd; padding: 10px 14px; text-align: left;">Vest Weight</th>
+</tr>
+</thead>
+<tbody>
+<tr><td style="border:1px solid #ddd;padding:10px 14px;"><strong>XS</strong></td><td style="border:1px solid #ddd;padding:10px 14px;">3–5 years</td><td style="border:1px solid #ddd;padding:10px 14px;">52–56 cm</td><td style="border:1px solid #ddd;padding:10px 14px;">95–110 cm</td><td style="border:1px solid #ddd;padding:10px 14px;">1 kg</td></tr>
+<tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:10px 14px;"><strong>S</strong></td><td style="border:1px solid #ddd;padding:10px 14px;">6–8 years</td><td style="border:1px solid #ddd;padding:10px 14px;">57–62 cm</td><td style="border:1px solid #ddd;padding:10px 14px;">111–125 cm</td><td style="border:1px solid #ddd;padding:10px 14px;">1.5 kg</td></tr>
+<tr><td style="border:1px solid #ddd;padding:10px 14px;"><strong>M</strong></td><td style="border:1px solid #ddd;padding:10px 14px;">9–12 years</td><td style="border:1px solid #ddd;padding:10px 14px;">63–70 cm</td><td style="border:1px solid #ddd;padding:10px 14px;">126–145 cm</td><td style="border:1px solid #ddd;padding:10px 14px;">2 kg</td></tr>
+<tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:10px 14px;"><strong>L</strong></td><td style="border:1px solid #ddd;padding:10px 14px;">13–16 years</td><td style="border:1px solid #ddd;padding:10px 14px;">71–82 cm</td><td style="border:1px solid #ddd;padding:10px 14px;">146–165 cm</td><td style="border:1px solid #ddd;padding:10px 14px;">2.5 kg</td></tr>
+<tr><td style="border:1px solid #ddd;padding:10px 14px;"><strong>XL</strong></td><td style="border:1px solid #ddd;padding:10px 14px;">Adults</td><td style="border:1px solid #ddd;padding:10px 14px;">83–96 cm</td><td style="border:1px solid #ddd;padding:10px 14px;">166–180 cm</td><td style="border:1px solid #ddd;padding:10px 14px;">3 kg</td></tr>
+</tbody>
+</table>
+</div>
+<h2>Fitting Tips</h2>
+<ul>
+<li>The vest should fit snugly but allow free arm movement</li>
+<li>Weights should distribute evenly across front and back pockets</li>
+<li>Always consult your occupational therapist for personalised weight recommendations</li>
+<li>Weighted vests should typically be worn for 20–30 minutes at a time</li>
+</ul>
+<h2>Still Unsure?</h2>
+<p>Contact us at <a href="mailto:team@ableys.in">team@ableys.in</a> and our team will help you choose the right size.</p>`,
+  },
+  {
+    slug: "sensory-body-sock-sizing-guide",
+    title: "Sensory Body Sock Size Guide",
+    content: `<p class="text-lg mb-8" style="color: var(--muted-foreground);">Find the perfect fit for maximum sensory comfort and therapeutic benefit.</p>
+<p>Abley's sensory body socks are <strong>recommended by professional therapists</strong>. Designed specifically for sensory purposes, each size is crafted with expert insights and clinical research to support sensory development and wellbeing.</p>
+<h2>Size Chart</h2>
+<div style="overflow-x: auto; margin: 2rem 0;">
+<table style="width:100%; border-collapse: collapse; font-size: 14px;">
+<thead>
+<tr style="background-color: #f5f5f5;">
+<th style="border: 1px solid #ddd; padding: 10px 14px; text-align: left;">Size</th>
+<th style="border: 1px solid #ddd; padding: 10px 14px; text-align: left;">Length</th>
+<th style="border: 1px solid #ddd; padding: 10px 14px; text-align: left;">Width</th>
+<th style="border: 1px solid #ddd; padding: 10px 14px; text-align: left;">Age Range</th>
+<th style="border: 1px solid #ddd; padding: 10px 14px; text-align: left;">User Height</th>
+</tr>
+</thead>
+<tbody>
+<tr><td style="border:1px solid #ddd;padding:10px 14px;"><strong>Small</strong></td><td style="border:1px solid #ddd;padding:10px 14px;">40″ L</td><td style="border:1px solid #ddd;padding:10px 14px;">27″ W</td><td style="border:1px solid #ddd;padding:10px 14px;">3–5 years</td><td style="border:1px solid #ddd;padding:10px 14px;">33″ – 42″</td></tr>
+<tr style="background:#fafafa;"><td style="border:1px solid #ddd;padding:10px 14px;"><strong>Medium</strong></td><td style="border:1px solid #ddd;padding:10px 14px;">47″ L</td><td style="border:1px solid #ddd;padding:10px 14px;">27″ W</td><td style="border:1px solid #ddd;padding:10px 14px;">6–9 years</td><td style="border:1px solid #ddd;padding:10px 14px;">43″ – 51″</td></tr>
+<tr><td style="border:1px solid #ddd;padding:10px 14px;"><strong>Large</strong></td><td style="border:1px solid #ddd;padding:10px 14px;">56″ L</td><td style="border:1px solid #ddd;padding:10px 14px;">28″ W</td><td style="border:1px solid #ddd;padding:10px 14px;">10–12 years</td><td style="border:1px solid #ddd;padding:10px 14px;">52″ – 60″</td></tr>
+</tbody>
+</table>
+</div>
+<h2>How to Choose the Right Size</h2>
+<ul>
+<li>Measure the child's height to determine the correct length</li>
+<li>The body sock should provide gentle resistance — not be too loose or too tight</li>
+<li>A snug fit provides better proprioceptive input</li>
+<li>When between sizes, size up for comfort</li>
+</ul>
+<h2>About Sensory Body Socks</h2>
+<p>Sensory body socks provide gentle, full-body deep pressure that supports body awareness, motor planning, and self-regulation. Commonly used in occupational therapy to help children with sensory processing differences feel calm and grounded.</p>
+<h2>Questions?</h2>
+<p>Contact us at <a href="mailto:team@ableys.in">team@ableys.in</a> for personalised sizing advice from our therapist-trained team.</p>`,
+  },
+  {
+    slug: "about-ableys-sensory-tools",
+    title: "About Abley's",
+    content: `<p class="text-lg mb-8" style="color: var(--muted-foreground);">A haven designed to meet the distinctive needs of individuals with special abilities.</p>
+<p>Welcome to Abley's, a haven designed to meet the distinctive needs of individuals with special abilities, disabilities, and the elderly. At Abley's, we go beyond providing adaptive clothing, allergen-free eats, sensory tools, and elderly care products. We're on a mission to enhance independence, foster inclusivity, and create a supportive community.</p>
+<p>Our curated offerings cater to specific needs, celebrating the unique abilities within every individual. Join us on this journey where abilities are redefined, and each product tells a story of empowerment, understanding, and shared joy.</p>
+<h2>Our Mission</h2>
+<p>We believe every individual deserves access to quality therapeutic tools that support their growth, independence, and wellbeing. That's why we work closely with occupational therapists, special educators, and families to curate products that genuinely make a difference.</p>
+<h2>Who We Serve</h2>
+<ul>
+<li><strong>Children with Sensory Processing Differences</strong> — Tools for regulation, focus, and motor development</li>
+<li><strong>Occupational Therapists &amp; Clinics</strong> — Professional-grade equipment built for clinical use</li>
+<li><strong>Schools &amp; Special Education Centres</strong> — Inclusive learning environments with the right sensory support</li>
+<li><strong>Families at Home</strong> — Bringing therapeutic tools into everyday routines</li>
+</ul>
+<h2>Made in India</h2>
+<p>Abley's is a brand of Eighth Fold Circle Pvt Ltd., based in Noida, Uttar Pradesh. We are proud to design and source products locally, supporting Indian craftsmanship while meeting global quality standards.</p>
+<h2>Get in Touch</h2>
+<p>Have questions? Reach out — we're always happy to help.</p>
+<ul>
+<li>Email: <a href="mailto:team@ableys.in">team@ableys.in</a></li>
+<li>Phone: <a href="tel:+917042180166">+91-704-218-0166</a></li>
+</ul>`,
+  },
+  {
     slug: "about-us",
     title: "About Us",
     content: `<p class="text-lg mb-8" style="color: var(--muted-foreground);">A Mission Born from a Need for Practical Solutions</p>
