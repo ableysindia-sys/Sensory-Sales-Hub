@@ -230,14 +230,18 @@ const FAQS_BY_CATEGORY: Record<string, FAQ[]> = {
 
 function extractHowItWorksSection(html: string): string | null {
   if (!html) return null;
-  const headingRegex = /<h[1-6][^>]*>\s*How\s+[Ii]t\s+Works\s*<\/h[1-6]>/i;
-  const match = headingRegex.exec(html);
-  if (!match) return null;
-  const afterHeading = html.slice(match.index + match[0].length);
-  const nextHeading = /<h[1-6][^>]*>/i.exec(afterHeading);
-  const body = nextHeading
-    ? afterHeading.slice(0, nextHeading.index)
-    : afterHeading;
+  // Match "How It Works" anywhere — regardless of surrounding tags, emojis, or colons
+  const m = /How\s+[Ii]t\s+Works/i.exec(html);
+  if (!m) return null;
+  // Take everything after the matched text
+  const afterHIW = html.slice(m.index + m[0].length);
+  // Skip to the first real block-level content element (<p>, <ul>, <ol>, <div>)
+  const contentStart = afterHIW.search(/<(?:p|ul|ol|div)[^>]*>/i);
+  if (contentStart === -1) return null;
+  const content = afterHIW.slice(contentStart);
+  // Stop before the next heading-level element
+  const nextH = /<h[1-6][^>]*>/i.exec(content);
+  const body = nextH ? content.slice(0, nextH.index) : content;
   return body.trim() || null;
 }
 
