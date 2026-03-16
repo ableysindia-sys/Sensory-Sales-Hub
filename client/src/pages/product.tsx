@@ -226,6 +226,21 @@ const FAQS_BY_CATEGORY: Record<string, FAQ[]> = {
 
 /* ─── Utility ───────────────────────────────────────────────────────────── */
 
+/* ─── Extract "How it Works" section from HTML description ─────────────── */
+
+function extractHowItWorksSection(html: string): string | null {
+  if (!html) return null;
+  const headingRegex = /<h[1-6][^>]*>\s*How\s+[Ii]t\s+Works\s*<\/h[1-6]>/i;
+  const match = headingRegex.exec(html);
+  if (!match) return null;
+  const afterHeading = html.slice(match.index + match[0].length);
+  const nextHeading = /<h[1-6][^>]*>/i.exec(afterHeading);
+  const body = nextHeading
+    ? afterHeading.slice(0, nextHeading.index)
+    : afterHeading;
+  return body.trim() || null;
+}
+
 function findVariantByOptions(
   variants: ShopifyVariant[],
   selectedOptions: Record<string, string>
@@ -1129,6 +1144,8 @@ export default function ProductPage() {
         {(() => {
           const specSections = resolveSpecSections(product.specifications);
           const hasSpecs = specSections.length > 0;
+          const howItWorksHtml = isHtmlDescription ? extractHowItWorksSection(product.description) : null;
+          const hasHowItWorks = !!howItWorksHtml;
           return (
             <section className="py-10 border-b border-border/30" data-testid="section-product-tabs">
               <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
@@ -1156,6 +1173,15 @@ export default function ProductPage() {
                           data-testid="tab-specs"
                         >
                           Specifications
+                        </TabsTrigger>
+                      )}
+                      {hasHowItWorks && (
+                        <TabsTrigger
+                          value="how-it-works"
+                          className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary"
+                          data-testid="tab-how-it-works"
+                        >
+                          How it Works
                         </TabsTrigger>
                       )}
                     </TabsList>
@@ -1231,6 +1257,26 @@ export default function ProductPage() {
                         {specSections.map(({ groupLabel, entries }) => (
                           <SpecGroupTable key={groupLabel} groupLabel={groupLabel} entries={entries} />
                         ))}
+                      </div>
+                    </TabsContent>
+                  )}
+                  {hasHowItWorks && (
+                    <TabsContent value="how-it-works" className="mt-0" data-testid="tabpanel-how-it-works">
+                      <div className="max-w-3xl">
+                        <div className="flex items-center gap-2 mb-6">
+                          <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <Zap className="w-3.5 h-3.5 text-primary" />
+                          </div>
+                          <h3 className="text-sm font-bold text-foreground">How it Works</h3>
+                        </div>
+                        <div
+                          className="prose prose-sm sm:prose-base max-w-none text-muted-foreground leading-relaxed
+                            [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_h4]:text-foreground
+                            [&_strong]:text-foreground [&_b]:text-foreground
+                            [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5
+                            [&_li]:mb-1.5 [&_p]:mb-3"
+                          dangerouslySetInnerHTML={{ __html: howItWorksHtml! }}
+                        />
                       </div>
                     </TabsContent>
                   )}
