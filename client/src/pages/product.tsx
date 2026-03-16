@@ -858,6 +858,26 @@ export default function ProductPage() {
                   <span className="text-xs text-muted-foreground ml-auto">incl. GST</span>
                 </div>
 
+                {/* ── Key features bullet list ── */}
+                {product.features.length > 0 && (
+                  <ul className="space-y-2" data-testid="list-key-features-inline">
+                    {product.features.slice(0, 5).map((feat, i) => {
+                      const colonIdx = feat.indexOf(":");
+                      const label = colonIdx !== -1 ? feat.slice(0, colonIdx).trim() : null;
+                      const body = colonIdx !== -1 ? feat.slice(colonIdx + 1).trim() : feat.trim();
+                      return (
+                        <li key={i} className="flex items-start gap-2.5 text-sm">
+                          <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                          <span className="text-muted-foreground leading-snug">
+                            {label && <span className="font-semibold text-foreground">{label}: </span>}
+                            {body}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+
                 {/* ── Short description + meta ── */}
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-product-description">
