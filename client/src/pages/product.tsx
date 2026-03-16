@@ -15,7 +15,6 @@ import {
   ShoppingCart,
   Package,
   CheckCircle2,
-  Shield,
   Zap,
   Heart,
   Layers,
@@ -470,7 +469,7 @@ export default function ProductPage() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(null);
-  const [shippingOpen, setShippingOpen] = useState(true);
+
 
   const hasShopifyVariants = !!(product?.shopifyVariants && product.shopifyVariants.length > 0);
   const optionGroups = useMemo(() => {
@@ -710,222 +709,106 @@ export default function ProductPage() {
         </section>
 
         {/* ── Hero: image + product panel ──────────────────────── */}
-        <section className="py-8 lg:py-12" data-testid="section-product-detail">
+        <section className="pb-16" data-testid="section-product-detail">
           <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
+            <div className="grid lg:grid-cols-[58%_42%] gap-8 lg:gap-14 items-start">
 
-              {/* Image Gallery */}
-              <div className="space-y-3 min-w-0 w-full">
-                {/* Main image — aspect-[4/3] on mobile keeps it compact; square on larger screens */}
-                <div
-                  className="w-full aspect-[4/3] sm:aspect-square bg-card rounded-2xl sm:rounded-3xl border border-border/50 relative overflow-hidden"
-                  data-testid="container-product-image"
-                >
-                  {activeImage ? (
+              {/* ─ Left: Vertical stacked image gallery (Pebble-style) ─ */}
+              <div className="space-y-2.5">
+                {displayImages.length > 0 ? displayImages.map((img, i) => (
+                  <div
+                    key={`${img}-${i}`}
+                    className="w-full aspect-square bg-muted/20 rounded-3xl overflow-hidden relative"
+                    data-testid={i === 0 ? "container-product-image" : `container-product-image-${i}`}
+                  >
                     <img
-                      key={activeImage}
-                      src={activeImage}
-                      alt={`${product.name}${variantTitle ? ` - ${variantTitle}` : ""}`}
-                      className="w-full h-full object-contain p-2 sm:p-4"
-                      data-testid="img-product-main"
+                      src={img}
+                      alt={`${product.name}${variantTitle ? ` — ${variantTitle}` : ""}${i > 0 ? ` view ${i + 1}` : ""}`}
+                      className="w-full h-full object-contain p-6 sm:p-10"
+                      loading={i === 0 ? "eager" : "lazy"}
+                      data-testid={i === 0 ? "img-product-main" : `img-product-${i}`}
                     />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center w-full h-full p-8">
-                      <div className="w-20 h-20 rounded-2xl bg-primary/8 flex items-center justify-center">
-                        <Package className="w-10 h-10 text-primary/30" />
+                    {i === 0 && discountPct && (
+                      <div className="absolute top-4 left-4 bg-emerald-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+                        -{discountPct}%
                       </div>
-                      <p className="text-xs text-muted-foreground/50 font-medium mt-3">
-                        Product Image
-                      </p>
-                    </div>
-                  )}
-                  {discountPct && (
-                    <div className="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
-                      -{discountPct}%
-                    </div>
-                  )}
-                </div>
-
-                {/* Thumbnail strip — horizontally scrollable, touch-friendly */}
-                {displayImages.length > 1 && (
-                  <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide snap-x snap-mandatory" data-testid="container-thumbnails">
-                    {displayImages.map((img, i) => (
-                      <button
-                        key={`${img}-${i}`}
-                        type="button"
-                        onClick={() => setActiveImageIdx(i)}
-                        className={`w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 snap-start bg-card ${
-                          activeImageIdx === i
-                            ? "border-primary ring-2 ring-primary/20"
-                            : "border-border/50 hover:border-primary/40 active:border-primary"
-                        }`}
-                        data-testid={`button-image-thumb-${i}`}
-                        aria-label={`View image ${i + 1}`}
-                      >
-                        <img
-                          src={img}
-                          alt={`${product.name} view ${i + 1}`}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                      </button>
-                    ))}
+                    )}
+                  </div>
+                )) : (
+                  <div className="w-full aspect-square bg-muted/20 rounded-3xl flex flex-col items-center justify-center" data-testid="container-product-image">
+                    <Package className="w-16 h-16 text-muted-foreground/20" />
+                    <p className="text-xs text-muted-foreground/40 mt-3 font-medium">No image available</p>
                   </div>
                 )}
+              </div>{/* end gallery */}
 
-                {/* Trust icons — visible on desktop below gallery */}
-                <div className="hidden lg:grid grid-cols-3 gap-3 pt-2">
-                  <div className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-card border border-border/50 text-center">
-                    <Truck className="w-5 h-5 text-primary" />
-                    <span className="text-xs font-semibold text-foreground">Free Shipping</span>
-                    <span className="text-[10px] text-muted-foreground">Pan India</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-card border border-border/50 text-center">
-                    <RotateCcw className="w-5 h-5 text-primary" />
-                    <span className="text-xs font-semibold text-foreground">7-Day Exchange</span>
-                    <span className="text-[10px] text-muted-foreground">Easy returns</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-card border border-border/50 text-center">
-                    <Shield className="w-5 h-5 text-primary" />
-                    <span className="text-xs font-semibold text-foreground">OT-Approved</span>
-                    <span className="text-[10px] text-muted-foreground">Therapist trusted</span>
-                  </div>
+              {/* ─ Right: Sticky product info (Pebble-style) ─ */}
+              <div className="lg:sticky lg:top-24 lg:self-start space-y-5">
+
+                {/* ── Badges ── */}
+                <div className="flex flex-wrap gap-2" data-testid="container-product-badges">
+                  {(product.specifications as Record<string, string | undefined>)?.["Safety Certifications"] && (
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900/40 uppercase tracking-wider">
+                      {(product.specifications as Record<string, string | undefined>)["Safety Certifications"]}
+                    </span>
+                  )}
+                  <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-primary/8 text-primary border border-primary/15 uppercase tracking-wider">
+                    OT Recommended
+                  </span>
+                  {(product.specifications as Record<string, string | undefined>)?.["Supervision Required"] === "Yes" && (
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border border-amber-100 dark:border-amber-900/40 uppercase tracking-wider">
+                      Adult Supervision
+                    </span>
+                  )}
                 </div>
-              </div>
 
-              {/* Product Info Panel */}
-              <div className="flex flex-col gap-5 min-w-0 w-full lg:sticky lg:top-32 lg:self-start">
-
-                {/* Category + Rating */}
-                <div className="order-1 min-w-0">
-                  <p
-                    className="text-sm font-semibold text-primary uppercase tracking-wider mb-2"
-                    data-testid="text-product-category"
-                  >
+                {/* ── Category + Name + Rating ── */}
+                <div>
+                  <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-2" data-testid="text-product-category">
                     {category?.title}
                   </p>
-
-                  <h1
-                    className="text-lg sm:text-3xl font-bold text-foreground mb-3 leading-tight"
-                    data-testid="heading-product-name"
-                  >
+                  <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight mb-4" data-testid="heading-product-name">
                     {product.name}
                   </h1>
-
-                  {/* Star rating */}
-                  <div className="flex items-center flex-wrap gap-x-2 gap-y-1 mb-3" data-testid="container-ratings">
+                  <div className="flex items-center gap-3 flex-wrap" data-testid="container-ratings">
                     <StarRow stars={Math.round(avgRating)} />
-                    <span className="text-sm font-semibold text-foreground tabular-nums">
-                      {avgRating.toFixed(1)}
-                    </span>
-                    <a
-                      href="#reviews"
-                      className="text-sm text-primary hover:underline"
-                      data-testid="link-review-count"
-                    >
-                      {reviewCount} reviews
+                    <span className="text-sm font-semibold text-foreground tabular-nums">{avgRating.toFixed(1)}</span>
+                    <a href="#reviews" className="text-sm text-muted-foreground hover:text-primary transition-colors" data-testid="link-review-count">
+                      ({reviewCount} reviews)
                     </a>
-                    <span className="text-muted-foreground/40">·</span>
-                    <span className="text-sm text-green-600 font-medium flex items-center gap-1">
-                      <BadgeCheck className="w-3.5 h-3.5" />
-                      In Stock
+                    <span className="flex items-center gap-1 text-sm text-emerald-600 font-medium">
+                      <Check className="w-3.5 h-3.5" /> In Stock
                     </span>
                   </div>
-
-                  {product.vendor && (
-                    <p
-                      className="hidden sm:block text-sm text-muted-foreground mb-2"
-                      data-testid="text-product-vendor"
-                    >
-                      By{" "}
-                      <span className="font-medium text-foreground">
-                        {product.vendor}
-                      </span>
-                    </p>
-                  )}
-
-                  {product.productType && (
-                    <p
-                      className="hidden sm:flex text-xs text-muted-foreground mb-2 items-center gap-1"
-                      data-testid="text-product-type"
-                    >
-                      <Tag className="w-3 h-3" />
-                      {product.productType}
-                    </p>
-                  )}
-
-                  {currentSku && (
-                    <p
-                      className="hidden sm:block text-xs text-muted-foreground mb-2"
-                      data-testid="text-product-sku"
-                    >
-                      SKU: <span className="font-mono">{currentSku}</span>
-                    </p>
-                  )}
-
-                  {/* Key features snippet */}
-                  {(() => {
-                    const heroFeatures = product.features
-                      .filter(f => f.includes(" ") && f.length > 10)
-                      .slice(0, 3);
-                    return heroFeatures.length > 0 ? (
-                      <ul className="hidden sm:flex flex-col gap-1 mb-3" data-testid="list-hero-features">
-                        {heroFeatures.map((f, i) => (
-                          <li key={i} className="flex items-start gap-1.5 text-xs text-foreground/80">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
-                            <span>{f}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : null;
-                  })()}
-
-                  <p
-                    className="text-sm text-muted-foreground leading-relaxed line-clamp-2 sm:line-clamp-none"
-                    data-testid="text-product-description"
-                  >
-                    {product.shortDescription}
-                  </p>
                 </div>
 
-                {/* Shipping trust strip — below CTAs on mobile, second on desktop */}
-                <div className="order-5 lg:order-2 flex flex-wrap gap-x-4 gap-y-1.5 py-3 px-4 rounded-2xl bg-green-50 dark:bg-green-950/30 border border-green-100 dark:border-green-900/50" data-testid="container-trust-strip">
-                  <span className="flex items-center gap-1.5 text-xs font-medium text-green-700 dark:text-green-400">
-                    <Truck className="w-3.5 h-3.5" /> Free delivery, Pan India
-                  </span>
-                  <span className="flex items-center gap-1.5 text-xs font-medium text-green-700 dark:text-green-400">
-                    <RotateCcw className="w-3.5 h-3.5" /> 7-day easy exchange
-                  </span>
-                  <span className="flex items-center gap-1.5 text-xs font-medium text-green-700 dark:text-green-400">
-                    <Clock className="w-3.5 h-3.5" /> Dispatch in 1–2 days
-                  </span>
-                  <span className="flex items-center gap-1.5 text-xs font-medium text-green-700 dark:text-green-400">
-                    <Lock className="w-3.5 h-3.5" /> Secure checkout
-                  </span>
-                </div>
-
-                {/* Price — second on mobile, third on desktop */}
-                <div className="order-2 lg:order-3 flex items-baseline flex-wrap gap-3">
-                  <span
-                    className="text-3xl font-bold text-foreground tabular-nums"
-                    data-testid="text-product-price"
-                  >
+                {/* ── Price ── */}
+                <div className="flex items-baseline gap-3 flex-wrap py-4 border-y border-border/40">
+                  <span className="text-3xl font-bold text-foreground tabular-nums" data-testid="text-product-price">
                     {formatPrice(computedPrice)}
                   </span>
                   {computedComparePrice && computedComparePrice > computedPrice && (
-                    <span
-                      className="text-base text-muted-foreground line-through tabular-nums"
-                      data-testid="text-compare-price"
-                    >
+                    <span className="text-base text-muted-foreground line-through tabular-nums" data-testid="text-compare-price">
                       {formatPrice(computedComparePrice)}
                     </span>
                   )}
                   {discountPct && (
-                    <span className="text-sm font-semibold text-green-600 bg-green-50 dark:bg-green-950/30 px-2 py-0.5 rounded-full">
+                    <span className="text-sm font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-0.5 rounded-full">
                       {discountPct}% off
                     </span>
                   )}
                   <span className="text-xs text-muted-foreground ml-auto">incl. GST</span>
+                </div>
+
+                {/* ── Short description + meta ── */}
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-product-description">
+                    {product.shortDescription}
+                  </p>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground pt-1">
+                    {currentSku && <span data-testid="text-product-sku">SKU: <span className="font-mono text-foreground">{currentSku}</span></span>}
+                    {product.vendor && <span data-testid="text-product-vendor">By <span className="font-medium text-foreground">{product.vendor}</span></span>}
+                  </div>
                 </div>
 
                 {/* Shopify Variant Selectors */}
@@ -1149,186 +1032,86 @@ export default function ProductPage() {
                   </div>
                 )}
 
-                {/* Quantity + Action Buttons — fourth on mobile (right after price/variants), fifth on desktop */}
-                <div className="order-4 lg:order-5 min-w-0">
-
-                {/* Quantity */}
-                <div className="flex items-center gap-3 py-2">
-                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Qty
-                  </label>
-                  <div className="flex items-center gap-1 border border-border/50 rounded-full">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full h-8 w-8"
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      disabled={quantity <= 1}
-                      data-testid="button-qty-decrease"
-                    >
-                      <Minus className="w-3.5 h-3.5" />
-                    </Button>
-                    <span
-                      className="w-8 text-center text-sm font-semibold tabular-nums"
-                      data-testid="text-quantity"
-                    >
-                      {quantity}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full h-8 w-8"
-                      onClick={() => setQuantity(quantity + 1)}
-                      data-testid="button-qty-increase"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                    </Button>
+                {/* ── Quantity + CTAs ── */}
+                <div className="space-y-3">
+                  {/* Quantity row */}
+                  <div className="flex items-center gap-3">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider w-20">Quantity</label>
+                    <div className="flex items-center border border-border/60 rounded-full overflow-hidden">
+                      <Button variant="ghost" size="icon" className="rounded-none h-9 w-9 hover:bg-muted/50" onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={quantity <= 1} data-testid="button-qty-decrease">
+                        <Minus className="w-3.5 h-3.5" />
+                      </Button>
+                      <span className="w-10 text-center text-sm font-semibold tabular-nums" data-testid="text-quantity">{quantity}</span>
+                      <Button variant="ghost" size="icon" className="rounded-none h-9 w-9 hover:bg-muted/50" onClick={() => setQuantity(quantity + 1)} data-testid="button-qty-increase">
+                        <Plus className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
                   </div>
-                  <span className="text-xs text-green-600 font-medium ml-2 flex items-center gap-1">
-                    <Check className="w-3 h-3" /> In stock
-                  </span>
-                </div>
 
-                {/* Action Buttons */}
-                <div className="flex flex-col gap-3 pt-2 border-t border-border/40">
-                  <div className="flex gap-3">
-                    <Button
-                      size="lg"
-                      className="flex-1 rounded-full gap-2 shadow-lg shadow-primary/20"
-                      onClick={handleAddToCart}
-                      data-testid="button-add-to-cart"
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      Add to Cart
-                    </Button>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="flex-1 rounded-full gap-2 border-primary/20 hover:bg-primary/5"
-                      onClick={handleBuyNow}
-                      disabled={checkoutLoading}
-                      data-testid="button-buy-now"
-                    >
-                      {checkoutLoading ? (
-                        <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-                      ) : (
-                        <Zap className="w-4 h-4" />
-                      )}
-                      {checkoutLoading ? "Opening checkout…" : "Buy Now"}
-                    </Button>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Button
-                      size="default"
-                      variant="ghost"
-                      className="flex-1 rounded-full gap-2 text-muted-foreground text-sm"
-                      onClick={() =>
-                        addItem(product.id, product.name, category?.title || "")
-                      }
-                      data-testid="button-add-enquiry"
-                    >
-                      {inEnquiryCart ? (
-                        <>
-                          <CheckCircle2 className="w-4 h-4 text-primary" />
-                          <span className="text-primary">Quote Added</span>
-                        </>
-                      ) : (
-                        <>
-                          <MessageSquare className="w-4 h-4" />
-                          Get B2B Quote
-                        </>
-                      )}
+                  {/* Primary: Add to Cart */}
+                  <Button size="lg" className="w-full h-12 rounded-2xl gap-2 text-base" onClick={handleAddToCart} data-testid="button-add-to-cart">
+                    <ShoppingCart className="w-4 h-4" /> Add to Cart
+                  </Button>
+
+                  {/* Secondary: Buy Now */}
+                  <Button size="lg" variant="outline" className="w-full h-12 rounded-2xl gap-2 border-border/60 hover:border-primary/40" onClick={handleBuyNow} disabled={checkoutLoading} data-testid="button-buy-now">
+                    {checkoutLoading ? <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" /> : <Zap className="w-4 h-4" />}
+                    {checkoutLoading ? "Opening checkout…" : "Buy Now"}
+                  </Button>
+
+                  {/* B2B row */}
+                  <div className="flex gap-2 pt-1">
+                    <Button size="sm" variant="secondary" className="flex-1 gap-1.5 rounded-xl text-xs font-semibold" onClick={() => addItem(product.id, product.name, category?.title || "")} data-testid="button-add-enquiry">
+                      {inEnquiryCart
+                        ? <><CheckCircle2 className="w-3.5 h-3.5 text-primary" /><span className="text-primary">Quote Added</span></>
+                        : <><MessageSquare className="w-3.5 h-3.5" /> Get B2B Quote</>}
                     </Button>
                     <Link href="/enquiry" className="flex-1">
-                      <Button
-                        size="default"
-                        variant="ghost"
-                        className="w-full rounded-full gap-2 text-muted-foreground text-sm"
-                        data-testid="button-bulk-quote"
-                      >
-                        <Send className="w-4 h-4" />
-                        Bulk / Custom Order
+                      <Button size="sm" variant="secondary" className="w-full gap-1.5 rounded-xl text-xs font-semibold" data-testid="button-bulk-quote">
+                        <Send className="w-3.5 h-3.5" /> Bulk / Custom Order
                       </Button>
                     </Link>
                   </div>
                 </div>
 
-                </div>{/* end order-4: qty + CTA wrapper */}
-
-                {/* Lead capture — phone signup */}
-                <div className="order-5 rounded-2xl border border-border/50 bg-muted/20 p-4">
-                  <PhoneSignupInline
-                    variant="light"
-                    label="Get B2B pricing & stock alerts"
-                    sublabel="Register free — we notify you of deals and restock"
-                    containerId="recaptcha-product"
-                  />
+                {/* ── Trust strip (Pebble-style 4-item grid) ── */}
+                <div className="grid grid-cols-2 gap-x-4 gap-y-3 pt-4 border-t border-border/30" data-testid="container-trust-strip">
+                  {[
+                    { icon: Truck, label: "Free Shipping", sub: "Pan India, 4–7 days" },
+                    { icon: RotateCcw, label: "7-Day Exchange", sub: "Easy, hassle-free" },
+                    { icon: Lock, label: "Secure Checkout", sub: "Razorpay powered" },
+                    { icon: PhoneCall, label: "Expert Support", sub: "Mon–Sat, 10am–6pm" },
+                  ].map(({ icon: Icon, label, sub }) => (
+                    <div key={label} className="flex items-start gap-2.5">
+                      <Icon className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs font-semibold text-foreground">{label}</p>
+                        <p className="text-[10px] text-muted-foreground">{sub}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
-                {/* Payment trust badges */}
-                <div className="order-6 pt-3 border-t border-border/40" data-testid="container-payment-badges">
-                  <p className="text-xs text-muted-foreground mb-2.5 flex items-center gap-1.5">
-                    <Lock className="w-3 h-3" /> Secure Payment — powered by Razorpay
+                {/* ── Phone signup ── */}
+                <div className="rounded-2xl border border-border/50 bg-muted/20 p-4">
+                  <PhoneSignupInline variant="light" label="Get B2B pricing & stock alerts" sublabel="Register free — we notify you of deals and restock" containerId="recaptcha-product" />
+                </div>
+
+                {/* ── Payment badges ── */}
+                <div className="border-t border-border/30 pt-3" data-testid="container-payment-badges">
+                  <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1.5">
+                    <Lock className="w-3 h-3" /> Secure payment — Razorpay
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {PAYMENT_METHODS.map((m) => (
-                      <span
-                        key={m.label}
-                        className="flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg border border-border/60 bg-muted/30 text-muted-foreground"
-                        data-testid={`badge-payment-${m.label.toLowerCase().replace(/\s+/g, "-")}`}
-                      >
-                        <m.icon className="w-3 h-3" />
-                        {m.label}
+                      <span key={m.label} className="flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-lg border border-border/50 bg-muted/20 text-muted-foreground" data-testid={`badge-payment-${m.label.toLowerCase().replace(/\s+/g, "-")}`}>
+                        <m.icon className="w-3 h-3" /> {m.label}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                {/* Shipping & Returns expandable */}
-                <div className="order-7 border border-border/50 rounded-2xl overflow-hidden" data-testid="container-shipping-returns">
-                  <button
-                    onClick={() => setShippingOpen((o) => !o)}
-                    className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-muted/30 transition-colors"
-                    data-testid="button-toggle-shipping"
-                  >
-                    <span className="text-sm font-semibold text-foreground flex items-center gap-2">
-                      <Truck className="w-4 h-4 text-primary" />
-                      Shipping & Returns
-                    </span>
-                    {shippingOpen ? (
-                      <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                    )}
-                  </button>
-                  {shippingOpen && (
-                    <div className="px-4 pb-4 pt-1 space-y-3 border-t border-border/40">
-                      <div className="flex gap-2.5">
-                        <Truck className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-xs font-semibold text-foreground mb-0.5">Free Shipping, Pan India</p>
-                          <p className="text-xs text-muted-foreground">Orders processed in 1–2 business days. Delivery in 4–7 days (metro cities: 3–5 days).</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2.5">
-                        <RotateCcw className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-xs font-semibold text-foreground mb-0.5">7-Day Exchange</p>
-                          <p className="text-xs text-muted-foreground">Unused, undamaged items in original packaging. Email info@ableys.in with your order number.</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2.5">
-                        <PhoneCall className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-xs font-semibold text-foreground mb-0.5">Expert Support</p>
-                          <p className="text-xs text-muted-foreground">Call +91 7042180166 · Mon–Sat, 10am–6pm IST</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-              </div>
+              </div>{/* end right panel */}
             </div>
           </div>
         </section>
