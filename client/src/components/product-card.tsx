@@ -96,7 +96,6 @@ export function ProductCard({ product }: ProductCardProps) {
 
       {/* Content */}
       <div className="p-3.5 flex flex-col flex-1">
-        {/* Category tag */}
         {category && (
           <span className="text-[10px] font-semibold text-primary uppercase tracking-wider mb-1">
             {category.title}
@@ -124,37 +123,17 @@ export function ProductCard({ product }: ProductCardProps) {
               {formatPrice(product.comparePrice)}
             </span>
           )}
-          <span className="text-[10px] text-muted-foreground/70 ml-auto">incl. GST</span>
+          <span className="text-[10px] text-green-600 font-medium ml-auto">Free shipping</span>
         </div>
 
-        {/* CTA — single smart button */}
+        {/* CTAs */}
         <div className="mt-3 space-y-1.5">
+          {/* Primary: B2B quote */}
           <button
             className={`w-full h-9 rounded-lg text-sm font-semibold flex items-center justify-center gap-1.5 transition-all ${
-              added || inCart
-                ? "bg-green-50 text-green-700 border border-green-200 dark:bg-green-950/30 dark:text-green-400 dark:border-green-800"
-                : "bg-primary text-primary-foreground hover:bg-primary/90"
-            }`}
-            onClick={handleAddToCart}
-            data-testid={`button-add-cart-${product.id}`}
-          >
-            {added || inCart ? (
-              <>
-                <CheckCircle2 className="w-3.5 h-3.5" /> Added to Cart
-              </>
-            ) : (
-              <>
-                <ShoppingCart className="w-3.5 h-3.5" /> Add to Cart
-              </>
-            )}
-          </button>
-
-          {/* B2B quote — subtle text button */}
-          <button
-            className={`w-full h-8 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-all border ${
               inEnquiry
-                ? "text-primary border-primary/30 bg-primary/5"
-                : "text-muted-foreground border-border/60 hover:text-primary hover:border-primary/30 hover:bg-primary/5"
+                ? "bg-primary/10 text-primary border border-primary/30"
+                : "bg-primary text-primary-foreground hover:bg-primary/90"
             }`}
             onClick={(e) => {
               e.preventDefault();
@@ -163,9 +142,26 @@ export function ProductCard({ product }: ProductCardProps) {
             data-testid={`button-add-enquiry-${product.id}`}
           >
             {inEnquiry ? (
-              <><CheckCircle2 className="w-3 h-3" /> In Quote List</>
+              <><CheckCircle2 className="w-3.5 h-3.5" /> Added to Quote</>
             ) : (
-              <><MessageSquare className="w-3 h-3" /> Get B2B Quote</>
+              <><MessageSquare className="w-3.5 h-3.5" /> Get B2B Quote</>
+            )}
+          </button>
+
+          {/* Secondary: individual cart */}
+          <button
+            className={`w-full h-8 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-all border ${
+              added || inCart
+                ? "text-green-700 border-green-200 bg-green-50 dark:bg-green-950/30 dark:text-green-400 dark:border-green-800"
+                : "text-muted-foreground border-border/60 hover:text-foreground hover:border-border"
+            }`}
+            onClick={handleAddToCart}
+            data-testid={`button-add-cart-${product.id}`}
+          >
+            {added || inCart ? (
+              <><CheckCircle2 className="w-3 h-3" /> In Cart</>
+            ) : (
+              <><ShoppingCart className="w-3 h-3" /> Add to Cart</>
             )}
           </button>
         </div>

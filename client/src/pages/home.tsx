@@ -8,77 +8,9 @@ import { BulkEnquiryForm } from "@/components/bulk-enquiry-form";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowRight, Building2, GraduationCap, Heart, ShieldCheck, Truck, BadgeIndianRupee, Gift, RotateCcw, Package, Users } from "lucide-react";
-import featuredSwingsImg from "@assets/generated_images/featured-swings-banner.png";
+import { ArrowRight, ShieldCheck, Truck, BadgeIndianRupee, Gift, RotateCcw, Package, Users } from "lucide-react";
 import { useProducts } from "@/lib/product-provider";
 
-function AudienceChooser() {
-  const cards = [
-    {
-      icon: Heart,
-      label: "My Child / Family",
-      desc: "Home therapy tools, sensory toys & calming equipment",
-      href: "/products",
-      cta: "Browse products",
-      card: "from-rose-500/12 to-rose-500/4 border-rose-200 dark:border-rose-800 hover:border-rose-400/60",
-      icon_cls: "bg-rose-100 dark:bg-rose-950/60 text-rose-500",
-      cta_cls: "text-rose-600 dark:text-rose-400",
-    },
-    {
-      icon: Building2,
-      label: "My OT Clinic",
-      desc: "Clinical-grade equipment, bulk pricing & GST invoices",
-      href: "/enquiry",
-      cta: "Get a bulk quote →",
-      card: "from-primary/15 to-primary/5 border-primary/40 hover:border-primary/70 ring-2 ring-primary/10",
-      icon_cls: "bg-primary/15 text-primary",
-      cta_cls: "text-primary",
-      highlight: true,
-    },
-    {
-      icon: GraduationCap,
-      label: "My School / NGO",
-      desc: "Sensory rooms, inclusive classroom tools & custom setups",
-      href: "/enquiry",
-      cta: "Get a setup quote",
-      card: "from-indigo-500/12 to-indigo-500/4 border-indigo-200 dark:border-indigo-800 hover:border-indigo-400/60",
-      icon_cls: "bg-indigo-100 dark:bg-indigo-950/60 text-indigo-500",
-      cta_cls: "text-indigo-600 dark:text-indigo-400",
-    },
-  ];
-  return (
-    <section className="py-12 sm:py-16 bg-gradient-to-b from-background to-muted/20 border-b" data-testid="section-audience-chooser">
-      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8">
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-3 bg-primary/10 px-3 py-1.5 rounded-full">Who are you shopping for?</span>
-          <h2 className="text-2xl sm:text-3xl font-bold font-display text-foreground">Find the Right Equipment for You</h2>
-        </div>
-        <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
-          {cards.map(({ icon: Icon, label, desc, href, cta, card, icon_cls, cta_cls, highlight }) => (
-            <Link key={label} href={href}>
-              <div
-                className={`group rounded-2xl border-2 bg-gradient-to-br p-5 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-0.5 h-full ${card}`}
-                data-testid={`card-audience-${label.toLowerCase().replace(/\s+/g, "-")}`}
-              >
-                {highlight && (
-                  <span className="inline-block text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full mb-3 uppercase tracking-wide">500+ Institutions</span>
-                )}
-                <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-3 ${icon_cls}`}>
-                  <Icon className="w-5 h-5" />
-                </div>
-                <p className="font-bold text-foreground text-sm mb-1.5">{label}</p>
-                <p className="text-xs text-muted-foreground leading-relaxed mb-3">{desc}</p>
-                <div className={`text-xs font-semibold flex items-center gap-1 group-hover:gap-2 transition-all ${cta_cls}`}>
-                  {cta} <ArrowRight className="w-3 h-3" />
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 function SampleKitBanner() {
   return (
@@ -123,57 +55,16 @@ function QuickTrustBar() {
       <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-xs text-white/85 font-medium">
           {[
-            { icon: Truck, text: "Free shipping across India" },
-            { icon: ShieldCheck, text: "Clinically validated by OTs" },
+            { icon: Truck,            text: "Free shipping across India" },
             { icon: BadgeIndianRupee, text: "GST invoices · Bulk discounts" },
-            { icon: Users, text: "500+ institutions trust us" },
+            { icon: ShieldCheck,      text: "OT-validated products" },
+            { icon: Users,            text: "500+ institutions trust us" },
           ].map(({ icon: Icon, text }) => (
             <span key={text} className="flex items-center gap-2">
               <Icon className="w-3.5 h-3.5 text-white/70" /> {text}
             </span>
           ))}
         </div>
-      </div>
-    </section>
-  );
-}
-
-function FeaturedSwings() {
-  return (
-    <section className="py-10 sm:py-14 bg-gradient-to-b from-muted/10 via-background to-muted/5" data-testid="section-featured-swings">
-      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-6">
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-2 bg-primary/10 px-3 py-1.5 rounded-full">Spotlight Collection</span>
-          <h2 className="text-xl sm:text-2xl font-bold font-display text-foreground">India's Most-Loved Sensory Swing Range</h2>
-        </div>
-        <Link href="/category/swings">
-          <div className="relative overflow-hidden rounded-2xl group cursor-pointer">
-            <div className="aspect-[21/9] sm:aspect-[3/1]">
-              <img
-                src={featuredSwingsImg}
-                alt="Professional therapy swings collection"
-                className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700"
-                loading="lazy"
-                data-testid="img-featured-swings"
-              />
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/30 to-transparent" />
-            <div className="absolute inset-0 flex items-center">
-              <div className="px-8 sm:px-12 lg:px-16 max-w-lg">
-                <p className="text-[10px] sm:text-xs font-semibold text-white/75 uppercase tracking-widest mb-2">Featured Collection</p>
-                <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-white mb-2 font-display" data-testid="heading-featured-swings">
-                  Therapy Swings
-                </h2>
-                <p className="text-xs sm:text-sm text-white/75 mb-4 hidden sm:block">
-                  Professional-grade vestibular input swings for clinics, therapy centres, and sensory rooms.
-                </p>
-                <span className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-white group-hover:gap-3 transition-all">
-                  Explore Collection <ArrowRight className="w-3.5 h-3.5" />
-                </span>
-              </div>
-            </div>
-          </div>
-        </Link>
       </div>
     </section>
   );
@@ -196,7 +87,7 @@ function ProductShowcase() {
               Top-Rated Therapy Equipment
             </h2>
             <p className="text-sm text-muted-foreground mt-1">
-              Handpicked by occupational therapists — loved by clinics & families
+              Handpicked by occupational therapists — available individually or in bulk
             </p>
           </div>
           <div className="flex items-center gap-1 bg-muted/60 rounded-xl p-1 self-start sm:self-auto border border-border/40">
@@ -219,10 +110,15 @@ function ProductShowcase() {
 
         <ProductCarousel products={active} hideHeader />
 
-        <div className="text-center mt-10">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-10">
           <Link href="/products">
             <Button variant="outline" className="rounded-full px-8 border-primary/30 hover:border-primary/60" data-testid="button-see-all-products">
-              See All 116+ Products <ArrowRight className="ml-1.5 w-4 h-4" />
+              See All 120+ Products <ArrowRight className="ml-1.5 w-4 h-4" />
+            </Button>
+          </Link>
+          <Link href="/enquiry">
+            <Button className="rounded-full px-8 gap-2" data-testid="button-get-bulk-quote-showcase">
+              Get a Bulk Quote <ArrowRight className="w-4 h-4" />
             </Button>
           </Link>
         </div>
@@ -236,23 +132,19 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main id="main-content" className="pb-16 lg:pb-0">
-        {/* 1. ARRIVE — Impact, single CTA */}
+        {/* 1. ARRIVE — B2B-first impact, dual CTA */}
         <Hero />
-        {/* 2. REASSURE — Reduce bounce immediately with trust signals */}
+        {/* 2. REASSURE — Institutional trust signals above the fold */}
         <QuickTrustBar />
-        {/* 3. SEGMENT — Route visitors to the right experience */}
-        <AudienceChooser />
-        {/* 4. DISCOVER — Browse by setup type, see what exists */}
+        {/* 3. DISCOVER — Browse by setup type, see curated product lists */}
         <CategoryGrid />
-        {/* 5. CURATE — Handpicked best sellers & new arrivals */}
+        {/* 4. BROWSE — Handpicked best sellers & new arrivals */}
         <ProductShowcase />
-        {/* 6. FEATURE — Editorial spotlight on a marquee collection */}
-        <FeaturedSwings />
-        {/* 7. TRY — Conversion offer once interest has formed */}
+        {/* 5. TRY — Sample kit: lower-friction B2B lead capture */}
         <SampleKitBanner />
-        {/* 8. VALIDATE — Social proof closes the decision */}
+        {/* 6. VALIDATE — Verified institutional reviews */}
         <Testimonials />
-        {/* 9. CONVERT — B2B capture for high-intent scrollers */}
+        {/* 7. CONVERT — Full bulk enquiry form for high-intent visitors */}
         <BulkEnquiryForm />
       </main>
       <SiteFooter />

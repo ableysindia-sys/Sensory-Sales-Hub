@@ -9,10 +9,10 @@ import { useAuth } from "@/lib/auth-context";
 import logoPath from "@assets/ableys_rehab_logo.png";
 
 const ANNOUNCEMENTS = [
-  "🚚 Free Shipping All Over India",
-  "🏷️ GST Invoices for All Institutional Orders",
-  "💬 Bulk pricing for OT Clinics & Schools — Chat with us",
-  "⭐ Trusted by 500+ Occupational Therapists Across India",
+  "🏷️ GST Invoices Provided for All Institutional Orders",
+  "📦 Bulk Pricing for OT Clinics, Schools & Hospitals — Get a Quote",
+  "🚚 Free Shipping Across India · Dispatch in 1–2 Business Days",
+  "⭐ Trusted by 500+ Institutions · Custom Setups Available",
 ];
 
 export function AnnouncementBar() {

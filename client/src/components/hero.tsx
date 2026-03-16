@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShieldCheck, Truck, Users } from "lucide-react";
+import { ArrowRight, ShieldCheck, BadgeIndianRupee, Users, Send } from "lucide-react";
+import { Link } from "wouter";
 import heroBannerImg from "@assets/generated_images/hero-banner.png";
 
 export function Hero() {
@@ -28,7 +29,7 @@ export function Hero() {
                       pt-28 pb-10
                       sm:pt-32 sm:pb-14
                       lg:pt-40 lg:pb-20">
-        <div className="max-w-[520px]">
+        <div className="max-w-[560px]">
 
           {/* Eyebrow */}
           <div
@@ -36,47 +37,54 @@ export function Hero() {
             data-testid="text-hero-label"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-white/80 animate-pulse" />
-            OT-Approved Therapy Equipment
+            India's Leading OT Equipment Supplier
           </div>
 
           {/* Headline */}
           <h1
-            className="text-[2rem] sm:text-5xl lg:text-[3.4rem] font-bold text-white leading-[1.1] mb-3 sm:mb-4 font-display drop-shadow-xl"
+            className="text-[1.9rem] sm:text-5xl lg:text-[3.2rem] font-bold text-white leading-[1.1] mb-3 sm:mb-4 font-display drop-shadow-xl"
             data-testid="heading-hero"
           >
-            Tools That Help<br />
-            Children{" "}
-            <span className="italic text-amber-300">Thrive.</span>
+            Equip Your Clinic,<br />
+            School or{" "}
+            <span className="italic text-amber-300">Sensory Room.</span>
           </h1>
 
           {/* Descriptor */}
           <p
-            className="text-sm sm:text-[1.05rem] text-white/85 leading-relaxed mb-5 sm:mb-6 max-w-[400px]"
+            className="text-sm sm:text-[1.05rem] text-white/85 leading-relaxed mb-6 sm:mb-7 max-w-[440px]"
             data-testid="text-hero-desc"
           >
-            Premium sensory &amp; rehab equipment for OT clinics, schools, and families across India.
+            Premium rehab &amp; sensory equipment with bulk pricing, GST invoices, and custom setup support for OT clinics, schools &amp; hospitals across India.
           </p>
 
-          {/* CTA */}
-          <div className="mb-6">
-            <Button
-              size="lg"
-              className="!bg-white !text-gray-900 hover:!bg-gray-50 rounded-full text-sm px-8 h-12 gap-2 font-semibold shadow-xl shadow-black/30 !border-0 w-full sm:w-auto justify-center"
-              data-testid="button-hero-cta"
-              onClick={() =>
-                document.getElementById("categories")?.scrollIntoView({ behavior: "smooth" })
-              }
-            >
-              Shop Products <ArrowRight className="w-4 h-4" />
-            </Button>
+          {/* Dual CTAs */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-7">
+            <Link href="/enquiry">
+              <Button
+                size="lg"
+                className="!bg-white !text-gray-900 hover:!bg-amber-50 rounded-full text-sm px-7 h-12 gap-2 font-semibold shadow-xl shadow-black/30 !border-0 w-full sm:w-auto justify-center"
+                data-testid="button-hero-quote"
+              >
+                <Send className="w-4 h-4" /> Get a Bulk Quote
+              </Button>
+            </Link>
+            <Link href="/products">
+              <button
+                className="h-12 px-7 rounded-full border border-white/30 text-white text-sm font-semibold hover:bg-white/10 transition-colors w-full sm:w-auto flex items-center justify-center gap-2"
+                data-testid="button-hero-browse"
+              >
+                Browse Products <ArrowRight className="w-4 h-4" />
+              </button>
+            </Link>
           </div>
 
           {/* Trust callouts — pill grid on mobile, inline row on desktop */}
           <div className="sm:hidden grid grid-cols-3 gap-2">
             {[
-              { icon: Truck,       text: "Free\nshipping" },
-              { icon: ShieldCheck, text: "OT-\napproved" },
-              { icon: Users,       text: "500+\ntherapists" },
+              { icon: Users,            text: "500+\nInstitutions" },
+              { icon: BadgeIndianRupee, text: "GST\nInvoices" },
+              { icon: ShieldCheck,      text: "OT-\nApproved" },
             ].map(({ icon: Icon, text }) => (
               <div
                 key={text}
@@ -88,11 +96,11 @@ export function Hero() {
             ))}
           </div>
 
-          <div className="hidden sm:flex flex-wrap gap-x-4 gap-y-1.5">
+          <div className="hidden sm:flex flex-wrap gap-x-5 gap-y-1.5">
             {[
-              { icon: Truck,       text: "Free shipping pan-India" },
-              { icon: ShieldCheck, text: "OT-approved products" },
-              { icon: Users,       text: "500+ therapists trust us" },
+              { icon: Users,            text: "Trusted by 500+ institutions" },
+              { icon: BadgeIndianRupee, text: "GST invoices · Bulk discounts" },
+              { icon: ShieldCheck,      text: "OT-validated products" },
             ].map(({ icon: Icon, text }) => (
               <span key={text} className="flex items-center gap-1.5 text-xs text-white/60">
                 <Icon className="w-3.5 h-3.5 text-white/45" />
