@@ -472,11 +472,11 @@ export default function SampleRequestPage() {
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="institution">Institution / Clinic name (optional)</Label>
-                    <Input id="institution" placeholder="e.g. Sunshine Therapy Centre" value={institutionName} onChange={(e) => setInstitutionName(e.target.value)} className="mt-1.5" data-testid="input-institution" />
+                    <Input id="institution" placeholder="City Rehab Centre" value={institutionName} onChange={(e) => setInstitutionName(e.target.value)} className="mt-1.5" data-testid="input-institution" />
                   </div>
                   <div>
                     <Label htmlFor="city">City <span className="text-destructive">*</span></Label>
-                    <Input id="city" placeholder="e.g. Mumbai" value={city} onChange={(e) => setCity(e.target.value)} className="mt-1.5" data-testid="input-city" />
+                    <Input id="city" placeholder="Mumbai, India" value={city} onChange={(e) => setCity(e.target.value)} className="mt-1.5" data-testid="input-city" />
                   </div>
                 </div>
               </motion.div>
@@ -545,11 +545,11 @@ export default function SampleRequestPage() {
                     <div className="space-y-4">
                       <div>
                         <Label htmlFor="name">Full name <span className="text-destructive">*</span></Label>
-                        <Input id="name" placeholder="Your full name" value={name} onChange={(e) => setName(e.target.value)} className="mt-1.5" data-testid="input-name" />
+                        <Input id="name" placeholder="Dr. Jane Smith" value={name} onChange={(e) => setName(e.target.value)} className="mt-1.5" data-testid="input-name" />
                       </div>
                       <div>
                         <Label htmlFor="email">Email address <span className="text-destructive">*</span></Label>
-                        <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1.5" data-testid="input-email" />
+                        <Input id="email" type="email" placeholder="jane@clinic.com" value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1.5" data-testid="input-email" />
                       </div>
                     </div>
                   </div>
