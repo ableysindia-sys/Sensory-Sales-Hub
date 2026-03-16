@@ -50,6 +50,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
 import { SITE_IMAGES } from "@/lib/catalogue-data";
 import { useProducts } from "@/lib/product-provider";
+import { PhoneSignupInline } from "@/components/phone-signup-inline";
 
 type EnquiryFormValues = z.infer<typeof api.leads.create.input>;
 
@@ -747,7 +748,7 @@ export default function EnquiryCartPage() {
                 >
                   {!user ? (
                     /* ── Auth gate ── */
-                    <div className="p-6 sm:p-10 flex flex-col items-center text-center">
+                    <div className="p-6 sm:p-8 flex flex-col items-center text-center">
                       <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-5">
                         <Smartphone className="w-8 h-8 text-primary" />
                       </div>
@@ -757,17 +758,14 @@ export default function EnquiryCartPage() {
                       <p className="text-sm text-muted-foreground mb-6 max-w-xs">
                         A one-time OTP will be sent to your phone. Your verified number will be used to send the customised quote and for WhatsApp follow-up.
                       </p>
-                      <Button
-                        onClick={() => openAuthDrawer()}
-                        className="gap-2 w-full sm:w-auto px-8"
-                        data-testid="button-verify-phone-enquiry"
-                      >
-                        <Phone className="w-4 h-4" />
-                        Verify via OTP
-                      </Button>
-                      <p className="text-xs text-muted-foreground mt-4">
-                        You can also sign in with Google or Apple
-                      </p>
+                      <div className="w-full max-w-sm">
+                        <PhoneSignupInline
+                          variant="light"
+                          label=""
+                          sublabel=""
+                          containerId="recaptcha-enquiry"
+                        />
+                      </div>
                     </div>
                   ) : (
                   <>
