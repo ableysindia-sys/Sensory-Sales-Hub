@@ -651,7 +651,8 @@ export default function ProductPage() {
         )
       : null;
 
-  const isHtmlDescription = product.description.trim().startsWith("<");
+  const _decodedDescription = decodeEntities(product.description);
+  const isHtmlDescription = _decodedDescription.trim().startsWith("<");
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
@@ -1144,7 +1145,7 @@ export default function ProductPage() {
         {(() => {
           const specSections = resolveSpecSections(product.specifications);
           const hasSpecs = specSections.length > 0;
-          const howItWorksHtml = isHtmlDescription ? extractHowItWorksSection(product.description) : null;
+          const howItWorksHtml = extractHowItWorksSection(_decodedDescription);
           const hasHowItWorks = !!howItWorksHtml;
           return (
             <section className="py-10 border-b border-border/30" data-testid="section-product-tabs">
@@ -1200,12 +1201,12 @@ export default function ProductPage() {
                             [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5
                             [&_li]:mb-1.5 [&_p]:mb-3 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-2
                             [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2"
-                          dangerouslySetInnerHTML={{ __html: product.description }}
+                          dangerouslySetInnerHTML={{ __html: _decodedDescription }}
                           data-testid="html-product-description"
                         />
                       ) : (
                         <div className="text-muted-foreground leading-relaxed space-y-3">
-                          {product.description.split("\n").filter((l) => l.trim()).map((line, i) => (
+                          {_decodedDescription.split("\n").filter((l) => l.trim()).map((line, i) => (
                             <p key={i}>{line}</p>
                           ))}
                         </div>
