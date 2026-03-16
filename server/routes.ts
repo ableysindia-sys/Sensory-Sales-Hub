@@ -663,6 +663,107 @@ export async function registerRoutes(
     }
   });
 
+  // ── Shopify OAuth Install Flow ──────────────────────────────────────────────
+  const SHOPIFY_CLIENT_ID = process.env.SHOPIFY_CLIENT_ID || "036dead5df86a6f8d45f0628174fb770";
+  const SHOPIFY_CLIENT_SECRET = process.env.SHOPIFY_APP_SHARED_SECRET;
+  const SHOPIFY_INSTALL_SHOP = "ableys.myshopify.com";
+  const SHOPIFY_SCOPES = [
+    "read_products", "write_products",
+    "read_collections", "write_collections",
+    "read_orders", "write_orders",
+    "read_customers", "write_customers",
+    "read_inventory", "write_inventory",
+    "read_metafields", "write_metafields",
+    "read_price_rules", "write_price_rules",
+    "read_discounts", "write_discounts",
+  ].join(",");
+
+  // In-memory nonce store (expires after 10 min)
+  const oauthNonces = new Map<string, number>();
+
+  app.get("/api/shopify/oauth/start", (req, res) => {
+    const pw = req.query.pw as string | undefined;
+    if (!ADMIN_PASSWORD || pw !== ADMIN_PASSWORD) {
+      return res.status(401).send("<h2>Unauthorized. Append ?pw=YOUR_ADMIN_PASSWORD to the URL.</h2>");
+    }
+    if (!SHOPIFY_CLIENT_SECRET) {
+      return res.status(500).send("SHOPIFY_APP_SHARED_SECRET env var is not set.");
+    }
+    const nonce = crypto.randomBytes(16).toString("hex");
+    oauthNonces.set(nonce, Date.now() + 10 * 60 * 1000);
+    const redirectUri = encodeURIComponent(
+      `https://${process.env.REPLIT_DOMAINS || "localhost:5000"}/api/shopify/oauth/callback`
+    );
+    const authUrl =
+      `https://${SHOPIFY_INSTALL_SHOP}/admin/oauth/authorize` +
+      `?client_id=${SHOPIFY_CLIENT_ID}` +
+      `&scope=${encodeURIComponent(SHOPIFY_SCOPES)}` +
+      `&redirect_uri=${redirectUri}` +
+      `&state=${nonce}`;
+    res.redirect(authUrl);
+  });
+
+  app.get("/api/shopify/oauth/callback", async (req, res) => {
+    const { code, state, error } = req.query as Record<string, string>;
+
+    if (error) {
+      return res.status(400).send(`<h2>Shopify OAuth Error</h2><pre>${error}</pre>`);
+    }
+    if (!state || !oauthNonces.has(state) || Date.now() > oauthNonces.get(state)!) {
+      return res.status(400).send("<h2>Invalid or expired state. Please start again.</h2>");
+    }
+    oauthNonces.delete(state);
+
+    if (!code) return res.status(400).send("<h2>Missing authorization code.</h2>");
+    if (!SHOPIFY_CLIENT_SECRET) return res.status(500).send("<h2>Client secret not configured.</h2>");
+
+    try {
+      const tokenRes = await fetch(`https://${SHOPIFY_INSTALL_SHOP}/admin/oauth/access_token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          client_id: SHOPIFY_CLIENT_ID,
+          client_secret: SHOPIFY_CLIENT_SECRET,
+          code,
+        }),
+      });
+      const tokenData = await tokenRes.json() as { access_token?: string; scope?: string; error?: string };
+
+      if (!tokenData.access_token) {
+        return res.status(400).send(`<h2>Token exchange failed</h2><pre>${JSON.stringify(tokenData, null, 2)}</pre>`);
+      }
+
+      res.send(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Shopify Connected</title>
+  <style>
+    body { font-family: sans-serif; max-width: 640px; margin: 60px auto; padding: 0 20px; }
+    .success { color: #16a34a; }
+    .box { background: #f1f5f9; border-radius: 8px; padding: 16px; word-break: break-all; font-family: monospace; font-size: 13px; margin: 12px 0; }
+    .btn { display: inline-block; background: #4A53A0; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; cursor: pointer; border: none; font-size: 14px; }
+    .scopes { font-size: 12px; color: #64748b; }
+  </style>
+</head>
+<body>
+  <h2 class="success">✅ Shopify Admin Connected!</h2>
+  <p>Store: <strong>${SHOPIFY_INSTALL_SHOP}</strong></p>
+  <p>Copy the token below and save it as a Replit secret named <code>SHOPIFY_ADMIN_TOKEN</code>:</p>
+  <div class="box" id="token">${tokenData.access_token}</div>
+  <button class="btn" onclick="navigator.clipboard.writeText('${tokenData.access_token}').then(()=>this.textContent='Copied!')">Copy Token</button>
+  <p class="scopes">Granted scopes: ${tokenData.scope}</p>
+  <br>
+  <p style="font-size:13px; color:#94a3b8;">Once saved as a secret, restart the app and you'll have full Admin API access.</p>
+</body>
+</html>`);
+    } catch (err) {
+      console.error("Shopify OAuth callback error:", err);
+      res.status(500).send(`<h2>Server error during token exchange</h2><pre>${err}</pre>`);
+    }
+  });
+  // ── End Shopify OAuth ────────────────────────────────────────────────────────
+
   startPeriodicSync();
 
   return httpServer;
