@@ -33,7 +33,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import logoPath from "@assets/ableys_rehab_logo.png";
-import heroBgImg from "@assets/generated_images/hero-banner.png";
 import swingImg from "@assets/generated_images/acrobat-swing.png";
 import crashMatImg from "@assets/generated_images/crash-mat.png";
 import therapyMatImg from "@assets/generated_images/therapy-mat.png";
@@ -330,29 +329,12 @@ export default function B2BLandingPage() {
         {/* ── Hero ── */}
         <section className="relative overflow-hidden bg-[#070d2a] text-white min-h-[520px] sm:min-h-[640px] lg:min-h-[700px]" data-testid="section-b2b-hero">
 
-          {/* Background image — higher opacity, richer presence */}
-          <img
-            src={heroBgImg}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover object-center"
-            style={{ opacity: 0.42 }}
-            loading="eager"
-          />
-
-          {/* Layered gradient system */}
-          {/* Mobile: strong top-to-bottom dark curtain */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#070d2a]/90 via-[#0d1540]/88 to-[#0d1540]/96 sm:hidden" />
-          {/* Desktop layer 1: left-side reading lane */}
-          <div className="absolute inset-0 hidden sm:block bg-gradient-to-r from-[#070d2a] via-[#0d1540]/92 to-transparent" style={{ backgroundSize: "70% 100%", backgroundRepeat: "no-repeat" }} />
-          {/* Desktop layer 2: bottom vignette */}
-          <div className="absolute inset-0 hidden sm:block bg-gradient-to-t from-[#070d2a]/80 via-transparent to-[#070d2a]/40" />
           {/* Brand-colour radial glow — behind the headline */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_55%_60%_at_18%_40%,rgba(74,83,160,0.35),transparent)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_55%_60%_at_15%_40%,rgba(74,83,160,0.40),transparent)] pointer-events-none" />
           {/* Warm accent glow on right — lifts product mosaic */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_45%_55%_at_85%_30%,rgba(251,191,36,0.07),transparent)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_45%_55%_at_85%_30%,rgba(251,191,36,0.08),transparent)] pointer-events-none" />
           {/* Subtle grid texture */}
-          <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.6) 1px,transparent 1px)", backgroundSize: "48px 48px" }} />
+          <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.6) 1px,transparent 1px)", backgroundSize: "48px 48px" }} />
 
           {/* Content grid */}
           <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-22 lg:py-28">
