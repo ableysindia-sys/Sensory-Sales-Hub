@@ -28,11 +28,11 @@ export function PhoneSignupInline({
   containerId = "recaptcha-inline",
 }: PhoneSignupInlineProps) {
   const { user, setIsAuthDrawerOpen, setPendingConfirmation, setPendingPhone } = useAuth();
-  const [phone, setPhone]             = useState("");
-  const [loading, setLoading]         = useState(false);
-  const [error, setError]             = useState("");
+  const [phone, setPhone]               = useState("");
+  const [loading, setLoading]           = useState(false);
+  const [error, setError]               = useState("");
   const [socialLoading, setSocialLoading] = useState<"google" | "apple" | null>(null);
-  const [done, setDone]               = useState(false);
+  const [done, setDone]                 = useState(false);
   const recaptchaRef = useRef<RecaptchaVerifier | null>(null);
 
   const isDark = variant === "dark";
@@ -43,7 +43,7 @@ export function PhoneSignupInline({
     return (
       <div className={cn("flex items-center gap-2.5", className)}>
         <div className={cn(
-          "flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium",
+          "w-full flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-medium",
           isDark
             ? "bg-white/10 text-white border border-white/20"
             : "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50"
@@ -98,26 +98,29 @@ export function PhoneSignupInline({
 
   /* ── Render ── */
   return (
-    <div className={cn("w-full space-y-3", className)}>
+    <div className={cn("w-full", className)}>
       <div id={containerId} className="hidden" />
 
-      {/* Header */}
+      {/* ── Zone 1: Header ── */}
       {(label || sublabel) && (
-        <div className="flex items-start gap-2.5">
+        <div className={cn(
+          "flex items-center gap-3 pb-4 mb-4 border-b",
+          isDark ? "border-white/10" : "border-border/50"
+        )}>
           <div className={cn(
-            "w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5",
-            isDark ? "bg-white/10" : "bg-primary/10"
+            "w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0",
+            isDark ? "bg-white/15" : "bg-primary/10"
           )}>
-            <Bell className={cn("w-3.5 h-3.5", isDark ? "text-white/70" : "text-primary")} />
+            <Bell className={cn("w-4 h-4", isDark ? "text-white" : "text-primary")} />
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             {label && (
-              <p className={cn("text-sm font-semibold leading-snug", isDark ? "text-white" : "text-foreground")}>
+              <p className={cn("text-sm font-bold leading-snug", isDark ? "text-white" : "text-foreground")}>
                 {label}
               </p>
             )}
             {sublabel && (
-              <p className={cn("text-xs mt-0.5 leading-relaxed", isDark ? "text-white/55" : "text-muted-foreground")}>
+              <p className={cn("text-xs mt-0.5", isDark ? "text-white/50" : "text-muted-foreground")}>
                 {sublabel}
               </p>
             )}
@@ -125,18 +128,18 @@ export function PhoneSignupInline({
         </div>
       )}
 
-      {/* Unified phone input + button */}
-      <div className="flex flex-col sm:flex-row gap-2">
-        {/* Unified phone input */}
+      {/* ── Zone 2: Form ── */}
+      <div className="space-y-2.5">
+        {/* Unified phone input — always full width */}
         <div className={cn(
-          "flex flex-1 items-center rounded-xl overflow-hidden border transition-shadow focus-within:ring-2",
+          "flex items-center rounded-xl overflow-hidden border transition-shadow focus-within:ring-2",
           isDark
             ? "bg-white/10 border-white/15 focus-within:ring-white/30"
-            : "bg-background border-input focus-within:ring-ring focus-within:ring-offset-0"
+            : "bg-background border-input focus-within:ring-ring"
         )}>
           <div className={cn(
             "flex items-center gap-1 px-3 py-2.5 text-sm font-semibold shrink-0 border-r select-none",
-            isDark ? "text-white border-white/15" : "text-foreground border-input bg-muted"
+            isDark ? "text-white/80 border-white/15" : "text-foreground border-input bg-muted"
           )}>
             🇮🇳 <span>+91</span>
           </div>
@@ -150,21 +153,21 @@ export function PhoneSignupInline({
             className={cn(
               "flex-1 px-3 py-2.5 text-sm tracking-wider bg-transparent outline-none min-w-0",
               isDark
-                ? "text-white placeholder:text-white/35"
+                ? "text-white placeholder:text-white/30"
                 : "text-foreground placeholder:text-muted-foreground"
             )}
             data-testid="input-inline-phone"
           />
         </div>
 
-        {/* Send OTP button */}
+        {/* CTA — always full width */}
         <button
           onClick={sendOtp}
           disabled={phone.replace(/\D/g, "").length !== 10 || loading}
           className={cn(
-            "h-[42px] px-5 rounded-xl text-sm font-semibold flex items-center justify-center gap-1.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto flex-shrink-0",
+            "w-full h-11 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed",
             isDark
-              ? "bg-white text-gray-900 hover:bg-white/90 shadow-lg shadow-black/30"
+              ? "bg-white text-gray-900 hover:bg-white/90 shadow-md shadow-black/20"
               : "bg-primary text-primary-foreground hover:bg-primary/90"
           )}
           data-testid="button-inline-send-otp"
@@ -174,48 +177,48 @@ export function PhoneSignupInline({
             : <><Phone className="w-3.5 h-3.5" /> Get OTP</>
           }
         </button>
-      </div>
 
-      {error && (
-        <p className={cn("text-xs", isDark ? "text-red-300" : "text-destructive")}>
-          {error}
-        </p>
-      )}
+        {error && (
+          <p className={cn("text-xs", isDark ? "text-red-300" : "text-destructive")}>
+            {error}
+          </p>
+        )}
 
-      {/* Divider */}
-      <div className="flex items-center gap-3">
-        <div className={cn("flex-1 h-px", isDark ? "bg-white/15" : "bg-border")} />
-        <span className={cn("text-[11px] font-medium", isDark ? "text-white/45" : "text-muted-foreground")}>
-          or sign in with
-        </span>
-        <div className={cn("flex-1 h-px", isDark ? "bg-white/15" : "bg-border")} />
-      </div>
+        {/* Divider */}
+        <div className="flex items-center gap-3 pt-0.5">
+          <div className={cn("flex-1 h-px", isDark ? "bg-white/12" : "bg-border")} />
+          <span className={cn("text-[11px] font-medium", isDark ? "text-white/40" : "text-muted-foreground")}>
+            or sign in with
+          </span>
+          <div className={cn("flex-1 h-px", isDark ? "bg-white/12" : "bg-border")} />
+        </div>
 
-      {/* Social buttons */}
-      <div className="flex gap-2">
-        {(["google", "apple"] as const).map((p) => (
-          <button
-            key={p}
-            onClick={() => signInWithProvider(p)}
-            disabled={!!socialLoading || loading}
-            className={cn(
-              "flex-1 flex items-center justify-center gap-2 h-10 rounded-full text-sm font-medium border transition-all disabled:opacity-50",
-              isDark
-                ? "bg-white/10 border-white/15 text-white hover:bg-white/20 backdrop-blur-sm"
-                : "bg-background border-border/70 text-foreground hover:bg-muted hover:border-border"
-            )}
-            data-testid={`button-inline-${p}`}
-          >
-            {socialLoading === p ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : p === "google" ? (
-              <SiGoogle className="w-3.5 h-3.5 text-red-500" />
-            ) : (
-              <SiApple className="w-3.5 h-3.5" />
-            )}
-            {p === "google" ? "Google" : "Apple"}
-          </button>
-        ))}
+        {/* Social buttons — compact equal pair */}
+        <div className="flex gap-2">
+          {(["google", "apple"] as const).map((p) => (
+            <button
+              key={p}
+              onClick={() => signInWithProvider(p)}
+              disabled={!!socialLoading || loading}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-2 h-9 rounded-xl text-xs font-medium border transition-all disabled:opacity-50",
+                isDark
+                  ? "bg-white/8 border-white/12 text-white hover:bg-white/15"
+                  : "bg-background border-border/60 text-foreground hover:bg-muted hover:border-border"
+              )}
+              data-testid={`button-inline-${p}`}
+            >
+              {socialLoading === p ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : p === "google" ? (
+                <SiGoogle className="w-3.5 h-3.5 text-red-500" />
+              ) : (
+                <SiApple className="w-3.5 h-3.5" />
+              )}
+              {p === "google" ? "Google" : "Apple"}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -1177,7 +1177,7 @@ export default function ProductPage() {
                 </div>
 
                 {/* ── Phone signup ── */}
-                <div className="rounded-2xl border border-border/50 bg-muted/20 p-4">
+                <div className="rounded-2xl border border-primary/15 bg-primary/5 p-4">
                   <PhoneSignupInline variant="light" label="Get B2B pricing & stock alerts" sublabel="Register free — we notify you of deals and restock" containerId="recaptcha-product" />
                 </div>
 
