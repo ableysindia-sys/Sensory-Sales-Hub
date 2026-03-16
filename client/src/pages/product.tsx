@@ -878,16 +878,13 @@ export default function ProductPage() {
                   </ul>
                 )}
 
-                {/* ── Short description + meta ── */}
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-product-description">
-                    {product.shortDescription}
-                  </p>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground pt-1">
+                {/* ── SKU + vendor meta ── */}
+                {(currentSku || product.vendor) && (
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                     {currentSku && <span data-testid="text-product-sku">SKU: <span className="font-mono text-foreground">{currentSku}</span></span>}
                     {product.vendor && <span data-testid="text-product-vendor">By <span className="font-medium text-foreground">{product.vendor}</span></span>}
                   </div>
-                </div>
+                )}
 
                 {/* Shopify Variant Selectors */}
                 {hasShopifyVariants && optionGroups.length > 0 && (
