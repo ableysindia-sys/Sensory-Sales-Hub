@@ -4,6 +4,7 @@ export interface ProductSpec {
   weightCapacity?: string;
   useCase?: string;
   weight?: string;
+  [key: string]: string | undefined;
 }
 
 export interface ColorOption {

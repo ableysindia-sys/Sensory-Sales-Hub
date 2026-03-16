@@ -287,6 +287,101 @@ function StarRow({ stars, size = "md" }: { stars: number; size?: "sm" | "md" }) 
   );
 }
 
+const SUITABLE_FOR_LABELS: Record<string, string> = {
+  "autism": "Autism / ASD", "adhd": "ADHD", "spd": "Sensory Processing Disorder",
+  "anxiety": "Anxiety", "age-0-3": "Ages 0–3", "age-3-5": "Ages 3–5",
+  "age-6-12": "Ages 6–12", "age-13-plus": "Teens & Adults",
+  "deep-pressure": "Deep Pressure", "calming": "Calming & Regulation",
+  "focus": "Focus & Attention", "vestibular-therapy": "Vestibular Therapy",
+  "sensory-integration": "Sensory Integration", "occupational-therapy": "Occupational Therapy",
+  "core-strengthening": "Core Strengthening", "bilateral-coordination": "Bilateral Coordination",
+  "sleep": "Sleep Support", "bedtime": "Bedtime Routine",
+  "classroom": "Classroom Use", "clinical": "Clinical / Therapy Centre",
+  "home": "Home Use", "school": "School / NGO",
+  "tactile-defensiveness": "Tactile Sensitivity", "proprioceptive-input": "Proprioceptive Input",
+  "tactile": "Tactile Stimulation", "weighted": "Weighted Products",
+  "compression": "Compression / Deep Pressure", "attention": "Attention & Focus",
+  "fidget": "Fidget / Restless Hands", "movement": "Movement Seeking",
+  "social-play": "Social Play", "balance-training": "Balance Training",
+  "on-the-go": "Portable / On the Go", "travel": "Travel",
+};
+
+function humanizeTag(tag: string): string {
+  return SUITABLE_FOR_LABELS[tag.toLowerCase()] || tag.replace(/[-_]/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function isTagSlug(s: string): boolean {
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s) && s.length < 40 && !s.includes(" ");
+}
+
+function SpecificationsDisplay({ specs }: { specs: Record<string, string> }) {
+  const LEGACY_KEY_LABELS: Record<string, string> = {
+    dimensions: "Dimensions", material: "Material",
+    weightCapacity: "Weight Capacity", useCase: "Use Case",
+  };
+  const entries = Object.entries(specs).filter(([, v]) => !!v);
+  if (entries.length === 0) {
+    return <p className="text-sm text-muted-foreground">See product description for specifications.</p>;
+  }
+  return (
+    <div className="space-y-3">
+      {entries.map(([key, val]) => {
+        let displayVal = val;
+        if (key === "dimensions" || key === "material" || key === "weightCapacity" || key === "useCase") {
+          // legacy structured format — val is already a string
+        } else {
+          // Flat metafield format — might be JSON
+          try { displayVal = JSON.stringify(JSON.parse(val)); } catch {}
+        }
+        const label = LEGACY_KEY_LABELS[key] || key.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+        return (
+          <div key={key} data-testid={`spec-${key}`}>
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
+            <p className="text-sm text-foreground">{displayVal}</p>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function KeyFeaturesDisplay({ features }: { features: string[] }) {
+  const realFeatures = features.filter(f => !isTagSlug(f) || f.includes(" "));
+  const displayFeatures = realFeatures.length > 0 ? realFeatures : features.filter(f => !isTagSlug(f));
+  if (displayFeatures.length === 0) {
+    return <p className="text-sm text-muted-foreground">See product description above for full feature details.</p>;
+  }
+  return (
+    <ul className="space-y-2">
+      {displayFeatures.map((feature, i) => (
+        <li key={i} className="flex items-start gap-2 text-sm text-foreground">
+          <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+          {feature}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function SuitableForDisplay({ applications }: { applications: string[] }) {
+  if (applications.length === 0) {
+    return <p className="text-sm text-muted-foreground">See product description for suitability details.</p>;
+  }
+  return (
+    <div className="flex flex-wrap gap-2">
+      {applications.map((app) => (
+        <span
+          key={app}
+          className="text-xs px-3 py-1.5 rounded-full bg-primary/8 text-primary font-medium"
+          data-testid={`app-tag-${app.toLowerCase().replace(/\s+/g, "-")}`}
+        >
+          {humanizeTag(app)}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function FAQItem({ faq, isOpen, onToggle }: { faq: FAQ; isOpen: boolean; onToggle: () => void }) {
   return (
     <div className="border-b border-border/50 last:border-0">
@@ -327,7 +422,7 @@ export default function ProductPage() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(null);
-  const [shippingOpen, setShippingOpen] = useState(false);
+  const [shippingOpen, setShippingOpen] = useState(true);
 
   const hasShopifyVariants = !!(product?.shopifyVariants && product.shopifyVariants.length > 0);
   const optionGroups = useMemo(() => {
@@ -1262,109 +1357,25 @@ export default function ProductPage() {
         >
           <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+              {/* Specifications */}
               <div>
-                <h3 className="text-lg font-bold text-foreground mb-4">
-                  Specifications
-                </h3>
-                <div className="space-y-3">
-                  {product.specifications.dimensions && (
-                    <div data-testid="spec-dimensions">
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">
-                        Dimensions
-                      </p>
-                      <p className="text-sm text-foreground">
-                        {product.specifications.dimensions}
-                      </p>
-                    </div>
-                  )}
-                  {product.specifications.material && (
-                    <div data-testid="spec-material">
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">
-                        Material
-                      </p>
-                      <p className="text-sm text-foreground">
-                        {product.specifications.material}
-                      </p>
-                    </div>
-                  )}
-                  {product.specifications.weightCapacity && (
-                    <div data-testid="spec-weight">
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">
-                        Weight Capacity
-                      </p>
-                      <p className="text-sm text-foreground">
-                        {product.specifications.weightCapacity}
-                      </p>
-                    </div>
-                  )}
-                  {product.specifications.useCase && (
-                    <div data-testid="spec-usecase">
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">
-                        Use Case
-                      </p>
-                      <p className="text-sm text-foreground">
-                        {product.specifications.useCase}
-                      </p>
-                    </div>
-                  )}
-                  {!product.specifications.dimensions &&
-                    !product.specifications.material &&
-                    !product.specifications.weightCapacity &&
-                    !product.specifications.useCase && (
-                      <p className="text-sm text-muted-foreground">
-                        See description for full specifications.
-                      </p>
-                    )}
-                </div>
+                <h3 className="text-lg font-bold text-foreground mb-4">Specifications</h3>
+                <SpecificationsDisplay specs={product.specifications} />
               </div>
 
+              {/* Key Features */}
               <div>
-                <h3 className="text-lg font-bold text-foreground mb-4">
-                  Key Features
-                </h3>
-                {product.features.length > 0 ? (
-                  <ul className="space-y-2">
-                    {product.features.map((feature) => (
-                      <li
-                        key={feature}
-                        className="flex items-start gap-2 text-sm text-foreground"
-                      >
-                        <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    See product description for features.
-                  </p>
-                )}
+                <h3 className="text-lg font-bold text-foreground mb-4">Key Features</h3>
+                <KeyFeaturesDisplay features={product.features} />
               </div>
 
+              {/* Suitable For */}
               <div className="md:col-span-2">
-                <h3 className="text-lg font-bold text-foreground mb-4">
-                  Suitable For
-                </h3>
-                {product.applications.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {product.applications.map((app) => (
-                      <span
-                        key={app}
-                        className="text-xs px-3 py-1.5 rounded-full bg-primary/8 text-primary font-medium capitalize"
-                        data-testid={`app-tag-${app
-                          .toLowerCase()
-                          .replace(/\s+/g, "-")}`}
-                      >
-                        {app.replace(/-/g, " ")}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    See product description for applications.
-                  </p>
-                )}
+                <h3 className="text-lg font-bold text-foreground mb-4">Suitable For</h3>
+                <SuitableForDisplay applications={product.applications} />
               </div>
+
             </div>
           </div>
         </section>

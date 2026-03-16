@@ -1,6 +1,7 @@
 import { db } from "./db";
 import { products as productsTable, categories as categoriesTable } from "@shared/schema";
 import { eq, isNotNull } from "drizzle-orm";
+import { shopifyAdminGraphQL } from "./shopify-admin";
 
 const SHOPIFY_COLLECTION_TO_CATEGORY: Record<string, string> = {
   // Swings (most specific — must win over generic deep-pressure)
@@ -97,6 +98,160 @@ interface ShopifyProduct {
   };
 }
 
+type MetafieldMap = Record<string, string>;
+
+function decodeHtmlEntities(s: string): string {
+  return s
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&nbsp;/gi, " ")
+    // strip leftover emoji-text artifacts like 🏫 🧠 ✓ 🎯 at end
+    .replace(/\s+[🏫🧠✓🎯✨🎉🌟]\s*$/u, "")
+    .trim();
+}
+
+function extractFeaturesFromHtml(html: string): string[] {
+  const matches: string[] = [];
+  const liRegex = /<li[^>]*>([\s\S]*?)<\/li>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = liRegex.exec(html)) !== null) {
+    const raw = decodeHtmlEntities(m[1].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim());
+    if (raw.length >= 8 && raw.length <= 300) matches.push(raw);
+  }
+  return matches.slice(0, 12);
+}
+
+function formatMetafieldValue(val: string): string | null {
+  // Filter out GID references
+  if (val.includes("gid://shopify/")) {
+    try {
+      const arr = JSON.parse(val);
+      if (Array.isArray(arr) && arr.every(v => typeof v === "string" && v.includes("gid://"))) return null;
+    } catch {}
+    if (val.includes("gid://shopify/")) return null;
+  }
+  // Try to parse JSON for arrays/objects
+  try {
+    const parsed = JSON.parse(val);
+    if (Array.isArray(parsed)) {
+      if (parsed.length === 0) return null;
+      // Check if it's dimension objects [{value, unit}]
+      if (parsed[0] && typeof parsed[0] === "object" && "value" in parsed[0] && "unit" in parsed[0]) {
+        return parsed.map((d: { value: number; unit: string }) => `${d.value}${d.unit === "CENTIMETERS" ? "cm" : d.unit === "INCHES" ? "in" : d.unit === "GRAMS" ? "g" : d.unit === "KILOGRAMS" ? "kg" : ` ${d.unit}`}`).join(" × ");
+      }
+      // Filter GIDs
+      const clean = parsed.filter((v: unknown) => typeof v === "string" && !String(v).includes("gid://"));
+      if (clean.length === 0) return null;
+      return clean.length === 1 ? String(clean[0]) : clean.join(", ");
+    }
+    if (parsed && typeof parsed === "object" && "value" in parsed && "unit" in parsed) {
+      const u = String((parsed as { unit: string }).unit);
+      const v = (parsed as { value: number }).value;
+      const unitLabel = u === "GRAMS" ? "g" : u === "KILOGRAMS" ? "kg" : u === "CENTIMETERS" ? "cm" : ` ${u}`;
+      return `${v}${unitLabel}`;
+    }
+  } catch {}
+  return val.length > 0 ? val : null;
+}
+
+function metafieldsToSpecs(mf: MetafieldMap): string | null {
+  const SPEC_KEYS = ["custom.specifications", "specs.value", "product.specifications"];
+  for (const k of SPEC_KEYS) {
+    if (mf[k]) return mf[k];
+  }
+  const specsObj: Record<string, string> = {};
+  const SPEC_KEYWORDS = ["spec", "dimension", "weight", "material", "composition", "size", "capacity"];
+  for (const [key, val] of Object.entries(mf)) {
+    const keyLower = key.toLowerCase();
+    if (SPEC_KEYWORDS.some(kw => keyLower.includes(kw))) {
+      const formatted = formatMetafieldValue(val);
+      if (formatted) {
+        const label = key.split(".").pop()?.replace(/[_\]]/g, " ").trim() || key;
+        specsObj[label] = formatted;
+      }
+    }
+  }
+  return Object.keys(specsObj).length > 0 ? JSON.stringify(specsObj) : null;
+}
+
+function metafieldsToFeatures(mf: MetafieldMap): string[] {
+  const FEATURE_KEYS = ["custom.key_features", "custom.features", "custom.key_feature", "product.features", "descriptors.features"];
+  for (const k of FEATURE_KEYS) {
+    if (mf[k]) {
+      try {
+        const parsed = JSON.parse(mf[k]);
+        if (Array.isArray(parsed)) return parsed.map(String).filter(Boolean);
+      } catch {}
+      return mf[k].split(/\n|;|,/).map(s => s.replace(/^[-•*]\s*/, "").trim()).filter(s => s.length > 3);
+    }
+  }
+  return [];
+}
+
+function metafieldsToApplications(mf: MetafieldMap): string[] {
+  const APP_KEYS = ["custom.suitable_for", "custom.suitable", "custom.who_is_it_for", "product.suitable_for"];
+  for (const k of APP_KEYS) {
+    if (mf[k]) {
+      try {
+        const parsed = JSON.parse(mf[k]);
+        if (Array.isArray(parsed)) return parsed.map(String).filter(Boolean);
+      } catch {}
+      return mf[k].split(/\n|;|,/).map(s => s.trim()).filter(Boolean);
+    }
+  }
+  return [];
+}
+
+async function fetchAllAdminMetafields(): Promise<Map<string, MetafieldMap>> {
+  const result = new Map<string, MetafieldMap>();
+  let cursor: string | null = null;
+  let hasNext = true;
+  let page = 0;
+
+  while (hasNext && page < 10) {
+    page++;
+    const afterClause = cursor ? `, after: "${cursor}"` : "";
+    const query = `{
+      products(first: 50${afterClause}) {
+        pageInfo { hasNextPage }
+        edges {
+          cursor
+          node {
+            handle
+            metafields(first: 30) {
+              edges { node { namespace key value type } }
+            }
+          }
+        }
+      }
+    }`;
+    try {
+      const data = await shopifyAdminGraphQL(query) as any;
+      const edges = data?.data?.products?.edges || [];
+      const pageInfo = data?.data?.products?.pageInfo;
+      for (const edge of edges) {
+        const handle = edge.node.handle as string;
+        const mfEdges = edge.node.metafields?.edges || [];
+        const mfMap: MetafieldMap = {};
+        for (const mfEdge of mfEdges) {
+          const { namespace, key, value } = mfEdge.node;
+          if (value) mfMap[`${namespace}.${key}`] = value as string;
+        }
+        if (Object.keys(mfMap).length > 0) result.set(handle, mfMap);
+        cursor = edge.cursor as string;
+      }
+      hasNext = pageInfo?.hasNextPage || false;
+    } catch (err) {
+      console.warn("[shopify-sync] Admin metafield fetch failed:", err);
+      hasNext = false;
+    }
+  }
+  return result;
+}
+
 function resolveCategory(product: ShopifyProduct): string {
   // Collect all category matches from the product's collections
   const matched = new Set<string>();
@@ -121,7 +276,7 @@ function extractShortDescription(html: string): string {
   return text.slice(0, 200);
 }
 
-function shopifyToDbProduct(sp: ShopifyProduct) {
+function shopifyToDbProduct(sp: ShopifyProduct, metafields: MetafieldMap = {}) {
   const firstVariantNode = sp.variants.edges[0]?.node;
   const basePrice = firstVariantNode ? Math.round(parseFloat(firstVariantNode.price.amount)) : 0;
   const comparePrice = firstVariantNode?.compareAtPrice
@@ -164,9 +319,19 @@ function shopifyToDbProduct(sp: ShopifyProduct) {
     comparePrice,
     stock: isAvailable ? null : 0,
     images: JSON.stringify(images),
-    specifications: null as string | null,
-    features: JSON.stringify(sp.tags.filter(t => !t.startsWith("need:") && !t.startsWith("product:"))),
-    applications: JSON.stringify(sp.tags.filter(t => t.startsWith("need:") || t.startsWith("product:")).map(t => t.replace(/^(need:|product:)/, ""))),
+    specifications: metafieldsToSpecs(metafields),
+    features: (() => {
+      const mfFeatures = metafieldsToFeatures(metafields);
+      if (mfFeatures.length > 0) return JSON.stringify(mfFeatures);
+      const htmlFeatures = extractFeaturesFromHtml(sp.descriptionHtml);
+      if (htmlFeatures.length > 0) return JSON.stringify(htmlFeatures);
+      return JSON.stringify(sp.tags.filter(t => !t.startsWith("need:") && !t.startsWith("product:")));
+    })(),
+    applications: (() => {
+      const mfApps = metafieldsToApplications(metafields);
+      if (mfApps.length > 0) return JSON.stringify(mfApps);
+      return JSON.stringify(sp.tags.filter(t => t.startsWith("need:") || t.startsWith("product:")).map(t => t.replace(/^(need:|product:)/, "")));
+    })(),
     configOptions: null as string | null,
     shopifyHandle: sp.handle,
     shopifyUrl: `https://www.ableys.in/products/${sp.handle}`,
@@ -271,11 +436,21 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
 
   console.log(`[shopify-sync] Fetched ${shopifyProducts.length} products from Shopify`);
 
+  // Fetch metafields via Admin API (Specifications, Key Features, Suitable For)
+  let adminMetafields = new Map<string, MetafieldMap>();
+  try {
+    adminMetafields = await fetchAllAdminMetafields();
+    console.log(`[shopify-sync] Fetched metafields for ${adminMetafields.size} products via Admin API`);
+  } catch (err) {
+    console.warn("[shopify-sync] Admin metafield fetch skipped:", err);
+  }
+
   let added = 0;
   let updated = 0;
 
   for (const sp of shopifyProducts) {
-    const dbProduct = shopifyToDbProduct(sp);
+    const metafields = adminMetafields.get(sp.handle) || {};
+    const dbProduct = shopifyToDbProduct(sp, metafields);
 
     const [existing] = await db
       .select()
@@ -294,6 +469,7 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
           comparePrice: dbProduct.comparePrice,
           stock: dbProduct.stock,
           images: dbProduct.images,
+          specifications: dbProduct.specifications,
           features: dbProduct.features,
           applications: dbProduct.applications,
           shopifyHandle: dbProduct.shopifyHandle,
