@@ -1,8 +1,11 @@
 import { useState, useMemo } from "react";
-import { ArrowRight, Hospital, GraduationCap, Sparkles, Home, Dumbbell, Building2 } from "lucide-react";
+import { ArrowRight, Hospital, GraduationCap, Sparkles, Home, Dumbbell, Building2, MessageSquare, ShoppingCart, CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
 import { useProducts } from "@/lib/product-provider";
+import { useEnquiryCart } from "@/lib/enquiry-cart";
+import { useShoppingCart } from "@/lib/shopping-cart";
 import { Button } from "@/components/ui/button";
+import type { CatalogueProduct } from "@/lib/catalogue-data";
 
 const SETUP_TYPES = [
   { id: "sensory-room",   label: "Sensory Room",   shortLabel: "Sensory",  icon: Sparkles,       color: "from-violet-500 to-purple-600", desc: "Complete sensory integration rooms" },
@@ -30,6 +33,120 @@ const SETUP_CTA: Record<string, string> = {
   "gym-fitness":    "Get a gym setup quote",
   "other":          "Get a custom quote",
 };
+
+function SetupProductCard({ product, catTitle }: { product: CatalogueProduct; catTitle: string }) {
+  const { addItem, isInCart } = useEnquiryCart();
+  const { addToCart, items: cartItems } = useShoppingCart();
+  const [cartAdded, setCartAdded] = useState(false);
+  const inEnquiry = isInCart(product.id);
+  const inCart = cartItems.some((i) => i.productId === product.id);
+  const hasDiscount = product.comparePrice && product.comparePrice > product.basePrice;
+
+  const handleQuote = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem(product.id, product.name, catTitle);
+  };
+
+  const handleCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart({
+      productId: product.id,
+      productName: product.name,
+      category: catTitle,
+      unitPrice: product.basePrice,
+      shopifyHandle: product.shopifyHandle,
+      config: { addons: [] },
+      image: product.images?.[0],
+    });
+    setCartAdded(true);
+    setTimeout(() => setCartAdded(false), 2000);
+  };
+
+  return (
+    <div
+      className="group bg-card rounded-xl border border-border/50 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/[0.06] transition-all duration-300 overflow-hidden h-full flex flex-col"
+      data-testid={`card-setup-product-${product.id}`}
+    >
+      {/* Image — clicking navigates to product page */}
+      <Link href={`/product/${product.id}`} className="block relative aspect-square overflow-hidden bg-muted/40 flex-shrink-0">
+        {product.images[0] ? (
+          <img
+            src={product.images[0]}
+            alt={product.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-muted-foreground/20">
+            {product.name[0]}
+          </div>
+        )}
+        {hasDiscount && (
+          <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-tight">
+            SALE
+          </div>
+        )}
+      </Link>
+
+      {/* Info + CTAs */}
+      <div className="p-3 flex-1 flex flex-col">
+        <p className="text-[10px] font-semibold text-primary/70 uppercase tracking-wider mb-1 truncate">{catTitle}</p>
+        <Link href={`/product/${product.id}`}>
+          <p className="text-sm font-semibold text-foreground leading-snug mb-2 line-clamp-2 flex-1 hover:text-primary transition-colors cursor-pointer">
+            {product.name}
+          </p>
+        </Link>
+        <div className="flex items-baseline gap-1.5 mb-3">
+          <p className="text-sm font-bold text-foreground">
+            ₹{product.basePrice.toLocaleString("en-IN")}
+          </p>
+          {hasDiscount && (
+            <p className="text-xs text-muted-foreground line-through">
+              ₹{product.comparePrice!.toLocaleString("en-IN")}
+            </p>
+          )}
+          <span className="text-[10px] text-green-600 font-medium ml-auto">Free shipping</span>
+        </div>
+
+        {/* B2B Quote button — primary */}
+        <button
+          onClick={handleQuote}
+          className={`w-full h-8 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all mb-1.5 ${
+            inEnquiry
+              ? "bg-primary/10 text-primary border border-primary/30"
+              : "bg-primary text-primary-foreground hover:bg-primary/90"
+          }`}
+          data-testid={`button-setup-enquiry-${product.id}`}
+        >
+          {inEnquiry ? (
+            <><CheckCircle2 className="w-3 h-3" /> Added to Quote</>
+          ) : (
+            <><MessageSquare className="w-3 h-3" /> Get B2B Quote</>
+          )}
+        </button>
+
+        {/* Add to Cart — secondary */}
+        <button
+          onClick={handleCart}
+          className={`w-full h-7 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-all border ${
+            cartAdded || inCart
+              ? "text-green-700 border-green-200 bg-green-50 dark:bg-green-950/30 dark:text-green-400 dark:border-green-800"
+              : "text-muted-foreground border-border/60 hover:text-foreground hover:border-border"
+          }`}
+          data-testid={`button-setup-cart-${product.id}`}
+        >
+          {cartAdded || inCart ? (
+            <><CheckCircle2 className="w-3 h-3" /> In Cart</>
+          ) : (
+            <><ShoppingCart className="w-3 h-3" /> Add to Cart</>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export function CategoryGrid() {
   const { products, categories } = useProducts();
@@ -111,48 +228,8 @@ export function CategoryGrid() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4" data-testid="setup-products-grid">
             {filteredProducts.map((product) => {
               const catTitle = categories.find((c) => c.slug === product.categorySlug)?.title || product.categorySlug;
-              const hasDiscount = product.comparePrice && product.comparePrice > product.basePrice;
               return (
-                <Link key={product.id} href={`/product/${product.id}`}>
-                  <div
-                    className="group bg-card rounded-xl border border-border/50 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/[0.06] transition-all duration-300 overflow-hidden cursor-pointer h-full flex flex-col"
-                    data-testid={`card-setup-product-${product.id}`}
-                  >
-                    <div className="relative aspect-square overflow-hidden bg-muted/40">
-                      {product.images[0] ? (
-                        <img
-                          src={product.images[0]}
-                          alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-muted-foreground/20">
-                          {product.name[0]}
-                        </div>
-                      )}
-                      {hasDiscount && (
-                        <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-tight">
-                          SALE
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-3 flex-1 flex flex-col">
-                      <p className="text-[10px] font-semibold text-primary/70 uppercase tracking-wider mb-1 truncate">{catTitle}</p>
-                      <p className="text-sm font-semibold text-foreground leading-snug mb-2 line-clamp-2 flex-1">{product.name}</p>
-                      <div className="flex items-baseline gap-1.5">
-                        <p className="text-sm font-bold text-foreground">
-                          ₹{product.basePrice.toLocaleString("en-IN")}
-                        </p>
-                        {hasDiscount && (
-                          <p className="text-xs text-muted-foreground line-through">
-                            ₹{product.comparePrice!.toLocaleString("en-IN")}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </Link>
+                <SetupProductCard key={product.id} product={product} catTitle={catTitle} />
               );
             })}
           </div>
