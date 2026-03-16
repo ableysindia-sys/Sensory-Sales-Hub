@@ -315,9 +315,16 @@ export default function B2BLandingPage() {
               <MessageCircle className="w-4 h-4" />
               +91 70421 80166
             </a>
-            <Button size="sm" className="rounded-full px-5" onClick={scrollToForm} data-testid="button-get-quote-header">
-              Get a Quote
-            </Button>
+            <a
+              href="/api/catalog"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="link-catalogue-header"
+            >
+              <Button size="sm" variant="outline" className="rounded-full px-5 gap-1.5 hidden sm:flex">
+                <Download className="w-3.5 h-3.5" /> Catalogue
+              </Button>
+            </a>
           </div>
         </div>
       </header>
