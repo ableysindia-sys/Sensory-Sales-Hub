@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetTitle,
 } from "@/components/ui/sheet";
 import {
@@ -227,8 +228,9 @@ export function AuthDrawer() {
           side="bottom"
           className="rounded-t-3xl px-0 pb-0 max-h-[96dvh] sm:max-w-md sm:mx-auto sm:rounded-3xl sm:left-1/2 sm:-translate-x-1/2 sm:bottom-4 overflow-hidden"
         >
-          {/* Accessibility title (visually hidden) */}
+          {/* Accessibility labels (visually hidden) */}
           <SheetTitle className="sr-only">Sign in to Abley's Rehab</SheetTitle>
+          <SheetDescription className="sr-only">Sign in with your mobile number, Google, or Apple to access your account.</SheetDescription>
 
           <div className="overflow-y-auto max-h-[96dvh]">
 
