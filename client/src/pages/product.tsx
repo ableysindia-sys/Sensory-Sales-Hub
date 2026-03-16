@@ -431,9 +431,9 @@ function KeyFeaturesDisplay({ features }: { features: string[] }) {
         return (
           <li key={i} className="flex gap-3">
             <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-            <span className="text-sm text-foreground leading-snug">
+            <span className="text-sm text-muted-foreground leading-snug">
               {hasTitle ? (
-                <><span className="font-semibold">{title}:</span> {body}</>
+                <><span className="font-semibold text-foreground">{title}:</span> {body}</>
               ) : decoded}
             </span>
           </li>
