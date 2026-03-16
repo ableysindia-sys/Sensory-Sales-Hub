@@ -48,11 +48,11 @@ export function Hero() {
             schools, and families across India.
           </p>
 
-          {/* CTA row */}
-          <div className="flex items-center gap-3 mb-8">
+          {/* CTA row — stacks on mobile, side-by-side on sm+ */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-8">
             <Button
               size="lg"
-              className="!bg-white !text-gray-900 hover:!bg-gray-50 rounded-full text-sm px-8 h-12 gap-2 font-semibold shadow-xl shadow-black/30 !border-0"
+              className="!bg-white !text-gray-900 hover:!bg-gray-50 rounded-full text-sm px-8 h-12 gap-2 font-semibold shadow-xl shadow-black/30 !border-0 w-full sm:w-auto justify-center"
               data-testid="button-hero-cta"
               onClick={() =>
                 document.getElementById("categories")?.scrollIntoView({ behavior: "smooth" })
@@ -61,11 +61,11 @@ export function Hero() {
               Shop Products <ArrowRight className="w-4 h-4" />
             </Button>
 
-            <Link href="/lp">
+            <Link href="/lp" className="w-full sm:w-auto">
               <Button
                 size="lg"
                 variant="ghost"
-                className="!text-white/80 hover:!text-white hover:!bg-white/10 rounded-full text-sm px-6 h-12 font-medium !border-0"
+                className="!text-white/80 hover:!text-white hover:!bg-white/10 rounded-full text-sm px-6 h-12 font-medium !border border-white/20 w-full justify-center"
                 data-testid="button-hero-b2b"
               >
                 B2B / Bulk orders
@@ -73,12 +73,28 @@ export function Hero() {
             </Link>
           </div>
 
-          {/* Trust strip */}
-          <div className="flex flex-wrap gap-x-5 gap-y-2">
+          {/* Trust callouts — pill grid on mobile, inline row on desktop */}
+          <div className="sm:hidden grid grid-cols-3 gap-2">
             {[
-              { icon: Truck, text: "Free shipping pan-India" },
+              { icon: Truck,       text: "Free\nshipping" },
+              { icon: ShieldCheck, text: "OT-\napproved" },
+              { icon: Users,       text: "500+\ntherapists" },
+            ].map(({ icon: Icon, text }) => (
+              <div
+                key={text}
+                className="flex flex-col items-center gap-1.5 rounded-xl bg-white/6 border border-white/10 py-3 px-2 text-center"
+              >
+                <Icon className="w-4 h-4 text-primary/70 flex-shrink-0" />
+                <span className="text-[10px] leading-tight text-white/55 whitespace-pre-line">{text}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="hidden sm:flex flex-wrap gap-x-5 gap-y-2">
+            {[
+              { icon: Truck,       text: "Free shipping pan-India" },
               { icon: ShieldCheck, text: "OT-approved products" },
-              { icon: Users, text: "500+ therapists trust us" },
+              { icon: Users,       text: "500+ therapists trust us" },
             ].map(({ icon: Icon, text }) => (
               <span key={text} className="flex items-center gap-1.5 text-xs text-white/50">
                 <Icon className="w-3.5 h-3.5 text-white/35" />
