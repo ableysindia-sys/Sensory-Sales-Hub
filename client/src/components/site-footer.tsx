@@ -2,7 +2,6 @@ import { Link } from "wouter";
 import logoPath from "@assets/ableys_rehab_logo.png";
 import { SiFacebook, SiInstagram, SiYoutube } from "react-icons/si";
 import { Building2, FileDown, Mail, MapPin, Phone } from "lucide-react";
-import paymentBadgesImg from "@assets/payment-badges.jpg";
 
 const socialLinks = [
   {
@@ -184,15 +183,6 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-gray-800/50">
-        {/* Payment trust strip */}
-        <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-4 border-b border-gray-800/30 flex justify-center">
-          <img
-            src={paymentBadgesImg}
-            alt="Accepted payment methods — Visa, Mastercard, Razorpay, UPI, PhonePe, Google Pay, Paytm, Net Banking, COD"
-            className="h-8 w-auto object-contain opacity-80"
-            data-testid="img-footer-payment-badges"
-          />
-        </div>
         {/* Copyright bar */}
         <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
           <p className="text-xs text-gray-500" data-testid="text-footer-copy">
