@@ -124,29 +124,65 @@ function extractFeaturesFromHtml(html: string): string[] {
   return matches.slice(0, 12);
 }
 
+/** Recursively extracts plain text from Shopify rich text JSON nodes */
+function extractRichText(node: unknown, bullets = true): string {
+  if (!node || typeof node !== "object") return "";
+  const n = node as Record<string, unknown>;
+  if (n.type === "text") return String(n.value || "");
+  const children = Array.isArray(n.children) ? n.children : [];
+  if (n.type === "list-item") return children.map(c => extractRichText(c, false)).join("").trim();
+  if (n.type === "list") {
+    return children
+      .map((c, i) => {
+        const text = extractRichText(c, false).trim();
+        return text ? (bullets && n.listType !== "ordered" ? `• ${text}` : `${i + 1}. ${text}`) : "";
+      })
+      .filter(Boolean)
+      .join("\n");
+  }
+  return children.map(c => extractRichText(c, bullets)).filter(Boolean).join(n.type === "paragraph" ? " " : "\n");
+}
+
 function formatMetafieldValue(val: string): string | null {
+  // Boolean strings (case-insensitive)
+  const lower = val.trim().toLowerCase();
+  if (lower === "true") return "Yes";
+  if (lower === "false") return "No";
+
   // Filter out GID references
   if (val.includes("gid://shopify/")) {
     try {
       const arr = JSON.parse(val);
-      if (Array.isArray(arr) && arr.every(v => typeof v === "string" && v.includes("gid://"))) return null;
+      if (Array.isArray(arr) && arr.every(v => typeof v === "string" && String(v).includes("gid://"))) return null;
     } catch {}
     if (val.includes("gid://shopify/")) return null;
   }
+
   // Try to parse JSON for arrays/objects
   try {
     const parsed = JSON.parse(val);
+
+    // Shopify rich text document root
+    if (parsed && typeof parsed === "object" && (parsed as Record<string, unknown>).type === "root") {
+      const text = extractRichText(parsed).trim();
+      return text || null;
+    }
+
     if (Array.isArray(parsed)) {
       if (parsed.length === 0) return null;
-      // Check if it's dimension objects [{value, unit}]
+      // Dimension objects [{value, unit}]
       if (parsed[0] && typeof parsed[0] === "object" && "value" in parsed[0] && "unit" in parsed[0]) {
-        return parsed.map((d: { value: number; unit: string }) => `${d.value}${d.unit === "CENTIMETERS" ? "cm" : d.unit === "INCHES" ? "in" : d.unit === "GRAMS" ? "g" : d.unit === "KILOGRAMS" ? "kg" : ` ${d.unit}`}`).join(" × ");
+        return parsed
+          .map((d: { value: number; unit: string }) => `${d.value}${d.unit === "CENTIMETERS" ? "cm" : d.unit === "INCHES" ? "in" : d.unit === "GRAMS" ? "g" : d.unit === "KILOGRAMS" ? "kg" : ` ${d.unit}`}`)
+          .join(" × ");
       }
-      // Filter GIDs
+      // Filter GIDs from string arrays
       const clean = parsed.filter((v: unknown) => typeof v === "string" && !String(v).includes("gid://"));
       if (clean.length === 0) return null;
       return clean.length === 1 ? String(clean[0]) : clean.join(", ");
     }
+
+    // Measurement object {value, unit}
     if (parsed && typeof parsed === "object" && "value" in parsed && "unit" in parsed) {
       const u = String((parsed as { unit: string }).unit);
       const v = (parsed as { value: number }).value;
@@ -154,22 +190,88 @@ function formatMetafieldValue(val: string): string | null {
       return `${v}${unitLabel}`;
     }
   } catch {}
-  return val.length > 0 ? val : null;
+
+  return val.trim() || null;
+}
+
+// Maps raw metafield key → canonical display label (title-case, human-readable)
+const SPEC_FIELD_MAP: Record<string, string> = {
+  // Physical / Dimensions
+  "dimension": "Dimensions",
+  "dimensions": "Dimensions",
+  "product weight": "Product Weight",
+  "weight": "Weight",
+  "material composition": "Material",
+  "material": "Material",
+  "material composition]": "Material",
+  "composition": "Material Composition",
+  "size": "Size",
+  "capacity": "Capacity",
+  // Product details
+  "target age group": "Target Age Group",
+  "target_age_group": "Target Age Group",
+  "target age": "Target Age Group",
+  "age group": "Target Age Group",
+  "whats in the box": "What's in the Box",
+  "what s in the box": "What's in the Box",
+  "what's in the box": "What's in the Box",
+  "whats_in_the_box": "What's in the Box",
+  "in the box": "What's in the Box",
+  "box contents": "What's in the Box",
+  "supervision required": "Supervision Required",
+  "supervision_required": "Supervision Required",
+  "supervision": "Supervision Required",
+  // Care & Safety
+  "care safety information": "Care & Safety Information",
+  "care and safety": "Care & Safety Information",
+  "care_and_safety": "Care & Safety Information",
+  "care instructions": "Care Instructions",
+  "care_instructions": "Care Instructions",
+  "care guide": "Care Instructions",
+  "care_guide": "Care Instructions",
+  "washing instructions": "Care Instructions",
+  "safety warning": "Safety Warning",
+  "safety_warning": "Safety Warning",
+  "warning": "Safety Warning",
+  "safety information": "Safety Information",
+  "safety_information": "Safety Information",
+  "safety certifications": "Safety Certifications",
+  "safety_certifications": "Safety Certifications",
+  "certifications": "Safety Certifications",
+  "certificate": "Safety Certifications",
+  // Usage / extras
+  "target users": "Suitable For",
+  "target_users": "Suitable For",
+  "usage instructions": "Usage Instructions",
+  "usage_instructions": "Usage Instructions",
+  "usage environment": "Usage Environment",
+  "usage_environment": "Usage Environment",
+};
+
+const SPEC_KEYWORDS = [
+  "dimension", "weight", "material", "composition", "size", "capacity",
+  "target", "age", "what.*box", "whats", "supervision",
+  "care", "safety", "warning", "certif", "instruction", "wash",
+];
+
+function canonicalLabel(rawKey: string): string {
+  const k = rawKey.split(".").pop()?.replace(/[_\]]/g, " ").trim().toLowerCase() || rawKey.toLowerCase();
+  return SPEC_FIELD_MAP[k] || k.replace(/\b\w/g, c => c.toUpperCase());
 }
 
 function metafieldsToSpecs(mf: MetafieldMap): string | null {
-  const SPEC_KEYS = ["custom.specifications", "specs.value", "product.specifications"];
-  for (const k of SPEC_KEYS) {
+  const SPEC_EXACT_KEYS = ["custom.specifications", "specs.value", "product.specifications"];
+  for (const k of SPEC_EXACT_KEYS) {
     if (mf[k]) return mf[k];
   }
   const specsObj: Record<string, string> = {};
-  const SPEC_KEYWORDS = ["spec", "dimension", "weight", "material", "composition", "size", "capacity"];
   for (const [key, val] of Object.entries(mf)) {
     const keyLower = key.toLowerCase();
-    if (SPEC_KEYWORDS.some(kw => keyLower.includes(kw))) {
+    const matches = SPEC_KEYWORDS.some(kw => new RegExp(kw).test(keyLower));
+    if (matches) {
       const formatted = formatMetafieldValue(val);
       if (formatted) {
-        const label = key.split(".").pop()?.replace(/[_\]]/g, " ").trim() || key;
+        const label = canonicalLabel(key);
         specsObj[label] = formatted;
       }
     }

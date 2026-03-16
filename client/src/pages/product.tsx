@@ -314,33 +314,70 @@ function isTagSlug(s: string): boolean {
   return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s) && s.length < 40 && !s.includes(" ");
 }
 
+const SPEC_GROUPS: { label: string; keys: string[] }[] = [
+  {
+    label: "Dimensions & Materials",
+    keys: ["Dimensions", "Material", "Material Composition", "Product Weight", "Weight", "Size", "Capacity",
+           "dimensions", "material", "weightCapacity", "weight", "useCase"],
+  },
+  {
+    label: "Product Details",
+    keys: ["Target Age Group", "What's in the Box", "Supervision Required",
+           "Suitable For", "Usage Environment", "Usage Instructions"],
+  },
+  {
+    label: "Care & Safety",
+    keys: ["Care Instructions", "Care & Safety Information", "Safety Information",
+           "Safety Warning", "Safety Certifications"],
+  },
+];
+
 function SpecificationsDisplay({ specs }: { specs: Record<string, string> }) {
-  const LEGACY_KEY_LABELS: Record<string, string> = {
+  const LEGACY_LABELS: Record<string, string> = {
     dimensions: "Dimensions", material: "Material",
-    weightCapacity: "Weight Capacity", useCase: "Use Case",
+    weightCapacity: "Weight Capacity", useCase: "Use Case", weight: "Weight",
   };
-  const entries = Object.entries(specs).filter(([, v]) => !!v);
-  if (entries.length === 0) {
+  const allEntries = Object.entries(specs).filter(([, v]) => !!v);
+  if (allEntries.length === 0) {
     return <p className="text-sm text-muted-foreground">See product description for specifications.</p>;
   }
+
+  const assignedKeys = new Set<string>();
+  const sections: { groupLabel: string; entries: [string, string][] }[] = [];
+
+  for (const group of SPEC_GROUPS) {
+    const entries: [string, string][] = [];
+    for (const [k, v] of allEntries) {
+      const label = LEGACY_LABELS[k] || k;
+      if (group.keys.includes(k) || group.keys.includes(label)) {
+        if (!assignedKeys.has(k)) { entries.push([label, v]); assignedKeys.add(k); }
+      }
+    }
+    if (entries.length > 0) sections.push({ groupLabel: group.label, entries });
+  }
+  // Ungrouped remainder
+  const remainder = allEntries.filter(([k]) => !assignedKeys.has(k));
+  if (remainder.length > 0) {
+    sections.push({ groupLabel: "", entries: remainder.map(([k, v]) => [LEGACY_LABELS[k] || k, v]) });
+  }
+
   return (
-    <div className="space-y-3">
-      {entries.map(([key, val]) => {
-        let displayVal = val;
-        if (key === "dimensions" || key === "material" || key === "weightCapacity" || key === "useCase") {
-          // legacy structured format — val is already a string
-        } else {
-          // Flat metafield format — might be JSON
-          try { displayVal = JSON.stringify(JSON.parse(val)); } catch {}
-        }
-        const label = LEGACY_KEY_LABELS[key] || key.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
-        return (
-          <div key={key} data-testid={`spec-${key}`}>
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
-            <p className="text-sm text-foreground">{displayVal}</p>
+    <div className="space-y-5">
+      {sections.map(({ groupLabel, entries }) => (
+        <div key={groupLabel}>
+          {groupLabel && (
+            <p className="text-[10px] font-semibold text-primary/70 uppercase tracking-widest mb-2">{groupLabel}</p>
+          )}
+          <div className="space-y-2.5">
+            {entries.map(([label, val]) => (
+              <div key={label} data-testid={`spec-${label.toLowerCase().replace(/\s+/g, "-")}`}>
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-0.5">{label}</p>
+                <p className="text-sm text-foreground whitespace-pre-line">{val}</p>
+              </div>
+            ))}
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 }
@@ -808,12 +845,29 @@ export default function ProductPage() {
 
                   {currentSku && (
                     <p
-                      className="hidden sm:block text-xs text-muted-foreground mb-3"
+                      className="hidden sm:block text-xs text-muted-foreground mb-2"
                       data-testid="text-product-sku"
                     >
                       SKU: <span className="font-mono">{currentSku}</span>
                     </p>
                   )}
+
+                  {/* Key features snippet */}
+                  {(() => {
+                    const heroFeatures = product.features
+                      .filter(f => f.includes(" ") && f.length > 10)
+                      .slice(0, 3);
+                    return heroFeatures.length > 0 ? (
+                      <ul className="hidden sm:flex flex-col gap-1 mb-3" data-testid="list-hero-features">
+                        {heroFeatures.map((f, i) => (
+                          <li key={i} className="flex items-start gap-1.5 text-xs text-foreground/80">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
+                            <span>{f}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null;
+                  })()}
 
                   <p
                     className="text-sm text-muted-foreground leading-relaxed line-clamp-2 sm:line-clamp-none"
