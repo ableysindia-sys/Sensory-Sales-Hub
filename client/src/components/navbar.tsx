@@ -485,7 +485,7 @@ export function Navbar() {
                 data-testid="button-mobile-bulk-enquiry"
               >
                 <Send className="w-4 h-4" />
-                Get a Bulk Quote
+                Get a Quote
               </Button>
             </div>
           </div>

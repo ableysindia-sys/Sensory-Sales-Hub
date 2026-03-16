@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ShieldCheck, Truck, Users } from "lucide-react";
-import { Link } from "wouter";
 import heroBannerImg from "@assets/generated_images/hero-banner.png";
 
 export function Hero() {
@@ -48,8 +47,8 @@ export function Hero() {
             schools, and families across India.
           </p>
 
-          {/* CTA row — stacks on mobile, side-by-side on sm+ */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-8">
+          {/* CTA */}
+          <div className="mb-8">
             <Button
               size="lg"
               className="!bg-white !text-gray-900 hover:!bg-gray-50 rounded-full text-sm px-8 h-12 gap-2 font-semibold shadow-xl shadow-black/30 !border-0 w-full sm:w-auto justify-center"
@@ -60,17 +59,6 @@ export function Hero() {
             >
               Shop Products <ArrowRight className="w-4 h-4" />
             </Button>
-
-            <Link href="/lp" className="w-full sm:w-auto">
-              <Button
-                size="lg"
-                variant="ghost"
-                className="!text-white/80 hover:!text-white hover:!bg-white/10 rounded-full text-sm px-6 h-12 font-medium !border border-white/20 w-full justify-center"
-                data-testid="button-hero-b2b"
-              >
-                B2B / Bulk orders
-              </Button>
-            </Link>
           </div>
 
           {/* Trust callouts — pill grid on mobile, inline row on desktop */}
