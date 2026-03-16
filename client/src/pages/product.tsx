@@ -245,6 +245,31 @@ function extractHowItWorksSection(html: string): string | null {
   return body.trim() || null;
 }
 
+function removeHowItWorksSection(html: string): string {
+  if (!html) return html;
+  const m = /How\s+[Ii]t\s+Works/i.exec(html);
+  if (!m) return html;
+  // Find the last block-level opening tag before the match — that's where the section starts
+  const before = html.slice(0, m.index);
+  const blockMatches = [...before.matchAll(/<(?:h[1-6]|p|div)[^>]*>/gi)];
+  const lastBlock = blockMatches[blockMatches.length - 1];
+  const cutStart = lastBlock ? lastBlock.index! : m.index;
+  // After "How It Works", find body content and stop at the next heading
+  const afterHIW = html.slice(m.index + m[0].length);
+  const bodyStart = afterHIW.search(/<(?:p|ul|ol|div)[^>]*>/i);
+  let cutEnd: number;
+  if (bodyStart === -1) {
+    cutEnd = html.length;
+  } else {
+    const body = afterHIW.slice(bodyStart);
+    const nextH = /<h[1-6][^>]*>/i.exec(body);
+    cutEnd = nextH
+      ? m.index + m[0].length + bodyStart + nextH.index
+      : html.length;
+  }
+  return (html.slice(0, cutStart) + html.slice(cutEnd)).trim();
+}
+
 function findVariantByOptions(
   variants: ShopifyVariant[],
   selectedOptions: Record<string, string>
@@ -1151,6 +1176,7 @@ export default function ProductPage() {
           const hasSpecs = specSections.length > 0;
           const howItWorksHtml = extractHowItWorksSection(_decodedDescription);
           const hasHowItWorks = !!howItWorksHtml;
+          const overviewHtml = hasHowItWorks ? removeHowItWorksSection(_decodedDescription) : _decodedDescription;
           return (
             <section className="py-10 border-b border-border/30" data-testid="section-product-tabs">
               <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
@@ -1205,12 +1231,12 @@ export default function ProductPage() {
                             [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5
                             [&_li]:mb-1.5 [&_p]:mb-3 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-2
                             [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2"
-                          dangerouslySetInnerHTML={{ __html: _decodedDescription }}
+                          dangerouslySetInnerHTML={{ __html: overviewHtml }}
                           data-testid="html-product-description"
                         />
                       ) : (
                         <div className="text-muted-foreground leading-relaxed space-y-3">
-                          {_decodedDescription.split("\n").filter((l) => l.trim()).map((line, i) => (
+                          {overviewHtml.split("\n").filter((l) => l.trim()).map((line, i) => (
                             <p key={i}>{line}</p>
                           ))}
                         </div>
