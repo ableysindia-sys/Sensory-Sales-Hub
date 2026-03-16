@@ -3,13 +3,13 @@ import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
   GoogleAuthProvider,
-  FacebookAuthProvider,
+  OAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
 import { auth as firebaseAuth } from "@/lib/firebase";
 import { useAuth } from "@/lib/auth-context";
 import { Loader2, Phone, CheckCircle2 } from "lucide-react";
-import { SiGoogle, SiFacebook } from "react-icons/si";
+import { SiGoogle, SiApple } from "react-icons/si";
 import { cn } from "@/lib/utils";
 
 interface PhoneSignupInlineProps {
@@ -31,7 +31,7 @@ export function PhoneSignupInline({
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [socialLoading, setSocialLoading] = useState<"google" | "facebook" | null>(null);
+  const [socialLoading, setSocialLoading] = useState<"google" | "apple" | null>(null);
   const [done, setDone] = useState(false);
   const recaptchaRef = useRef<RecaptchaVerifier | null>(null);
 
@@ -91,10 +91,10 @@ export function PhoneSignupInline({
     }
   };
 
-  const signInWithProvider = async (providerName: "google" | "facebook") => {
+  const signInWithProvider = async (providerName: "google" | "apple") => {
     setSocialLoading(providerName);
     try {
-      const provider = providerName === "google" ? new GoogleAuthProvider() : new FacebookAuthProvider();
+      const provider = providerName === "google" ? new GoogleAuthProvider() : new OAuthProvider("apple.com");
       await signInWithPopup(firebaseAuth, provider);
       setDone(true);
     } catch (err: any) {
@@ -204,7 +204,7 @@ export function PhoneSignupInline({
           Google
         </button>
         <button
-          onClick={() => signInWithProvider("facebook")}
+          onClick={() => signInWithProvider("apple")}
           disabled={!!socialLoading || loading}
           className={cn(
             "flex-1 flex items-center justify-center gap-2 h-10 rounded-xl text-sm font-medium border transition-all disabled:opacity-50",
@@ -212,14 +212,14 @@ export function PhoneSignupInline({
               ? "bg-white/10 border-white/15 text-white hover:bg-white/20 backdrop-blur-sm"
               : "bg-background border-border text-foreground hover:bg-muted"
           )}
-          data-testid="button-inline-facebook"
+          data-testid="button-inline-apple"
         >
-          {socialLoading === "facebook" ? (
+          {socialLoading === "apple" ? (
             <Loader2 className="w-4 h-4 animate-spin" />
           ) : (
-            <SiFacebook className="w-4 h-4 text-blue-600" />
+            <SiApple className="w-4 h-4" />
           )}
-          Facebook
+          Apple
         </button>
       </div>
     </div>

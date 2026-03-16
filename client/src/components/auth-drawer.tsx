@@ -3,7 +3,7 @@ import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
   GoogleAuthProvider,
-  FacebookAuthProvider,
+  OAuthProvider,
   signInWithPopup,
   ConfirmationResult,
 } from "firebase/auth";
@@ -18,7 +18,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Phone, ArrowLeft, Loader2, CheckCircle2, X } from "lucide-react";
-import { SiGoogle, SiFacebook } from "react-icons/si";
+import { SiGoogle, SiApple } from "react-icons/si";
 import logoPath from "@assets/ableys_rehab_logo.png";
 
 type Step = "method" | "otp" | "success";
@@ -183,13 +183,13 @@ export function AuthDrawer() {
     }
   };
 
-  const signInWithProvider = async (providerName: "google" | "facebook") => {
+  const signInWithProvider = async (providerName: "google" | "apple") => {
     setError("");
     setLoading(true);
     try {
       const provider = providerName === "google"
         ? new GoogleAuthProvider()
-        : new FacebookAuthProvider();
+        : new OAuthProvider("apple.com");
       await signInWithPopup(firebaseAuth, provider);
       setStep("success");
       setTimeout(() => {
@@ -317,12 +317,12 @@ export function AuthDrawer() {
                   <Button
                     variant="outline"
                     className="h-11 gap-2 rounded-xl font-medium"
-                    onClick={() => signInWithProvider("facebook")}
+                    onClick={() => signInWithProvider("apple")}
                     disabled={loading}
-                    data-testid="button-facebook-signin"
+                    data-testid="button-apple-signin"
                   >
-                    <SiFacebook className="w-4 h-4 text-blue-600" />
-                    Facebook
+                    <SiApple className="w-4 h-4" />
+                    Apple
                   </Button>
                 </div>
 

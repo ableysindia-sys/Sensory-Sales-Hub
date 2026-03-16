@@ -766,7 +766,7 @@ export default function EnquiryCartPage() {
                         Verify via OTP
                       </Button>
                       <p className="text-xs text-muted-foreground mt-4">
-                        You can also sign in with Google or Facebook
+                        You can also sign in with Google or Apple
                       </p>
                     </div>
                   ) : (
