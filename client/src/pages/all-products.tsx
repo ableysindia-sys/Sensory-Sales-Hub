@@ -17,6 +17,27 @@ const PRICE_RANGES = [
   { label: "Over ₹60,000", min: 60000, max: Infinity },
 ];
 
+const SETUP_TYPE_FILTERS = [
+  { id: "sensory-room",    label: "Sensory Room",        categories: ["swings", "ballpool", "visual", "deep-pressure", "mats", "climbing"] },
+  { id: "therapy-clinic",  label: "Therapy / OT Clinic", categories: ["swings", "therapy-balls", "deep-pressure", "movement-balance", "mats"] },
+  { id: "school",          label: "School / Classroom",  categories: ["deep-pressure", "visual", "movement-balance", "therapy-balls", "adl-kit"] },
+  { id: "home",            label: "Home Therapy",        categories: ["swings", "deep-pressure", "therapy-balls", "visual"] },
+  { id: "gym",             label: "Rehab Gym",           categories: ["climbing", "movement-balance", "therapy-balls", "mats"] },
+];
+
+const THERAPEUTIC_GOAL_FILTERS = [
+  { id: "vestibular",    label: "Vestibular & Balance",        tags: ["vestibular-therapy", "vestibular-input", "rotational-vestibular", "balance-training", "balance-development", "advanced-vestibular", "balance-obstacles"] },
+  { id: "calming",       label: "Calming & Deep Pressure",     tags: ["calming", "deep-pressure", "self-regulation", "deep-pressure-therapy", "seated-calming", "sleep-support", "anxiety-reduction", "sensory-processing"] },
+  { id: "motor",         label: "Motor Development",           tags: ["coordination", "motor-planning", "motor-coordination", "gait-training", "gross-motor", "motor-development", "bilateral-coordination", "postural-control", "energy-regulation"] },
+  { id: "proprioception",label: "Proprioception",              tags: ["proprioceptive-input", "body-awareness", "prone-extension"] },
+  { id: "strength",      label: "Strength & Core",             tags: ["core-strengthening", "grip-strength", "upper-body-strength", "core-stability", "stability-training", "strength-training", "strength-building", "strengthening", "core-exercises"] },
+  { id: "focus",         label: "Focus & Attention",           tags: ["focus-support", "sustained-attention", "focus-tool", "classroom-use", "desk-activities"] },
+  { id: "visual",        label: "Visual Stimulation",          tags: ["visual-stimulation", "visual-tracking", "visual-input", "visual-calming", "visual-exploration", "visual-timer", "cause-and-effect"] },
+  { id: "adl",           label: "Daily Living Skills",         tags: ["fine-motor", "self-care-skills", "daily-living", "independence-training", "comprehensive-adl", "comprehensive-training"] },
+  { id: "sensory-int",   label: "Sensory Integration",         tags: ["sensory-integration", "sensory-room", "sensory-therapy", "sensory-corner", "multi-sensory", "tactile-stimulation", "tactile-exploration", "tactile-input"] },
+  { id: "active-play",   label: "Active Play & Climbing",      tags: ["climbing", "climbing-therapy", "active-play", "active-movement", "jumping-therapy", "active-movement"] },
+];
+
 function FilterAccordion({
   title,
   children,
@@ -109,6 +130,8 @@ export default function AllProducts() {
   const [search, setSearch] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedPriceRanges, setSelectedPriceRanges] = useState<number[]>([]);
+  const [selectedSetupTypes, setSelectedSetupTypes] = useState<string[]>([]);
+  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<string>("default");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [gridCols, setGridCols] = useState<3 | 4>(4);
@@ -116,93 +139,167 @@ export default function AllProducts() {
   const { categories, getAllProducts } = useProducts();
   const allProducts = useMemo(() => getAllProducts(), [getAllProducts]);
 
-  const toggleCategory = (slug: string) => {
+  const toggleCategory = (slug: string) =>
     setSelectedCategories((prev) =>
       prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]
     );
-  };
 
-  const togglePriceRange = (index: number) => {
+  const togglePriceRange = (index: number) =>
     setSelectedPriceRanges((prev) =>
       prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
     );
-  };
+
+  const toggleSetupType = (id: string) =>
+    setSelectedSetupTypes((prev) =>
+      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+    );
+
+  const toggleGoal = (id: string) =>
+    setSelectedGoals((prev) =>
+      prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id]
+    );
 
   const clearAllFilters = () => {
     setSelectedCategories([]);
     setSelectedPriceRanges([]);
+    setSelectedSetupTypes([]);
+    setSelectedGoals([]);
     setSearch("");
   };
 
-  const activeFilterCount = selectedCategories.length + selectedPriceRanges.length;
+  const activeFilterCount =
+    selectedCategories.length +
+    selectedPriceRanges.length +
+    selectedSetupTypes.length +
+    selectedGoals.length;
+
+  function applySetupType(products: typeof allProducts) {
+    if (selectedSetupTypes.length === 0) return products;
+    return products.filter((p) =>
+      selectedSetupTypes.some((id) => {
+        const setup = SETUP_TYPE_FILTERS.find((s) => s.id === id);
+        return setup?.categories.includes(p.categorySlug);
+      })
+    );
+  }
+
+  function applyGoals(products: typeof allProducts) {
+    if (selectedGoals.length === 0) return products;
+    return products.filter((p) =>
+      selectedGoals.some((id) => {
+        const goal = THERAPEUTIC_GOAL_FILTERS.find((g) => g.id === id);
+        return goal?.tags.some((tag) => p.applications.includes(tag));
+      })
+    );
+  }
+
+  function applyCategories(products: typeof allProducts) {
+    if (selectedCategories.length === 0) return products;
+    return products.filter((p) => selectedCategories.includes(p.categorySlug));
+  }
+
+  function applyPriceRanges(products: typeof allProducts) {
+    if (selectedPriceRanges.length === 0) return products;
+    return products.filter((p) =>
+      selectedPriceRanges.some((idx) => {
+        const range = PRICE_RANGES[idx];
+        return p.basePrice >= range.min && p.basePrice < range.max;
+      })
+    );
+  }
+
+  function applySearch(products: typeof allProducts) {
+    if (!search.trim()) return products;
+    const q = search.toLowerCase();
+    return products.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.shortDescription.toLowerCase().includes(q) ||
+        p.categorySlug.toLowerCase().includes(q)
+    );
+  }
 
   const filteredProducts = useMemo(() => {
     let products = allProducts;
+    products = applyCategories(products);
+    products = applyPriceRanges(products);
+    products = applySetupType(products);
+    products = applyGoals(products);
+    products = applySearch(products);
 
-    if (selectedCategories.length > 0) {
-      products = products.filter((p) => selectedCategories.includes(p.categorySlug));
-    }
-
-    if (selectedPriceRanges.length > 0) {
-      products = products.filter((p) =>
-        selectedPriceRanges.some((idx) => {
-          const range = PRICE_RANGES[idx];
-          return p.basePrice >= range.min && p.basePrice < range.max;
-        })
-      );
-    }
-
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      products = products.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.shortDescription.toLowerCase().includes(q) ||
-          p.categorySlug.toLowerCase().includes(q)
-      );
-    }
-
-    if (sortBy === "price-low") {
-      products = [...products].sort((a, b) => a.basePrice - b.basePrice);
-    } else if (sortBy === "price-high") {
-      products = [...products].sort((a, b) => b.basePrice - a.basePrice);
-    } else if (sortBy === "name-az") {
-      products = [...products].sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortBy === "name-za") {
-      products = [...products].sort((a, b) => b.name.localeCompare(a.name));
-    }
+    if (sortBy === "price-low") products = [...products].sort((a, b) => a.basePrice - b.basePrice);
+    else if (sortBy === "price-high") products = [...products].sort((a, b) => b.basePrice - a.basePrice);
+    else if (sortBy === "name-az") products = [...products].sort((a, b) => a.name.localeCompare(b.name));
+    else if (sortBy === "name-za") products = [...products].sort((a, b) => b.name.localeCompare(a.name));
 
     return products;
-  }, [allProducts, selectedCategories, selectedPriceRanges, search, sortBy]);
+  }, [allProducts, selectedCategories, selectedPriceRanges, selectedSetupTypes, selectedGoals, search, sortBy]);
 
   const categoryCounts = useMemo(() => {
+    const base = applyPriceRanges(applySetupType(applyGoals(applySearch(allProducts))));
     const counts: Record<string, number> = {};
-    const base = selectedPriceRanges.length > 0
-      ? allProducts.filter((p) =>
-          selectedPriceRanges.some((idx) => {
-            const range = PRICE_RANGES[idx];
-            return p.basePrice >= range.min && p.basePrice < range.max;
-          })
-        )
-      : allProducts;
     categories.forEach((cat) => {
       counts[cat.slug] = base.filter((p) => p.categorySlug === cat.slug).length;
     });
     return counts;
-  }, [allProducts, selectedPriceRanges]);
+  }, [allProducts, selectedPriceRanges, selectedSetupTypes, selectedGoals, search]);
 
   const priceRangeCounts = useMemo(() => {
-    const base = selectedCategories.length > 0
-      ? allProducts.filter((p) => selectedCategories.includes(p.categorySlug))
-      : allProducts;
+    const base = applyCategories(applySetupType(applyGoals(applySearch(allProducts))));
     return PRICE_RANGES.map((range) =>
       base.filter((p) => p.basePrice >= range.min && p.basePrice < range.max).length
     );
-  }, [allProducts, selectedCategories]);
+  }, [allProducts, selectedCategories, selectedSetupTypes, selectedGoals, search]);
+
+  const setupTypeCounts = useMemo(() => {
+    const base = applyCategories(applyPriceRanges(applyGoals(applySearch(allProducts))));
+    const counts: Record<string, number> = {};
+    SETUP_TYPE_FILTERS.forEach((s) => {
+      counts[s.id] = base.filter((p) => s.categories.includes(p.categorySlug)).length;
+    });
+    return counts;
+  }, [allProducts, selectedCategories, selectedPriceRanges, selectedGoals, search]);
+
+  const goalCounts = useMemo(() => {
+    const base = applyCategories(applyPriceRanges(applySetupType(applySearch(allProducts))));
+    const counts: Record<string, number> = {};
+    THERAPEUTIC_GOAL_FILTERS.forEach((g) => {
+      counts[g.id] = base.filter((p) =>
+        g.tags.some((tag) => p.applications.includes(tag))
+      ).length;
+    });
+    return counts;
+  }, [allProducts, selectedCategories, selectedPriceRanges, selectedSetupTypes, search]);
 
   const filterSidebar = (
     <div className="space-y-0">
-      <FilterAccordion title="Product Type" defaultOpen={true} testId="product-type">
+      <FilterAccordion title="Setup / Environment" defaultOpen={true} testId="setup-type">
+        {SETUP_TYPE_FILTERS.map((s) => (
+          <FilterCheckbox
+            key={s.id}
+            label={s.label}
+            count={setupTypeCounts[s.id] || 0}
+            checked={selectedSetupTypes.includes(s.id)}
+            onChange={() => toggleSetupType(s.id)}
+            testId={`filter-setup-${s.id}`}
+          />
+        ))}
+      </FilterAccordion>
+
+      <FilterAccordion title="Therapeutic Goal" defaultOpen={true} testId="goal">
+        {THERAPEUTIC_GOAL_FILTERS.map((g) => (
+          <FilterCheckbox
+            key={g.id}
+            label={g.label}
+            count={goalCounts[g.id] || 0}
+            checked={selectedGoals.includes(g.id)}
+            onChange={() => toggleGoal(g.id)}
+            testId={`filter-goal-${g.id}`}
+          />
+        ))}
+      </FilterAccordion>
+
+      <FilterAccordion title="Product Type" defaultOpen={false} testId="product-type">
         {categories.map((cat) => (
           <FilterCheckbox
             key={cat.slug}
@@ -215,7 +312,7 @@ export default function AllProducts() {
         ))}
       </FilterAccordion>
 
-      <FilterAccordion title="Price" defaultOpen={true} testId="price">
+      <FilterAccordion title="Price" defaultOpen={false} testId="price">
         {PRICE_RANGES.map((range, i) => (
           <FilterCheckbox
             key={i}
@@ -325,6 +422,34 @@ export default function AllProducts() {
 
                   {activeFilterCount > 0 && (
                     <div className="hidden lg:flex items-center gap-2 flex-wrap flex-1 min-w-0">
+                      {selectedSetupTypes.map((id) => {
+                        const s = SETUP_TYPE_FILTERS.find((x) => x.id === id);
+                        return (
+                          <button
+                            key={id}
+                            onClick={() => toggleSetupType(id)}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer touch-manipulation"
+                            data-testid={`active-filter-setup-${id}`}
+                          >
+                            {s?.label}
+                            <X className="w-3 h-3" />
+                          </button>
+                        );
+                      })}
+                      {selectedGoals.map((id) => {
+                        const g = THERAPEUTIC_GOAL_FILTERS.find((x) => x.id === id);
+                        return (
+                          <button
+                            key={id}
+                            onClick={() => toggleGoal(id)}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer touch-manipulation"
+                            data-testid={`active-filter-goal-${id}`}
+                          >
+                            {g?.label}
+                            <X className="w-3 h-3" />
+                          </button>
+                        );
+                      })}
                       {selectedCategories.map((slug) => {
                         const cat = categories.find((c) => c.slug === slug);
                         return (
