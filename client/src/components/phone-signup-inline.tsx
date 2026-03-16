@@ -188,7 +188,7 @@ export function PhoneSignupInline({
         <div className="flex items-center gap-3 pt-0.5">
           <div className={cn("flex-1 h-px", isDark ? "bg-white/12" : "bg-border")} />
           <span className={cn("text-[11px] font-medium", isDark ? "text-white/40" : "text-muted-foreground")}>
-            or sign in with
+            or continue with
           </span>
           <div className={cn("flex-1 h-px", isDark ? "bg-white/12" : "bg-border")} />
         </div>

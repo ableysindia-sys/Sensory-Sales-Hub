@@ -111,6 +111,7 @@ export function AuthDrawer() {
   const [error, setError]           = useState("");
   const [confirmResult, setConfirmResult] = useState<ConfirmationResult | null>(null);
   const [resendTimer, setResendTimer]     = useState(0);
+  const [isNewUser, setIsNewUser]         = useState(false);
   const recaptchaRef = useRef<RecaptchaVerifier | null>(null);
 
   /* ── Countdown for resend OTP ── */
@@ -145,6 +146,7 @@ export function AuthDrawer() {
         setError("");
         setConfirmResult(null);
         setResendTimer(0);
+        setIsNewUser(false);
         if (recaptchaRef.current) {
           recaptchaRef.current.clear();
           recaptchaRef.current = null;
@@ -187,9 +189,10 @@ export function AuthDrawer() {
     setError("");
     setLoading(true);
     try {
-      await confirmResult.confirm(otp);
+      const result = await confirmResult.confirm(otp);
+      setIsNewUser(result.additionalUserInfo?.isNewUser ?? false);
       setStep("success");
-      setTimeout(() => { setIsAuthDrawerOpen(false); authSuccessCallback?.(); }, 2000);
+      setTimeout(() => { setIsAuthDrawerOpen(false); authSuccessCallback?.(); }, 2200);
     } catch {
       setError("Incorrect OTP. Please check and try again.");
     } finally {
@@ -204,9 +207,10 @@ export function AuthDrawer() {
       const provider = providerName === "google"
         ? new GoogleAuthProvider()
         : new OAuthProvider("apple.com");
-      await signInWithPopup(firebaseAuth, provider);
+      const result = await signInWithPopup(firebaseAuth, provider);
+      setIsNewUser(result.additionalUserInfo?.isNewUser ?? false);
       setStep("success");
-      setTimeout(() => { setIsAuthDrawerOpen(false); authSuccessCallback?.(); }, 2000);
+      setTimeout(() => { setIsAuthDrawerOpen(false); authSuccessCallback?.(); }, 2200);
     } catch (err: any) {
       if (err.code !== "auth/popup-closed-by-user") setError("Sign-in failed. Please try again.");
     } finally {
@@ -229,8 +233,8 @@ export function AuthDrawer() {
           className="rounded-t-3xl px-0 pb-0 max-h-[96dvh] sm:max-w-md sm:mx-auto sm:rounded-3xl sm:left-1/2 sm:-translate-x-1/2 sm:bottom-4 overflow-hidden"
         >
           {/* Accessibility labels (visually hidden) */}
-          <SheetTitle className="sr-only">Sign in to Abley's Rehab</SheetTitle>
-          <SheetDescription className="sr-only">Sign in with your mobile number, Google, or Apple to access your account.</SheetDescription>
+          <SheetTitle className="sr-only">Sign in or create an account — Abley's Rehab</SheetTitle>
+          <SheetDescription className="sr-only">New or returning? Use your mobile number, Google, or Apple to sign in or create your free account.</SheetDescription>
 
           <div className="overflow-y-auto max-h-[96dvh]">
 
@@ -244,9 +248,13 @@ export function AuthDrawer() {
                   <div className="absolute inset-0 rounded-full border-4 border-emerald-200 dark:border-emerald-800 animate-ping opacity-30" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-2xl font-bold text-foreground">You're signed in!</p>
+                  <p className="text-2xl font-bold text-foreground">
+                    {isNewUser ? "Account Created!" : "Welcome back!"}
+                  </p>
                   <p className="text-sm text-muted-foreground">
-                    Your details are saved for future orders.
+                    {isNewUser
+                      ? "Your free account is ready. Enjoy B2B pricing and order tracking."
+                      : "Your cart and preferences have been restored."}
                   </p>
                 </div>
               </div>
@@ -288,7 +296,7 @@ export function AuthDrawer() {
                 >
                   {loading
                     ? <Loader2 className="w-4 h-4 animate-spin" />
-                    : "Verify & Sign In"
+                    : "Verify & Continue"
                   }
                 </Button>
 
@@ -321,9 +329,9 @@ export function AuthDrawer() {
                     alt="Abley's Rehab"
                     className="h-8 object-contain mx-auto mb-3"
                   />
-                  <h2 className="text-xl font-bold text-foreground">Welcome to Abley's Rehab</h2>
+                  <h2 className="text-xl font-bold text-foreground">Sign in or Create Account</h2>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Sign in to manage your orders, access B2B pricing, and save your cart.
+                    New or returning — continue with any method below to get started.
                   </p>
                 </div>
 
