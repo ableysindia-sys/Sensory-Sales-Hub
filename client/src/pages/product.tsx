@@ -15,6 +15,7 @@ import {
   ShoppingCart,
   Package,
   CheckCircle2,
+  Shield,
   Zap,
   Heart,
   Layers,
@@ -709,40 +710,88 @@ export default function ProductPage() {
         </section>
 
         {/* ── Hero: image + product panel ──────────────────────── */}
-        <section className="pb-16" data-testid="section-product-detail">
+        <section className="py-8 lg:py-12" data-testid="section-product-detail">
           <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-[58%_42%] gap-8 lg:gap-14 items-start">
+            <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
 
-              {/* ─ Left: Vertical stacked image gallery (Pebble-style) ─ */}
-              <div className="space-y-2.5">
-                {displayImages.length > 0 ? displayImages.map((img, i) => (
-                  <div
-                    key={`${img}-${i}`}
-                    className="w-full aspect-square bg-muted/20 rounded-3xl overflow-hidden relative"
-                    data-testid={i === 0 ? "container-product-image" : `container-product-image-${i}`}
-                  >
+              {/* ─ Left: Image Gallery ─ */}
+              <div className="space-y-3 min-w-0 w-full">
+                {/* Main image */}
+                <div
+                  className="w-full aspect-[4/3] sm:aspect-square bg-card rounded-2xl sm:rounded-3xl border border-border/50 relative overflow-hidden"
+                  data-testid="container-product-image"
+                >
+                  {activeImage ? (
                     <img
-                      src={img}
-                      alt={`${product.name}${variantTitle ? ` — ${variantTitle}` : ""}${i > 0 ? ` view ${i + 1}` : ""}`}
-                      className="w-full h-full object-contain p-6 sm:p-10"
-                      loading={i === 0 ? "eager" : "lazy"}
-                      data-testid={i === 0 ? "img-product-main" : `img-product-${i}`}
+                      key={activeImage}
+                      src={activeImage}
+                      alt={`${product.name}${variantTitle ? ` - ${variantTitle}` : ""}`}
+                      className="w-full h-full object-contain p-2 sm:p-4"
+                      data-testid="img-product-main"
                     />
-                    {i === 0 && discountPct && (
-                      <div className="absolute top-4 left-4 bg-emerald-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
-                        -{discountPct}%
+                  ) : (
+                    <div className="flex flex-col items-center justify-center w-full h-full p-8">
+                      <div className="w-20 h-20 rounded-2xl bg-primary/8 flex items-center justify-center">
+                        <Package className="w-10 h-10 text-primary/30" />
                       </div>
-                    )}
-                  </div>
-                )) : (
-                  <div className="w-full aspect-square bg-muted/20 rounded-3xl flex flex-col items-center justify-center" data-testid="container-product-image">
-                    <Package className="w-16 h-16 text-muted-foreground/20" />
-                    <p className="text-xs text-muted-foreground/40 mt-3 font-medium">No image available</p>
+                      <p className="text-xs text-muted-foreground/50 font-medium mt-3">Product Image</p>
+                    </div>
+                  )}
+                  {discountPct && (
+                    <div className="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                      -{discountPct}%
+                    </div>
+                  )}
+                </div>
+
+                {/* Thumbnail strip */}
+                {displayImages.length > 1 && (
+                  <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide snap-x snap-mandatory" data-testid="container-thumbnails">
+                    {displayImages.map((img, i) => (
+                      <button
+                        key={`${img}-${i}`}
+                        type="button"
+                        onClick={() => setActiveImageIdx(i)}
+                        className={`w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 snap-start bg-card ${
+                          activeImageIdx === i
+                            ? "border-primary ring-2 ring-primary/20"
+                            : "border-border/50 hover:border-primary/40 active:border-primary"
+                        }`}
+                        data-testid={`button-image-thumb-${i}`}
+                        aria-label={`View image ${i + 1}`}
+                      >
+                        <img
+                          src={img}
+                          alt={`${product.name} view ${i + 1}`}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      </button>
+                    ))}
                   </div>
                 )}
+
+                {/* Desktop trust icons below gallery */}
+                <div className="hidden lg:grid grid-cols-3 gap-3 pt-2">
+                  <div className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-card border border-border/50 text-center">
+                    <Truck className="w-5 h-5 text-primary" />
+                    <span className="text-xs font-semibold text-foreground">Free Shipping</span>
+                    <span className="text-[10px] text-muted-foreground">Pan India</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-card border border-border/50 text-center">
+                    <RotateCcw className="w-5 h-5 text-primary" />
+                    <span className="text-xs font-semibold text-foreground">7-Day Exchange</span>
+                    <span className="text-[10px] text-muted-foreground">Easy returns</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-card border border-border/50 text-center">
+                    <Shield className="w-5 h-5 text-primary" />
+                    <span className="text-xs font-semibold text-foreground">OT-Approved</span>
+                    <span className="text-[10px] text-muted-foreground">Therapist trusted</span>
+                  </div>
+                </div>
               </div>{/* end gallery */}
 
-              {/* ─ Right: Sticky product info (Pebble-style) ─ */}
+              {/* ─ Right: Sticky product info ─ */}
               <div className="lg:sticky lg:top-24 lg:self-start space-y-5">
 
                 {/* ── Badges ── */}
