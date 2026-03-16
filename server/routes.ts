@@ -7,6 +7,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import crypto from "crypto";
 import { syncShopifyProducts, startPeriodicSync } from "./shopify-sync";
 import { generateCatalogPDF } from "./catalog-pdf";
+import { initShopifyAdmin, shopifyAdminFetch, shopifyAdminGraphQL } from "./shopify-admin";
 
 const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
 const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
@@ -785,6 +786,64 @@ export async function registerRoutes(
   });
   // ── End Shopify OAuth ────────────────────────────────────────────────────────
 
+  // ── Shopify Admin API Routes ─────────────────────────────────────────────────
+  app.get("/api/admin/shopify/products", requireAdmin, async (req, res) => {
+    try {
+      const limit = req.query.limit || "50";
+      const page_info = req.query.page_info ? `&page_info=${req.query.page_info}` : "";
+      const r = await shopifyAdminFetch(`/products.json?limit=${limit}&fields=id,title,status,variants,images,handle${page_info}`);
+      const data = await r.json();
+      res.json(data);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch products", error: String(err) });
+    }
+  });
+
+  app.get("/api/admin/shopify/orders", requireAdmin, async (req, res) => {
+    try {
+      const limit = req.query.limit || "50";
+      const status = req.query.status || "any";
+      const r = await shopifyAdminFetch(`/orders.json?limit=${limit}&status=${status}&fields=id,name,email,total_price,financial_status,fulfillment_status,created_at,line_items`);
+      const data = await r.json();
+      res.json(data);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch orders", error: String(err) });
+    }
+  });
+
+  app.get("/api/admin/shopify/analytics", requireAdmin, async (_req, res) => {
+    try {
+      const [ordersRes, productsRes, customersRes] = await Promise.all([
+        shopifyAdminFetch("/orders/count.json?status=any"),
+        shopifyAdminFetch("/products/count.json"),
+        shopifyAdminFetch("/customers/count.json"),
+      ]);
+      const [orders, products, customers] = await Promise.all([
+        ordersRes.json() as Promise<{ count: number }>,
+        productsRes.json() as Promise<{ count: number }>,
+        customersRes.json() as Promise<{ count: number }>,
+      ]);
+      res.json({ orders: orders.count, products: products.count, customers: customers.count });
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch analytics", error: String(err) });
+    }
+  });
+
+  app.patch("/api/admin/shopify/products/:id", requireAdmin, async (req, res) => {
+    try {
+      const r = await shopifyAdminFetch(`/products/${req.params.id}.json`, {
+        method: "PUT",
+        body: JSON.stringify({ product: req.body }),
+      });
+      const data = await r.json();
+      res.json(data);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to update product", error: String(err) });
+    }
+  });
+  // ── End Shopify Admin API Routes ─────────────────────────────────────────────
+
+  initShopifyAdmin();
   startPeriodicSync();
 
   return httpServer;
