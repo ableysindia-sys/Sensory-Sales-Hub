@@ -56,8 +56,6 @@ import {
   Award,
   Users,
   Package,
-  Zap,
-  ChevronDown,
   MessageCircle,
   Send,
   Loader2,
@@ -145,14 +143,6 @@ const STATS = [
   { value: "24 hr", label: "Quote Turnaround" },
 ];
 
-const AUDIENCES = [
-  { icon: Building2, label: "OT & Rehab Clinics", color: "text-blue-600 bg-blue-50 dark:bg-blue-950/30" },
-  { icon: GraduationCap, label: "Special Education Schools", color: "text-green-600 bg-green-50 dark:bg-green-950/30" },
-  { icon: Sparkles, label: "Sensory Room Projects", color: "text-violet-600 bg-violet-50 dark:bg-violet-950/30" },
-  { icon: Heart, label: "Child Development Centres", color: "text-rose-600 bg-rose-50 dark:bg-rose-950/30" },
-  { icon: Dumbbell, label: "Rehab Gyms", color: "text-orange-600 bg-orange-50 dark:bg-orange-950/30" },
-  { icon: Users, label: "NGOs & Institutions", color: "text-teal-600 bg-teal-50 dark:bg-teal-950/30" },
-];
 
 const STAKEHOLDERS = [
   {
@@ -246,7 +236,7 @@ export default function B2BLandingPage() {
   const { user } = useAuth();
   const formRef = useRef<HTMLDivElement>(null);
   const [submitted, setSubmitted] = useState(false);
-  const [formStep, setFormStep] = useState(0);
+  const [formStep, setFormStep] = useState(1);
   const utms = useUtmParams();
 
   usePageMeta(
@@ -289,13 +279,12 @@ export default function B2BLandingPage() {
     },
   });
 
-  /* Auto-advance past sign-in step when user is already / newly signed in */
   useEffect(() => {
-    if (user && formStep === 0) {
+    if (user) {
       if (user.displayName) form.setValue("name", user.displayName);
       if (user.email) form.setValue("email", user.email);
       if (user.phoneNumber) form.setValue("phone", user.phoneNumber.replace("+91", "").trim());
-      setFormStep(1);
+      if (formStep === 0) setFormStep(1);
     }
   }, [user]);
 
@@ -343,6 +332,7 @@ export default function B2BLandingPage() {
       </header>
 
       <main id="main-content">
+
         {/* ── Hero ── */}
         <section className="relative overflow-hidden bg-[#070d2a] text-white" data-testid="section-b2b-hero">
 
@@ -489,9 +479,9 @@ export default function B2BLandingPage() {
                 { icon: Truck,       text: "Free\nshipping" },
                 { icon: Receipt,     text: "GST\ninvoices" },
               ].map(({ icon: Icon, text }) => (
-                <div key={text} className="flex flex-col items-center gap-1.5 rounded-xl bg-white/[0.06] border border-white/10 py-3 px-2 text-center">
-                  <Icon className="w-4 h-4 text-amber-400/80 flex-shrink-0" />
-                  <span className="text-[10px] leading-tight text-white/55 whitespace-pre-line">{text}</span>
+                <div key={text} className="flex flex-col items-center gap-1.5 bg-white/8 border border-white/12 rounded-xl px-3 py-3">
+                  <Icon className="w-4 h-4 text-amber-300" />
+                  <span className="text-[10px] text-white/60 text-center leading-tight whitespace-pre-line">{text}</span>
                 </div>
               ))}
             </div>
@@ -519,6 +509,328 @@ export default function B2BLandingPage() {
                   <p className="text-[10px] sm:text-xs text-white/60 mt-0.5">{s.label}</p>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Social Proof / Testimonial Strip ── */}
+        <section className="bg-gradient-to-b from-muted/30 to-background border-b">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-16">
+          <div className="text-center mb-10">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-3 bg-primary/10 px-3 py-1.5 rounded-full">⭐ What Institutions Say</span>
+            <h2 className="text-2xl sm:text-3xl font-bold font-display text-foreground">Trusted by India's Leading OT Professionals</h2>
+          </div>
+          <div className="grid sm:grid-cols-3 gap-6">
+            {[
+              {
+                quote: "Abley's made it incredibly easy to stock our sensory room. The bulk pricing was fair and the GST invoice was ready within the hour.",
+                author: "Ruchika M.",
+                role: "Occupational Therapist, Mumbai",
+                avatar: "RM",
+              },
+              {
+                quote: "We set up our school's entire sensory corner through Abley's. Quick delivery, great quality — and they even recommended the right products for our budget.",
+                author: "Ananya K.",
+                role: "Special Educator, Bengaluru",
+                avatar: "AK",
+              },
+              {
+                quote: "Finally, a reliable Indian vendor for OT equipment that doesn't cut corners on quality. Our clinic swears by Abley's Rehab.",
+                author: "Dr. Suresh P.",
+                role: "Rehab Consultant, Delhi NCR",
+                avatar: "SP",
+              },
+            ].map(({ quote, author, role, avatar }) => (
+              <div key={author} className="rounded-2xl border border-border/60 bg-card p-6 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+                <div className="flex gap-0.5 mb-4">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  ))}
+                </div>
+                <p className="text-sm text-foreground/80 leading-relaxed mb-5 italic">"{quote}"</p>
+                <div className="flex items-center gap-3 pt-3 border-t border-border/40">
+                  <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center text-xs font-bold text-primary shrink-0">
+                    {avatar}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">{author}</p>
+                    <p className="text-xs text-muted-foreground">{role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          </div>
+        </section>
+
+        {/* ── Lead Form ── */}
+        <section ref={formRef} className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-muted/30 border-y" id="enquiry-form">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+            <div className="grid lg:grid-cols-2 gap-12 items-start">
+
+              {/* Left — pitch */}
+              <div className="lg:sticky lg:top-24">
+                <span className="text-xs font-semibold uppercase tracking-widest text-primary mb-3 block">Get Started</span>
+                <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground mb-5 leading-tight">
+                  Get Your Custom B2B Quote — Free, in 24 Hours.
+                </h2>
+                <p className="text-muted-foreground leading-relaxed mb-8">
+                  Tell us about your facility and what you need. Our B2B team will get back to you with a tailored quote, product recommendations, and bulk pricing — within one business day.
+                </p>
+                <div className="space-y-4">
+                  {[
+                    { icon: Clock, text: "Response within 24 working hours" },
+                    { icon: BadgeIndianRupee, text: "Custom bulk pricing, no obligations" },
+                    { icon: Headset, text: "Dedicated B2B support via WhatsApp" },
+                    { icon: ShieldCheck, text: "No spam — only a quote tailored to you" },
+                  ].map(({ icon: Icon, text }) => (
+                    <div key={text} className="flex items-center gap-3 text-sm text-foreground/80">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <Icon className="w-4 h-4 text-primary" />
+                      </div>
+                      {text}
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-8 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+                  <p className="text-sm text-amber-900 dark:text-amber-300 font-medium mb-1">Prefer to talk first?</p>
+                  <a
+                    href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20chat%20with%20your%20OT%20specialist%20about%20bulk%20B2B%20pricing%20for%20my%20institution."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-amber-700 dark:text-amber-400 font-semibold hover:underline flex items-center gap-1"
+                    data-testid="link-whatsapp-form-aside"
+                  >
+                    <MessageCircle className="w-4 h-4" /> Chat with our OT specialist on WhatsApp
+                  </a>
+                  <p className="text-xs text-amber-700/70 dark:text-amber-500/70 mt-1">Usually responds within 2 hours</p>
+                </div>
+
+                <a
+                  href="/api/catalog"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-6 flex items-center gap-2.5 text-sm text-primary font-semibold hover:underline"
+                  data-testid="link-download-catalogue-b2b"
+                >
+                  <Download className="w-4 h-4" />
+                  Download Full Product Catalogue (PDF)
+                  <span className="text-xs font-normal text-muted-foreground">120+ products · 7 pages</span>
+                </a>
+              </div>
+
+              {/* Right — form or success state */}
+              <div className="bg-card rounded-2xl border shadow-sm p-6 sm:p-8">
+                {submitted ? (
+                  <div className="text-center py-10" data-testid="state-form-success">
+                    <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-5">
+                      <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
+                    </div>
+                    <h3 className="text-xl font-bold text-foreground mb-2">Enquiry Received!</h3>
+                    <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
+                      Thank you — our B2B team will review your request and send you a custom quote within 24 working hours.
+                    </p>
+                    <a
+                      href="https://wa.me/917042180166?text=Hi%2C%20I%20just%20submitted%20a%20B2B%20enquiry%20on%20rehab.ableys.in%20and%20wanted%20to%20follow%20up."
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-testid="link-whatsapp-success"
+                    >
+                      <Button className="rounded-full px-8">
+                        <MessageCircle className="mr-2 w-4 h-4" /> Follow Up on WhatsApp
+                      </Button>
+                    </a>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="text-lg font-bold text-foreground">Your B2B Enquiry</h3>
+                      {!user && formStep === 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setFormStep(0)}
+                          className="flex items-center gap-1 text-xs text-primary hover:underline shrink-0 mt-0.5"
+                          data-testid="button-signin-prefill"
+                        >
+                          <Phone className="w-3 h-3" /> Sign in to pre-fill →
+                        </button>
+                      )}
+                      {formStep === 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setFormStep(1)}
+                          className="text-xs text-muted-foreground hover:text-foreground underline shrink-0 mt-0.5"
+                          data-testid="button-back-to-form"
+                        >
+                          ← Back to form
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-5">Custom quote delivered within 24 working hours — no commitment needed.</p>
+
+                    {formStep === 0 ? (
+                      <div data-testid="form-step-signin">
+                        <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+                          Sign in with your phone and we'll pre-fill your details in the next step.
+                        </p>
+                        <div id="recaptcha-lp-form" />
+                        <PhoneSignupInline variant="light" containerId="recaptcha-lp-form" />
+                      </div>
+                    ) : (
+                    <Form {...form}>
+                      <form
+                        onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
+                        className="space-y-4"
+                        data-testid="form-b2b-enquiry"
+                      >
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Full Name *</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Dr. Priya Sharma" {...field} data-testid="input-name" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="organisation"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Organisation *</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="ABC Rehab Centre" {...field} value={field.value ?? ""} data-testid="input-organisation" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="phone"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Phone / WhatsApp *</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="+91 98765 43210" {...field} value={field.value ?? ""} data-testid="input-phone" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Email Address *</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="priya@rehabcentre.in" type="email" {...field} data-testid="input-email" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="city"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>City *</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Mumbai" {...field} value={field.value ?? ""} data-testid="input-city" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="requirementType"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>I Need *</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value ?? ""}>
+                                  <FormControl>
+                                    <SelectTrigger data-testid="select-requirement-type">
+                                      <SelectValue placeholder="Select requirement" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="sensory-room-setup">Complete Sensory Room Setup</SelectItem>
+                                    <SelectItem value="bulk-order">Bulk Order of Products</SelectItem>
+                                    <SelectItem value="clinic-equipment">Clinic / OT Equipment</SelectItem>
+                                    <SelectItem value="school-setup">School / Institutional Setup</SelectItem>
+                                    <SelectItem value="rehab-gym">Rehab Gym Equipment</SelectItem>
+                                    <SelectItem value="custom-quote">Custom / Other Quote</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <FormField
+                          control={form.control}
+                          name="message"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Tell Us More (Optional)</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  placeholder="E.g. We need equipment for a 300 sq ft sensory room at our school in Pune. Budget approx ₹1.5L..."
+                                  className="resize-none"
+                                  rows={3}
+                                  {...field}
+                                  value={field.value ?? ""}
+                                  data-testid="textarea-message"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Urgency nudge */}
+                        <div className="flex items-center gap-2.5 py-2 text-xs text-muted-foreground">
+                          <div className="flex -space-x-1.5 shrink-0">
+                            {["RM", "AK", "SP"].map((i) => (
+                              <div key={i} className="w-5 h-5 rounded-full bg-primary/20 border-2 border-background text-[8px] font-bold text-primary flex items-center justify-center">{i}</div>
+                            ))}
+                          </div>
+                          <span>12+ institutions received quotes this week · spots limited</span>
+                        </div>
+
+                        <Button
+                          type="submit"
+                          className="w-full rounded-xl h-12 text-base font-semibold"
+                          disabled={mutation.isPending}
+                          data-testid="button-submit-enquiry"
+                        >
+                          {mutation.isPending ? (
+                            <><Loader2 className="mr-2 w-4 h-4 animate-spin" /> Submitting…</>
+                          ) : (
+                            <><Send className="mr-2 w-4 h-4" /> Submit Enquiry — Get My Quote</>
+                          )}
+                        </Button>
+                        <p className="text-xs text-muted-foreground text-center">
+                          No spam. Your details are only used to prepare your quote.
+                        </p>
+                      </form>
+                    </Form>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </section>
@@ -684,7 +996,6 @@ export default function B2BLandingPage() {
                   className={`group rounded-2xl border bg-gradient-to-br ${a.card} p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col`}
                   data-testid={`card-setup-${id}`}
                 >
-                  {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className={`w-11 h-11 rounded-xl ${a.iconBg} flex items-center justify-center`}>
                       <Icon className={`w-5 h-5 ${a.icon}`} />
@@ -695,12 +1006,8 @@ export default function B2BLandingPage() {
                       </span>
                     </Link>
                   </div>
-
-                  {/* Content */}
                   <h3 className="font-bold text-foreground mb-2">{label}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1">{desc}</p>
-
-                  {/* Actions */}
                   <div className={`flex items-center justify-between pt-4 border-t ${a.divider}`}>
                     <Link href={browseHref} data-testid={`link-browse-${id}`}>
                       <span className={`text-xs font-semibold ${a.icon} flex items-center gap-1 group-hover:gap-2 transition-all cursor-pointer`}>
@@ -737,7 +1044,6 @@ export default function B2BLandingPage() {
 
         {/* ── B2B Benefits ── */}
         <section className="relative overflow-hidden bg-primary text-white">
-          {/* Mesh pattern overlay */}
           <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1) 1px,transparent 1px)", backgroundSize: "32px 32px" }} />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_100%,rgba(0,0,0,0.3),transparent)]" />
           <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
@@ -775,7 +1081,6 @@ export default function B2BLandingPage() {
             </h2>
           </div>
           <div className="grid sm:grid-cols-3 gap-8 relative">
-            {/* connector line desktop */}
             <div className="hidden sm:block absolute top-11 left-[calc(16.67%+2rem)] right-[calc(16.67%+2rem)] h-px border-t-2 border-dashed border-primary/30" />
             {HOW_IT_WORKS.map(({ step, title, desc }) => (
               <div key={step} className="text-center relative">
@@ -800,7 +1105,6 @@ export default function B2BLandingPage() {
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
             <div className="grid lg:grid-cols-2 gap-12 items-start">
 
-              {/* Left — context and pitch */}
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold uppercase tracking-widest mb-5">
                   <BookOpen className="w-3.5 h-3.5" /> School Grant Toolkit
@@ -812,7 +1116,6 @@ export default function B2BLandingPage() {
                   Getting school budget approved for sensory equipment is the hardest part. We've done the work for you — our grant toolkit includes a pre-filled letter your principal or administrator can sign off on in minutes.
                 </p>
 
-                {/* Data points */}
                 <div className="grid sm:grid-cols-2 gap-4 mb-6">
                   {[
                     { icon: Users, stat: "7.3M+", label: "Indian students who benefit from sensory tools", color: "text-green-600" },
@@ -832,7 +1135,6 @@ export default function B2BLandingPage() {
                   ))}
                 </div>
 
-                {/* What's included */}
                 <div className="mb-6">
                   <p className="text-xs font-bold text-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
                     <ClipboardList className="w-3.5 h-3.5 text-primary" /> What's in the toolkit
@@ -871,7 +1173,6 @@ export default function B2BLandingPage() {
                   Free Template
                 </div>
                 <div className="rounded-2xl border-2 border-green-200 dark:border-green-800 bg-card shadow-lg overflow-hidden">
-                  {/* Mock letterhead */}
                   <div className="bg-green-700 text-white px-6 py-4">
                     <p className="text-xs font-bold uppercase tracking-widest text-green-300 mb-1">Grant Request Letter · Abley's Template</p>
                     <p className="text-sm font-semibold">To: Principal / School Administrator</p>
@@ -951,311 +1252,6 @@ export default function B2BLandingPage() {
                 <p className="text-center text-xs text-white/40">Usually responds within 2 hours · Mon–Sat 9am–7pm</p>
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* ── Lead Form ── */}
-        <section ref={formRef} className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-muted/30 border-y" id="enquiry-form">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
-            <div className="grid lg:grid-cols-2 gap-12 items-start">
-
-              {/* Left — pitch */}
-              <div className="lg:sticky lg:top-24">
-                <span className="text-xs font-semibold uppercase tracking-widest text-primary mb-3 block">Get Started</span>
-                <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground mb-5 leading-tight">
-                  Get Your Custom B2B Quote — Free, in 24 Hours.
-                </h2>
-                <p className="text-muted-foreground leading-relaxed mb-8">
-                  Tell us about your facility and what you need. Our B2B team will get back to you with a tailored quote, product recommendations, and bulk pricing — within one business day.
-                </p>
-                <div className="space-y-4">
-                  {[
-                    { icon: Clock, text: "Response within 24 working hours" },
-                    { icon: BadgeIndianRupee, text: "Custom bulk pricing, no obligations" },
-                    { icon: Headset, text: "Dedicated B2B support via WhatsApp" },
-                    { icon: ShieldCheck, text: "No spam — only a quote tailored to you" },
-                  ].map(({ icon: Icon, text }) => (
-                    <div key={text} className="flex items-center gap-3 text-sm text-foreground/80">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                        <Icon className="w-4 h-4 text-primary" />
-                      </div>
-                      {text}
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-8 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
-                  <p className="text-sm text-amber-900 dark:text-amber-300 font-medium mb-1">Prefer to talk first?</p>
-                  <a
-                    href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20chat%20with%20your%20OT%20specialist%20about%20bulk%20B2B%20pricing%20for%20my%20institution."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-amber-700 dark:text-amber-400 font-semibold hover:underline flex items-center gap-1"
-                    data-testid="link-whatsapp-form-aside"
-                  >
-                    <MessageCircle className="w-4 h-4" /> Chat with our OT specialist on WhatsApp
-                  </a>
-                  <p className="text-xs text-amber-700/70 dark:text-amber-500/70 mt-1">Usually responds within 2 hours</p>
-                </div>
-
-                <a
-                  href="/api/catalog"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-6 flex items-center gap-2.5 text-sm text-primary font-semibold hover:underline"
-                  data-testid="link-download-catalogue-b2b"
-                >
-                  <Download className="w-4 h-4" />
-                  Download Full Product Catalogue (PDF)
-                  <span className="text-xs font-normal text-muted-foreground">120+ products · 7 pages</span>
-                </a>
-              </div>
-
-              {/* Right — form or success state */}
-              <div className="bg-card rounded-2xl border shadow-sm p-6 sm:p-8">
-                {submitted ? (
-                  <div className="text-center py-10" data-testid="state-form-success">
-                    <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-5">
-                      <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
-                    </div>
-                    <h3 className="text-xl font-bold text-foreground mb-2">Enquiry Received!</h3>
-                    <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
-                      Thank you — our B2B team will review your request and send you a custom quote within 24 working hours.
-                    </p>
-                    <a
-                      href="https://wa.me/917042180166?text=Hi%2C%20I%20just%20submitted%20a%20B2B%20enquiry%20on%20rehab.ableys.in%20and%20wanted%20to%20follow%20up."
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      data-testid="link-whatsapp-success"
-                    >
-                      <Button className="rounded-full px-8">
-                        <MessageCircle className="mr-2 w-4 h-4" /> Follow Up on WhatsApp
-                      </Button>
-                    </a>
-                  </div>
-                ) : (
-                  <>
-                    {/* Header row with step dots */}
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-lg font-bold text-foreground">
-                        {formStep === 0 ? "Sign In to Continue" : "Your B2B Enquiry"}
-                      </h3>
-                      <div className="flex items-center gap-1.5">
-                        <span className={`w-2 h-2 rounded-full transition-colors ${formStep === 0 ? "bg-primary" : "bg-primary/30"}`} />
-                        <span className={`w-2 h-2 rounded-full transition-colors ${formStep === 1 ? "bg-primary" : "bg-primary/30"}`} />
-                      </div>
-                    </div>
-
-                    {formStep === 0 ? (
-                      <div data-testid="form-step-signin">
-                        <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
-                          Sign in with your phone and we'll pre-fill your details in the next step.
-                        </p>
-                        <div id="recaptcha-lp-form" />
-                        <PhoneSignupInline variant="light" containerId="recaptcha-lp-form" />
-                        <button
-                          type="button"
-                          onClick={() => setFormStep(1)}
-                          className="mt-5 text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 block mx-auto transition-colors"
-                          data-testid="button-skip-signin"
-                        >
-                          Fill in manually →
-                        </button>
-                      </div>
-                    ) : (
-                    <Form {...form}>
-                      <form
-                        onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
-                        className="space-y-4"
-                        data-testid="form-b2b-enquiry"
-                      >
-                        <div className="grid sm:grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Full Name *</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="Dr. Priya Sharma" {...field} data-testid="input-name" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="organisation"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Organisation *</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="ABC Rehab Centre" {...field} value={field.value ?? ""} data-testid="input-organisation" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <div className="grid sm:grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="phone"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Phone / WhatsApp *</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="+91 98765 43210" {...field} value={field.value ?? ""} data-testid="input-phone" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Email Address *</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="priya@rehabcentre.in" type="email" {...field} data-testid="input-email" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <div className="grid sm:grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="city"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>City *</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="Mumbai" {...field} value={field.value ?? ""} data-testid="input-city" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="requirementType"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>I Need *</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value ?? ""}>
-                                  <FormControl>
-                                    <SelectTrigger data-testid="select-requirement-type">
-                                      <SelectValue placeholder="Select requirement" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="sensory-room-setup">Complete Sensory Room Setup</SelectItem>
-                                    <SelectItem value="bulk-order">Bulk Order of Products</SelectItem>
-                                    <SelectItem value="clinic-equipment">Clinic / OT Equipment</SelectItem>
-                                    <SelectItem value="school-setup">School / Institutional Setup</SelectItem>
-                                    <SelectItem value="rehab-gym">Rehab Gym Equipment</SelectItem>
-                                    <SelectItem value="custom-quote">Custom / Other Quote</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <FormField
-                          control={form.control}
-                          name="message"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Tell Us More (Optional)</FormLabel>
-                              <FormControl>
-                                <Textarea
-                                  placeholder="E.g. We need equipment for a 300 sq ft sensory room at our school in Pune. Budget approx ₹1.5L..."
-                                  className="resize-none"
-                                  rows={3}
-                                  {...field}
-                                  value={field.value ?? ""}
-                                  data-testid="textarea-message"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <Button
-                          type="submit"
-                          className="w-full rounded-xl h-12 text-base font-semibold"
-                          disabled={mutation.isPending}
-                          data-testid="button-submit-enquiry"
-                        >
-                          {mutation.isPending ? (
-                            <><Loader2 className="mr-2 w-4 h-4 animate-spin" /> Submitting…</>
-                          ) : (
-                            <><Send className="mr-2 w-4 h-4" /> Submit Enquiry — Get My Quote</>
-                          )}
-                        </Button>
-                        <p className="text-xs text-muted-foreground text-center">
-                          No spam. Your details are only used to prepare your quote.
-                        </p>
-                      </form>
-                    </Form>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Social Proof / Testimonial Strip ── */}
-        <section className="bg-gradient-to-b from-muted/30 to-background border-b">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-16">
-          <div className="text-center mb-10">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-3 bg-primary/10 px-3 py-1.5 rounded-full">⭐ What Institutions Say</span>
-            <h2 className="text-2xl sm:text-3xl font-bold font-display text-foreground">Trusted by India's Leading OT Professionals</h2>
-          </div>
-          <div className="grid sm:grid-cols-3 gap-6">
-            {[
-              {
-                quote: "Abley's made it incredibly easy to stock our sensory room. The bulk pricing was fair and the GST invoice was ready within the hour.",
-                author: "Ruchika M.",
-                role: "Occupational Therapist, Mumbai",
-                avatar: "RM",
-              },
-              {
-                quote: "We set up our school's entire sensory corner through Abley's. Quick delivery, great quality — and they even recommended the right products for our budget.",
-                author: "Ananya K.",
-                role: "Special Educator, Bengaluru",
-                avatar: "AK",
-              },
-              {
-                quote: "Finally, a reliable Indian vendor for OT equipment that doesn't cut corners on quality. Our clinic swears by Abley's Rehab.",
-                author: "Dr. Suresh P.",
-                role: "Rehab Consultant, Delhi NCR",
-                avatar: "SP",
-              },
-            ].map(({ quote, author, role, avatar }) => (
-              <div key={author} className="rounded-2xl border border-border/60 bg-card p-6 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
-                <div className="flex gap-0.5 mb-4">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-                <p className="text-sm text-foreground/80 leading-relaxed mb-5 italic">"{quote}"</p>
-                <div className="flex items-center gap-3 pt-3 border-t border-border/40">
-                  <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center text-xs font-bold text-primary shrink-0">
-                    {avatar}
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-foreground">{author}</p>
-                    <p className="text-xs text-muted-foreground">{role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
           </div>
         </section>
 
@@ -1390,6 +1386,30 @@ export default function B2BLandingPage() {
           <p className="text-xs">© {new Date().getFullYear()} Abley's Rehab</p>
         </div>
       </footer>
+
+      {/* ── Mobile Sticky CTA Bar ── */}
+      {!submitted && (
+        <div className="fixed bottom-0 inset-x-0 z-[60] lg:hidden bg-background/95 backdrop-blur-md border-t border-border px-4 py-3 flex gap-3 safe-area-bottom">
+          <Button
+            onClick={scrollToForm}
+            className="flex-1 h-11 rounded-xl text-sm font-semibold gap-1.5"
+            data-testid="button-sticky-get-quote"
+          >
+            <Send className="w-4 h-4" /> Get a Free Quote
+          </Button>
+          <a
+            href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20bulk%20B2B%20pricing%20for%20my%20institution."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center w-11 h-11 rounded-xl border border-border bg-card hover:bg-muted transition-colors shrink-0"
+            aria-label="Chat on WhatsApp"
+            data-testid="button-sticky-whatsapp"
+          >
+            <MessageCircle className="w-5 h-5 text-[#25D366]" />
+          </a>
+        </div>
+      )}
+
     </div>
   );
 }
