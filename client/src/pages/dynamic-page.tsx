@@ -21,7 +21,7 @@ export default function DynamicPage() {
   return (
     <>
       <Navbar />
-      <main className="pt-[6.5rem] min-h-screen bg-background">
+      <main id="main-content" className="pt-[6.5rem] min-h-screen bg-background">
         {isLoading ? (
           <div className="flex items-center justify-center py-32">
             <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />

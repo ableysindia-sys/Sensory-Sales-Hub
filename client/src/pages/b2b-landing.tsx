@@ -342,7 +342,7 @@ export default function B2BLandingPage() {
         </div>
       </header>
 
-      <main>
+      <main id="main-content">
         {/* ── Hero ── */}
         <section className="relative overflow-hidden bg-[#070d2a] text-white" data-testid="section-b2b-hero">
 

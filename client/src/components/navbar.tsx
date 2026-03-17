@@ -36,6 +36,8 @@ export function AnnouncementBar() {
         <p
           className="font-medium tracking-wide transition-opacity duration-300"
           style={{ opacity: visible ? 1 : 0 }}
+          aria-live="polite"
+          aria-atomic="true"
           data-testid="text-announcement"
         >
           {ANNOUNCEMENTS[idx]}
@@ -90,31 +92,39 @@ function UserAvatar() {
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full border border-border hover:border-primary/30 hover:bg-primary/5 transition-colors"
+        aria-label={`Account menu for ${display}`}
+        aria-expanded={open}
+        aria-haspopup="menu"
         data-testid="button-user-avatar"
       >
         {user.photoURL ? (
-          <img src={user.photoURL} alt={display} className="w-7 h-7 rounded-full object-cover" />
+          <img src={user.photoURL} alt="" aria-hidden="true" className="w-7 h-7 rounded-full object-cover" />
         ) : (
-          <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
+          <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center" aria-hidden="true">
             {initial}
           </div>
         )}
         <span className="text-xs font-semibold text-foreground max-w-[100px] truncate">{display}</span>
-        <ChevronDown className={`w-3 h-3 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown className={`w-3 h-3 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} aria-hidden="true" />
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-56 bg-background border border-border rounded-xl shadow-lg z-50 overflow-hidden">
-          <div className="px-4 py-3 border-b border-border bg-muted/30">
+        <div
+          className="absolute right-0 top-full mt-2 w-56 bg-background border border-border rounded-xl shadow-lg z-50 overflow-hidden"
+          role="menu"
+          aria-label="Account menu"
+        >
+          <div className="px-4 py-3 border-b border-border bg-muted/30" role="presentation">
             <p className="text-xs text-muted-foreground">Signed in as</p>
             <p className="text-sm font-semibold text-foreground truncate">{display}</p>
           </div>
           <button
             onClick={() => { logout(); setOpen(false); }}
             className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+            role="menuitem"
             data-testid="button-sign-out"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-4 h-4" aria-hidden="true" />
             Sign Out
           </button>
         </div>
@@ -205,6 +215,8 @@ export function Navbar() {
                       ? "text-primary"
                       : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
                   }`}
+                  aria-expanded={productsOpen}
+                  aria-haspopup="true"
                   data-testid="link-nav-products"
                 >
                   Products
@@ -243,55 +255,51 @@ export function Navbar() {
               </div>
 
               {/* B2B / Bulk Orders */}
-              <Link href="/lp">
-                <button
-                  className={`flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-semibold transition-colors rounded-md ${
-                    isActive("/lp") ? "text-primary" : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
-                  }`}
-                  data-testid="link-nav-b2b"
-                >
-                  <Building2 className="w-3.5 h-3.5" />
-                  B2B / Bulk
-                </button>
+              <Link
+                href="/lp"
+                className={`flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-semibold transition-colors rounded-md ${
+                  isActive("/lp") ? "text-primary" : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
+                }`}
+                data-testid="link-nav-b2b"
+              >
+                <Building2 className="w-3.5 h-3.5" />
+                B2B / Bulk
               </Link>
 
               {/* Sample Kit */}
-              <Link href="/sample">
-                <button
-                  className={`flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-semibold transition-colors rounded-md ${
-                    isActive("/sample") ? "text-primary" : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
-                  }`}
-                  data-testid="link-nav-sample"
-                >
-                  <FlaskConical className="w-3.5 h-3.5" />
-                  Sample Kit
-                </button>
+              <Link
+                href="/sample"
+                className={`flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-semibold transition-colors rounded-md ${
+                  isActive("/sample") ? "text-primary" : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
+                }`}
+                data-testid="link-nav-sample"
+              >
+                <FlaskConical className="w-3.5 h-3.5" />
+                Sample Kit
               </Link>
 
               {/* About */}
-              <Link href="/about">
-                <button
-                  className={`flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-semibold transition-colors rounded-md ${
-                    isActive("/about") ? "text-primary" : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
-                  }`}
-                  data-testid="link-nav-about"
-                >
-                  <Info className="w-3.5 h-3.5" />
-                  About
-                </button>
+              <Link
+                href="/about"
+                className={`flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-semibold transition-colors rounded-md ${
+                  isActive("/about") ? "text-primary" : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
+                }`}
+                data-testid="link-nav-about"
+              >
+                <Info className="w-3.5 h-3.5" />
+                About
               </Link>
 
               {/* Contact */}
-              <Link href="/contact">
-                <button
-                  className={`flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-semibold transition-colors rounded-md ${
-                    isActive("/contact") ? "text-primary" : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
-                  }`}
-                  data-testid="link-nav-contact"
-                >
-                  <Phone className="w-3.5 h-3.5" />
-                  Contact
-                </button>
+              <Link
+                href="/contact"
+                className={`flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-semibold transition-colors rounded-md ${
+                  isActive("/contact") ? "text-primary" : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
+                }`}
+                data-testid="link-nav-contact"
+              >
+                <Phone className="w-3.5 h-3.5" />
+                Contact
               </Link>
             </div>
 
@@ -312,17 +320,17 @@ export function Navbar() {
                 onClick={openDrawer}
                 className="relative p-2 text-foreground/60 hover:text-foreground transition-colors rounded-md hover:bg-muted/50"
                 data-testid="button-nav-shopping-cart"
-                aria-label="Shopping cart"
+                aria-label={cartCount > 0 ? `Shopping cart, ${cartCount} item${cartCount !== 1 ? "s" : ""}` : "Shopping cart"}
               >
-                <ShoppingCart className="w-5 h-5" />
+                <ShoppingCart className="w-5 h-5" aria-hidden="true" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center" data-testid="badge-shopping-cart-count">
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center" data-testid="badge-shopping-cart-count" aria-hidden="true">
                     {cartCount}
                   </span>
                 )}
               </button>
-              <Link href="/enquiry">
-                <Button size="sm" className="gap-1.5 rounded-full text-xs font-semibold px-4" data-testid="button-nav-bulk-enquiry">
+              <Button asChild size="sm" className="gap-1.5 rounded-full text-xs font-semibold px-4" data-testid="button-nav-bulk-enquiry">
+                <Link href="/enquiry">
                   <Send className="w-3.5 h-3.5" />
                   Get a Quote
                   {enquiryCount > 0 && (
@@ -330,26 +338,25 @@ export function Navbar() {
                       {enquiryCount}
                     </span>
                   )}
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
 
             {/* Mobile right: cart + enquiry + hamburger */}
             <div className="flex items-center gap-0.5 lg:hidden">
               {/* Enquiry cart badge */}
-              <Link href="/enquiry">
-                <button
-                  className="relative p-2.5 text-foreground/60 hover:text-foreground transition-colors"
-                  data-testid="button-mobile-enquiry-cart"
-                  aria-label="Enquiry cart"
-                >
-                  <Send className="w-[18px] h-[18px]" />
-                  {enquiryCount > 0 && (
-                    <span className="absolute top-1 right-1 w-4 h-4 bg-primary text-primary-foreground text-[9px] font-bold rounded-full flex items-center justify-center" data-testid="badge-mobile-enquiry-count">
-                      {enquiryCount}
-                    </span>
-                  )}
-                </button>
+              <Link
+                href="/enquiry"
+                className="relative p-2.5 text-foreground/60 hover:text-foreground transition-colors"
+                data-testid="button-mobile-enquiry-cart"
+                aria-label={enquiryCount > 0 ? `Enquiry cart, ${enquiryCount} item${enquiryCount !== 1 ? "s" : ""}` : "Enquiry cart"}
+              >
+                <Send className="w-[18px] h-[18px]" />
+                {enquiryCount > 0 && (
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-primary text-primary-foreground text-[9px] font-bold rounded-full flex items-center justify-center" data-testid="badge-mobile-enquiry-count" aria-hidden="true">
+                    {enquiryCount}
+                  </span>
+                )}
               </Link>
 
               {/* Shopping cart */}
@@ -357,11 +364,11 @@ export function Navbar() {
                 onClick={openDrawer}
                 className="relative p-2.5 text-foreground/60 hover:text-foreground transition-colors"
                 data-testid="button-mobile-shopping-cart"
-                aria-label="Shopping cart"
+                aria-label={cartCount > 0 ? `Shopping cart, ${cartCount} item${cartCount !== 1 ? "s" : ""}` : "Shopping cart"}
               >
-                <ShoppingCart className="w-[18px] h-[18px]" />
+                <ShoppingCart className="w-[18px] h-[18px]" aria-hidden="true" />
                 {cartCount > 0 && (
-                  <span className="absolute top-1 right-1 w-4 h-4 bg-primary text-primary-foreground text-[9px] font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-primary text-primary-foreground text-[9px] font-bold rounded-full flex items-center justify-center" aria-hidden="true">
                     {cartCount}
                   </span>
                 )}
@@ -393,6 +400,9 @@ export function Navbar() {
       {/* Slide-in panel */}
       <div
         className={`lg:hidden fixed top-0 right-0 bottom-0 z-[70] w-full max-w-sm bg-background shadow-2xl flex flex-col transition-transform duration-300 ease-in-out ${mobileOpen ? "translate-x-0" : "translate-x-full"}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation menu"
         data-testid="mobile-nav-drawer"
       >
         {/* Drawer header */}

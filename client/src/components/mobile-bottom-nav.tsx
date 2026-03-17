@@ -2,10 +2,10 @@ import { Link, useLocation } from "wouter";
 import { Home, Grid3x3, Send, FileDown } from "lucide-react";
 
 const tabs = [
-  { label: "Home",      icon: Home,     href: "/",        external: false },
-  { label: "Products",  icon: Grid3x3,  href: "/products", external: false },
-  { label: "Get a Quote", icon: Send,   href: "/enquiry",  external: false, primary: true },
-  { label: "Catalogue", icon: FileDown, href: "/api/catalog", external: true },
+  { label: "Home",        icon: Home,     href: "/",           external: false },
+  { label: "Products",    icon: Grid3x3,  href: "/products",   external: false },
+  { label: "Get a Quote", icon: Send,     href: "/enquiry",    external: false, primary: true },
+  { label: "Catalogue",   icon: FileDown, href: "/api/catalog", external: true },
 ];
 
 export function MobileBottomNav() {
@@ -14,6 +14,7 @@ export function MobileBottomNav() {
   return (
     <nav
       className="fixed bottom-0 inset-x-0 z-50 lg:hidden bg-background/95 backdrop-blur-md border-t border-border safe-area-bottom"
+      aria-label="Main navigation"
       data-testid="mobile-bottom-nav"
     >
       <div className="grid grid-cols-4 h-16">
@@ -29,15 +30,29 @@ export function MobileBottomNav() {
 
           if (external) {
             return (
-              <a key={label} href={href} target="_blank" rel="noopener noreferrer" className={cls} data-testid={`tab-${label.toLowerCase().replace(/\s+/g, "-")}`}>
-                <Icon className="w-5 h-5" />
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cls}
+                aria-label={`${label} (opens in new tab)`}
+                data-testid={`tab-${label.toLowerCase().replace(/\s+/g, "-")}`}
+              >
+                <Icon className="w-5 h-5" aria-hidden="true" />
                 <span>{label}</span>
               </a>
             );
           }
           return (
-            <Link key={label} href={href} className={cls} data-testid={`tab-${label.toLowerCase().replace(/\s+/g, "-")}`}>
-              <Icon className={`w-5 h-5 ${primary ? "text-primary-foreground" : ""}`} />
+            <Link
+              key={label}
+              href={href}
+              className={cls}
+              aria-current={isActive ? "page" : undefined}
+              data-testid={`tab-${label.toLowerCase().replace(/\s+/g, "-")}`}
+            >
+              <Icon className={`w-5 h-5 ${primary ? "text-primary-foreground" : ""}`} aria-hidden="true" />
               <span>{label}</span>
             </Link>
           );
