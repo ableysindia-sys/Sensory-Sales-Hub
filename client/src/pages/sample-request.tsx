@@ -198,10 +198,6 @@ export default function SampleRequestPage() {
   }
 
   useEffect(() => {
-    if (user && step === 0) setStep(1);
-  }, [user]);
-
-  useEffect(() => {
     if (user) {
       if (user.displayName && !name) setName(user.displayName);
       if (user.email && !email) setEmail(user.email);
