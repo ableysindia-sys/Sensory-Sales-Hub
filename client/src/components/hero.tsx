@@ -71,7 +71,7 @@ export function Hero() {
             </Link>
             <Link href="/products">
               <button
-                className="h-12 px-7 rounded-full border border-white/30 text-white text-sm font-semibold hover:bg-white/10 transition-colors w-full sm:w-auto flex items-center justify-center gap-2"
+                className="h-12 px-7 rounded-full border border-white/60 bg-white/10 text-white text-sm font-semibold hover:bg-white/20 hover:border-white/80 transition-colors w-full sm:w-auto flex items-center justify-center gap-2"
                 data-testid="button-hero-browse"
               >
                 Browse Products <ArrowRight className="w-4 h-4" />
@@ -88,10 +88,10 @@ export function Hero() {
             ].map(({ icon: Icon, text }) => (
               <div
                 key={text}
-                className="flex flex-col items-center gap-1.5 rounded-xl bg-white/8 border border-white/12 py-3 px-2 text-center"
+                className="flex flex-col items-center gap-1.5 rounded-xl bg-white/20 border border-white/35 py-3 px-2 text-center backdrop-blur-sm"
               >
-                <Icon className="w-4 h-4 text-white/60 flex-shrink-0" />
-                <span className="text-[10px] leading-tight text-white/55 whitespace-pre-line">{text}</span>
+                <Icon className="w-4 h-4 text-amber-300 flex-shrink-0" />
+                <span className="text-[10px] leading-tight text-white/90 whitespace-pre-line font-medium">{text}</span>
               </div>
             ))}
           </div>
@@ -102,8 +102,8 @@ export function Hero() {
               { icon: BadgeIndianRupee, text: "GST invoices · Bulk discounts" },
               { icon: ShieldCheck,      text: "OT-validated products" },
             ].map(({ icon: Icon, text }) => (
-              <span key={text} className="flex items-center gap-1.5 text-xs text-white/60">
-                <Icon className="w-3.5 h-3.5 text-white/45" />
+              <span key={text} className="flex items-center gap-1.5 text-xs text-white/80">
+                <Icon className="w-3.5 h-3.5 text-amber-300/80" />
                 {text}
               </span>
             ))}
