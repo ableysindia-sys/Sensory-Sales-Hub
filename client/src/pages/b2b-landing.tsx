@@ -9,6 +9,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { PhoneSignupInline } from "@/components/phone-signup-inline";
+import { useAuth } from "@/lib/auth-context";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -242,8 +243,10 @@ function useUtmParams() {
 
 export default function B2BLandingPage() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const formRef = useRef<HTMLDivElement>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [formStep, setFormStep] = useState(0);
   const utms = useUtmParams();
 
   usePageMeta(
@@ -285,6 +288,16 @@ export default function B2BLandingPage() {
       toast({ title: "Something went wrong", description: "Please try WhatsApp or email us directly.", variant: "destructive" });
     },
   });
+
+  /* Auto-advance past sign-in step when user is already / newly signed in */
+  useEffect(() => {
+    if (user && formStep === 0) {
+      if (user.displayName) form.setValue("name", user.displayName);
+      if (user.email) form.setValue("email", user.email);
+      if (user.phoneNumber) form.setValue("phone", user.phoneNumber.replace("+91", "").trim());
+      setFormStep(1);
+    }
+  }, [user]);
 
   const scrollToForm = () => {
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1021,7 +1034,34 @@ export default function B2BLandingPage() {
                   </div>
                 ) : (
                   <>
-                    <h3 className="text-lg font-bold text-foreground mb-6">Your B2B Enquiry</h3>
+                    {/* Header row with step dots */}
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-lg font-bold text-foreground">
+                        {formStep === 0 ? "Sign In to Continue" : "Your B2B Enquiry"}
+                      </h3>
+                      <div className="flex items-center gap-1.5">
+                        <span className={`w-2 h-2 rounded-full transition-colors ${formStep === 0 ? "bg-primary" : "bg-primary/30"}`} />
+                        <span className={`w-2 h-2 rounded-full transition-colors ${formStep === 1 ? "bg-primary" : "bg-primary/30"}`} />
+                      </div>
+                    </div>
+
+                    {formStep === 0 ? (
+                      <div data-testid="form-step-signin">
+                        <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+                          Sign in with your phone and we'll pre-fill your details in the next step.
+                        </p>
+                        <div id="recaptcha-lp-form" />
+                        <PhoneSignupInline variant="light" containerId="recaptcha-lp-form" />
+                        <button
+                          type="button"
+                          onClick={() => setFormStep(1)}
+                          className="mt-5 text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 block mx-auto transition-colors"
+                          data-testid="button-skip-signin"
+                        >
+                          Fill in manually →
+                        </button>
+                      </div>
+                    ) : (
                     <Form {...form}>
                       <form
                         onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
@@ -1161,6 +1201,7 @@ export default function B2BLandingPage() {
                         </p>
                       </form>
                     </Form>
+                    )}
                   </>
                 )}
               </div>
