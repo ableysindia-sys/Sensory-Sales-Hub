@@ -604,7 +604,7 @@ export default function B2BLandingPage() {
             <div className="grid lg:grid-cols-2 gap-12 items-start">
 
               {/* Left — pitch */}
-              <div className="lg:sticky lg:top-24">
+              <div className="lg:sticky lg:top-24 order-2 lg:order-none">
                 <span className="text-xs font-semibold uppercase tracking-widest text-primary mb-3 block">Get Started</span>
                 <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground mb-5 leading-tight">
                   Get Your Custom B2B Quote — Free, in 24 Hours.
@@ -655,7 +655,7 @@ export default function B2BLandingPage() {
               </div>
 
               {/* Right — form or success state */}
-              <div className="bg-card rounded-2xl border shadow-sm p-6 sm:p-8">
+              <div className="bg-card rounded-2xl border shadow-sm p-6 sm:p-8 order-1 lg:order-none">
                 {submitted ? (
                   <div className="text-center py-10" data-testid="state-form-success">
                     <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-5">
