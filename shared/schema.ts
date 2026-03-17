@@ -40,8 +40,8 @@ export const products = pgTable("products", {
 
 export const leads = pgTable("leads", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  email: varchar("email", { length: 255 }).notNull(),
+  name: text("name").notNull().default("B2B Lead"),
+  email: varchar("email", { length: 255 }),
   interest: text("interest"),
   organisation: text("organisation"),
   phone: text("phone"),

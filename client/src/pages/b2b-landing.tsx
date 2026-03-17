@@ -77,7 +77,7 @@ import {
 
 const formSchema = api.leads.create.input.extend({
   name: z.string().min(2, "Please enter your full name"),
-  email: z.string().email("Enter a valid email address"),
+  email: z.union([z.string().email("Enter a valid email address"), z.literal(""), z.null()]).optional(),
   phone: z.string().min(10, "Enter a valid phone number"),
   organisation: z.string().min(2, "Organisation name is required"),
   city: z.string().min(2, "Please enter your city"),
@@ -237,6 +237,9 @@ export default function B2BLandingPage() {
   const formRef = useRef<HTMLDivElement>(null);
   const [submitted, setSubmitted] = useState(false);
   const [formStep, setFormStep] = useState(1);
+  const [quickPhone, setQuickPhone] = useState("");
+  const [quickError, setQuickError] = useState("");
+  const [quickCaptured, setQuickCaptured] = useState(false);
   const utms = useUtmParams();
 
   usePageMeta(
@@ -279,12 +282,44 @@ export default function B2BLandingPage() {
     },
   });
 
+  const quickMutation = useMutation({
+    mutationFn: (phone: string) =>
+      apiRequest("POST", api.leads.create.path, {
+        phone,
+        category: "b2b-landing-quick",
+        interest: "Quick Capture – B2B Landing",
+      }),
+    onSuccess: () => {
+      form.setValue("phone", quickPhone);
+      setQuickCaptured(true);
+      setFormStep(2);
+    },
+    onError: () => {
+      form.setValue("phone", quickPhone);
+      setFormStep(2);
+    },
+  });
+
+  const handleQuickSubmit = () => {
+    const cleaned = quickPhone.replace(/\D/g, "").slice(0, 10);
+    if (cleaned.length < 10) {
+      setQuickError("Please enter a valid 10-digit phone number");
+      return;
+    }
+    setQuickError("");
+    quickMutation.mutate(cleaned);
+  };
+
   useEffect(() => {
     if (user) {
       if (user.displayName) form.setValue("name", user.displayName);
       if (user.email) form.setValue("email", user.email);
-      if (user.phoneNumber) form.setValue("phone", user.phoneNumber.replace("+91", "").trim());
-      if (formStep === 0) setFormStep(1);
+      if (user.phoneNumber) {
+        const ph = user.phoneNumber.replace("+91", "").trim();
+        form.setValue("phone", ph);
+        setQuickPhone(ph);
+      }
+      if (formStep === 0) setFormStep(2);
     }
   }, [user]);
 
@@ -641,42 +676,128 @@ export default function B2BLandingPage() {
                       </Button>
                     </a>
                   </div>
-                ) : (
-                  <>
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="text-lg font-bold text-foreground">Your B2B Enquiry</h3>
-                      {!user && formStep === 1 && (
-                        <button
-                          type="button"
-                          onClick={() => setFormStep(0)}
-                          className="flex items-center gap-1 text-xs text-primary hover:underline shrink-0 mt-0.5"
-                          data-testid="button-signin-prefill"
-                        >
-                          <Phone className="w-3 h-3" /> Sign in to pre-fill →
-                        </button>
-                      )}
-                      {formStep === 0 && (
-                        <button
-                          type="button"
-                          onClick={() => setFormStep(1)}
-                          className="text-xs text-muted-foreground hover:text-foreground underline shrink-0 mt-0.5"
-                          data-testid="button-back-to-form"
-                        >
-                          ← Back to form
-                        </button>
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground mb-5">Custom quote delivered within 24 working hours — no commitment needed.</p>
 
-                    {formStep === 0 ? (
-                      <div data-testid="form-step-signin">
-                        <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
-                          Sign in with your phone and we'll pre-fill your details in the next step.
-                        </p>
-                        <div id="recaptcha-lp-form" />
-                        <PhoneSignupInline variant="light" containerId="recaptcha-lp-form" />
+                ) : formStep === 0 ? (
+                  /* ── Step 0: OTP sign-in (optional, accessed via link) ── */
+                  <div data-testid="form-step-signin">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-bold text-foreground">Sign In to Pre-fill</h3>
+                      <button
+                        type="button"
+                        onClick={() => setFormStep(1)}
+                        className="text-xs text-muted-foreground hover:text-foreground underline"
+                        data-testid="button-back-to-quick"
+                      >
+                        ← Back
+                      </button>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+                      Verify your phone and we'll pre-fill all your details automatically.
+                    </p>
+                    <div id="recaptcha-lp-form" />
+                    <PhoneSignupInline variant="light" containerId="recaptcha-lp-form" />
+                  </div>
+
+                ) : formStep === 1 ? (
+                  /* ── Step 1: Quick capture — single phone field ── */
+                  <div data-testid="form-step-quick">
+                    <h3 className="text-lg font-bold text-foreground mb-1">Get Your Free Quote</h3>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      Enter your WhatsApp number — we'll reach out with pricing within 24 hours.
+                    </p>
+
+                    <div className="space-y-3">
+                      <div className="relative">
+                        <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-muted-foreground select-none pointer-events-none">
+                          +91
+                        </div>
+                        <Input
+                          type="tel"
+                          inputMode="numeric"
+                          placeholder="98765 43210"
+                          className="pl-12 h-12 text-base"
+                          value={quickPhone}
+                          onChange={(e) => {
+                            setQuickPhone(e.target.value.replace(/\D/g, "").slice(0, 10));
+                            setQuickError("");
+                          }}
+                          onKeyDown={(e) => e.key === "Enter" && handleQuickSubmit()}
+                          data-testid="input-quick-phone"
+                        />
                       </div>
-                    ) : (
+                      {quickError && (
+                        <p className="text-xs text-destructive">{quickError}</p>
+                      )}
+                      <Button
+                        className="w-full h-12 text-base font-semibold rounded-xl gap-2"
+                        onClick={handleQuickSubmit}
+                        disabled={quickMutation.isPending}
+                        data-testid="button-quick-submit"
+                      >
+                        {quickMutation.isPending ? (
+                          <><Loader2 className="w-4 h-4 animate-spin" /> Saving…</>
+                        ) : (
+                          <><ArrowRight className="w-4 h-4" /> Get My Free Quote</>
+                        )}
+                      </Button>
+                    </div>
+
+                    <div className="my-5 flex items-center gap-3">
+                      <div className="h-px flex-1 bg-border" />
+                      <span className="text-xs text-muted-foreground shrink-0">or share more details now</span>
+                      <div className="h-px flex-1 bg-border" />
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setFormStep(2)}
+                      className="w-full text-sm text-muted-foreground hover:text-foreground text-center transition-colors py-1"
+                      data-testid="button-fill-full-form"
+                    >
+                      Fill detailed enquiry form →
+                    </button>
+
+                    {!user && (
+                      <button
+                        type="button"
+                        onClick={() => setFormStep(0)}
+                        className="mt-3 w-full flex items-center justify-center gap-1 text-xs text-primary hover:underline"
+                        data-testid="button-signin-prefill"
+                      >
+                        <Phone className="w-3 h-3" /> Sign in to pre-fill your details →
+                      </button>
+                    )}
+
+                    <p className="text-xs text-muted-foreground text-center mt-4">
+                      No spam. Used only to prepare your quote.
+                    </p>
+                  </div>
+
+                ) : (
+                  /* ── Step 2: Full detailed form ── */
+                  <>
+                    {quickCaptured && (
+                      <div className="flex items-start gap-2.5 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-xl px-4 py-3 mb-5">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-semibold text-green-900 dark:text-green-300">Number saved — we'll be in touch within 24 hrs</p>
+                          <p className="text-xs text-green-700/80 dark:text-green-400/80 mt-0.5">Share a few more details for a tailored quote (optional)</p>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-base font-bold text-foreground">Complete Your Enquiry</h3>
+                      <button
+                        type="button"
+                        onClick={() => setFormStep(1)}
+                        className="text-xs text-muted-foreground hover:text-foreground underline shrink-0"
+                        data-testid="button-back-to-quick"
+                      >
+                        ← Back
+                      </button>
+                    </div>
+
                     <Form {...form}>
                       <form
                         onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
@@ -719,7 +840,7 @@ export default function B2BLandingPage() {
                               <FormItem>
                                 <FormLabel>Phone / WhatsApp *</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="+91 98765 43210" {...field} value={field.value ?? ""} data-testid="input-phone" />
+                                  <Input placeholder="98765 43210" {...field} value={field.value ?? ""} data-testid="input-phone" />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -730,9 +851,9 @@ export default function B2BLandingPage() {
                             name="email"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Email Address *</FormLabel>
+                                <FormLabel>Email <span className="text-muted-foreground font-normal">(optional)</span></FormLabel>
                                 <FormControl>
-                                  <Input placeholder="priya@rehabcentre.in" type="email" {...field} data-testid="input-email" />
+                                  <Input placeholder="priya@rehabcentre.in" type="email" {...field} value={field.value ?? ""} data-testid="input-email" />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -784,7 +905,7 @@ export default function B2BLandingPage() {
                           name="message"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Tell Us More (Optional)</FormLabel>
+                              <FormLabel>Tell Us More <span className="text-muted-foreground font-normal">(optional)</span></FormLabel>
                               <FormControl>
                                 <Textarea
                                   placeholder="E.g. We need equipment for a 300 sq ft sensory room at our school in Pune. Budget approx ₹1.5L..."
@@ -801,13 +922,13 @@ export default function B2BLandingPage() {
                         />
 
                         {/* Urgency nudge */}
-                        <div className="flex items-center gap-2.5 py-2 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-2.5 py-1 text-xs text-muted-foreground">
                           <div className="flex -space-x-1.5 shrink-0">
                             {["RM", "AK", "SP"].map((i) => (
                               <div key={i} className="w-5 h-5 rounded-full bg-primary/20 border-2 border-background text-[8px] font-bold text-primary flex items-center justify-center">{i}</div>
                             ))}
                           </div>
-                          <span>12+ institutions received quotes this week · spots limited</span>
+                          <span>12+ institutions got quotes this week</span>
                         </div>
 
                         <Button
@@ -827,7 +948,6 @@ export default function B2BLandingPage() {
                         </p>
                       </form>
                     </Form>
-                    )}
                   </>
                 )}
               </div>

@@ -130,7 +130,11 @@ export async function registerRoutes(
   app.post(api.leads.create.path, async (req, res) => {
     try {
       const input = api.leads.create.input.parse(req.body);
-      const lead = await storage.createLead(input);
+      const lead = await storage.createLead({
+        ...input,
+        name: input.name || "B2B Lead",
+        email: input.email || undefined,
+      });
       res.status(201).json({ id: lead.id, message: "Enquiry submitted successfully" });
     } catch (err) {
       if (err instanceof z.ZodError) {

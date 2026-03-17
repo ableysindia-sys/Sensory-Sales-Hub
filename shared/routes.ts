@@ -33,8 +33,8 @@ export const api = {
       method: 'POST' as const,
       path: '/api/leads' as const,
       input: z.object({
-        name: z.string().min(1, "Name is required"),
-        email: z.string().email("Please enter a valid email address."),
+        name: z.string().min(1, "Name is required").optional().nullable(),
+        email: z.string().email("Please enter a valid email address.").optional().nullable(),
         interest: z.string().optional().nullable(),
         organisation: z.string().optional().nullable(),
         phone: z.string().optional().nullable(),
