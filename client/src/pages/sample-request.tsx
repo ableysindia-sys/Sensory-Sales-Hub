@@ -180,7 +180,9 @@ export default function SampleRequestPage() {
   const [city, setCity] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [name, setName] = useState(user?.displayName || "");
-  const [phone, setPhone] = useState(user?.phoneNumber?.replace("+91", "") || "");
+  const [phone, setPhone] = useState(
+    user?.phoneNumber ? user.phoneNumber.replace(/^\+91/, "") : ""
+  );
   const [email, setEmail] = useState(user?.email || "");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
@@ -199,12 +201,23 @@ export default function SampleRequestPage() {
     if (user && step === 0) setStep(1);
   }, [user]);
 
+  useEffect(() => {
+    if (user) {
+      if (user.displayName && !name) setName(user.displayName);
+      if (user.email && !email) setEmail(user.email);
+      if (user.phoneNumber) {
+        const digits = user.phoneNumber.replace(/^\+91/, "").replace(/\D/g, "");
+        if (digits.length === 10) setPhone(digits);
+      }
+    }
+  }, [user]);
+
   function canNext() {
     if (step === 0) return !!user;
     if (step === 1) return !!role;
     if (step === 2) return !!setupType && !!city;
     if (step === 3) return selectedCategories.length > 0;
-    if (step === 4) return name.length >= 2 && email.includes("@");
+    if (step === 4) return name.length >= 2 && email.includes("@") && phone.replace(/\D/g, "").length === 10;
     return false;
   }
 
@@ -370,10 +383,12 @@ export default function SampleRequestPage() {
               >
                 <FileText className="w-4 h-4" /> Download Catalogue PDF
               </a>
-              <Link href="/products">
-                <button className="flex items-center justify-center gap-2 border border-border px-5 py-2.5 rounded-full text-sm font-medium hover:bg-muted/40 transition-colors">
-                  Browse Products <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+              <Link
+                href="/products"
+                className="flex items-center justify-center gap-2 border border-border px-5 py-2.5 rounded-full text-sm font-medium hover:bg-muted/40 transition-colors"
+                data-testid="link-browse-products-success"
+              >
+                Browse Products <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </motion.div>
@@ -538,23 +553,45 @@ export default function SampleRequestPage() {
               <motion.div key="s3" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.22 }} className="p-6 sm:p-8">
                 <h2 className="text-lg font-bold mb-1" data-testid="heading-step-3">Your contact details</h2>
                 <p className="text-sm text-muted-foreground mb-5">We'll use these to dispatch your kit and follow up on WhatsApp.</p>
-                {user && (
+                {user?.phoneNumber && (
                   <div className="flex items-center gap-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-xl px-4 py-3 mb-5" data-testid="badge-phone-verified">
                     <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
                     <div className="text-left">
-                      <p className="text-sm font-semibold text-green-700 dark:text-green-400">Phone verified</p>
-                      <p className="text-xs text-green-600 dark:text-green-500">{user.phoneNumber || user.email}</p>
+                      <p className="text-sm font-semibold text-green-700 dark:text-green-400">Mobile number verified</p>
+                      <p className="text-xs text-green-600 dark:text-green-500">{user.phoneNumber}</p>
                     </div>
                   </div>
                 )}
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="name">Full name <span className="text-destructive">*</span></Label>
-                    <Input id="name" placeholder="Dr. Jane Smith" value={name} onChange={(e) => setName(e.target.value)} className="mt-1.5" data-testid="input-name" />
+                    <Input id="name" placeholder="Dr. Priya Sharma" value={name} onChange={(e) => setName(e.target.value)} className="mt-1.5" data-testid="input-name" />
                   </div>
                   <div>
                     <Label htmlFor="email">Email address <span className="text-destructive">*</span></Label>
-                    <Input id="email" type="email" placeholder="jane@clinic.com" value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1.5" data-testid="input-email" />
+                    <Input id="email" type="email" placeholder="priya@clinic.co.in" value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1.5" data-testid="input-email" />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone">
+                      WhatsApp / Mobile number <span className="text-destructive">*</span>
+                    </Label>
+                    <div className="flex mt-1.5">
+                      <span className="flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-sm text-muted-foreground select-none">+91</span>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        inputMode="numeric"
+                        placeholder="98765 43210"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                        className="rounded-l-none"
+                        maxLength={10}
+                        data-testid="input-phone"
+                      />
+                    </div>
+                    {phone.replace(/\D/g, "").length > 0 && phone.replace(/\D/g, "").length !== 10 && (
+                      <p className="text-xs text-destructive mt-1">Please enter a valid 10-digit mobile number</p>
+                    )}
                   </div>
                 </div>
               </motion.div>
