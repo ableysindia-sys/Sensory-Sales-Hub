@@ -155,6 +155,21 @@ export function Navbar() {
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
+  /* Close on ESC key */
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, []);
+
+  /* Close drawer on route change (e.g. browser back button) */
+  useEffect(() => {
+    setMobileOpen(false);
+    setProductsOpen(false);
+  }, [location]);
+
   const display = user
     ? (user.displayName ?? user.phoneNumber ?? user.email ?? "User")
     : null;
@@ -425,7 +440,7 @@ export function Navbar() {
             data-testid="button-mobile-sign-in"
           >
             <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
-              <LogIn className="w-4.5 h-4.5 text-muted-foreground" />
+              <LogIn className="w-[18px] h-[18px] text-muted-foreground" />
             </div>
             <div className="text-left">
               <p className="text-sm font-semibold text-foreground">Sign In / Register</p>
@@ -435,16 +450,16 @@ export function Navbar() {
         )}
 
         {/* Scrollable nav body */}
-        <div className="flex-1 overflow-y-auto overscroll-contain">
+        <div className="flex-1 overflow-y-auto">
           <nav className="px-3 py-3 space-y-0.5" aria-label="Mobile navigation">
 
             {/* Home */}
             <button
               onClick={() => handleNavClick("/")}
-              className={`flex items-center gap-3 w-full px-3 py-3 text-sm font-medium rounded-xl transition-colors ${location === "/" ? "text-primary bg-primary/8 font-semibold" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
+              className={`flex items-center gap-3 w-full px-3 py-3 text-sm font-medium rounded-xl transition-colors ${location === "/" ? "text-primary bg-primary/10 font-semibold" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
               data-testid="link-mobile-home"
             >
-              <Home className="w-4.5 h-4.5 shrink-0" />
+              <Home className="w-[18px] h-[18px] shrink-0" />
               Home
             </button>
 
@@ -452,11 +467,11 @@ export function Navbar() {
             <div>
               <button
                 onClick={() => setProductsOpen(!productsOpen)}
-                className={`flex items-center gap-3 justify-between w-full px-3 py-3 text-sm font-medium rounded-xl transition-colors ${(location.startsWith("/product") || location.startsWith("/category")) ? "text-primary bg-primary/8 font-semibold" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
+                className={`flex items-center gap-3 justify-between w-full px-3 py-3 text-sm font-medium rounded-xl transition-colors ${(location.startsWith("/product") || location.startsWith("/category")) ? "text-primary bg-primary/10 font-semibold" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
                 data-testid="link-mobile-products"
               >
                 <span className="flex items-center gap-3">
-                  <Grid3X3 className="w-4.5 h-4.5 shrink-0" />
+                  <Grid3X3 className="w-[18px] h-[18px] shrink-0" />
                   Products
                 </span>
                 <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${productsOpen ? "rotate-180" : ""}`} />
@@ -502,20 +517,20 @@ export function Navbar() {
             {/* B2B / Bulk */}
             <button
               onClick={() => handleNavClick("/lp")}
-              className={`flex items-center gap-3 w-full px-3 py-3 text-sm font-medium rounded-xl transition-colors ${isActive("/lp") ? "text-primary bg-primary/8 font-semibold" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
+              className={`flex items-center gap-3 w-full px-3 py-3 text-sm font-medium rounded-xl transition-colors ${isActive("/lp") ? "text-primary bg-primary/10 font-semibold" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
               data-testid="link-mobile-b2b"
             >
-              <Building2 className="w-4.5 h-4.5 shrink-0" />
+              <Building2 className="w-[18px] h-[18px] shrink-0" />
               <span>B2B &amp; Bulk Orders</span>
             </button>
 
             {/* Sample Kit */}
             <button
               onClick={() => handleNavClick("/sample")}
-              className={`flex items-center gap-3 w-full px-3 py-3 text-sm font-medium rounded-xl transition-colors ${isActive("/sample") ? "text-primary bg-primary/8 font-semibold" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
+              className={`flex items-center gap-3 w-full px-3 py-3 text-sm font-medium rounded-xl transition-colors ${isActive("/sample") ? "text-primary bg-primary/10 font-semibold" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
               data-testid="link-mobile-sample"
             >
-              <FlaskConical className="w-4.5 h-4.5 shrink-0" />
+              <FlaskConical className="w-[18px] h-[18px] shrink-0" />
               <span className="flex-1 text-left">Sample Kit</span>
               <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">₹1,499</span>
             </button>
@@ -523,20 +538,20 @@ export function Navbar() {
             {/* About */}
             <button
               onClick={() => handleNavClick("/about")}
-              className={`flex items-center gap-3 w-full px-3 py-3 text-sm font-medium rounded-xl transition-colors ${isActive("/about") ? "text-primary bg-primary/8 font-semibold" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
+              className={`flex items-center gap-3 w-full px-3 py-3 text-sm font-medium rounded-xl transition-colors ${isActive("/about") ? "text-primary bg-primary/10 font-semibold" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
               data-testid="link-mobile-about"
             >
-              <Info className="w-4.5 h-4.5 shrink-0" />
+              <Info className="w-[18px] h-[18px] shrink-0" />
               About Us
             </button>
 
             {/* Contact */}
             <button
               onClick={() => handleNavClick("/contact")}
-              className={`flex items-center gap-3 w-full px-3 py-3 text-sm font-medium rounded-xl transition-colors ${isActive("/contact") ? "text-primary bg-primary/8 font-semibold" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
+              className={`flex items-center gap-3 w-full px-3 py-3 text-sm font-medium rounded-xl transition-colors ${isActive("/contact") ? "text-primary bg-primary/10 font-semibold" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
               data-testid="link-mobile-contact"
             >
-              <Phone className="w-4.5 h-4.5 shrink-0" />
+              <Phone className="w-[18px] h-[18px] shrink-0" />
               Contact
             </button>
 
@@ -549,7 +564,7 @@ export function Navbar() {
               className="flex items-center gap-3 w-full px-3 py-3 text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted rounded-xl transition-colors"
               data-testid="link-mobile-catalogue-pdf"
             >
-              <FileDown className="w-4.5 h-4.5 shrink-0" />
+              <FileDown className="w-[18px] h-[18px] shrink-0" />
               Download Catalogue
             </a>
 
