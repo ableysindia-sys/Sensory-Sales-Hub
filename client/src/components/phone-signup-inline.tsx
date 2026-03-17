@@ -134,12 +134,12 @@ export function PhoneSignupInline({
         <div className={cn(
           "flex items-center rounded-xl overflow-hidden border transition-shadow focus-within:ring-2",
           isDark
-            ? "bg-white/10 border-white/15 focus-within:ring-white/30"
+            ? "bg-white/10 border-white/20 focus-within:ring-white/30"
             : "bg-background border-input focus-within:ring-ring"
         )}>
           <div className={cn(
             "flex items-center gap-1 px-3 py-2.5 text-sm font-semibold shrink-0 border-r select-none",
-            isDark ? "text-white/80 border-white/15" : "text-foreground border-input bg-muted"
+            isDark ? "text-white/80 border-white/20" : "text-foreground border-input bg-muted"
           )}>
             🇮🇳 <span>+91</span>
           </div>
@@ -186,11 +186,11 @@ export function PhoneSignupInline({
 
         {/* Divider */}
         <div className="flex items-center gap-3 pt-0.5">
-          <div className={cn("flex-1 h-px", isDark ? "bg-white/12" : "bg-border")} />
+          <div className={cn("flex-1 h-px", isDark ? "bg-white/10" : "bg-border")} />
           <span className={cn("text-[11px] font-medium", isDark ? "text-white/40" : "text-muted-foreground")}>
             or continue with
           </span>
-          <div className={cn("flex-1 h-px", isDark ? "bg-white/12" : "bg-border")} />
+          <div className={cn("flex-1 h-px", isDark ? "bg-white/10" : "bg-border")} />
         </div>
 
         {/* Social buttons — compact equal pair */}
@@ -203,7 +203,7 @@ export function PhoneSignupInline({
               className={cn(
                 "flex-1 flex items-center justify-center gap-2 h-9 rounded-xl text-xs font-medium border transition-all disabled:opacity-50",
                 isDark
-                  ? "bg-white/8 border-white/12 text-white hover:bg-white/15"
+                  ? "bg-white/10 border-white/10 text-white hover:bg-white/20"
                   : "bg-background border-border/60 text-foreground hover:bg-muted hover:border-border"
               )}
               data-testid={`button-inline-${p}`}

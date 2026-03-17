@@ -49,12 +49,40 @@ function OtpInput({
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
   const digits = value.split("").concat(Array(6).fill("")).slice(0, 6);
 
+  /* Web OTP API — Android Chrome can auto-read the SMS entirely */
+  useEffect(() => {
+    if (!("OTPCredential" in window)) return;
+    const ac = new AbortController();
+    (navigator.credentials as any)
+      .get({ otp: { transport: ["sms"] }, signal: ac.signal })
+      .then((otp: any) => {
+        if (otp?.code) {
+          const code = otp.code.replace(/\D/g, "").slice(0, 6);
+          onChange(code);
+          if (code.length === 6) { inputs.current[5]?.focus(); onComplete(); }
+        }
+      })
+      .catch(() => {});
+    return () => ac.abort();
+  }, []);
+
   const handleKey = (i: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Backspace" && !digits[i] && i > 0) inputs.current[i - 1]?.focus();
   };
 
+  /* Handles both single-digit input AND full OTP auto-fill from OS keyboard suggestion */
   const handleChange = (i: number, raw: string) => {
-    const d = raw.replace(/\D/g, "").slice(-1);
+    const cleaned = raw.replace(/\D/g, "");
+    if (cleaned.length > 1) {
+      /* OS auto-filled the full OTP into one box */
+      const full = cleaned.slice(0, 6);
+      onChange(full);
+      const focusIdx = Math.min(full.length, 5);
+      inputs.current[focusIdx]?.focus();
+      if (full.length === 6) onComplete();
+      return;
+    }
+    const d = cleaned.slice(-1);
     const next = digits.map((v, idx) => (idx === i ? d : v)).join("").slice(0, 6);
     onChange(next);
     if (d && i < 5) inputs.current[i + 1]?.focus();
@@ -62,9 +90,12 @@ function OtpInput({
   };
 
   const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
     const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
     onChange(pasted);
-    if (pasted.length === 6) { inputs.current[5]?.focus(); onComplete(); }
+    const focusIdx = Math.min(pasted.length, 5);
+    inputs.current[focusIdx]?.focus();
+    if (pasted.length === 6) onComplete();
   };
 
   return (
@@ -75,10 +106,12 @@ function OtpInput({
           ref={(el) => { inputs.current[i] = el; }}
           type="text"
           inputMode="numeric"
-          maxLength={1}
+          maxLength={6}
           value={d}
           onChange={(e) => handleChange(i, e.target.value)}
           onKeyDown={(e) => handleKey(i, e)}
+          /* autocomplete="one-time-code" on box 0 triggers iOS/Android keyboard OTP suggestion */
+          autoComplete={i === 0 ? "one-time-code" : "off"}
           className="w-12 h-14 text-center text-2xl font-bold rounded-xl border-2 bg-background transition-all focus:outline-none"
           style={{
             borderColor: d ? "hsl(var(--primary))" : "hsl(var(--border))",
@@ -340,7 +373,7 @@ export function AuthDrawer() {
                   {BENEFITS.map(({ icon: Icon, label }) => (
                     <div
                       key={label}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/8 border border-primary/15"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20"
                     >
                       <Icon className="w-3 h-3 text-primary" />
                       <span className="text-xs font-semibold text-primary">{label}</span>
