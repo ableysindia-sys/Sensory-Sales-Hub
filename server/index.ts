@@ -4,6 +4,20 @@ import { serveStatic } from "./static";
 import { createServer } from "http";
 import { seedDatabase, seedPages } from "./seed";
 import { syncShopifyProducts } from "./shopify-sync";
+import { db } from "./db";
+import { products as productsTable } from "@shared/schema";
+import { eq, inArray, notInArray, count } from "drizzle-orm";
+
+const PINNED_PRODUCT_IDS = [6,7,8,9,11,12,13,15,18,19,20,21,22,23,24,25,26,27,28,43,44,95,128,131,132,135,136,137,139,140,141,142,143,168];
+
+async function applyInitialCuration() {
+  const [{ value }] = await db.select({ value: count() }).from(productsTable).where(eq(productsTable.b2bPinned, true));
+  if (Number(value) > 0) return;
+  console.log("[curation] No pinned products found — applying initial B2B curation...");
+  await db.update(productsTable).set({ isActive: true, b2bPinned: true }).where(inArray(productsTable.id, PINNED_PRODUCT_IDS));
+  await db.update(productsTable).set({ isActive: false, b2bPinned: false }).where(notInArray(productsTable.id, PINNED_PRODUCT_IDS));
+  console.log(`[curation] Done — ${PINNED_PRODUCT_IDS.length} products pinned, rest deactivated.`);
+}
 
 const app = express();
 const httpServer = createServer(app);
@@ -73,6 +87,12 @@ app.use((req, res, next) => {
     await seedPages();
   } catch (err) {
     console.error("Page seed error:", err);
+  }
+
+  try {
+    await applyInitialCuration();
+  } catch (err) {
+    console.error("Curation error:", err);
   }
 
   try {
