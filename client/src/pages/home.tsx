@@ -71,10 +71,11 @@ function QuickTrustBar() {
 }
 
 function ProductShowcase() {
-  const { getNewArrivals, getBestSellers } = useProducts();
+  const { getNewArrivals, getBestSellers, products } = useProducts();
   const [activeTab, setActiveTab] = useState<"new" | "best">("best");
   const newArrivals = getNewArrivals();
   const bestSellers = getBestSellers();
+  const totalCount = products.length;
   const active = activeTab === "new" ? newArrivals : bestSellers;
 
   return (
@@ -113,7 +114,7 @@ function ProductShowcase() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-10">
           <Link href="/products">
             <Button variant="outline" className="rounded-full px-8 border-primary/30 hover:border-primary/60" data-testid="button-see-all-products">
-              See All 120+ Products <ArrowRight className="ml-1.5 w-4 h-4" />
+              See All {totalCount}+ Products <ArrowRight className="ml-1.5 w-4 h-4" />
             </Button>
           </Link>
           <Link href="/enquiry">
