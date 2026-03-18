@@ -561,36 +561,38 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
       .where(eq(productsTable.slug, dbProduct.slug));
 
     if (existing) {
+      // Always update product data (name, price, images, etc.)
+      // Only update isActive when the product is NOT pinned — pinned products are team-curated
+      const updateSet: Record<string, unknown> = {
+        name: dbProduct.name,
+        categorySlug: dbProduct.categorySlug,
+        shortDescription: dbProduct.shortDescription,
+        longDescription: dbProduct.longDescription,
+        basePrice: dbProduct.basePrice,
+        comparePrice: dbProduct.comparePrice,
+        stock: dbProduct.stock,
+        images: dbProduct.images,
+        specifications: dbProduct.specifications,
+        features: dbProduct.features,
+        applications: dbProduct.applications,
+        shopifyHandle: dbProduct.shopifyHandle,
+        shopifyUrl: dbProduct.shopifyUrl,
+        shopifyVariants: dbProduct.shopifyVariants,
+        defaultVariantId: dbProduct.defaultVariantId,
+        productType: dbProduct.productType,
+        vendor: dbProduct.vendor,
+        sku: dbProduct.sku,
+      };
+      // Non-pinned products are NEVER activated by sync — team controls visibility via pinning
+      // Pinned products: sync only updates product data, never changes their isActive
       await db
         .update(productsTable)
-        .set({
-          name: dbProduct.name,
-          categorySlug: dbProduct.categorySlug,
-          shortDescription: dbProduct.shortDescription,
-          longDescription: dbProduct.longDescription,
-          basePrice: dbProduct.basePrice,
-          comparePrice: dbProduct.comparePrice,
-          stock: dbProduct.stock,
-          images: dbProduct.images,
-          specifications: dbProduct.specifications,
-          features: dbProduct.features,
-          applications: dbProduct.applications,
-          shopifyHandle: dbProduct.shopifyHandle,
-          shopifyUrl: dbProduct.shopifyUrl,
-          shopifyVariants: dbProduct.shopifyVariants,
-          defaultVariantId: dbProduct.defaultVariantId,
-          productType: dbProduct.productType,
-          vendor: dbProduct.vendor,
-          sku: dbProduct.sku,
-          isActive: dbProduct.isActive, // Respect Shopify availability — OOS products become inactive
-        })
+        .set(updateSet as any)
         .where(eq(productsTable.slug, dbProduct.slug));
-      if (!dbProduct.isActive) {
-        console.log(`[shopify-sync] Deactivated OOS product: ${dbProduct.slug} (availableForSale=false on Shopify)`);
-      }
       updated++;
     } else {
-      await db.insert(productsTable).values(dbProduct);
+      // New products start inactive — team pins them to make them visible on the B2B app
+      await db.insert(productsTable).values({ ...dbProduct, isActive: false, b2bPinned: false });
       added++;
     }
   }
@@ -616,12 +618,14 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
     })
   );
   const allDbProducts = await db
-    .select({ slug: productsTable.slug, shopifyHandle: productsTable.shopifyHandle, isActive: productsTable.isActive })
+    .select({ slug: productsTable.slug, shopifyHandle: productsTable.shopifyHandle, isActive: productsTable.isActive, b2bPinned: productsTable.b2bPinned })
     .from(productsTable);
 
   let deactivated = 0;
-  let reactivated = 0;
   for (const dbProd of allDbProducts) {
+    // Pinned products are managed manually — sync never overrides their visibility
+    if (dbProd.b2bPinned) continue;
+
     const shopifyIsAvailable = dbProd.shopifyHandle ? shopifyAvailability.get(dbProd.shopifyHandle) : undefined;
     // undefined = not in Shopify at all (unpublished or seeded product with no Shopify handle)
     const shouldBeActive = shopifyIsAvailable === true;
@@ -635,17 +639,13 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
       deactivated++;
       const reason = shopifyIsAvailable === false ? "out of stock on Shopify" : "not published on Shopify";
       console.log(`[shopify-sync] Deactivated ${dbProd.slug}: ${reason}`);
-    } else if (shouldBeActive && !dbProd.isActive) {
-      await db
-        .update(productsTable)
-        .set({ isActive: true })
-        .where(eq(productsTable.slug, dbProd.slug));
-      reactivated++;
-      console.log(`[shopify-sync] Reactivated back-in-stock product: ${dbProd.slug}`);
     }
+    // Non-pinned products are never auto-reactivated by sync;
+    // team controls visibility manually via the admin panel or DB.
+    // New products from Shopify are inserted as active in the upsert loop above.
   }
 
-  const summary = `${added} added, ${updated} updated, ${deactivated} deactivated, ${reactivated} reactivated, ${shopifyProducts.length} total from Shopify`;
+  const summary = `${added} added, ${updated} updated, ${deactivated} deactivated, ${shopifyProducts.length} total from Shopify`;
   console.log(`[shopify-sync] Sync complete: ${summary}`);
   return { added, updated, total: shopifyProducts.length };
 }
