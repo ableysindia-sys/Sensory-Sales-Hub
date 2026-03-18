@@ -13,6 +13,18 @@ const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
 const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
 const DEPOSIT_AMOUNT_PAISE = 149900; // ₹1,499 in paise
 
+/* ── Checkout cache (module-scoped so sync paths can invalidate it) ──── */
+let _checkoutCache: {
+  handles: Set<string>;
+  variantMap: Map<string, string>;
+  ts: number;
+} | null = null;
+const CHECKOUT_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+export function invalidateCheckoutCache() {
+  _checkoutCache = null;
+}
+
 const SYSTEM_PROMPT = `You are a friendly, knowledgeable assistant for Abley's Rehab — a professional therapy equipment company based in India. You help occupational therapists, physiotherapists, special educators, parents, and clinic owners find the right rehabilitation and sensory integration equipment.
 
 Key facts about Abley's Rehab:
@@ -412,22 +424,14 @@ export async function registerRoutes(
     }
   });
 
-  /* ── Checkout handle + variant-ID cache ──────────────────────────────── */
-  let checkoutCache: {
-    handles: Set<string>;
-    variantMap: Map<string, string>; // handle → Shopify GID (for fast checkout)
-    ts: number;
-  } | null = null;
-  const CHECKOUT_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-
   async function getAllowedShopifyHandles(): Promise<Set<string>> {
     const { handles } = await getCheckoutCache();
     return handles;
   }
 
   async function getCheckoutCache() {
-    if (checkoutCache && Date.now() - checkoutCache.ts < CHECKOUT_CACHE_TTL) {
-      return checkoutCache;
+    if (_checkoutCache && Date.now() - _checkoutCache.ts < CHECKOUT_CACHE_TTL) {
+      return _checkoutCache;
     }
     const allProducts = await storage.getActiveProducts();
     const handles = new Set<string>();
@@ -447,8 +451,8 @@ export async function registerRoutes(
         } catch { /* ignore */ }
       }
     }
-    checkoutCache = { handles, variantMap, ts: Date.now() };
-    return checkoutCache;
+    _checkoutCache = { handles, variantMap, ts: Date.now() };
+    return _checkoutCache;
   }
 
   const shopifyCheckoutSchema = z.object({
@@ -616,6 +620,7 @@ export async function registerRoutes(
   app.post("/api/admin/shopify-sync", requireAdmin, async (_req, res) => {
     try {
       const result = await syncShopifyProducts();
+      invalidateCheckoutCache(); // new products are immediately available for checkout
       res.json(result);
     } catch (err) {
       console.error("Shopify sync error:", err);
@@ -889,7 +894,7 @@ export async function registerRoutes(
   // ── End Shopify Admin API Routes ─────────────────────────────────────────────
 
   initShopifyAdmin();
-  startPeriodicSync();
+  startPeriodicSync(undefined, invalidateCheckoutCache);
 
   return httpServer;
 }

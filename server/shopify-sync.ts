@@ -652,11 +652,11 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
 
 let syncInterval: ReturnType<typeof setInterval> | null = null;
 
-export function startPeriodicSync(intervalMs: number = 10 * 60 * 1000) {
+export function startPeriodicSync(intervalMs: number = 10 * 60 * 1000, onComplete?: () => void) {
   syncInterval = setInterval(() => {
-    syncShopifyProducts().catch(err =>
-      console.error("[shopify-sync] Periodic sync failed:", err)
-    );
+    syncShopifyProducts()
+      .then(() => { if (onComplete) onComplete(); })
+      .catch(err => console.error("[shopify-sync] Periodic sync failed:", err));
   }, intervalMs);
 
   console.log(`[shopify-sync] Periodic sync started (every ${intervalMs / 60000} minutes)`);
