@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { SiGoogle, SiApple } from "react-icons/si";
 import logoPath from "@assets/ableys_rehab_logo.png";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 
 type Step = "method" | "otp" | "success";
 
@@ -46,9 +47,6 @@ function OtpInput({
   onChange: (v: string) => void;
   onComplete: () => void;
 }) {
-  const inputs = useRef<(HTMLInputElement | null)[]>([]);
-  const digits = value.split("").concat(Array(6).fill("")).slice(0, 6);
-
   /* Web OTP API — Android Chrome can auto-read the SMS entirely */
   useEffect(() => {
     if (!("OTPCredential" in window)) return;
@@ -59,69 +57,35 @@ function OtpInput({
         if (otp?.code) {
           const code = otp.code.replace(/\D/g, "").slice(0, 6);
           onChange(code);
-          if (code.length === 6) { inputs.current[5]?.focus(); onComplete(); }
+          if (code.length === 6) onComplete();
         }
       })
       .catch(() => {});
     return () => ac.abort();
   }, []);
 
-  const handleKey = (i: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !digits[i] && i > 0) inputs.current[i - 1]?.focus();
-  };
-
-  /* Handles both single-digit input AND full OTP auto-fill from OS keyboard suggestion */
-  const handleChange = (i: number, raw: string) => {
-    const cleaned = raw.replace(/\D/g, "");
-    if (cleaned.length > 1) {
-      /* OS auto-filled the full OTP into one box */
-      const full = cleaned.slice(0, 6);
-      onChange(full);
-      const focusIdx = Math.min(full.length, 5);
-      inputs.current[focusIdx]?.focus();
-      if (full.length === 6) onComplete();
-      return;
-    }
-    const d = cleaned.slice(-1);
-    const next = digits.map((v, idx) => (idx === i ? d : v)).join("").slice(0, 6);
-    onChange(next);
-    if (d && i < 5) inputs.current[i + 1]?.focus();
-    else if (next.length === 6) onComplete();
-  };
-
-  const handlePaste = (e: React.ClipboardEvent) => {
-    e.preventDefault();
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
-    onChange(pasted);
-    const focusIdx = Math.min(pasted.length, 5);
-    inputs.current[focusIdx]?.focus();
-    if (pasted.length === 6) onComplete();
-  };
-
   return (
-    <div className="flex gap-2.5 justify-center" onPaste={handlePaste}>
-      {digits.map((d, i) => (
-        <input
-          key={i}
-          ref={(el) => { inputs.current[i] = el; }}
-          type="text"
-          inputMode="numeric"
-          maxLength={6}
-          value={d}
-          onChange={(e) => handleChange(i, e.target.value)}
-          onKeyDown={(e) => handleKey(i, e)}
-          /* autocomplete="one-time-code" on box 0 triggers iOS/Android keyboard OTP suggestion */
-          autoComplete={i === 0 ? "one-time-code" : "off"}
-          className="w-12 h-14 text-center text-2xl font-bold rounded-xl border-2 bg-background transition-all focus:outline-none"
-          style={{
-            borderColor: d ? "hsl(var(--primary))" : "hsl(var(--border))",
-            boxShadow: d ? "0 0 0 3px hsl(var(--primary) / 0.12)" : undefined,
-          }}
-          data-testid={`otp-digit-${i}`}
-          autoFocus={i === 0}
-        />
-      ))}
-    </div>
+    <InputOTP
+      maxLength={6}
+      value={value}
+      onChange={(v) => {
+        onChange(v);
+        if (v.length === 6) onComplete();
+      }}
+      autoComplete="one-time-code"
+      containerClassName="flex justify-center"
+    >
+      <InputOTPGroup className="gap-2.5">
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <InputOTPSlot
+            key={i}
+            index={i}
+            data-testid={`otp-digit-${i}`}
+            className="w-12 h-14 text-2xl font-bold rounded-xl border-2 border-input first:rounded-xl last:rounded-xl border-x"
+          />
+        ))}
+      </InputOTPGroup>
+    </InputOTP>
   );
 }
 
