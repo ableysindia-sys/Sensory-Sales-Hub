@@ -105,8 +105,8 @@ const BENEFITS = [
 
 const HOW_IT_WORKS = [
   { step: "01", title: "Share Your Requirements", desc: "Fill out the quick form below with your facility type, location, and what you need. It takes under 2 minutes." },
-  { step: "02", title: "Get a Custom Quote", desc: "Our B2B team reviews your request and sends a tailored quote with bulk pricing within 24 working hours." },
-  { step: "03", title: "Receive & Set Up", desc: "Order confirmed, products dispatched pan-India. Your equipment arrives ready to use with no hidden charges." },
+  { step: "02", title: "Get a Custom Quote", desc: "Our B2B team reviews your request and sends a tailored quote with bulk pricing — usually within 2 hours." },
+  { step: "03", title: "Receive & Set Up", desc: "Order confirmed, products dispatched pan-India within 48–72 hrs. Your equipment arrives ready to use with no hidden charges." },
 ];
 
 const FAQS = [
@@ -138,9 +138,9 @@ const FAQS = [
 
 const STATS = [
   { value: "500+", label: "OTs & Therapists Served" },
-  { value: "116+", label: "Products in Catalogue" },
+  { value: "34+", label: "OT-Curated Products" },
   { value: "50+", label: "Sensory Rooms Set Up" },
-  { value: "24 hr", label: "Quote Turnaround" },
+  { value: "< 2 hr", label: "Quote Response Time" },
 ];
 
 
@@ -448,8 +448,8 @@ export default function B2BLandingPage() {
               />
               {/* Floating product count badge */}
               <div className="absolute top-8 right-8 z-20 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-3 text-center">
-                <p className="text-2xl font-bold text-white font-display leading-none">116+</p>
-                <p className="text-[10px] text-white/65 mt-0.5 uppercase tracking-wider">Products</p>
+                <p className="text-2xl font-bold text-white font-display leading-none">34+</p>
+                <p className="text-[10px] text-white/65 mt-0.5 uppercase tracking-wider">OT-Curated Products</p>
               </div>
               {/* Bottom catalogue CTA */}
               <div className="absolute bottom-6 right-8 z-20">
@@ -479,7 +479,7 @@ export default function B2BLandingPage() {
             </h1>
 
             <p className="text-sm text-white/70 leading-relaxed mb-6">
-              Bulk pricing · GST invoices · Free pan-India shipping · 116+ products
+              Bulk pricing · GST invoices · Free pan-India shipping · 34+ OT-curated products
             </p>
 
             <div className="flex flex-col gap-3 mb-6">
@@ -607,14 +607,14 @@ export default function B2BLandingPage() {
               <div className="lg:sticky lg:top-24 order-2 lg:order-none">
                 <span className="text-xs font-semibold uppercase tracking-widest text-primary mb-3 block">Get Started</span>
                 <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground mb-5 leading-tight">
-                  Get Your Custom B2B Quote — Free, in 24 Hours.
+                  Get Your Custom B2B Quote — Free, in Under 2 Hours.
                 </h2>
                 <p className="text-muted-foreground leading-relaxed mb-8">
-                  Tell us about your facility and what you need. Our B2B team will get back to you with a tailored quote, product recommendations, and bulk pricing — within one business day.
+                  Tell us about your facility and what you need. Our B2B team will get back to you with a tailored quote, product recommendations, and bulk pricing — usually within 2 hours.
                 </p>
                 <div className="space-y-4">
                   {[
-                    { icon: Clock, text: "Response within 24 working hours" },
+                    { icon: Clock, text: "Response within 2 hours (business hours)" },
                     { icon: BadgeIndianRupee, text: "Custom bulk pricing, no obligations" },
                     { icon: Headset, text: "Dedicated B2B support via WhatsApp" },
                     { icon: ShieldCheck, text: "No spam — only a quote tailored to you" },
@@ -650,7 +650,7 @@ export default function B2BLandingPage() {
                 >
                   <Download className="w-4 h-4" />
                   Download Full Product Catalogue (PDF)
-                  <span className="text-xs font-normal text-muted-foreground">120+ products · 7 pages</span>
+                  <span className="text-xs font-normal text-muted-foreground">OT-curated · PDF</span>
                 </a>
               </div>
 
@@ -663,7 +663,7 @@ export default function B2BLandingPage() {
                     </div>
                     <h3 className="text-xl font-bold text-foreground mb-2">Enquiry Received!</h3>
                     <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
-                      Thank you — our B2B team will review your request and send you a custom quote within 24 working hours.
+                      Thank you — our B2B team will review your request and send you a custom quote within 2 hours (during business hours).
                     </p>
                     <a
                       href="https://wa.me/917042180166?text=Hi%2C%20I%20just%20submitted%20a%20B2B%20enquiry%20on%20rehab.ableys.in%20and%20wanted%20to%20follow%20up."
@@ -703,7 +703,7 @@ export default function B2BLandingPage() {
                   <div data-testid="form-step-quick">
                     <h3 className="text-lg font-bold text-foreground mb-1">Get Your Free Quote</h3>
                     <p className="text-sm text-muted-foreground mb-6">
-                      Enter your WhatsApp number — we'll reach out with pricing within 24 hours.
+                      Enter your WhatsApp number — we'll send your pricing within 2 hours.
                     </p>
 
                     <div className="space-y-3">
@@ -780,7 +780,7 @@ export default function B2BLandingPage() {
                       <div className="flex items-start gap-2.5 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-xl px-4 py-3 mb-5">
                         <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
                         <div>
-                          <p className="text-sm font-semibold text-green-900 dark:text-green-300">Number saved — we'll be in touch within 24 hrs</p>
+                          <p className="text-sm font-semibold text-green-900 dark:text-green-300">Number saved — expect a quote within 2 hours</p>
                           <p className="text-xs text-green-700/80 dark:text-green-400/80 mt-0.5">Share a few more details for a tailored quote (optional)</p>
                         </div>
                       </div>
@@ -1444,7 +1444,7 @@ export default function B2BLandingPage() {
               <span className="italic text-amber-300">Facility the Right Way?</span>
             </h2>
             <p className="text-lg text-white/75 mb-8 max-w-xl mx-auto leading-relaxed">
-              Register with your phone — we'll send you a custom quote within 24 hours, no commitment needed.
+              Register with your phone — we'll send you a custom quote within 2 hours, no commitment needed.
             </p>
 
             <div className="max-w-md mx-auto mb-6">
@@ -1509,24 +1509,23 @@ export default function B2BLandingPage() {
 
       {/* ── Mobile Sticky CTA Bar ── */}
       {!submitted && (
-        <div className="fixed bottom-0 inset-x-0 z-[60] lg:hidden bg-background/95 backdrop-blur-md border-t border-border px-4 py-3 flex gap-3 safe-area-bottom">
+        <div className="fixed bottom-0 inset-x-0 z-[60] lg:hidden bg-background/95 backdrop-blur-md border-t border-border px-4 pt-3 pb-4 flex gap-3">
+          <a
+            href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20bulk%20B2B%20pricing%20for%20my%20institution."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-2 h-11 rounded-xl bg-green-500 hover:bg-green-600 text-white text-sm font-semibold transition-colors shadow-lg shadow-green-500/20"
+            data-testid="button-sticky-whatsapp"
+          >
+            <MessageCircle className="w-4 h-4" /> WhatsApp Us
+          </a>
           <Button
             onClick={scrollToForm}
             className="flex-1 h-11 rounded-xl text-sm font-semibold gap-1.5"
             data-testid="button-sticky-get-quote"
           >
-            <Send className="w-4 h-4" /> Get a Free Quote
+            <Send className="w-4 h-4" /> Get a Quote
           </Button>
-          <a
-            href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20bulk%20B2B%20pricing%20for%20my%20institution."
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center w-11 h-11 rounded-xl border border-border bg-card hover:bg-muted transition-colors shrink-0"
-            aria-label="Chat on WhatsApp"
-            data-testid="button-sticky-whatsapp"
-          >
-            <MessageCircle className="w-5 h-5 text-[#25D366]" />
-          </a>
         </div>
       )}
 
