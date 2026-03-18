@@ -138,7 +138,7 @@ const FAQS = [
 
 const STATS = [
   { value: "500+", label: "OTs & Therapists Served" },
-  { value: "34+", label: "OT-Curated Products" },
+  { value: "15", label: "OT-Curated Products" },
   { value: "50+", label: "Sensory Rooms Set Up" },
   { value: "< 2 hr", label: "Quote Response Time" },
 ];
@@ -448,7 +448,7 @@ export default function B2BLandingPage() {
               />
               {/* Floating product count badge */}
               <div className="absolute top-8 right-8 z-20 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-3 text-center">
-                <p className="text-2xl font-bold text-white font-display leading-none">34+</p>
+                <p className="text-2xl font-bold text-white font-display leading-none">15</p>
                 <p className="text-[10px] text-white/65 mt-0.5 uppercase tracking-wider">OT-Curated Products</p>
               </div>
               {/* Bottom catalogue CTA */}
@@ -479,7 +479,7 @@ export default function B2BLandingPage() {
             </h1>
 
             <p className="text-sm text-white/70 leading-relaxed mb-6">
-              Bulk pricing · GST invoices · Free pan-India shipping · 34+ OT-curated products
+              Bulk pricing · GST invoices · Free pan-India shipping · 15 OT-curated products
             </p>
 
             <div className="flex flex-col gap-3 mb-6">

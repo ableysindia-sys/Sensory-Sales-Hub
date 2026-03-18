@@ -8,7 +8,7 @@ import { db } from "./db";
 import { products as productsTable } from "@shared/schema";
 import { eq, inArray, notInArray, count } from "drizzle-orm";
 
-const PINNED_PRODUCT_IDS = [6,7,8,9,11,12,13,15,18,19,20,21,22,23,24,25,26,27,28,43,44,95,128,131,132,135,136,137,139,140,141,142,143,168];
+const PINNED_PRODUCT_IDS = [43,44,95,128,131,132,135,136,137,139,140,141,142,143,168];
 
 async function applyInitialCuration() {
   const [{ value }] = await db.select({ value: count() }).from(productsTable).where(eq(productsTable.b2bPinned, true));
