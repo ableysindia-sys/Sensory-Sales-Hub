@@ -412,13 +412,43 @@ export async function registerRoutes(
     }
   });
 
+  /* ── Checkout handle + variant-ID cache ──────────────────────────────── */
+  let checkoutCache: {
+    handles: Set<string>;
+    variantMap: Map<string, string>; // handle → Shopify GID (for fast checkout)
+    ts: number;
+  } | null = null;
+  const CHECKOUT_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
   async function getAllowedShopifyHandles(): Promise<Set<string>> {
+    const { handles } = await getCheckoutCache();
+    return handles;
+  }
+
+  async function getCheckoutCache() {
+    if (checkoutCache && Date.now() - checkoutCache.ts < CHECKOUT_CACHE_TTL) {
+      return checkoutCache;
+    }
     const allProducts = await storage.getActiveProducts();
     const handles = new Set<string>();
+    const variantMap = new Map<string, string>();
     for (const p of allProducts) {
-      if (p.shopifyHandle) handles.add(p.shopifyHandle);
+      if (!p.shopifyHandle) continue;
+      handles.add(p.shopifyHandle);
+      // Prefer stored defaultVariantId; fall back to first entry in shopifyVariants JSON
+      if ((p as any).defaultVariantId) {
+        variantMap.set(p.shopifyHandle, (p as any).defaultVariantId);
+      } else if (p.shopifyVariants) {
+        try {
+          const variants = JSON.parse(p.shopifyVariants);
+          if (Array.isArray(variants) && variants[0]?.id) {
+            variantMap.set(p.shopifyHandle, variants[0].id);
+          }
+        } catch { /* ignore */ }
+      }
     }
-    return handles;
+    checkoutCache = { handles, variantMap, ts: Date.now() };
+    return checkoutCache;
   }
 
   const shopifyCheckoutSchema = z.object({
@@ -449,32 +479,34 @@ export async function registerRoutes(
     handles: string[]
   ): Promise<Map<string, string>> {
     const results = new Map<string, string>();
-    for (const handle of handles) {
-      const resp = await fetch(
-        `https://${storeDomain}/api/2024-10/graphql.json`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Shopify-Storefront-Access-Token": storefrontToken,
-          },
-          body: JSON.stringify({
-            query: `query getProduct($handle: String!) {
-              product(handle: $handle) {
-                variants(first: 1) {
-                  edges { node { id } }
-                }
-              }
-            }`,
-            variables: { handle },
-          }),
-        }
-      );
-      if (!resp.ok) continue;
-      const data = await resp.json() as any;
-      const variantId = data?.data?.product?.variants?.edges?.[0]?.node?.id;
+    if (handles.length === 0) return results;
+
+    // Build one batched GraphQL query using field aliases — one round-trip for all handles
+    const aliases = handles.map(
+      (h, i) => `p${i}: product(handle: ${JSON.stringify(h)}) { variants(first: 1) { edges { node { id } } } }`
+    );
+    const query = `{ ${aliases.join(" ")} }`;
+
+    const resp = await fetch(
+      `https://${storeDomain}/api/2024-10/graphql.json`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Storefront-Access-Token": storefrontToken,
+        },
+        body: JSON.stringify({ query }),
+      }
+    );
+
+    if (!resp.ok) return results;
+    const data = await resp.json() as any;
+
+    handles.forEach((handle, i) => {
+      const variantId = data?.data?.[`p${i}`]?.variants?.edges?.[0]?.node?.id;
       if (variantId) results.set(handle, variantId);
-    }
+    });
+
     return results;
   }
 
@@ -491,7 +523,7 @@ export async function registerRoutes(
       }
       const { items, note } = parsed.data;
 
-      const allowedHandles = await getAllowedShopifyHandles();
+      const { handles: allowedHandles, variantMap: dbVariantMap } = await getCheckoutCache();
       for (const item of items) {
         if (!allowedHandles.has(item.handle)) {
           return res.status(400).json({ message: `Product not available for checkout: ${item.handle}` });
@@ -504,20 +536,28 @@ export async function registerRoutes(
         return res.status(500).json({ message: "Shopify not configured" });
       }
 
-      const handlesToResolve = [...new Set(
-        items.filter(i => !i.variantId).map(i => i.handle)
-      )];
-      const variantMap = handlesToResolve.length > 0
-        ? await resolveVariantIds(storeDomain, storefrontToken, handlesToResolve)
-        : new Map<string, string>();
+      // Build the merged variant map: item-provided > DB-cached > Shopify API (batched)
+      const resolvedVariantMap = new Map<string, string>(Array.from(dbVariantMap.entries()));
 
-      const missingHandles = handlesToResolve.filter(h => !variantMap.has(h));
+      // Only hit the Shopify API for handles with no pre-resolved variantId
+      const handlesNeedingLookup = Array.from(
+        new Set(items.filter(i => !i.variantId && !resolvedVariantMap.has(i.handle)).map(i => i.handle))
+      );
+      if (handlesNeedingLookup.length > 0) {
+        const fetched = await resolveVariantIds(storeDomain, storefrontToken, handlesNeedingLookup);
+        Array.from(fetched.entries()).forEach(([h, v]) => resolvedVariantMap.set(h, v));
+      }
+
+      // Verify all handles are now resolvable
+      const missingHandles = items
+        .filter(i => !i.variantId && !resolvedVariantMap.has(i.handle))
+        .map(i => i.handle);
       if (missingHandles.length > 0) {
         return res.status(404).json({ message: "Products not found on Shopify", missing: missingHandles });
       }
 
       const lines = items.map(item => ({
-        merchandiseId: item.variantId || variantMap.get(item.handle)!,
+        merchandiseId: item.variantId || resolvedVariantMap.get(item.handle)!,
         quantity: item.quantity,
       }));
 

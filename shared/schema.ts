@@ -31,6 +31,7 @@ export const products = pgTable("products", {
   shopifyHandle: text("shopify_handle"),
   shopifyUrl: text("shopify_url"),
   shopifyVariants: text("shopify_variants"),
+  defaultVariantId: text("default_variant_id"),
   productType: text("product_type"),
   vendor: text("vendor"),
   sku: text("sku"),
