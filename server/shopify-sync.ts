@@ -591,8 +591,12 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
         .where(eq(productsTable.slug, dbProduct.slug));
       updated++;
     } else {
-      // New products start inactive — team pins them to make them visible on the B2B app
-      await db.insert(productsTable).values({ ...dbProduct, isActive: false, b2bPinned: false });
+      // New products published to the Ableys Headless channel are automatically shown on the B2B app
+      const isAvailable = dbProduct.isActive; // true = Shopify says available
+      await db.insert(productsTable).values({ ...dbProduct, isActive: isAvailable, b2bPinned: isAvailable });
+      if (isAvailable) {
+        console.log(`[shopify-sync] Auto-listed new product: ${dbProduct.slug}`);
+      }
       added++;
     }
   }
