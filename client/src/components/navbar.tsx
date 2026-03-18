@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ShoppingCart, ChevronDown, Send, LogIn, LogOut, FileDown, Building2, FlaskConical, Info, Phone, Home, Grid3X3 } from "lucide-react";
+import { Menu, X, ShoppingCart, ChevronDown, Send, LogIn, LogOut, FileDown, Building2, FlaskConical, Info, Phone, Home, Grid3X3, Search } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
 import { useShoppingCart } from "@/lib/shopping-cart";
@@ -133,9 +133,150 @@ function UserAvatar() {
   );
 }
 
+/* ─── Search overlay ─────────────────────────────────────────────────────── */
+function SearchOverlay({ onClose }: { onClose: () => void }) {
+  const { products, categories } = useProducts();
+  const [query, setQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [, navigate] = useLocation();
+
+  useEffect(() => {
+    inputRef.current?.focus();
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, []);
+
+  /* Lock body scroll while overlay is open */
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  const categoryMap = useMemo(() =>
+    Object.fromEntries(categories.map(c => [c.slug, c.title])),
+    [categories]
+  );
+
+  const results = useMemo(() => {
+    const q = query.toLowerCase().trim();
+    if (!q) return [];
+    return products
+      .filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.shortDescription?.toLowerCase().includes(q) ||
+        categoryMap[p.categorySlug]?.toLowerCase().includes(q)
+      )
+      .slice(0, 8);
+  }, [query, products, categoryMap]);
+
+  const handleSelect = (slug: string) => {
+    navigate(`/product/${slug}`);
+    onClose();
+  };
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 z-[80] bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      {/* Panel — slides down from top */}
+      <div className="fixed top-0 left-0 right-0 z-[90] bg-background border-b border-border shadow-2xl" role="search" aria-label="Product search">
+
+        {/* Input bar */}
+        <div className="max-w-2xl mx-auto px-4 py-3">
+          <div className="flex items-center gap-3 bg-muted/70 border border-border rounded-xl px-4 h-12 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary/40 transition-all">
+            <Search className="w-4 h-4 text-muted-foreground shrink-0" aria-hidden="true" />
+            <input
+              ref={inputRef}
+              type="search"
+              placeholder="Search products, categories..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
+              data-testid="input-search"
+              autoComplete="off"
+              aria-label="Search products"
+            />
+            {query && (
+              <button
+                onClick={() => setQuery("")}
+                className="shrink-0 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Clear search"
+                data-testid="button-search-clear"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="shrink-0 text-xs font-medium text-muted-foreground hover:text-foreground border border-border rounded-md px-2 py-1 transition-colors ml-1"
+              aria-label="Close search"
+              data-testid="button-search-close"
+            >
+              ESC
+            </button>
+          </div>
+        </div>
+
+        {/* Results list */}
+        {results.length > 0 && (
+          <div className="max-w-2xl mx-auto px-4 pb-3 max-h-[60vh] overflow-y-auto divide-y divide-border/50">
+            {results.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => handleSelect(p.id)}
+                className="flex items-center gap-3 w-full px-2 py-3 hover:bg-muted/60 transition-colors text-left rounded-lg"
+                data-testid={`search-result-${p.id}`}
+              >
+                {p.images?.[0] ? (
+                  <img
+                    src={p.images[0]}
+                    alt=""
+                    className="w-11 h-11 rounded-lg object-cover shrink-0 bg-muted"
+                  />
+                ) : (
+                  <div className="w-11 h-11 rounded-lg bg-muted shrink-0 flex items-center justify-center">
+                    <Search className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground leading-snug line-clamp-1">{p.name}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{categoryMap[p.categorySlug] ?? p.categorySlug}</p>
+                </div>
+                <p className="text-sm font-semibold text-foreground shrink-0 tabular-nums">₹{p.basePrice.toLocaleString("en-IN")}</p>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Empty state */}
+        {query.trim() && results.length === 0 && (
+          <div className="max-w-2xl mx-auto px-4 pb-6 pt-1 text-center">
+            <p className="text-sm text-muted-foreground">No products found for "<span className="font-medium text-foreground">{query}</span>"</p>
+            <p className="text-xs text-muted-foreground mt-1">Try a different term or <button onClick={() => { navigate("/products"); onClose(); }} className="text-primary hover:underline">browse all products</button></p>
+          </div>
+        )}
+
+        {/* Hint when empty */}
+        {!query.trim() && (
+          <p className="max-w-2xl mx-auto px-6 pb-4 text-xs text-muted-foreground">
+            Start typing to search across {products.length}+ products
+          </p>
+        )}
+      </div>
+    </>
+  );
+}
+
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [productsOpen, setProductsOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { getItemCount: getEnquiryCount } = useEnquiryCart();
   const { getItemCount: getCartCount, openDrawer } = useShoppingCart();
   const { categories } = useProducts();
@@ -174,10 +315,11 @@ export function Navbar() {
     return () => document.removeEventListener("keydown", handler);
   }, []);
 
-  /* Close drawer on route change (e.g. browser back button) */
+  /* Close drawer + search on route change (e.g. browser back button) */
   useEffect(() => {
     setMobileOpen(false);
     setProductsOpen(false);
+    setSearchOpen(false);
   }, [location]);
 
   const display = user
@@ -305,6 +447,15 @@ export function Navbar() {
 
             {/* Desktop right actions */}
             <div className="hidden lg:flex items-center gap-2">
+              {/* Search */}
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="p-2 text-foreground/60 hover:text-foreground transition-colors rounded-md hover:bg-muted/50"
+                aria-label="Search products"
+                data-testid="button-nav-search"
+              >
+                <Search className="w-[18px] h-[18px]" aria-hidden="true" />
+              </button>
               <a
                 href="/api/catalog"
                 target="_blank"
@@ -372,6 +523,16 @@ export function Navbar() {
                     {cartCount}
                   </span>
                 )}
+              </button>
+
+              {/* Search */}
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="p-2.5 text-foreground/70 hover:text-foreground transition-colors"
+                aria-label="Search products"
+                data-testid="button-mobile-search"
+              >
+                <Search className="w-[18px] h-[18px]" aria-hidden="true" />
               </button>
 
               {/* Hamburger */}
@@ -599,6 +760,9 @@ export function Navbar() {
           </Button>
         </div>
       </div>
+
+      {/* Search overlay — rendered inside header so it sits above everything */}
+      {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)} />}
     </header>
   );
 }
