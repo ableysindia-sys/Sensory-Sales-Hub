@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShieldCheck, BadgeIndianRupee, Users, Send } from "lucide-react";
+import { ArrowRight, ShieldCheck, BadgeIndianRupee, Users, Send, MessageCircle } from "lucide-react";
 import { Link } from "wouter";
 import heroBannerImg from "@assets/generated_images/hero-banner.png";
+
+const WHATSAPP_URL = "https://wa.me/917042180166?text=Hi%20Abley%27s%2C%20I%27m%20interested%20in%20bulk%20rehab%20equipment%20for%20my%20institution.";
 
 export function Hero() {
   return (
@@ -59,7 +61,7 @@ export function Hero() {
           </p>
 
           {/* Dual CTAs */}
-          <div className="flex flex-col sm:flex-row gap-3 mb-7">
+          <div className="flex flex-col sm:flex-row gap-3 mb-4">
             <Link href="/enquiry">
               <Button
                 size="lg"
@@ -78,6 +80,18 @@ export function Hero() {
               </button>
             </Link>
           </div>
+
+          {/* WhatsApp quick-connect */}
+          <a
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors mb-7"
+            data-testid="link-hero-whatsapp"
+          >
+            <MessageCircle className="w-4 h-4 text-green-400" />
+            <span>Or chat on <span className="text-green-400 font-semibold">WhatsApp</span> — we reply within minutes</span>
+          </a>
 
           {/* Trust callouts — pill grid on mobile, inline row on desktop */}
           <div className="sm:hidden grid grid-cols-3 gap-2">

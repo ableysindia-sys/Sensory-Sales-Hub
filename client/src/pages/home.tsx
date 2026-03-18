@@ -8,9 +8,14 @@ import { BulkEnquiryForm } from "@/components/bulk-enquiry-form";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowRight, ShieldCheck, Truck, BadgeIndianRupee, Gift, RotateCcw, Package, Users } from "lucide-react";
+import {
+  ArrowRight, ShieldCheck, Truck, BadgeIndianRupee, Gift, RotateCcw,
+  Package, Users, MessageCircle, Send, Search, FileText, CheckCircle2,
+  Hospital, GraduationCap, Building2, Home as HomeIcon, Clock,
+} from "lucide-react";
 import { useProducts } from "@/lib/product-provider";
 
+const WHATSAPP_URL = "https://wa.me/917042180166?text=Hi%20Abley%27s%2C%20I%27m%20interested%20in%20bulk%20rehab%20equipment%20for%20my%20institution.";
 
 function SampleKitBanner() {
   return (
@@ -49,19 +54,170 @@ function SampleKitBanner() {
   );
 }
 
+function HowItWorks() {
+  const steps = [
+    {
+      icon: Search,
+      step: "01",
+      title: "Browse & Select",
+      desc: "Filter by setup type — sensory room, clinic, school. Add what you need to your enquiry list.",
+    },
+    {
+      icon: FileText,
+      step: "02",
+      title: "Get a Custom Quote",
+      desc: "Submit your list and we'll send a detailed quote with bulk pricing and GST breakdown within 2 hours.",
+    },
+    {
+      icon: CheckCircle2,
+      step: "03",
+      title: "Delivered & Invoiced",
+      desc: "We dispatch within 48–72 hrs with full GST tax invoice, ready for institutional procurement.",
+    },
+  ];
+
+  return (
+    <section className="py-12 sm:py-16 bg-muted/30 border-t border-border/50" data-testid="section-how-it-works">
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-3 bg-primary/10 px-3 py-1.5 rounded-full">
+            Simple Process
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground font-display" data-testid="heading-how-it-works">
+            From Enquiry to Delivery — in 3 Steps
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-10">
+          {steps.map((s, i) => (
+            <div key={s.step} className="relative flex flex-col items-center text-center sm:items-start sm:text-left group">
+              {/* connector line — desktop only */}
+              {i < steps.length - 1 && (
+                <div className="hidden sm:block absolute top-6 left-[calc(50%+2rem)] right-[-50%] h-px bg-gradient-to-r from-primary/30 to-transparent" />
+              )}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center ring-1 ring-primary/20 group-hover:bg-primary/15 transition-colors">
+                  <s.icon className="w-5 h-5 text-primary" />
+                </div>
+                <span className="text-3xl font-bold text-primary/15 font-display select-none">{s.step}</span>
+              </div>
+              <h3 className="text-base font-bold text-foreground mb-1.5">{s.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-10">
+          <Link href="/enquiry">
+            <Button className="rounded-full px-7 gap-2" data-testid="button-how-it-works-quote">
+              <Send className="w-4 h-4" /> Start My Enquiry
+            </Button>
+          </Link>
+          <a
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-7 h-10 rounded-full border border-green-500/40 text-green-600 dark:text-green-400 text-sm font-semibold hover:bg-green-50 dark:hover:bg-green-950/30 transition-colors"
+            data-testid="link-how-it-works-whatsapp"
+          >
+            <MessageCircle className="w-4 h-4" /> Chat on WhatsApp
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function WhoWeServe() {
+  const segments = [
+    {
+      icon: Hospital,
+      label: "OT Clinics & Rehab Centres",
+      detail: "Therapy equipment, sensory tools, rehab aids",
+      typical: "Typical order: 10–50 units",
+      color: "text-blue-600 dark:text-blue-400",
+      bg: "bg-blue-50 dark:bg-blue-950/30 ring-blue-200 dark:ring-blue-800/40",
+    },
+    {
+      icon: GraduationCap,
+      label: "Special Schools & Institutions",
+      detail: "Sensory rooms, motor skill equipment, ADL kits",
+      typical: "Typical order: 20–100 units",
+      color: "text-green-600 dark:text-green-400",
+      bg: "bg-green-50 dark:bg-green-950/30 ring-green-200 dark:ring-green-800/40",
+    },
+    {
+      icon: Building2,
+      label: "Hospitals & Paediatric Wards",
+      detail: "Certified equipment with GST invoice for procurement",
+      typical: "Typical order: 30–200 units",
+      color: "text-purple-600 dark:text-purple-400",
+      bg: "bg-purple-50 dark:bg-purple-950/30 ring-purple-200 dark:ring-purple-800/40",
+    },
+    {
+      icon: HomeIcon,
+      label: "NGOs & Disability Orgs",
+      detail: "Subsidised bulk rates with CSR billing support",
+      typical: "Typical order: 50+ units",
+      color: "text-amber-600 dark:text-amber-400",
+      bg: "bg-amber-50 dark:bg-amber-950/30 ring-amber-200 dark:ring-amber-800/40",
+    },
+  ];
+
+  return (
+    <section className="py-12 sm:py-16 border-t border-border/50" data-testid="section-who-we-serve">
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-3 bg-primary/10 px-3 py-1.5 rounded-full">
+            Our Customers
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground font-display" data-testid="heading-who-we-serve">
+            Built for Institutional Buyers
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1.5 max-w-md mx-auto">
+            500+ clinics, schools and hospitals trust Abley's for their therapy equipment needs
+          </p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {segments.map((s) => (
+            <div
+              key={s.label}
+              className={`rounded-2xl p-5 ring-1 ${s.bg} flex flex-col gap-3`}
+              data-testid={`card-segment-${s.label.toLowerCase().replace(/\s+/g, '-')}`}
+            >
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-white dark:bg-background shadow-sm`}>
+                <s.icon className={`w-5 h-5 ${s.color}`} />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-foreground leading-snug mb-1">{s.label}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">{s.detail}</p>
+              </div>
+              <span className={`text-xs font-semibold ${s.color} mt-auto`}>{s.typical}</span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-8 text-center">
+          <p className="text-xs text-muted-foreground">
+            Not sure what you need? <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="text-green-600 dark:text-green-400 font-semibold hover:underline">Message us on WhatsApp</a> and our OT team will guide you.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function QuickTrustBar() {
   return (
-    <section className="bg-primary" data-testid="section-quick-trust">
+    <section className="bg-[#070d2a]" data-testid="section-quick-trust">
       <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
-        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-xs text-white/85 font-medium">
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-xs text-white/75 font-medium">
           {[
             { icon: Truck,            text: "Free shipping across India" },
             { icon: BadgeIndianRupee, text: "GST invoices · Bulk discounts" },
             { icon: ShieldCheck,      text: "OT-validated products" },
+            { icon: Clock,            text: "Quote in under 2 hours" },
             { icon: Users,            text: "500+ institutions trust us" },
           ].map(({ icon: Icon, text }) => (
             <span key={text} className="flex items-center gap-2">
-              <Icon className="w-3.5 h-3.5 text-white/70" /> {text}
+              <Icon className="w-3.5 h-3.5 text-white/50" /> {text}
             </span>
           ))}
         </div>
@@ -128,27 +284,60 @@ function ProductShowcase() {
   );
 }
 
+function StickyMobileBar() {
+  return (
+    <div
+      className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-background/95 backdrop-blur border-t border-border/60 px-4 pt-3 pb-4 flex gap-3"
+      data-testid="bar-sticky-mobile"
+    >
+      <a
+        href={WHATSAPP_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex-1 flex items-center justify-center gap-2 h-11 rounded-xl bg-green-500 hover:bg-green-600 text-white text-sm font-semibold transition-colors shadow-lg shadow-green-500/20"
+        data-testid="button-sticky-whatsapp"
+      >
+        <MessageCircle className="w-4 h-4" /> WhatsApp Us
+      </a>
+      <Link href="/enquiry" className="flex-1">
+        <Button
+          className="w-full h-11 rounded-xl text-sm font-semibold"
+          data-testid="button-sticky-quote"
+        >
+          Get a Quote <Send className="w-3.5 h-3.5 ml-1" />
+        </Button>
+      </Link>
+    </div>
+  );
+}
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main id="main-content" className="pb-16 lg:pb-0">
-        {/* 1. ARRIVE — B2B-first impact, dual CTA */}
+      <main id="main-content" className="pb-20 lg:pb-0">
+        {/* 1. ARRIVE */}
         <Hero />
-        {/* 2. REASSURE — Institutional trust signals above the fold */}
+        {/* 2. REASSURE — Compact trust bar in dark navy */}
         <QuickTrustBar />
-        {/* 3. DISCOVER — Browse by setup type, see curated product lists */}
+        {/* 3. DISCOVER — Browse by setup type */}
         <CategoryGrid />
-        {/* 4. BROWSE — Handpicked best sellers & new arrivals */}
+        {/* 4. PROCESS — 3-step clarity for B2B buyers */}
+        <HowItWorks />
+        {/* 5. BROWSE — Handpicked best sellers & new arrivals */}
         <ProductShowcase />
-        {/* 5. TRY — Sample kit: lower-friction B2B lead capture */}
+        {/* 6. TRY — Sample kit: lowest-friction B2B entry */}
         <SampleKitBanner />
-        {/* 6. VALIDATE — Verified institutional reviews */}
+        {/* 7. IDENTIFY — Who we work with (self-segmentation) */}
+        <WhoWeServe />
+        {/* 8. VALIDATE — Verified institutional reviews */}
         <Testimonials />
-        {/* 7. CONVERT — Full bulk enquiry form for high-intent visitors */}
+        {/* 9. CONVERT — Full bulk enquiry form */}
         <BulkEnquiryForm />
       </main>
       <SiteFooter />
+      {/* Sticky mobile CTA bar */}
+      <StickyMobileBar />
     </div>
   );
 }
