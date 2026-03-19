@@ -1402,13 +1402,6 @@ export default function ProductPage() {
                         >
                           Overview
                         </TabsTrigger>
-                        <TabsTrigger
-                          value="features"
-                          className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary whitespace-nowrap flex-shrink-0"
-                          data-testid="tab-features"
-                        >
-                          Key Features
-                        </TabsTrigger>
                         {hasSpecs && (
                           <TabsTrigger
                             value="specs"
@@ -1454,47 +1447,6 @@ export default function ProductPage() {
                           ))}
                         </div>
                       )}
-                    </div>
-                  </TabsContent>
-
-                  {/* Key Features tab */}
-                  <TabsContent value="features" className="mt-0" data-testid="tabpanel-features">
-                    <div className="mb-6">
-                      <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">Why Choose This</p>
-                      <h2 className="text-2xl font-bold text-foreground">Key Features & Benefits</h2>
-                    </div>
-                    <div className="grid lg:grid-cols-5 gap-10">
-                      <div className="lg:col-span-3">
-                        <div className="rounded-2xl border border-border/50 bg-card p-5">
-                          <div className="flex items-center gap-2 mb-4">
-                            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
-                            </div>
-                            <h3 className="text-sm font-bold text-foreground">Key Features</h3>
-                          </div>
-                          <KeyFeaturesDisplay features={product.features} />
-                        </div>
-                      </div>
-                      <div className="lg:col-span-2 space-y-6">
-                        {product.applications.length > 0 && (
-                          <div>
-                            <div className="flex items-center gap-2 mb-3">
-                              <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                <Heart className="w-3.5 h-3.5 text-primary" />
-                              </div>
-                              <h3 className="text-sm font-bold text-foreground">Suitable For</h3>
-                            </div>
-                            <SuitableForDisplay applications={product.applications} />
-                          </div>
-                        )}
-                        <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-primary/5 border border-primary/10">
-                          <BadgeCheck className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                          <p className="text-xs text-muted-foreground leading-relaxed">
-                            <span className="font-semibold text-foreground">OT-Recommended.</span>{" "}
-                            Trusted by occupational therapists across clinics and schools in India.
-                          </p>
-                        </div>
-                      </div>
                     </div>
                   </TabsContent>
 
