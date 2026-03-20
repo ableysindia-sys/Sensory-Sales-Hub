@@ -1174,21 +1174,30 @@ export default function ProductPage() {
                 </div>
 
                 {/* ── Price — immediately after rating, no interruption ── */}
-                <div className="flex items-baseline gap-3 flex-wrap py-3 border-y border-border/40">
-                  <span className="text-3xl font-bold text-foreground tabular-nums" data-testid="text-product-price">
-                    {formatPrice(computedPrice)}
-                  </span>
-                  {computedComparePrice && computedComparePrice > computedPrice && (
-                    <span className="text-base text-muted-foreground line-through tabular-nums" data-testid="text-compare-price">
-                      {formatPrice(computedComparePrice)}
+                <div className="py-3 border-y border-border/40 space-y-2">
+                  <div className="flex items-baseline gap-3 flex-wrap">
+                    <span className="text-3xl font-bold text-foreground tabular-nums" data-testid="text-product-price">
+                      {formatPrice(computedPrice)}
                     </span>
-                  )}
-                  {discountPct && (
-                    <span className="text-sm font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-0.5 rounded-full">
-                      {discountPct}% off
-                    </span>
-                  )}
-                  <span className="text-xs text-muted-foreground ml-auto">incl. GST</span>
+                    {computedComparePrice && computedComparePrice > computedPrice && (
+                      <span className="text-base text-muted-foreground line-through tabular-nums" data-testid="text-compare-price">
+                        {formatPrice(computedComparePrice)}
+                      </span>
+                    )}
+                    {discountPct && (
+                      <span className="text-sm font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-0.5 rounded-full">
+                        {discountPct}% off
+                      </span>
+                    )}
+                    <span className="text-xs text-muted-foreground ml-auto">incl. GST</span>
+                  </div>
+                  <div className="bg-white rounded-lg p-1.5 inline-block" data-testid="container-payment-badges-price">
+                    <img
+                      src={paymentBadgesImg}
+                      alt="All payment modes accepted — UPI, Cards, Paytm, G Pay, Amazon Pay, Net Banking · 100% Secured"
+                      className="h-7 w-auto object-contain block"
+                    />
+                  </div>
                 </div>
 
                 {/* ── Key features — 3 bullets max for above-fold conviction ── */}
@@ -1507,22 +1516,13 @@ export default function ProductPage() {
                   ))}
                 </div>
 
-                {/* ── Payment + Warranty — stacked, image at full readable width ── */}
-                <div className="pt-2 border-t border-border/30 space-y-2" data-testid="container-payment-badges">
-                  <div className="bg-white rounded-xl p-2.5 inline-block">
-                    <img
-                      src={paymentBadgesImg}
-                      alt="Accepted payment methods — Paytm, G Pay, Amazon Pay, UPI, Mastercard, Visa, RuPay — All modes accepted, 100% secured"
-                      className="w-full max-w-[280px] object-contain block"
-                    />
+                {/* ── Warranty + shipping — de-emphasised fine print ── */}
+                {(_warranty || _shippingNotes) && (
+                  <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] text-muted-foreground pt-2 border-t border-border/30" data-testid="container-warranty-shipping">
+                    {_warranty && <span><span className="font-semibold text-foreground">Warranty:</span> {_warranty}</span>}
+                    {_shippingNotes && <span><span className="font-semibold text-foreground">Shipping:</span> {_shippingNotes}</span>}
                   </div>
-                  {(_warranty || _shippingNotes) && (
-                    <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] text-muted-foreground" data-testid="container-warranty-shipping">
-                      {_warranty && <span><span className="font-semibold text-foreground">Warranty:</span> {_warranty}</span>}
-                      {_shippingNotes && <span><span className="font-semibold text-foreground">Shipping:</span> {_shippingNotes}</span>}
-                    </div>
-                  )}
-                </div>
+                )}
 
                 {/* ── SKU + vendor — de-emphasised, lowest priority ── */}
                 {(currentSku || product.vendor) && (
