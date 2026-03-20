@@ -260,11 +260,18 @@ function canonicalLabel(rawKey: string): string {
 }
 
 function metafieldsToSpecs(mf: MetafieldMap): string | null {
+  const specsObj: Record<string, string> = {};
+
+  // Check for a pre-formatted spec blob and merge it in (don't early-return — we still add extended fields)
   const SPEC_EXACT_KEYS = ["custom.specifications", "specs.value", "product.specifications"];
   for (const k of SPEC_EXACT_KEYS) {
-    if (mf[k]) return mf[k];
+    if (mf[k]) {
+      try { Object.assign(specsObj, JSON.parse(mf[k])); } catch { specsObj["Specifications"] = mf[k]; }
+      break;
+    }
   }
-  const specsObj: Record<string, string> = {};
+
+  // Keyword-based extraction for standard spec fields
   for (const [key, val] of Object.entries(mf)) {
     const keyLower = key.toLowerCase();
     const matches = SPEC_KEYWORDS.some(kw => new RegExp(kw).test(keyLower));
@@ -272,15 +279,53 @@ function metafieldsToSpecs(mf: MetafieldMap): string | null {
       const formatted = formatMetafieldValue(val);
       if (formatted) {
         const label = canonicalLabel(key);
-        specsObj[label] = formatted;
+        if (!specsObj[label]) specsObj[label] = formatted;
       }
     }
   }
+
+  // Extended metafields for rich product page data (stored verbatim for the frontend to render)
+  const EXTENDED_FIELD_MAP: Record<string, string> = {
+    "custom.problem_statement":           "Problem Statement",
+    "custom.product_demo_video":          "Demo Video URL",
+    "custom.sensory_profile_primary":     "Sensory Profile Primary",
+    "custom.sensory_profile_secondary":   "Sensory Profile Secondary",
+    "custom.therapist_recommended":       "Therapist Recommended",
+    "custom.warranty_details":            "Warranty",
+    "custom.shipping_notes":              "Shipping Notes",
+    "custom.sensory_characteristics":     "Sensory Characteristics",
+    "custom.behavior_support":            "Behavior Support",
+    "custom.product_tier":                "Product Tier",
+    "custom.trust_badges":                "Trust Badges",
+    "custom.target_users":                "Target Users",
+    "custom.use_cases":                   "Use Cases",
+    "custom.best_used_in":               "Best Used In",
+    "custom.short_product_highlights_list": "Short Highlights",
+    "custom.key_benefits":                "Key Benefits",
+    "custom.usage_instructions":          "Usage Instructions Rich",
+    "custom.comparison_features":         "Comparison Features",
+    "custom.what_s_in_the_box":           "What's in the Box",
+    "custom.safety_certifications":       "Safety Certifications",
+    "custom.supervision_required":        "Supervision Required",
+    "custom.care_instructions":           "Care Instructions Rich",
+    "custom.safety_warning":              "Safety Warning Rich",
+    "custom.target_age_group":            "Target Age Group",
+    "custom.product_highlights":          "Product Highlights",
+  };
+  for (const [mfKey, label] of Object.entries(EXTENDED_FIELD_MAP)) {
+    if (mf[mfKey] && !specsObj[label]) specsObj[label] = mf[mfKey];
+  }
+
   return Object.keys(specsObj).length > 0 ? JSON.stringify(specsObj) : null;
 }
 
 function metafieldsToFeatures(mf: MetafieldMap): string[] {
-  const FEATURE_KEYS = ["custom.key_features", "custom.features", "custom.key_feature", "product.features", "descriptors.features"];
+  const FEATURE_KEYS = [
+    "custom.product_highlights",
+    "custom.short_product_highlights_list",
+    "custom.key_features", "custom.features", "custom.key_feature",
+    "product.features", "descriptors.features",
+  ];
   for (const k of FEATURE_KEYS) {
     if (mf[k]) {
       try {
@@ -323,7 +368,7 @@ async function fetchAllAdminMetafields(): Promise<Map<string, MetafieldMap>> {
           cursor
           node {
             handle
-            metafields(first: 30) {
+            metafields(first: 50) {
               edges { node { namespace key value type } }
             }
           }

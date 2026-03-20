@@ -344,6 +344,90 @@ function isTagSlug(s: string): boolean {
   return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s) && s.length < 40 && !s.includes(" ");
 }
 
+function parseJsonMetaArray(raw: string | undefined): string[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed.map(String).filter(Boolean);
+  } catch {}
+  return raw.split(/[,;|\n]/).map(s => s.trim()).filter(Boolean);
+}
+
+function stripToText(raw: string): string {
+  // Handle Shopify rich text JSON first
+  if (raw.trim().startsWith("{") && raw.includes('"type"')) {
+    try {
+      const doc = JSON.parse(raw);
+      return richTextToHtml(doc).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    } catch {}
+  }
+  return raw.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
+}
+
+// Parse Shopify's metafield rich_text_field JSON into HTML
+function richTextToHtml(node: any): string {
+  if (!node) return "";
+  if (typeof node === "string") return node;
+  if (node.type === "root") return node.children?.map(richTextToHtml).join("") || "";
+  if (node.type === "paragraph") {
+    const inner = node.children?.map(richTextToHtml).join("") || "";
+    return inner.trim() ? `<p>${inner}</p>` : "";
+  }
+  if (node.type === "list") {
+    const tag = node.listType === "ordered" ? "ol" : "ul";
+    const items = node.children?.map(richTextToHtml).join("") || "";
+    return `<${tag}>${items}</${tag}>`;
+  }
+  if (node.type === "list-item") {
+    return `<li>${node.children?.map(richTextToHtml).join("") || ""}</li>`;
+  }
+  if (node.type === "heading") {
+    const lvl = Math.min(Math.max(node.level || 2, 1), 6);
+    return `<h${lvl}>${node.children?.map(richTextToHtml).join("") || ""}</h${lvl}>`;
+  }
+  if (node.type === "link") {
+    const href = node.url || "#";
+    return `<a href="${href}" target="_blank" rel="noopener">${node.children?.map(richTextToHtml).join("") || href}</a>`;
+  }
+  if (node.type === "text") {
+    let t = node.value || "";
+    if (node.bold) t = `<strong>${t}</strong>`;
+    if (node.italic) t = `<em>${t}</em>`;
+    if (node.underline) t = `<u>${t}</u>`;
+    if (node.code) t = `<code>${t}</code>`;
+    return t;
+  }
+  if (node.children) return node.children.map(richTextToHtml).join("");
+  return "";
+}
+
+// Normalise a raw metafield value to rendered HTML (handles rich text JSON and plain strings)
+function toHtml(raw: string | undefined): string | null {
+  if (!raw) return null;
+  const trimmed = raw.trim();
+  if (trimmed.startsWith("{") && trimmed.includes('"type"')) {
+    try { return richTextToHtml(JSON.parse(trimmed)); } catch {}
+  }
+  // Plain text — preserve newlines
+  return trimmed.replace(/\n/g, "<br />");
+}
+
+function extractYouTubeId(url: string): string | null {
+  const m = url.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+// Keys that contain rich HTML or JSON arrays — excluded from the plain spec table
+const RICH_SPEC_EXCLUDE_KEYS = new Set([
+  "Problem Statement", "Key Benefits", "Usage Instructions Rich",
+  "Comparison Features", "Safety Warning Rich", "Care Instructions Rich",
+  "Product Highlights", "Short Highlights", "Trust Badges",
+  "Target Users", "Use Cases", "Best Used In",
+  "Demo Video URL", "Sensory Characteristics", "Behavior Support",
+  "Sensory Profile Primary", "Sensory Profile Secondary",
+  "Therapist Recommended", "Warranty", "Shipping Notes", "Product Tier",
+]);
+
 const SPEC_GROUPS: { label: string; keys: string[] }[] = [
   {
     label: "Dimensions & Materials",
@@ -352,8 +436,7 @@ const SPEC_GROUPS: { label: string; keys: string[] }[] = [
   },
   {
     label: "Product Details",
-    keys: ["Target Age Group", "What's in the Box", "Supervision Required",
-           "Suitable For", "Usage Environment", "Usage Instructions"],
+    keys: ["Target Age Group", "What's in the Box", "Supervision Required", "Suitable For", "Usage Environment"],
   },
   {
     label: "Care & Safety",
@@ -367,7 +450,7 @@ function resolveSpecSections(specs: Record<string, string>): { groupLabel: strin
     dimensions: "Dimensions", material: "Material",
     weightCapacity: "Weight Capacity", useCase: "Use Case", weight: "Weight",
   };
-  const allEntries = Object.entries(specs).filter(([, v]) => !!v);
+  const allEntries = Object.entries(specs).filter(([k, v]) => !!v && !RICH_SPEC_EXCLUDE_KEYS.has(k));
   const assignedKeys = new Set<string>();
   const sections: { groupLabel: string; entries: [string, string][] }[] = [];
   for (const group of SPEC_GROUPS) {
@@ -652,7 +735,7 @@ export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
-
+  const [showVideo, setShowVideo] = useState(false);
 
   const hasShopifyVariants = !!(product?.shopifyVariants && product.shopifyVariants.length > 0);
   const optionGroups = useMemo(() => {
@@ -698,6 +781,26 @@ export default function ProductPage() {
       .filter((p) => p.id !== product.id)
       .slice(0, 6);
   }, [product, getProductsByCategory]);
+
+  // ── Parsed metafields (from specifications JSON) ─────────────────────────
+  const _specs = (product?.specifications || {}) as Record<string, string | undefined>;
+  const _problemStatement  = _specs["Problem Statement"];
+  const _demoVideoUrl      = _specs["Demo Video URL"];
+  const _sensoryPrimary    = _specs["Sensory Profile Primary"];
+  const _sensorySecondary  = _specs["Sensory Profile Secondary"];
+  const _therapistRec      = _specs["Therapist Recommended"];
+  const _warranty          = _specs["Warranty"];
+  const _shippingNotes     = _specs["Shipping Notes"];
+  const _targetUsers       = parseJsonMetaArray(_specs["Target Users"]);
+  const _useCases          = parseJsonMetaArray(_specs["Use Cases"]);
+  const _bestUsedIn        = parseJsonMetaArray(_specs["Best Used In"]);
+  const _trustBadges       = parseJsonMetaArray(_specs["Trust Badges"]);
+  const _usageInstructions = toHtml(_specs["Usage Instructions Rich"]);
+  const _careInstructions  = toHtml(_specs["Care Instructions Rich"]);
+  const _safetyWarning     = toHtml(_specs["Safety Warning Rich"]);
+  const _keyBenefits       = toHtml(_specs["Key Benefits"]);
+  const _comparisonFeat    = _specs["Comparison Features"];
+  const _ytId              = _demoVideoUrl ? extractYouTubeId(_demoVideoUrl) : null;
 
   // Compute displayImages before any early returns — hooks must never be
   // called conditionally or after early returns (React rules of hooks).
@@ -904,12 +1007,29 @@ export default function ProductPage() {
 
               {/* ─ Left: Image Gallery ─ */}
               <div className="space-y-3 min-w-0 w-full">
-                {/* Main image */}
+                {/* Main image or video */}
                 <div
                   className="w-full aspect-[4/3] sm:aspect-square bg-card rounded-2xl sm:rounded-3xl border border-border/50 relative overflow-hidden"
                   data-testid="container-product-image"
                 >
-                  {activeImage ? (
+                  {showVideo && _ytId ? (
+                    <iframe
+                      src={`https://www.youtube.com/embed/${_ytId}?autoplay=1`}
+                      title="Product demo video"
+                      allow="autoplay; encrypted-media; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full border-0"
+                      data-testid="iframe-demo-video"
+                    />
+                  ) : showVideo && _demoVideoUrl ? (
+                    <video
+                      src={_demoVideoUrl}
+                      controls
+                      autoPlay
+                      className="w-full h-full object-cover"
+                      data-testid="video-demo"
+                    />
+                  ) : activeImage ? (
                     <img
                       key={activeImage}
                       src={activeImage}
@@ -925,7 +1045,7 @@ export default function ProductPage() {
                       <p className="text-xs text-muted-foreground/50 font-medium mt-3">Product Image</p>
                     </div>
                   )}
-                  {discountPct && (
+                  {!showVideo && discountPct && (
                     <div className="absolute top-3 left-3 bg-emerald-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
                       -{discountPct}%
                     </div>
@@ -933,15 +1053,38 @@ export default function ProductPage() {
                 </div>
 
                 {/* Thumbnail strip */}
-                {displayImages.length > 1 && (
+                {(displayImages.length > 1 || _demoVideoUrl) && (
                   <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide snap-x snap-mandatory" data-testid="container-thumbnails">
+                    {/* Demo video thumbnail */}
+                    {_demoVideoUrl && (
+                      <button
+                        type="button"
+                        onClick={() => { setShowVideo(true); }}
+                        className={`w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 snap-start bg-card flex flex-col items-center justify-center gap-0.5 ${
+                          showVideo ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40"
+                        }`}
+                        data-testid="button-video-thumb"
+                        aria-label="Watch product video"
+                      >
+                        {_ytId ? (
+                          <img src={`https://img.youtube.com/vi/${_ytId}/mqdefault.jpg`} alt="Demo video" className="w-full h-full object-cover" />
+                        ) : (
+                          <>
+                            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                              <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 text-primary"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                            <span className="text-[9px] font-semibold text-primary">Video</span>
+                          </>
+                        )}
+                      </button>
+                    )}
                     {displayImages.map((img, i) => (
                       <button
                         key={`${img}-${i}`}
                         type="button"
-                        onClick={() => setActiveImageIdx(i)}
+                        onClick={() => { setShowVideo(false); setActiveImageIdx(i); }}
                         className={`w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 snap-start bg-card ${
-                          activeImageIdx === i
+                          !showVideo && activeImageIdx === i
                             ? "border-primary ring-2 ring-primary/20"
                             : "border-border/50 hover:border-primary/40 active:border-primary"
                         }`}
@@ -984,17 +1127,27 @@ export default function ProductPage() {
 
                 {/* ── Badges ── */}
                 <div className="flex flex-wrap gap-2" data-testid="container-product-badges">
-                  {(product.specifications as Record<string, string | undefined>)?.["Safety Certifications"] && (
+                  {_specs?.["Safety Certifications"] && (
                     <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900/40 uppercase tracking-wider">
-                      {(product.specifications as Record<string, string | undefined>)["Safety Certifications"]}
+                      {_specs["Safety Certifications"]}
                     </span>
                   )}
                   <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-primary/8 text-primary border border-primary/15 uppercase tracking-wider">
-                    OT Recommended
+                    {_therapistRec && _therapistRec.toLowerCase() !== "no" ? _therapistRec : "OT Recommended"}
                   </span>
-                  {(product.specifications as Record<string, string | undefined>)?.["Supervision Required"] === "Yes" && (
+                  {_specs?.["Supervision Required"] === "Yes" && (
                     <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border border-amber-100 dark:border-amber-900/40 uppercase tracking-wider">
                       Adult Supervision
+                    </span>
+                  )}
+                  {_sensoryPrimary && (
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300 border border-violet-100 dark:border-violet-900/40 uppercase tracking-wider" data-testid="badge-sensory-primary">
+                      {_sensoryPrimary}
+                    </span>
+                  )}
+                  {_sensorySecondary && (
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-teal-900/40 uppercase tracking-wider" data-testid="badge-sensory-secondary">
+                      {_sensorySecondary}
                     </span>
                   )}
                 </div>
@@ -1018,6 +1171,14 @@ export default function ProductPage() {
                     </span>
                   </div>
                 </div>
+
+                {/* ── Problem Statement callout ── */}
+                {_problemStatement && (
+                  <div className="p-3.5 rounded-xl bg-primary/5 border-l-4 border-primary/40 text-sm leading-snug" data-testid="container-problem-statement">
+                    <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-1">The Challenge</p>
+                    <p className="text-muted-foreground italic">{stripToText(_problemStatement)}</p>
+                  </div>
+                )}
 
                 {/* ── Price ── */}
                 <div className="flex items-baseline gap-3 flex-wrap py-4 border-y border-border/40">
@@ -1062,6 +1223,29 @@ export default function ProductPage() {
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                     {currentSku && <span data-testid="text-product-sku">SKU: <span className="font-mono text-foreground">{currentSku}</span></span>}
                     {product.vendor && <span data-testid="text-product-vendor">By <span className="font-medium text-foreground">{product.vendor}</span></span>}
+                  </div>
+                )}
+
+                {/* ── Recommended For ── */}
+                {(_targetUsers.length > 0 || _bestUsedIn.length > 0 || _useCases.length > 0) && (
+                  <div className="space-y-2" data-testid="section-recommended-for">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Recommended for</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[..._targetUsers, ..._bestUsedIn].slice(0, 8).map((item, i) => (
+                        <span key={i} className="text-xs px-2.5 py-1 rounded-full bg-muted/60 text-foreground border border-border/50" data-testid={`tag-recommended-${i}`}>
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                    {_useCases.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 pt-0.5">
+                        {_useCases.slice(0, 4).map((uc, i) => (
+                          <span key={i} className="text-xs px-2.5 py-1 rounded-full bg-primary/5 text-primary border border-primary/15" data-testid={`tag-usecase-${i}`}>
+                            {uc}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -1350,6 +1534,18 @@ export default function ProductPage() {
                   />
                 </div>
 
+                {/* ── Warranty & Shipping ── */}
+                {(_warranty || _shippingNotes) && (
+                  <div className="flex flex-col gap-1.5 text-xs text-muted-foreground py-2 border-t border-border/30" data-testid="container-warranty-shipping">
+                    {_warranty && (
+                      <span><span className="font-semibold text-foreground">Warranty:</span> {_warranty}</span>
+                    )}
+                    {_shippingNotes && (
+                      <span><span className="font-semibold text-foreground">Shipping:</span> {_shippingNotes}</span>
+                    )}
+                  </div>
+                )}
+
                 {/* ── Trust strip (Pebble-style 4-item grid) ── */}
                 <div className="grid grid-cols-2 gap-x-4 gap-y-3 pt-4 border-t border-border/30" data-testid="container-trust-strip">
                   {[
@@ -1386,6 +1582,16 @@ export default function ProductPage() {
           const howItWorksHtml = extractHowItWorksSection(_decodedDescription);
           const hasHowItWorks = !!howItWorksHtml;
           const overviewHtml = hasHowItWorks ? removeHowItWorksSection(_decodedDescription) : _decodedDescription;
+          const hasUsageGuide = !!_usageInstructions;
+          const hasSafetyCare = !!(_careInstructions || _safetyWarning);
+          const hasKeyBenefits = !!_keyBenefits;
+          const PROSE = `prose prose-sm sm:prose-base max-w-none text-muted-foreground leading-relaxed
+            [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_h4]:text-foreground
+            [&_strong]:text-foreground [&_b]:text-foreground
+            [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5
+            [&_li]:mb-1.5 [&_p]:mb-3 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-2
+            [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2`;
+          const TAB_TRIGGER = "rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary whitespace-nowrap flex-shrink-0";
           return (
             <section className="py-12 border-b border-border/30" data-testid="section-product-tabs">
               <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
@@ -1395,30 +1601,21 @@ export default function ProductPage() {
                     {/* Tab bar: scrolls horizontally on mobile so all tabs are reachable */}
                     <div className="overflow-x-auto scrollbar-hide border-b border-border/40 -mx-4 sm:-mx-6 lg:-mx-8">
                       <TabsList className="h-auto bg-transparent p-0 gap-0 rounded-none flex-nowrap min-w-max px-4 sm:px-6 lg:px-8">
-                        <TabsTrigger
-                          value="overview"
-                          className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary whitespace-nowrap flex-shrink-0"
-                          data-testid="tab-overview"
-                        >
-                          Overview
-                        </TabsTrigger>
+                        <TabsTrigger value="overview" className={TAB_TRIGGER} data-testid="tab-overview">Overview</TabsTrigger>
+                        {hasKeyBenefits && (
+                          <TabsTrigger value="key-benefits" className={TAB_TRIGGER} data-testid="tab-key-benefits">Key Benefits</TabsTrigger>
+                        )}
+                        {hasUsageGuide && (
+                          <TabsTrigger value="usage-guide" className={TAB_TRIGGER} data-testid="tab-usage-guide">Usage Guide</TabsTrigger>
+                        )}
                         {hasSpecs && (
-                          <TabsTrigger
-                            value="specs"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary whitespace-nowrap flex-shrink-0"
-                            data-testid="tab-specs"
-                          >
-                            Specifications
-                          </TabsTrigger>
+                          <TabsTrigger value="specs" className={TAB_TRIGGER} data-testid="tab-specs">Specifications</TabsTrigger>
+                        )}
+                        {hasSafetyCare && (
+                          <TabsTrigger value="safety-care" className={TAB_TRIGGER} data-testid="tab-safety-care">Safety & Care</TabsTrigger>
                         )}
                         {hasHowItWorks && (
-                          <TabsTrigger
-                            value="how-it-works"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary whitespace-nowrap flex-shrink-0"
-                            data-testid="tab-how-it-works"
-                          >
-                            How it Works
-                          </TabsTrigger>
+                          <TabsTrigger value="how-it-works" className={TAB_TRIGGER} data-testid="tab-how-it-works">How it Works</TabsTrigger>
                         )}
                       </TabsList>
                     </div>
@@ -1430,16 +1627,7 @@ export default function ProductPage() {
                       <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-3">About this product</p>
                       <h2 className="text-2xl font-bold text-foreground mb-6 leading-snug">{product.name.split("|")[0].trim()}</h2>
                       {isHtmlDescription ? (
-                        <div
-                          className="prose prose-sm sm:prose-base max-w-none text-muted-foreground leading-relaxed
-                            [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_h4]:text-foreground
-                            [&_strong]:text-foreground [&_b]:text-foreground
-                            [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5
-                            [&_li]:mb-1.5 [&_p]:mb-3 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-2
-                            [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2"
-                          dangerouslySetInnerHTML={{ __html: overviewHtml }}
-                          data-testid="html-product-description"
-                        />
+                        <div className={PROSE} dangerouslySetInnerHTML={{ __html: overviewHtml }} data-testid="html-product-description" />
                       ) : (
                         <div className="text-muted-foreground leading-relaxed space-y-3">
                           {overviewHtml.split("\n").filter((l) => l.trim()).map((line, i) => (
@@ -1449,6 +1637,32 @@ export default function ProductPage() {
                       )}
                     </div>
                   </TabsContent>
+
+                  {/* Key Benefits tab */}
+                  {hasKeyBenefits && (
+                    <TabsContent value="key-benefits" className="mt-0" data-testid="tabpanel-key-benefits">
+                      <div className="max-w-3xl">
+                        <div className="mb-6">
+                          <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">Why It Works</p>
+                          <h2 className="text-2xl font-bold text-foreground">Key Benefits</h2>
+                        </div>
+                        <div className={PROSE} dangerouslySetInnerHTML={{ __html: _keyBenefits! }} />
+                      </div>
+                    </TabsContent>
+                  )}
+
+                  {/* Usage Guide tab */}
+                  {hasUsageGuide && (
+                    <TabsContent value="usage-guide" className="mt-0" data-testid="tabpanel-usage-guide">
+                      <div className="max-w-3xl">
+                        <div className="mb-6">
+                          <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">How to Use</p>
+                          <h2 className="text-2xl font-bold text-foreground">Usage Guide</h2>
+                        </div>
+                        <div className={PROSE} dangerouslySetInnerHTML={{ __html: _usageInstructions! }} />
+                      </div>
+                    </TabsContent>
+                  )}
 
                   {/* Specifications tab */}
                   {hasSpecs && (
@@ -1464,6 +1678,34 @@ export default function ProductPage() {
                       </div>
                     </TabsContent>
                   )}
+
+                  {/* Safety & Care tab */}
+                  {hasSafetyCare && (
+                    <TabsContent value="safety-care" className="mt-0" data-testid="tabpanel-safety-care">
+                      <div className="max-w-3xl space-y-10">
+                        {_safetyWarning && (
+                          <div>
+                            <div className="mb-4">
+                              <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-1">Important</p>
+                              <h2 className="text-2xl font-bold text-foreground">Safety Information</h2>
+                            </div>
+                            <div className={`${PROSE} [&_p]:text-amber-700 dark:[&_p]:text-amber-300 [&_li]:text-amber-700 dark:[&_li]:text-amber-300`} dangerouslySetInnerHTML={{ __html: _safetyWarning }} />
+                          </div>
+                        )}
+                        {_careInstructions && (
+                          <div>
+                            <div className="mb-4">
+                              <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-1">Maintenance</p>
+                              <h2 className="text-2xl font-bold text-foreground">Care Instructions</h2>
+                            </div>
+                            <div className={PROSE} dangerouslySetInnerHTML={{ __html: _careInstructions }} />
+                          </div>
+                        )}
+                      </div>
+                    </TabsContent>
+                  )}
+
+                  {/* How it Works tab */}
                   {hasHowItWorks && (
                     <TabsContent value="how-it-works" className="mt-0" data-testid="tabpanel-how-it-works">
                       <div className="max-w-3xl">
@@ -1471,14 +1713,7 @@ export default function ProductPage() {
                           <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">Step by Step</p>
                           <h2 className="text-2xl font-bold text-foreground">How it Works</h2>
                         </div>
-                        <div
-                          className="prose prose-sm sm:prose-base max-w-none text-muted-foreground leading-relaxed
-                            [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_h4]:text-foreground
-                            [&_strong]:text-foreground [&_b]:text-foreground
-                            [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5
-                            [&_li]:mb-1.5 [&_p]:mb-3"
-                          dangerouslySetInnerHTML={{ __html: howItWorksHtml! }}
-                        />
+                        <div className={PROSE} dangerouslySetInnerHTML={{ __html: howItWorksHtml! }} />
                       </div>
                     </TabsContent>
                   )}
