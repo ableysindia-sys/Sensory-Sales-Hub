@@ -342,7 +342,7 @@ export function Navbar() {
 
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 flex-shrink-0" data-testid="link-home">
-              <img src={logoPath} alt="Abley's Rehab" className="h-11 lg:h-14 w-auto" data-testid="img-logo" />
+              <img src={logoPath} alt="Abley's Rehab" className="h-14 lg:h-16 w-auto" data-testid="img-logo" />
             </Link>
 
             {/* Desktop nav links */}

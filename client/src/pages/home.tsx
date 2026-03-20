@@ -173,7 +173,7 @@ function WhoWeServe() {
             Built for Institutional Buyers
           </h2>
           <p className="text-sm text-muted-foreground mt-1.5 max-w-md mx-auto">
-            500+ clinics, schools and hospitals trust Abley's for their therapy equipment needs
+            50+ clinics, schools and hospitals trust Abley's for their therapy equipment needs
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -210,11 +210,11 @@ function QuickTrustBar() {
       <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-xs text-white/75 font-medium">
           {[
-            { icon: Truck,            text: "Free shipping across India" },
+            { icon: Truck,            text: "Shipping Available Across India" },
             { icon: BadgeIndianRupee, text: "GST invoices · Bulk discounts" },
-            { icon: ShieldCheck,      text: "OT-validated products" },
-            { icon: Clock,            text: "Quote in under 2 hours" },
-            { icon: Users,            text: "500+ institutions trust us" },
+            { icon: ShieldCheck,      text: "Designed by Experts" },
+            { icon: Clock,            text: "Same Day Quotation" },
+            { icon: Users,            text: "50+ Institutions trust us" },
           ].map(({ icon: Icon, text }) => (
             <span key={text} className="flex items-center gap-2">
               <Icon className="w-3.5 h-3.5 text-white/50" /> {text}

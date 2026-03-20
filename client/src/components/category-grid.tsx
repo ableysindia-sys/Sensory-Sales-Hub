@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ArrowRight, Hospital, GraduationCap, Sparkles, Home, Dumbbell, Building2, MessageSquare, ShoppingCart, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Hospital, GraduationCap, Sparkles, Home, Building2, MessageSquare, ShoppingCart, CheckCircle2 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useProducts } from "@/lib/product-provider";
 import { useEnquiryCart } from "@/lib/enquiry-cart";
@@ -9,12 +9,11 @@ import type { CatalogueProduct } from "@/lib/catalogue-data";
 import { useToast } from "@/hooks/use-toast";
 
 const SETUP_TYPES = [
-  { id: "sensory-room",   label: "Sensory Room",   shortLabel: "Sensory",  icon: Sparkles,       color: "from-violet-500 to-purple-600", desc: "Complete sensory integration rooms" },
-  { id: "therapy-centre", label: "Therapy Centre",  shortLabel: "Clinic",   icon: Hospital,       color: "from-blue-500 to-indigo-600",   desc: "OT clinics & rehab facilities" },
-  { id: "school",         label: "School",          shortLabel: "School",   icon: GraduationCap,  color: "from-green-500 to-emerald-600", desc: "Special education & inclusive classrooms" },
-  { id: "home-setup",     label: "Home Setup",      shortLabel: "Home",     icon: Home,           color: "from-amber-500 to-orange-600",  desc: "Home-based therapy corners" },
-  { id: "gym-fitness",    label: "Gym / Fitness",   shortLabel: "Gym",      icon: Dumbbell,       color: "from-red-500 to-rose-600",      desc: "Rehab gyms & fitness centres" },
-  { id: "other",          label: "Browse All",      shortLabel: "All",      icon: Building2,      color: "from-gray-500 to-slate-600",    desc: "All product categories" },
+  { id: "sensory-room",   label: "OT Room",          shortLabel: "OT Room",  icon: Sparkles,       color: "from-violet-500 to-purple-600", desc: "Complete OT room." },
+  { id: "therapy-centre", label: "Therapy Centre",   shortLabel: "Clinic",   icon: Hospital,       color: "from-blue-500 to-indigo-600",   desc: "OT clinics & rehab facilities" },
+  { id: "school",         label: "School",           shortLabel: "School",   icon: GraduationCap,  color: "from-green-500 to-emerald-600", desc: "Special education & inclusive classrooms" },
+  { id: "home-setup",     label: "Home Setup",       shortLabel: "Home",     icon: Home,           color: "from-amber-500 to-orange-600",  desc: "Home-based therapy corners" },
+  { id: "other",          label: "Browse All",       shortLabel: "All",      icon: Building2,      color: "from-gray-500 to-slate-600",    desc: "All product categories" },
 ];
 
 const SETUP_CATEGORY_MAP: Record<string, string[]> = {
@@ -22,16 +21,14 @@ const SETUP_CATEGORY_MAP: Record<string, string[]> = {
   "therapy-centre": ["swings", "therapy-balls", "deep-pressure", "movement-balance", "mats"],
   "school":         ["deep-pressure", "visual", "movement-balance", "therapy-balls", "adl-kit"],
   "home-setup":     ["swings", "deep-pressure", "therapy-balls", "visual"],
-  "gym-fitness":    ["climbing", "movement-balance", "therapy-balls", "mats"],
   "other":          [],
 };
 
 const SETUP_CTA: Record<string, string> = {
-  "sensory-room":   "Get a sensory room quote",
+  "sensory-room":   "Get an OT room quote",
   "therapy-centre": "Get a clinic setup quote",
   "school":         "Get a school setup quote",
   "home-setup":     "Get a home setup quote",
-  "gym-fitness":    "Get a gym setup quote",
   "other":          "Get a custom quote",
 };
 

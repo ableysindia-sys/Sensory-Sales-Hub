@@ -137,7 +137,7 @@ const FAQS = [
 ];
 
 const STATS = [
-  { value: "500+", label: "OTs & Therapists Served" },
+  { value: "50+", label: "OTs & Therapists Served" },
   { value: "32+", label: "OT-Curated Products" },
   { value: "50+", label: "Sensory Rooms Set Up" },
   { value: "< 2 hr", label: "Quote Response Time" },
@@ -244,7 +244,7 @@ export default function B2BLandingPage() {
 
   usePageMeta(
     "Bulk Sensory & OT Equipment for Clinics & Schools | Abley's Rehab B2B",
-    "India's most trusted B2B source for clinical-grade sensory tools, OT equipment & sensory room setups. Bulk pricing, GST invoices, free pan-India shipping. Trusted by 500+ occupational therapists."
+    "India's most trusted B2B source for clinical-grade sensory tools, OT equipment & sensory room setups. Bulk pricing, GST invoices, free pan-India shipping. Trusted by 50+ occupational therapists."
   );
 
   const form = useForm<FormValues>({
@@ -332,7 +332,7 @@ export default function B2BLandingPage() {
 
       {/* ── Announcement Bar ── */}
       <div className="bg-primary text-white text-center text-xs font-medium py-2 px-4 tracking-wide">
-        🇮🇳 Free Shipping Pan India &nbsp;·&nbsp; GST Invoices Provided &nbsp;·&nbsp; 500+ OTs Trust Abley's Rehab
+        🇮🇳 Free Shipping Pan India &nbsp;·&nbsp; GST Invoices Provided &nbsp;·&nbsp; 50+ OTs Trust Abley's Rehab
       </div>
 
       {/* ── Minimal Header ── */}
@@ -1437,7 +1437,7 @@ export default function B2BLandingPage() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.06),transparent_70%)]" />
           <div className="relative max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-24 text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-white/80 text-xs font-semibold uppercase tracking-widest mb-6">
-              <TrendingUp className="w-3.5 h-3.5" /> Trusted by 500+ OTs Across India
+              <TrendingUp className="w-3.5 h-3.5" /> Trusted by 50+ OTs Across India
             </div>
             <h2 className="text-3xl sm:text-5xl font-bold font-display leading-tight mb-5">
               Ready to Equip Your<br />

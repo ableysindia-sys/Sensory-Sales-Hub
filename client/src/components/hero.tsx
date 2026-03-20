@@ -49,7 +49,7 @@ export function Hero() {
           >
             Equip Your Clinic,<br />
             School or{" "}
-            <span className="italic text-amber-300">Sensory Room.</span>
+            <span className="italic text-amber-300">Occupational Therapy Room.</span>
           </h1>
 
           {/* Descriptor */}
@@ -57,7 +57,7 @@ export function Hero() {
             className="text-sm sm:text-[1.05rem] text-white/85 leading-relaxed mb-6 sm:mb-7 max-w-[440px]"
             data-testid="text-hero-desc"
           >
-            Premium rehab &amp; sensory equipment with bulk pricing, GST invoices, and custom setup support for OT clinics, schools &amp; hospitals across India.
+            Quality Equipment Enabling Professionals to Deliver Better Rehabilitation.
           </p>
 
           {/* Dual CTAs */}
@@ -96,9 +96,9 @@ export function Hero() {
           {/* Trust callouts — pill grid on mobile, inline row on desktop */}
           <div className="sm:hidden grid grid-cols-3 gap-2">
             {[
-              { icon: Users,            text: "500+\nInstitutions" },
+              { icon: Users,            text: "50+\nInstitutions" },
               { icon: BadgeIndianRupee, text: "GST\nInvoices" },
-              { icon: ShieldCheck,      text: "OT-\nApproved" },
+              { icon: ShieldCheck,      text: "Designed\nby Experts" },
             ].map(({ icon: Icon, text }) => (
               <div
                 key={text}
@@ -112,9 +112,9 @@ export function Hero() {
 
           <div className="hidden sm:flex flex-wrap gap-x-5 gap-y-1.5">
             {[
-              { icon: Users,            text: "Trusted by 500+ institutions" },
+              { icon: Users,            text: "Trusted by 50+ institutions" },
               { icon: BadgeIndianRupee, text: "GST invoices · Bulk discounts" },
-              { icon: ShieldCheck,      text: "OT-validated products" },
+              { icon: ShieldCheck,      text: "Designed by Experts." },
             ].map(({ icon: Icon, text }) => (
               <span key={text} className="flex items-center gap-1.5 text-xs text-white/80">
                 <Icon className="w-3.5 h-3.5 text-amber-300/80" />
