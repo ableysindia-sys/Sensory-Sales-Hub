@@ -21,6 +21,7 @@ import {
   Plus,
   Minus,
   Check,
+  X,
   Star,
   Truck,
   RotateCcw,
@@ -961,13 +962,25 @@ export default function ProductPage() {
         )
       : null;
 
+  // True in-stock check: Shopify variants use availableForSale; others use stock field
+  const isInStock = hasShopifyVariants
+    ? (selectedVariant?.availableForSale ?? true)
+    : (product.stock === null || product.stock > 0);
+
+  // Filter out raw tag slugs (e.g. "age-3-5", "balance") — only show human-readable features
+  const cleanFeature = (f: string): string | null => {
+    if (f.toLowerCase() === "out of stock") return null;
+    if (/^[a-z0-9-]+$/.test(f.trim())) return null; // slug-like, no spaces
+    return f.trim();
+  };
+
   const _decodedDescription = decodeEntities(product.description);
   const isHtmlDescription = _decodedDescription.trim().startsWith("<");
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <Navbar />
-      <main id="main-content" className="pb-16 lg:pb-0">
+      <main id="main-content" className="pb-28 lg:pb-0">
 
         {/* ── Breadcrumb ────────────────────────────────────────── */}
         <section className="pt-36 pb-4">
@@ -993,7 +1006,7 @@ export default function ProductPage() {
               </Link>
               <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
               <span className="text-foreground font-medium truncate min-w-0">
-                {product.name}
+                {product.name.split(/[|–—]/)[0].trim()}
               </span>
             </nav>
           </div>
@@ -1168,8 +1181,10 @@ export default function ProductPage() {
                   <a href="#reviews" className="text-sm text-muted-foreground hover:text-primary transition-colors" data-testid="link-review-count">
                     ({reviewCount} reviews)
                   </a>
-                  <span className="flex items-center gap-1 text-sm text-emerald-600 font-medium">
-                    <Check className="w-3.5 h-3.5" /> In Stock
+                  <span className={`flex items-center gap-1 text-sm font-medium ${isInStock ? "text-emerald-600" : "text-red-500"}`} data-testid="text-stock-status">
+                    {isInStock
+                      ? <><Check className="w-3.5 h-3.5" /> In Stock</>
+                      : <><X className="w-3.5 h-3.5" /> Out of Stock</>}
                   </span>
                 </div>
 
@@ -1189,9 +1204,9 @@ export default function ProductPage() {
                         {discountPct}% off
                       </span>
                     )}
-                    <span className="text-xs text-muted-foreground ml-auto">incl. GST</span>
+                    <span className="text-xs text-muted-foreground ml-auto">per unit · incl. GST</span>
                   </div>
-                  <div className="bg-white rounded-lg p-1.5 inline-block" data-testid="container-payment-badges-price">
+                  <div className="bg-white rounded-lg p-1.5 inline-block border border-border/30" data-testid="container-payment-badges-price">
                     <img
                       src={paymentBadgesImg}
                       alt="All payment modes accepted — UPI, Cards, Paytm, G Pay, Amazon Pay, Net Banking · 100% Secured"
@@ -1201,9 +1216,13 @@ export default function ProductPage() {
                 </div>
 
                 {/* ── Key features — 3 bullets max for above-fold conviction ── */}
-                {product.features.length > 0 && (
+                {(() => {
+                  const readableFeatures = product.features
+                    .map(cleanFeature)
+                    .filter((f): f is string => f !== null);
+                  return readableFeatures.length > 0 ? (
                   <ul className="space-y-1.5" data-testid="list-key-features-inline">
-                    {product.features.slice(0, 3).map((feat, i) => {
+                    {readableFeatures.slice(0, 3).map((feat, i) => {
                       const colonIdx = feat.indexOf(":");
                       const label = colonIdx !== -1 ? feat.slice(0, colonIdx).trim() : null;
                       const body = colonIdx !== -1 ? feat.slice(colonIdx + 1).trim() : feat.trim();
@@ -1218,7 +1237,8 @@ export default function ProductPage() {
                       );
                     })}
                   </ul>
-                )}
+                  ) : null;
+                })()}
 
                 {/* Shopify Variant Selectors */}
                 {hasShopifyVariants && optionGroups.length > 0 && (
@@ -1463,24 +1483,17 @@ export default function ProductPage() {
                     </Button>
                   </div>
 
-                  {/* Secondary row */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button size="sm" variant="ghost" className="rounded-xl gap-1.5 text-xs border border-border/50 hover:border-primary/30" onClick={handleAddToCart} data-testid="button-add-to-cart">
-                      <ShoppingCart className="w-3.5 h-3.5" /> Add to Cart
-                    </Button>
-                    <Link href="/enquiry" className="w-full">
-                      <Button size="sm" variant="ghost" className="w-full rounded-xl gap-1.5 text-xs border border-border/50 hover:border-primary/30" data-testid="button-bulk-quote">
-                        <Send className="w-3.5 h-3.5" /> Bulk Order
-                      </Button>
-                    </Link>
-                  </div>
+                  {/* Secondary row — single add-to-cart */}
+                  <Button size="sm" variant="ghost" className="w-full rounded-xl gap-1.5 text-xs border border-border/50 hover:border-primary/30" onClick={handleAddToCart} data-testid="button-add-to-cart">
+                    <ShoppingCart className="w-3.5 h-3.5" /> Add to Cart
+                  </Button>
                 </div>
 
                 {/* ── Problem Statement — below CTAs so it doesn't interrupt price discovery ── */}
                 {_problemStatement && (
                   <div className="p-3 rounded-xl bg-primary/5 border-l-4 border-primary/40" data-testid="container-problem-statement">
                     <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-0.5">The Challenge</p>
-                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">{stripToText(_problemStatement)}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{stripToText(_problemStatement)}</p>
                   </div>
                 )}
 
@@ -1842,6 +1855,33 @@ export default function ProductPage() {
             </div>
           </section>
         )}
+
+        {/* ── Sticky mobile CTA bar — hidden on desktop ── */}
+        <div className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-background/95 backdrop-blur-sm border-t border-border/50 px-4 py-3 flex items-center gap-3" data-testid="sticky-mobile-cta">
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-muted-foreground">per unit · incl. GST</p>
+            <p className="text-lg font-bold text-foreground tabular-nums leading-tight">{formatPrice(computedPrice)}</p>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="rounded-xl gap-1.5 text-xs font-semibold border-primary/40 text-primary hover:bg-primary/5 flex-shrink-0"
+            onClick={() => addItem(product.id, product.name, category?.title || "")}
+            data-testid="sticky-button-get-quote"
+          >
+            {inEnquiryCart ? <><CheckCircle2 className="w-3.5 h-3.5" /> Added</> : <><MessageSquare className="w-3.5 h-3.5" /> Get Quote</>}
+          </Button>
+          <Button
+            size="sm"
+            className="rounded-xl gap-1.5 text-xs font-bold flex-shrink-0"
+            onClick={handleBuyNow}
+            disabled={checkoutLoading}
+            data-testid="sticky-button-buy-now"
+          >
+            {checkoutLoading ? <div className="w-3.5 h-3.5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
+            {checkoutLoading ? "Opening…" : "Buy Now"}
+          </Button>
+        </div>
 
       </main>
       <SiteFooter />
