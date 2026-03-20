@@ -256,7 +256,7 @@ function ClientLogos() {
               key={i}
               src={logo.src}
               alt={logo.alt}
-              className="h-10 w-auto object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300 flex-shrink-0"
+              className="h-14 w-auto object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300 flex-shrink-0"
               loading="lazy"
               data-testid={`img-client-logo-${logo.alt.toLowerCase()}-${i}`}
             />

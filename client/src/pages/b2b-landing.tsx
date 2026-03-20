@@ -330,14 +330,14 @@ export default function B2BLandingPage() {
 
       {/* ── Announcement Bar ── */}
       <div className="bg-primary text-white text-center text-xs font-medium py-2 px-4 tracking-wide">
-        🇮🇳 Free Shipping Pan India &nbsp;·&nbsp; GST Invoices Provided &nbsp;·&nbsp; 50+ OTs Trust Abley's Rehab
+        🇮🇳 Free Shipping Pan India &nbsp;·&nbsp; GST Invoices Provided &nbsp;·&nbsp; Same Day Quotation &nbsp;·&nbsp; 50+ OTs Trust Abley's Rehab
       </div>
 
       {/* ── Minimal Header ── */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/">
-            <img src={logoPath} alt="Abley's Rehab" className="h-12 object-contain" data-testid="img-logo-header" />
+            <img src={logoPath} alt="Abley's Rehab" className="h-16 object-contain" data-testid="img-logo-header" />
           </Link>
           <div className="flex items-center gap-3">
             <a
@@ -582,7 +582,7 @@ export default function B2BLandingPage() {
                   key={logo.alt}
                   src={logo.src}
                   alt={logo.alt.replace(/\d+$/, "")}
-                  className="h-10 w-auto object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300 flex-shrink-0"
+                  className="h-14 w-auto object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300 flex-shrink-0"
                   loading="lazy"
                   data-testid={`img-lp-client-logo-${logo.alt.toLowerCase()}`}
                 />
