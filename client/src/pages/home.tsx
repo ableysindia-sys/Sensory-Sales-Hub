@@ -226,6 +226,53 @@ function QuickTrustBar() {
   );
 }
 
+const CLIENT_LOGOS = [
+  { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/TH.png?v=1773997113",  alt: "TH" },
+  { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/NG.png?v=1773997113",  alt: "NG" },
+  { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/OS.png?v=1773997113",  alt: "OS" },
+  { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/JM.png?v=1773997112",  alt: "JM" },
+  { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/BM.png?v=1773997113",  alt: "BM" },
+  { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/PI.png?v=1773997112",  alt: "PI" },
+  { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/SSS.png?v=1773997113", alt: "SSS" },
+  { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/CG.png?v=1773997112",  alt: "CG" },
+  { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/WB.png?v=1773997112",  alt: "WB" },
+  { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/NF.png?v=1773997113",  alt: "NF" },
+];
+
+function ClientLogos() {
+  const track = [...CLIENT_LOGOS, ...CLIENT_LOGOS];
+  return (
+    <section className="bg-muted/30 border-y border-border/40 py-6 overflow-hidden" data-testid="section-client-logos">
+      <p className="text-center text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-4">
+        Trusted by institutions across India
+      </p>
+      <div className="relative">
+        <div
+          className="flex gap-10 items-center w-max"
+          style={{ animation: "marquee 28s linear infinite" }}
+        >
+          {track.map((logo, i) => (
+            <img
+              key={i}
+              src={logo.src}
+              alt={logo.alt}
+              className="h-10 w-auto object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300 flex-shrink-0"
+              loading="lazy"
+              data-testid={`img-client-logo-${logo.alt.toLowerCase()}-${i}`}
+            />
+          ))}
+        </div>
+      </div>
+      <style>{`
+        @keyframes marquee {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+      `}</style>
+    </section>
+  );
+}
+
 function ProductShowcase() {
   const { getNewArrivals, getBestSellers, products } = useProducts();
   const [activeTab, setActiveTab] = useState<"new" | "best">("best");
@@ -320,9 +367,11 @@ export default function Home() {
         <Hero />
         {/* 2. REASSURE — Compact trust bar in dark navy */}
         <QuickTrustBar />
-        {/* 3. DISCOVER — Browse by setup type */}
+        {/* 3. SOCIAL PROOF — Client logo marquee */}
+        <ClientLogos />
+        {/* 4. DISCOVER — Browse by setup type */}
         <CategoryGrid />
-        {/* 4. PROCESS — 3-step clarity for B2B buyers */}
+        {/* 5. PROCESS — 3-step clarity for B2B buyers */}
         <HowItWorks />
         {/* 5. BROWSE — Handpicked best sellers & new arrivals */}
         <ProductShowcase />
