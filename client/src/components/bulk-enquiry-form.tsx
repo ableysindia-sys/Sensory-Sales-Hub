@@ -23,7 +23,6 @@ import {
   Home,
   Hospital,
   ShoppingBag,
-  Dumbbell,
   Sparkles,
   Package,
   Wrench,
@@ -53,7 +52,6 @@ const SETUP_TYPES = [
   { id: "school", label: "School / Institution", icon: GraduationCap, desc: "Special education schools" },
   { id: "sensory-room", label: "Sensory Room Setup", icon: Sparkles, desc: "Complete sensory room design" },
   { id: "home-setup", label: "Home Setup", icon: Home, desc: "Home-based therapy corner" },
-  { id: "gym-fitness", label: "Gym / Fitness Centre", icon: Dumbbell, desc: "Rehab gyms, training centres" },
   { id: "other", label: "Other / Custom", icon: Building2, desc: "Something else entirely" },
 ];
 

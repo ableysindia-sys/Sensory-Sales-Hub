@@ -25,7 +25,6 @@ import {
   Home,
   Hospital,
   ShoppingBag,
-  Dumbbell,
   Sparkles,
   Package,
   Wrench,
@@ -59,7 +58,6 @@ const SETUP_TYPES = [
   { id: "school", label: "School / Institution", icon: GraduationCap, desc: "Special education schools, inclusive classrooms" },
   { id: "sensory-room", label: "Sensory Room Setup", icon: Sparkles, desc: "Complete sensory integration room design" },
   { id: "home-setup", label: "Home Setup", icon: Home, desc: "Home-based therapy or sensory corner" },
-  { id: "gym-fitness", label: "Gym / Fitness Centre", icon: Dumbbell, desc: "Rehabilitation gyms, training centres" },
   { id: "other", label: "Other / Custom", icon: Building2, desc: "Something else entirely" },
 ];
 
@@ -75,7 +73,6 @@ const SETUP_CATEGORY_MAP: Record<string, string[]> = {
   "school":           ["deep-pressure", "visual", "movement-balance", "therapy-balls", "adl-kit"],
   "sensory-room":     ["swings", "ballpool", "visual", "deep-pressure", "mats", "climbing"],
   "home-setup":       ["swings", "deep-pressure", "therapy-balls", "visual"],
-  "gym-fitness":      ["climbing", "movement-balance", "therapy-balls", "mats"],
   "other":            [],
 };
 
@@ -99,11 +96,6 @@ const SETUP_KIT_INFO: Record<string, { title: string; description: string; highl
     title: "Home Therapy Corner",
     description: "Compact, safe equipment for home-based sensory therapy — a therapy swing, calming weighted tools, therapy balls and visual stimulation items.",
     highlight: "Recommended for home-based therapy",
-  },
-  "gym-fitness": {
-    title: "Rehab Gym Setup",
-    description: "Climbing structures, balance boards, therapy balls and safety mats — equipment for rehabilitation gyms and fitness centres with therapy needs.",
-    highlight: "Recommended for rehab gyms & fitness centres",
   },
   "other": {
     title: "Custom Selection",

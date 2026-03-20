@@ -47,9 +47,9 @@ export function Hero() {
             className="text-[1.9rem] sm:text-5xl lg:text-[3.2rem] font-bold text-white leading-[1.1] mb-3 sm:mb-4 font-display drop-shadow-xl"
             data-testid="heading-hero"
           >
-            Equip Your Clinic,<br />
-            School or{" "}
-            <span className="italic text-amber-300">Occupational Therapy Room.</span>
+            Quality Equipment Enabling<br />
+            Professionals to Deliver{" "}
+            <span className="italic text-amber-300">Better Rehabilitation.</span>
           </h1>
 
           {/* Descriptor */}
@@ -57,7 +57,7 @@ export function Hero() {
             className="text-sm sm:text-[1.05rem] text-white/85 leading-relaxed mb-6 sm:mb-7 max-w-[440px]"
             data-testid="text-hero-desc"
           >
-            Quality Equipment Enabling Professionals to Deliver Better Rehabilitation.
+            Premium rehab &amp; sensory equipment with bulk pricing, GST invoices, and custom setup support for OT clinics, schools &amp; hospitals across India.
           </p>
 
           {/* Dual CTAs */}

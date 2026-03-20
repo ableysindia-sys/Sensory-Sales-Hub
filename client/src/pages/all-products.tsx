@@ -22,7 +22,6 @@ const SETUP_TYPE_FILTERS = [
   { id: "therapy-clinic",  label: "Therapy / OT Clinic", categories: ["swings", "therapy-balls", "deep-pressure", "movement-balance", "mats"] },
   { id: "school",          label: "School / Classroom",  categories: ["deep-pressure", "visual", "movement-balance", "therapy-balls", "adl-kit"] },
   { id: "home",            label: "Home Therapy",        categories: ["swings", "deep-pressure", "therapy-balls", "visual"] },
-  { id: "gym",             label: "Rehab Gym",           categories: ["climbing", "movement-balance", "therapy-balls", "mats"] },
 ];
 
 const THERAPEUTIC_GOAL_FILTERS = [

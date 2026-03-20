@@ -9,7 +9,7 @@ import type { CatalogueProduct } from "@/lib/catalogue-data";
 import { useToast } from "@/hooks/use-toast";
 
 const SETUP_TYPES = [
-  { id: "sensory-room",   label: "OT Room",          shortLabel: "OT Room",  icon: Sparkles,       color: "from-violet-500 to-purple-600", desc: "Complete OT room." },
+  { id: "sensory-room",   label: "Occupational Therapy Room", shortLabel: "OT Room",  icon: Sparkles,       color: "from-violet-500 to-purple-600", desc: "Complete OT room." },
   { id: "therapy-centre", label: "Therapy Centre",   shortLabel: "Clinic",   icon: Hospital,       color: "from-blue-500 to-indigo-600",   desc: "OT clinics & rehab facilities" },
   { id: "school",         label: "School",           shortLabel: "School",   icon: GraduationCap,  color: "from-green-500 to-emerald-600", desc: "Special education & inclusive classrooms" },
   { id: "home-setup",     label: "Home Setup",       shortLabel: "Home",     icon: Home,           color: "from-amber-500 to-orange-600",  desc: "Home-based therapy corners" },

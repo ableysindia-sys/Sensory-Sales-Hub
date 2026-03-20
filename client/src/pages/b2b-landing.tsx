@@ -46,7 +46,6 @@ import {
   Building2,
   GraduationCap,
   Home,
-  Dumbbell,
   Sparkles,
   ShieldCheck,
   Truck,
@@ -91,7 +90,6 @@ const SETUP_TYPES = [
   { id: "school",         label: "School / Institution",    icon: GraduationCap, desc: "Special education schools, inclusive classrooms",     count: "30+ products", browseHref: "/category/adl-kit" },
   { id: "sensory-room",   label: "Sensory Room Setup",      icon: Sparkles,      desc: "Complete sensory integration room design",            count: "43 products",  browseHref: "/category/swings" },
   { id: "home-setup",     label: "Home Therapy Setup",      icon: Home,          desc: "Home-based therapy corners for families",             count: "25+ products", browseHref: "/category/deep-pressure" },
-  { id: "gym-fitness",    label: "Rehab Gym / Centre",      icon: Dumbbell,      desc: "Rehabilitation gyms and motor skill centres",         count: "20+ products", browseHref: "/category/climbing" },
 ];
 
 const BENEFITS = [
