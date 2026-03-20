@@ -44,6 +44,9 @@ import {
   AlertTriangle,
   RefreshCw,
   CheckCircle,
+  BookOpen,
+  Copy,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1169,7 +1172,213 @@ function PagesView() {
   );
 }
 
-type AdminTab = "dashboard" | "leads" | "products" | "pages";
+function SetupGuideView() {
+  const { toast } = useToast();
+  const guideUrl = `${window.location.origin}/admin#setup-guide`;
+
+  function copyUrl() {
+    navigator.clipboard.writeText(guideUrl).then(() => {
+      toast({ title: "Link copied!", description: "Setup guide URL copied to clipboard." });
+    });
+  }
+
+  const LOC: Record<string, { label: string; color: string }> = {
+    "right-panel": { label: "Right panel", color: "bg-primary/10 text-primary border-primary/20" },
+    "gallery": { label: "Gallery", color: "bg-sky-50 dark:bg-sky-950/30 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-800" },
+    "badge": { label: "Badge", color: "bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-800" },
+    "tab": { label: "Tab", color: "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800" },
+    "url": { label: "URL / SEO", color: "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700" },
+    "filter": { label: "Filter", color: "bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800" },
+  };
+
+  function Loc({ ids }: { ids: string[] }) {
+    return (
+      <div className="flex flex-wrap gap-1">
+        {ids.map((id) => {
+          const cfg = LOC[id];
+          return (
+            <span key={id} className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border ${cfg.color}`}>
+              {cfg.label}
+            </span>
+          );
+        })}
+      </div>
+    );
+  }
+
+  const stdFields = [
+    { field: "Title", note: "First segment before  |  or  –  shown as h1; full title shown on listing cards", locs: ["right-panel"] },
+    { field: "Description (HTML)", note: "Rendered in the Overview tab as formatted HTML", locs: ["tab"] },
+    { field: "Price (variant)", note: "Main price display. Each variant can have its own price", locs: ["right-panel"] },
+    { field: "Compare-at Price", note: "Shown as struck-through price with % discount badge when higher than price", locs: ["right-panel"] },
+    { field: "Images", note: "All product images populate the scrollable gallery; first image is the default", locs: ["gallery"] },
+    { field: "Variants", note: "Each variant (Weight, Size, Color…) generates a selector button with its own price", locs: ["right-panel"] },
+    { field: "Vendor", note: "Shown de-emphasised below the payment section (lowest priority info)", locs: ["right-panel"] },
+    { field: "Tags", note: "Used for search filtering and application matching on collection pages", locs: ["filter"] },
+    { field: "Handle", note: "Becomes the product URL: /products/{handle}", locs: ["url"] },
+    { field: "Product Type", note: "Maps the product to a site category (e.g. Sensory Tools > Weighted Products)", locs: ["filter"] },
+  ];
+
+  const metafields: { key: string; type: string; where: string; locs: string[] }[] = [
+    { key: "custom.problem_statement", type: "Rich text", where: '"The Challenge" callout below CTAs in the right panel', locs: ["right-panel"] },
+    { key: "custom.key_benefits", type: "Rich text", where: "Key Benefits tab — rendered as formatted HTML with bold labels", locs: ["tab"] },
+    { key: "custom.usage_instructions", type: "Rich text", where: "Usage Guide tab", locs: ["tab"] },
+    { key: "custom.care_instructions", type: "Rich text", where: "Safety & Care tab (Care section)", locs: ["tab"] },
+    { key: "custom.safety_warning", type: "Rich text", where: "Safety & Care tab (Safety section, shown with warning icon)", locs: ["tab"] },
+    { key: "custom.sensory_profile_primary", type: "Single-line text", where: "Violet badge at top of right panel (e.g. Proprioceptive)", locs: ["badge"] },
+    { key: "custom.sensory_profile_secondary", type: "Single-line text", where: "Teal badge at top of right panel (e.g. Tactile)", locs: ["badge"] },
+    { key: "custom.product_demo_video", type: "URL", where: "Video thumbnail in gallery strip; click opens YouTube embed", locs: ["gallery"] },
+    { key: "custom.target_users", type: "List · single-line text", where: '"Recommended for" pills in right panel (first 4 shown)', locs: ["right-panel"] },
+    { key: "custom.use_cases", type: "List · single-line text", where: '"Recommended for" secondary row', locs: ["right-panel"] },
+    { key: "custom.best_used_in", type: "List · single-line text", where: '"Recommended for" pills — merged with target_users', locs: ["right-panel"] },
+    { key: "custom.warranty_details", type: "Single-line text", where: "Warranty line grouped next to payment badges", locs: ["right-panel"] },
+  ];
+
+  const specsNote = [
+    { key: "Safety Certifications", note: "Blue badge top of right panel (e.g. CE certified)" },
+    { key: "Supervision Required", note: 'If = "Yes" → amber "Adult Supervision" badge shown' },
+    { key: "Therapist Recommended", note: "Overrides the default 'OT Recommended' badge text" },
+  ];
+
+  return (
+    <div className="max-w-4xl space-y-10" data-testid="view-setup-guide">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-1">Admin Reference</p>
+          <h1 className="text-2xl font-bold text-foreground">Shopify Setup Guide</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            How product data in Shopify Admin maps to what appears on{" "}
+            <a href="https://rehab.ableys.in" target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2 inline-flex items-center gap-0.5">
+              rehab.ableys.in <ExternalLink className="w-3 h-3" />
+            </a>
+          </p>
+        </div>
+        <Button variant="outline" size="sm" className="gap-2 self-start" onClick={copyUrl} data-testid="button-copy-guide-url">
+          <Copy className="w-3.5 h-3.5" /> Copy link to share
+        </Button>
+      </div>
+
+      {/* Sync info banner */}
+      <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+        <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+        <div className="text-sm">
+          <p className="font-semibold text-amber-800 dark:text-amber-300">Sync rules</p>
+          <ul className="text-amber-700 dark:text-amber-400 mt-1 space-y-0.5 list-disc list-inside text-xs">
+            <li>Products sync every <strong>10 minutes</strong> automatically from Shopify.</li>
+            <li><strong>Draft products</strong> are not synced — publish in Shopify first.</li>
+            <li>Metafield changes appear on the next sync cycle (up to 10 min delay).</li>
+            <li>Product title: text before the first <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">|</code> or <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">–</code> becomes the h1 heading.</li>
+          </ul>
+        </div>
+      </div>
+
+      {/* Section 1: Standard fields */}
+      <div>
+        <h2 className="text-base font-bold text-foreground mb-1">Standard product fields</h2>
+        <p className="text-xs text-muted-foreground mb-4">Set these in the main product editor in Shopify Admin.</p>
+        <div className="rounded-xl border border-border/50 overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-muted/50 border-b border-border/40">
+                <th className="text-left text-xs font-bold text-muted-foreground uppercase tracking-wider px-4 py-3 w-36">Shopify field</th>
+                <th className="text-left text-xs font-bold text-muted-foreground uppercase tracking-wider px-4 py-3">What it does on the website</th>
+                <th className="text-left text-xs font-bold text-muted-foreground uppercase tracking-wider px-4 py-3 w-36">Shows in</th>
+              </tr>
+            </thead>
+            <tbody>
+              {stdFields.map((row, i) => (
+                <tr key={row.field} className={`border-b border-border/30 last:border-0 ${i % 2 === 0 ? "" : "bg-muted/20"}`}>
+                  <td className="px-4 py-3 font-mono text-xs text-foreground font-medium align-top">{row.field}</td>
+                  <td className="px-4 py-3 text-xs text-muted-foreground align-top leading-relaxed">{row.note}</td>
+                  <td className="px-4 py-3 align-top"><Loc ids={row.locs} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Section 2: Custom metafields */}
+      <div>
+        <h2 className="text-base font-bold text-foreground mb-1">Custom metafields</h2>
+        <p className="text-xs text-muted-foreground mb-4">
+          Set these in Shopify Admin → Product → <strong>Metafields</strong> section at the bottom of each product page.
+          The namespace for all is <code className="bg-muted px-1 rounded text-[11px]">custom</code>.
+        </p>
+        <div className="rounded-xl border border-border/50 overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-muted/50 border-b border-border/40">
+                <th className="text-left text-xs font-bold text-muted-foreground uppercase tracking-wider px-4 py-3 w-52">Metafield key</th>
+                <th className="text-left text-xs font-bold text-muted-foreground uppercase tracking-wider px-4 py-3 w-36">Type</th>
+                <th className="text-left text-xs font-bold text-muted-foreground uppercase tracking-wider px-4 py-3">Where it appears</th>
+                <th className="text-left text-xs font-bold text-muted-foreground uppercase tracking-wider px-4 py-3 w-28">Shows in</th>
+              </tr>
+            </thead>
+            <tbody>
+              {metafields.map((row, i) => (
+                <tr key={row.key} className={`border-b border-border/30 last:border-0 ${i % 2 === 0 ? "" : "bg-muted/20"}`}>
+                  <td className="px-4 py-3 align-top">
+                    <code className="text-[11px] text-primary bg-primary/5 px-1.5 py-0.5 rounded font-mono break-all">{row.key}</code>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-muted-foreground align-top">{row.type}</td>
+                  <td className="px-4 py-3 text-xs text-muted-foreground align-top leading-relaxed">{row.where}</td>
+                  <td className="px-4 py-3 align-top"><Loc ids={row.locs} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Section 3: Spec metafields that drive badges */}
+      <div>
+        <h2 className="text-base font-bold text-foreground mb-1">Specification fields that drive badges</h2>
+        <p className="text-xs text-muted-foreground mb-4">
+          These live inside the product <strong>Specifications</strong> metafield as key-value pairs and control the trust badges shown at the top of the right panel.
+        </p>
+        <div className="rounded-xl border border-border/50 overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-muted/50 border-b border-border/40">
+                <th className="text-left text-xs font-bold text-muted-foreground uppercase tracking-wider px-4 py-3 w-48">Spec key</th>
+                <th className="text-left text-xs font-bold text-muted-foreground uppercase tracking-wider px-4 py-3">Effect</th>
+              </tr>
+            </thead>
+            <tbody>
+              {specsNote.map((row, i) => (
+                <tr key={row.key} className={`border-b border-border/30 last:border-0 ${i % 2 === 0 ? "" : "bg-muted/20"}`}>
+                  <td className="px-4 py-3 align-top">
+                    <code className="text-[11px] text-foreground bg-muted px-1.5 py-0.5 rounded font-mono">{row.key}</code>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-muted-foreground align-top leading-relaxed">{row.note}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Section 4: Rich text note */}
+      <div className="p-4 rounded-xl bg-primary/5 border border-primary/15">
+        <h3 className="text-sm font-bold text-foreground mb-2">Rich text fields — how to fill them</h3>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Fields typed <strong>Rich text</strong> above use Shopify's native rich text editor.
+          Write them using the formatted text editor in Shopify Admin — bold, bullet lists, and headers all carry through to the website.
+          Do <strong>not</strong> paste raw HTML; Shopify stores these as structured JSON and the site renders them automatically.
+        </p>
+      </div>
+
+      {/* Footer */}
+      <p className="text-xs text-muted-foreground border-t border-border/30 pt-4">
+        Last schema update: March 2026 · {metafields.length} custom metafields · {stdFields.length} standard fields mapped
+      </p>
+    </div>
+  );
+}
+
+type AdminTab = "dashboard" | "leads" | "products" | "pages" | "setup-guide";
 
 export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState(!!getToken());
@@ -1206,6 +1415,7 @@ export default function AdminPage() {
     { id: "leads" as AdminTab, label: "Leads", icon: Users },
     { id: "products" as AdminTab, label: "Products", icon: Package },
     { id: "pages" as AdminTab, label: "Pages", icon: FileText },
+    { id: "setup-guide" as AdminTab, label: "Setup Guide", icon: BookOpen },
   ];
 
   return (
@@ -1297,6 +1507,7 @@ export default function AdminPage() {
           {activeTab === "leads" && <LeadsView />}
           {activeTab === "products" && <ProductsView />}
           {activeTab === "pages" && <PagesView />}
+          {activeTab === "setup-guide" && <SetupGuideView />}
         </main>
       </div>
     </div>
