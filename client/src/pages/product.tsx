@@ -17,7 +17,6 @@ import {
   CheckCircle2,
   Shield,
   Zap,
-  Heart,
   Send,
   Plus,
   Minus,
@@ -1102,31 +1101,26 @@ export default function ProductPage() {
                   </div>
                 )}
 
-                {/* Desktop trust icons below gallery */}
-                <div className="hidden lg:grid grid-cols-3 gap-3 pt-2">
-                  <div className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-card border border-border/50 text-center">
-                    <Truck className="w-5 h-5 text-primary" />
-                    <span className="text-xs font-semibold text-foreground">Free Shipping</span>
-                    <span className="text-[10px] text-muted-foreground">Pan India</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-card border border-border/50 text-center">
-                    <RotateCcw className="w-5 h-5 text-primary" />
-                    <span className="text-xs font-semibold text-foreground">7-Day Exchange</span>
-                    <span className="text-[10px] text-muted-foreground">Easy returns</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-card border border-border/50 text-center">
-                    <Shield className="w-5 h-5 text-primary" />
-                    <span className="text-xs font-semibold text-foreground">OT-Approved</span>
-                    <span className="text-[10px] text-muted-foreground">Therapist trusted</span>
-                  </div>
+                {/* Compact trust strip below gallery — desktop only */}
+                <div className="hidden lg:flex items-center gap-4 pt-1">
+                  {[
+                    { icon: Truck, label: "Free Pan India Shipping" },
+                    { icon: RotateCcw, label: "7-Day Easy Exchange" },
+                    { icon: Shield, label: "OT-Approved Products" },
+                  ].map(({ icon: Icon, label }) => (
+                    <div key={label} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Icon className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                      <span>{label}</span>
+                    </div>
+                  ))}
                 </div>
               </div>{/* end gallery */}
 
               {/* ─ Right: Sticky product info ─ */}
-              <div className="lg:sticky lg:top-24 lg:self-start space-y-5">
+              <div className="lg:sticky lg:top-24 lg:self-start space-y-4">
 
                 {/* ── Badges ── */}
-                <div className="flex flex-wrap gap-2" data-testid="container-product-badges">
+                <div className="flex flex-wrap gap-1.5" data-testid="container-product-badges">
                   {_specs?.["Safety Certifications"] && (
                     <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900/40 uppercase tracking-wider">
                       {_specs["Safety Certifications"]}
@@ -1152,36 +1146,30 @@ export default function ProductPage() {
                   )}
                 </div>
 
-                {/* ── Category + Name + Rating ── */}
-                <div>
-                  <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-2" data-testid="text-product-category">
+                {/* ── Category + trimmed Name ── */}
+                <div className="space-y-1.5">
+                  <p className="text-xs font-semibold text-primary uppercase tracking-widest" data-testid="text-product-category">
                     {category?.title}
                   </p>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight mb-4" data-testid="heading-product-name">
-                    {product.name}
+                  <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight" data-testid="heading-product-name">
+                    {product.name.split(/[|–—]/)[0].trim()}
                   </h1>
-                  <div className="flex items-center gap-3 flex-wrap" data-testid="container-ratings">
-                    <StarRow stars={Math.round(avgRating)} />
-                    <span className="text-sm font-semibold text-foreground tabular-nums">{avgRating.toFixed(1)}</span>
-                    <a href="#reviews" className="text-sm text-muted-foreground hover:text-primary transition-colors" data-testid="link-review-count">
-                      ({reviewCount} reviews)
-                    </a>
-                    <span className="flex items-center gap-1 text-sm text-emerald-600 font-medium">
-                      <Check className="w-3.5 h-3.5" /> In Stock
-                    </span>
-                  </div>
                 </div>
 
-                {/* ── Problem Statement callout ── */}
-                {_problemStatement && (
-                  <div className="p-3.5 rounded-xl bg-primary/5 border-l-4 border-primary/40 text-sm leading-snug" data-testid="container-problem-statement">
-                    <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-1">The Challenge</p>
-                    <p className="text-muted-foreground italic">{stripToText(_problemStatement)}</p>
-                  </div>
-                )}
+                {/* ── Rating + Stock ── */}
+                <div className="flex items-center gap-3 flex-wrap" data-testid="container-ratings">
+                  <StarRow stars={Math.round(avgRating)} />
+                  <span className="text-sm font-semibold text-foreground tabular-nums">{avgRating.toFixed(1)}</span>
+                  <a href="#reviews" className="text-sm text-muted-foreground hover:text-primary transition-colors" data-testid="link-review-count">
+                    ({reviewCount} reviews)
+                  </a>
+                  <span className="flex items-center gap-1 text-sm text-emerald-600 font-medium">
+                    <Check className="w-3.5 h-3.5" /> In Stock
+                  </span>
+                </div>
 
-                {/* ── Price ── */}
-                <div className="flex items-baseline gap-3 flex-wrap py-4 border-y border-border/40">
+                {/* ── Price — immediately after rating, no interruption ── */}
+                <div className="flex items-baseline gap-3 flex-wrap py-3 border-y border-border/40">
                   <span className="text-3xl font-bold text-foreground tabular-nums" data-testid="text-product-price">
                     {formatPrice(computedPrice)}
                   </span>
@@ -1198,10 +1186,10 @@ export default function ProductPage() {
                   <span className="text-xs text-muted-foreground ml-auto">incl. GST</span>
                 </div>
 
-                {/* ── Key features bullet list ── */}
+                {/* ── Key features — 3 bullets max for above-fold conviction ── */}
                 {product.features.length > 0 && (
-                  <ul className="space-y-2" data-testid="list-key-features-inline">
-                    {product.features.slice(0, 5).map((feat, i) => {
+                  <ul className="space-y-1.5" data-testid="list-key-features-inline">
+                    {product.features.slice(0, 3).map((feat, i) => {
                       const colonIdx = feat.indexOf(":");
                       const label = colonIdx !== -1 ? feat.slice(0, colonIdx).trim() : null;
                       const body = colonIdx !== -1 ? feat.slice(colonIdx + 1).trim() : feat.trim();
@@ -1218,43 +1206,9 @@ export default function ProductPage() {
                   </ul>
                 )}
 
-                {/* ── SKU + vendor meta ── */}
-                {(currentSku || product.vendor) && (
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                    {currentSku && <span data-testid="text-product-sku">SKU: <span className="font-mono text-foreground">{currentSku}</span></span>}
-                    {product.vendor && <span data-testid="text-product-vendor">By <span className="font-medium text-foreground">{product.vendor}</span></span>}
-                  </div>
-                )}
-
-                {/* ── Recommended For ── */}
-                {(_targetUsers.length > 0 || _bestUsedIn.length > 0 || _useCases.length > 0) && (
-                  <div className="space-y-2" data-testid="section-recommended-for">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Recommended for</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {[..._targetUsers, ..._bestUsedIn].slice(0, 8).map((item, i) => (
-                        <span key={i} className="text-xs px-2.5 py-1 rounded-full bg-muted/60 text-foreground border border-border/50" data-testid={`tag-recommended-${i}`}>
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                    {_useCases.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 pt-0.5">
-                        {_useCases.slice(0, 4).map((uc, i) => (
-                          <span key={i} className="text-xs px-2.5 py-1 rounded-full bg-primary/5 text-primary border border-primary/15" data-testid={`tag-usecase-${i}`}>
-                            {uc}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-
                 {/* Shopify Variant Selectors */}
                 {hasShopifyVariants && optionGroups.length > 0 && (
-                  <div
-                    className="order-3 lg:order-4 space-y-5 py-4 border-t border-border/40"
-                    data-testid="section-variant-selector"
-                  >
+                  <div className="space-y-4 pt-1 border-t border-border/40" data-testid="section-variant-selector">
                     {optionGroups.map((group) => (
                       <div key={group.name}>
                         <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">
@@ -1267,29 +1221,14 @@ export default function ProductPage() {
                         </label>
                         <div className="flex flex-wrap gap-2">
                           {group.values.map((value) => {
-                            const testOptions = {
-                              ...selectedOptions,
-                              [group.name]: value,
-                            };
-                            const testVariant = findVariantByOptions(
-                              product.shopifyVariants!,
-                              testOptions
-                            );
-                            const isSelected =
-                              (
-                                selectedOptions[group.name] ||
-                                product.shopifyVariants![0]?.options.find(
-                                  (o) => o.name === group.name
-                                )?.value
-                              ) === value;
-                            const isUnavailable =
-                              testVariant && !testVariant.availableForSale;
+                            const testOptions = { ...selectedOptions, [group.name]: value };
+                            const testVariant = findVariantByOptions(product.shopifyVariants!, testOptions);
+                            const isSelected = (selectedOptions[group.name] || product.shopifyVariants![0]?.options.find((o) => o.name === group.name)?.value) === value;
+                            const isUnavailable = testVariant && !testVariant.availableForSale;
                             return (
                               <button
                                 key={value}
-                                onClick={() =>
-                                  handleOptionSelect(group.name, value)
-                                }
+                                onClick={() => handleOptionSelect(group.name, value)}
                                 disabled={isUnavailable || false}
                                 className={`px-4 py-2 rounded-xl border text-sm font-medium transition-all ${
                                   isSelected
@@ -1298,20 +1237,14 @@ export default function ProductPage() {
                                     ? "border-border/30 bg-muted/30 text-muted-foreground/50 line-through cursor-not-allowed"
                                     : "border-border/50 bg-card hover:border-primary/30 text-foreground"
                                 }`}
-                                data-testid={`option-${group.name
-                                  .toLowerCase()
-                                  .replace(/\s+/g, "-")}-${value
-                                  .toLowerCase()
-                                  .replace(/\s+/g, "-")}`}
+                                data-testid={`option-${group.name.toLowerCase().replace(/\s+/g, "-")}-${value.toLowerCase().replace(/\s+/g, "-")}`}
                               >
                                 {value}
-                                {testVariant &&
-                                  testVariant.price !==
-                                    product.shopifyVariants![0]?.price && (
-                                    <span className="ml-1 text-xs text-muted-foreground">
-                                      {formatPrice(testVariant.price)}
-                                    </span>
-                                  )}
+                                {testVariant && testVariant.price !== product.shopifyVariants![0]?.price && (
+                                  <span className="ml-1 text-xs text-muted-foreground">
+                                    {formatPrice(testVariant.price)}
+                                  </span>
+                                )}
                               </button>
                             );
                           })}
@@ -1319,9 +1252,7 @@ export default function ProductPage() {
                       </div>
                     ))}
                     {selectedVariant && !selectedVariant.availableForSale && (
-                      <p className="text-sm text-amber-600 font-medium">
-                        This variant is currently out of stock.
-                      </p>
+                      <p className="text-sm text-amber-600 font-medium">This variant is currently out of stock.</p>
                     )}
                   </div>
                 )}
@@ -1484,78 +1415,85 @@ export default function ProductPage() {
                 )}
 
                 {/* ── Quantity + CTAs ── */}
-                <div className="space-y-3">
-                  {/* Quantity row */}
-                  <div className="flex items-center gap-3">
-                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider w-20">Quantity</label>
+                <div className="space-y-2.5">
+                  {/* Compact quantity row */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Qty</span>
                     <div className="flex items-center border border-border/60 rounded-full overflow-hidden">
-                      <Button variant="ghost" size="icon" className="rounded-none h-9 w-9 hover:bg-muted/50" onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={quantity <= 1} data-testid="button-qty-decrease">
-                        <Minus className="w-3.5 h-3.5" />
+                      <Button variant="ghost" size="icon" className="rounded-none h-8 w-8 hover:bg-muted/50" onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={quantity <= 1} data-testid="button-qty-decrease">
+                        <Minus className="w-3 h-3" />
                       </Button>
-                      <span className="w-10 text-center text-sm font-semibold tabular-nums" data-testid="text-quantity">{quantity}</span>
-                      <Button variant="ghost" size="icon" className="rounded-none h-9 w-9 hover:bg-muted/50" onClick={() => setQuantity(quantity + 1)} data-testid="button-qty-increase">
-                        <Plus className="w-3.5 h-3.5" />
+                      <span className="w-9 text-center text-sm font-semibold tabular-nums" data-testid="text-quantity">{quantity}</span>
+                      <Button variant="ghost" size="icon" className="rounded-none h-8 w-8 hover:bg-muted/50" onClick={() => setQuantity(quantity + 1)} data-testid="button-qty-increase">
+                        <Plus className="w-3 h-3" />
                       </Button>
                     </div>
                   </div>
 
-                  {/* Primary: Buy Now */}
-                  <Button size="lg" className="w-full h-12 rounded-2xl gap-2 text-base" onClick={handleBuyNow} disabled={checkoutLoading} data-testid="button-buy-now">
-                    {checkoutLoading ? <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Zap className="w-4 h-4" />}
-                    {checkoutLoading ? "Opening checkout…" : "Buy Now"}
-                  </Button>
-
-                  {/* Secondary: Add to Cart */}
-                  <Button size="lg" variant="outline" className="w-full h-12 rounded-2xl gap-2 border-border/60 hover:border-primary/40" onClick={handleAddToCart} data-testid="button-add-to-cart">
-                    <ShoppingCart className="w-4 h-4" /> Add to Cart
-                  </Button>
-
-                  {/* B2B row */}
-                  <div className="flex gap-2 pt-1">
-                    <Button size="sm" variant="secondary" className="flex-1 gap-1.5 rounded-xl text-xs font-semibold" onClick={() => addItem(product.id, product.name, category?.title || "")} data-testid="button-add-enquiry">
-                      {inEnquiryCart
-                        ? <><CheckCircle2 className="w-3.5 h-3.5 text-primary" /><span className="text-primary">Quote Added</span></>
-                        : <><MessageSquare className="w-3.5 h-3.5" /> Get B2B Quote</>}
+                  {/* Primary CTA pair — Buy Now + B2B Quote co-equal */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button size="lg" className="h-12 rounded-2xl gap-2 text-sm font-bold" onClick={handleBuyNow} disabled={checkoutLoading} data-testid="button-buy-now">
+                      {checkoutLoading ? <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Zap className="w-4 h-4" />}
+                      {checkoutLoading ? "Opening…" : "Buy Now"}
                     </Button>
-                    <Link href="/enquiry" className="flex-1">
-                      <Button size="sm" variant="secondary" className="w-full gap-1.5 rounded-xl text-xs font-semibold" data-testid="button-bulk-quote">
-                        <Send className="w-3.5 h-3.5" /> Bulk / Custom Order
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="h-12 rounded-2xl gap-2 text-sm font-bold border-primary/40 text-primary hover:bg-primary/5"
+                      onClick={() => addItem(product.id, product.name, category?.title || "")}
+                      data-testid="button-add-enquiry"
+                    >
+                      {inEnquiryCart
+                        ? <><CheckCircle2 className="w-4 h-4" /> Added</>
+                        : <><MessageSquare className="w-4 h-4" /> Get Quote</>}
+                    </Button>
+                  </div>
+
+                  {/* Secondary row */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button size="sm" variant="ghost" className="rounded-xl gap-1.5 text-xs border border-border/50 hover:border-primary/30" onClick={handleAddToCart} data-testid="button-add-to-cart">
+                      <ShoppingCart className="w-3.5 h-3.5" /> Add to Cart
+                    </Button>
+                    <Link href="/enquiry" className="w-full">
+                      <Button size="sm" variant="ghost" className="w-full rounded-xl gap-1.5 text-xs border border-border/50 hover:border-primary/30" data-testid="button-bulk-quote">
+                        <Send className="w-3.5 h-3.5" /> Bulk Order
                       </Button>
                     </Link>
                   </div>
                 </div>
 
-                {/* ── Payment methods ── */}
-                <div className="pt-3 border-t border-border/30" data-testid="container-payment-badges">
-                  <img
-                    src={paymentBadgesImg}
-                    alt="Accepted payment methods — Visa, Mastercard, Razorpay, UPI, PhonePe, Google Pay, Paytm, Net Banking, COD"
-                    className="w-full max-w-xs object-contain"
-                  />
-                </div>
-
-                {/* ── Warranty & Shipping ── */}
-                {(_warranty || _shippingNotes) && (
-                  <div className="flex flex-col gap-1.5 text-xs text-muted-foreground py-2 border-t border-border/30" data-testid="container-warranty-shipping">
-                    {_warranty && (
-                      <span><span className="font-semibold text-foreground">Warranty:</span> {_warranty}</span>
-                    )}
-                    {_shippingNotes && (
-                      <span><span className="font-semibold text-foreground">Shipping:</span> {_shippingNotes}</span>
-                    )}
+                {/* ── Problem Statement — below CTAs so it doesn't interrupt price discovery ── */}
+                {_problemStatement && (
+                  <div className="p-3 rounded-xl bg-primary/5 border-l-4 border-primary/40" data-testid="container-problem-statement">
+                    <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-0.5">The Challenge</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">{stripToText(_problemStatement)}</p>
                   </div>
                 )}
 
-                {/* ── Trust strip (Pebble-style 4-item grid) ── */}
-                <div className="grid grid-cols-2 gap-x-4 gap-y-3 pt-4 border-t border-border/30" data-testid="container-trust-strip">
+                {/* ── Recommended For — compact, 4 items max ── */}
+                {(_targetUsers.length > 0 || _bestUsedIn.length > 0) && (
+                  <div data-testid="section-recommended-for">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Recommended for</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[..._targetUsers, ..._bestUsedIn].slice(0, 4).map((item, i) => (
+                        <span key={i} className="text-xs px-2.5 py-0.5 rounded-full bg-muted/60 text-foreground border border-border/50" data-testid={`tag-recommended-${i}`}>
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Trust strip — compact 4-icon grid ── */}
+                <div className="grid grid-cols-2 gap-x-3 gap-y-2 pt-3 border-t border-border/30" data-testid="container-trust-strip">
                   {[
                     { icon: Truck, label: "Free Shipping", sub: "Pan India, 4–7 days" },
                     { icon: RotateCcw, label: "7-Day Exchange", sub: "Easy, hassle-free" },
                     { icon: Lock, label: "Secure Checkout", sub: "Razorpay powered" },
                     { icon: PhoneCall, label: "Expert Support", sub: "Mon–Sat, 10am–6pm" },
                   ].map(({ icon: Icon, label, sub }) => (
-                    <div key={label} className="flex items-start gap-2.5">
-                      <Icon className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                    <div key={label} className="flex items-start gap-2">
+                      <Icon className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="text-xs font-semibold text-foreground">{label}</p>
                         <p className="text-[10px] text-muted-foreground">{sub}</p>
@@ -1564,11 +1502,33 @@ export default function ProductPage() {
                   ))}
                 </div>
 
+                {/* ── Payment + Warranty — grouped together ── */}
+                <div className="flex items-start gap-4 pt-2 border-t border-border/30" data-testid="container-payment-badges">
+                  <img
+                    src={paymentBadgesImg}
+                    alt="Accepted payment methods — Visa, Mastercard, Razorpay, UPI, PhonePe, Google Pay, Paytm, Net Banking, COD"
+                    className="w-36 object-contain flex-shrink-0"
+                  />
+                  {(_warranty || _shippingNotes) && (
+                    <div className="flex flex-col gap-1 text-[11px] text-muted-foreground" data-testid="container-warranty-shipping">
+                      {_warranty && <span><span className="font-semibold text-foreground">Warranty:</span> {_warranty}</span>}
+                      {_shippingNotes && <span><span className="font-semibold text-foreground">Shipping:</span> {_shippingNotes}</span>}
+                    </div>
+                  )}
+                </div>
+
+                {/* ── SKU + vendor — de-emphasised, lowest priority ── */}
+                {(currentSku || product.vendor) && (
+                  <div className="flex flex-wrap gap-x-4 text-[11px] text-muted-foreground/60">
+                    {currentSku && <span data-testid="text-product-sku">SKU: <span className="font-mono">{currentSku}</span></span>}
+                    {product.vendor && <span data-testid="text-product-vendor">By {product.vendor}</span>}
+                  </div>
+                )}
+
                 {/* ── Phone signup ── */}
                 <div className="rounded-2xl border border-primary/15 bg-primary/5 p-4">
                   <PhoneSignupInline variant="light" label="Get B2B pricing & stock alerts" sublabel="Register free — we notify you of deals and restock" containerId="recaptcha-product" />
                 </div>
-
 
               </div>{/* end right panel */}
             </div>
@@ -1624,8 +1584,6 @@ export default function ProductPage() {
                   {/* Overview tab */}
                   <TabsContent value="overview" className="mt-0" data-testid="tabpanel-overview">
                     <div className="max-w-3xl">
-                      <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-3">About this product</p>
-                      <h2 className="text-2xl font-bold text-foreground mb-6 leading-snug">{product.name.split("|")[0].trim()}</h2>
                       {isHtmlDescription ? (
                         <div className={PROSE} dangerouslySetInnerHTML={{ __html: overviewHtml }} data-testid="html-product-description" />
                       ) : (
