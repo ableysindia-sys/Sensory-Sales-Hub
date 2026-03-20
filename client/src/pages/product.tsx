@@ -1195,7 +1195,7 @@ export default function ProductPage() {
                     <img
                       src={paymentBadgesImg}
                       alt="All payment modes accepted — UPI, Cards, Paytm, G Pay, Amazon Pay, Net Banking · 100% Secured"
-                      className="h-11 w-auto object-contain block"
+                      className="h-[55px] w-auto object-contain block"
                     />
                   </div>
                 </div>
