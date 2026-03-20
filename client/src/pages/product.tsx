@@ -1154,6 +1154,11 @@ export default function ProductPage() {
                   <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight" data-testid="heading-product-name">
                     {product.name.split(/[|–—]/)[0].trim()}
                   </h1>
+                  {product.shortDescription && (
+                    <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-short-description">
+                      {stripToText(product.shortDescription)}
+                    </p>
+                  )}
                 </div>
 
                 {/* ── Rating + Stock ── */}
