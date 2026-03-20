@@ -375,8 +375,8 @@ export default function Home() {
         <HowItWorks />
         {/* 5. BROWSE — Handpicked best sellers & new arrivals */}
         <ProductShowcase />
-        {/* 6. TRY — Sample kit: lowest-friction B2B entry */}
-        <SampleKitBanner />
+        {/* 6. TRY — Sample kit: hidden until further notice */}
+        {/* <SampleKitBanner /> */}
         {/* 7. IDENTIFY — Who we work with (self-segmentation) */}
         <WhoWeServe />
         {/* 8. VALIDATE — Verified institutional reviews */}

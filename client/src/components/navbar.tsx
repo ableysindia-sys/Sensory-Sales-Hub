@@ -408,17 +408,7 @@ export function Navbar() {
                 B2B / Bulk
               </Link>
 
-              {/* Sample Kit */}
-              <Link
-                href="/sample"
-                className={`flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-semibold transition-colors rounded-md ${
-                  isActive("/sample") ? "text-primary" : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
-                }`}
-                data-testid="link-nav-sample"
-              >
-                <FlaskConical className="w-3.5 h-3.5" />
-                Sample Kit
-              </Link>
+              {/* Sample Kit — hidden until further notice */}
 
               {/* About */}
               <Link
@@ -695,16 +685,7 @@ export function Navbar() {
               <span>B2B &amp; Bulk Orders</span>
             </button>
 
-            {/* Sample Kit */}
-            <button
-              onClick={() => handleNavClick("/sample")}
-              className={`flex items-center gap-3 w-full px-3 py-3 text-sm font-medium rounded-xl transition-colors ${isActive("/sample") ? "text-primary bg-primary/10 font-semibold" : "text-foreground/70 hover:text-foreground hover:bg-muted"}`}
-              data-testid="link-mobile-sample"
-            >
-              <FlaskConical className="w-[18px] h-[18px] shrink-0" />
-              <span className="flex-1 text-left">Sample Kit</span>
-              <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">₹1,499</span>
-            </button>
+            {/* Sample Kit — hidden until further notice */}
 
             {/* About */}
             <button

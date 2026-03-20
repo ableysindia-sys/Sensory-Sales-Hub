@@ -150,8 +150,8 @@ const STAKEHOLDERS = [
     concern: "\"I need to try a product before recommending it to my clinic.\"",
     needs: ["Hands-on product evaluation", "Peer-recommended brands", "Clinical evidence & specs"],
     solution: "Request a curated trial kit first — curated for your caseload.",
-    cta: "Try OT Sample Kit",
-    ctaHref: "/sample",
+    cta: "Request a Quote",
+    ctaHref: "/enquiry",
     color: "text-blue-600 bg-blue-50 dark:bg-blue-950/30",
     accent: "border-blue-200 dark:border-blue-800",
   },
@@ -1506,13 +1506,7 @@ export default function B2BLandingPage() {
             </div>
 
             <div className="flex flex-wrap gap-4 justify-center">
-              <a
-                href="/sample"
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white text-primary font-semibold text-sm hover:bg-white/90 transition-colors shadow-lg"
-                data-testid="button-sample-kit-b2b-final"
-              >
-                🎁 Try OT Sample Kit — ₹1,499 deposit
-              </a>
+              {/* Sample Kit CTA — hidden until further notice */}
               <button
                 onClick={scrollToForm}
                 className="text-white/65 hover:text-white text-sm font-medium underline underline-offset-2 transition-colors"
