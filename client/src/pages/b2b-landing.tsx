@@ -548,6 +548,57 @@ export default function B2BLandingPage() {
           </div>
         </section>
 
+        {/* ── Client Logo Marquee ── */}
+        <section className="bg-muted/30 border-b border-border/40 py-6 overflow-hidden" data-testid="section-lp-client-logos">
+          <p className="text-center text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-4">
+            Trusted by institutions across India
+          </p>
+          <div className="relative">
+            <div
+              className="flex gap-10 items-center w-max"
+              style={{ animation: "marquee 28s linear infinite" }}
+            >
+              {[
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/TH.png?v=1773997113",  alt: "TH" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/NG.png?v=1773997113",  alt: "NG" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/OS.png?v=1773997113",  alt: "OS" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/JM.png?v=1773997112",  alt: "JM" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/BM.png?v=1773997113",  alt: "BM" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/PI.png?v=1773997112",  alt: "PI" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/SSS.png?v=1773997113", alt: "SSS" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/CG.png?v=1773997112",  alt: "CG" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/WB.png?v=1773997112",  alt: "WB" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/NF.png?v=1773997113",  alt: "NF" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/TH.png?v=1773997113",  alt: "TH2" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/NG.png?v=1773997113",  alt: "NG2" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/OS.png?v=1773997113",  alt: "OS2" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/JM.png?v=1773997112",  alt: "JM2" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/BM.png?v=1773997113",  alt: "BM2" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/PI.png?v=1773997112",  alt: "PI2" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/SSS.png?v=1773997113", alt: "SSS2" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/CG.png?v=1773997112",  alt: "CG2" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/WB.png?v=1773997112",  alt: "WB2" },
+                { src: "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/NF.png?v=1773997113",  alt: "NF2" },
+              ].map((logo) => (
+                <img
+                  key={logo.alt}
+                  src={logo.src}
+                  alt={logo.alt.replace(/\d+$/, "")}
+                  className="h-10 w-auto object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300 flex-shrink-0"
+                  loading="lazy"
+                  data-testid={`img-lp-client-logo-${logo.alt.toLowerCase()}`}
+                />
+              ))}
+            </div>
+          </div>
+          <style>{`
+            @keyframes marquee {
+              0%   { transform: translateX(0); }
+              100% { transform: translateX(-50%); }
+            }
+          `}</style>
+        </section>
+
         {/* ── Social Proof / Testimonial Strip ── */}
         <section className="bg-gradient-to-b from-muted/30 to-background border-b">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-16">
