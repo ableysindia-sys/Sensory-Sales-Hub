@@ -1507,15 +1507,17 @@ export default function ProductPage() {
                   ))}
                 </div>
 
-                {/* ── Payment + Warranty — grouped together ── */}
-                <div className="flex items-start gap-4 pt-2 border-t border-border/30" data-testid="container-payment-badges">
-                  <img
-                    src={paymentBadgesImg}
-                    alt="Accepted payment methods — Visa, Mastercard, Razorpay, UPI, PhonePe, Google Pay, Paytm, Net Banking, COD"
-                    className="w-36 object-contain flex-shrink-0"
-                  />
+                {/* ── Payment + Warranty — stacked, image at full readable width ── */}
+                <div className="pt-2 border-t border-border/30 space-y-2" data-testid="container-payment-badges">
+                  <div className="bg-white rounded-xl p-2.5 inline-block">
+                    <img
+                      src={paymentBadgesImg}
+                      alt="Accepted payment methods — Paytm, G Pay, Amazon Pay, UPI, Mastercard, Visa, RuPay — All modes accepted, 100% secured"
+                      className="w-full max-w-[280px] object-contain block"
+                    />
+                  </div>
                   {(_warranty || _shippingNotes) && (
-                    <div className="flex flex-col gap-1 text-[11px] text-muted-foreground" data-testid="container-warranty-shipping">
+                    <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] text-muted-foreground" data-testid="container-warranty-shipping">
                       {_warranty && <span><span className="font-semibold text-foreground">Warranty:</span> {_warranty}</span>}
                       {_shippingNotes && <span><span className="font-semibold text-foreground">Shipping:</span> {_shippingNotes}</span>}
                     </div>
