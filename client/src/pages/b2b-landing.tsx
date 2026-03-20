@@ -103,7 +103,7 @@ const BENEFITS = [
 
 const HOW_IT_WORKS = [
   { step: "01", title: "Share Your Requirements", desc: "Fill out the quick form below with your facility type, location, and what you need. It takes under 2 minutes." },
-  { step: "02", title: "Get a Custom Quote", desc: "Our B2B team reviews your request and sends a tailored quote with bulk pricing — usually within 2 hours." },
+  { step: "02", title: "Get a Custom Quote", desc: "Our B2B team reviews your request and sends a tailored quote with bulk pricing — same day." },
   { step: "03", title: "Receive & Set Up", desc: "Order confirmed, products dispatched pan-India within 48–72 hrs. Your equipment arrives ready to use with no hidden charges." },
 ];
 
@@ -656,14 +656,14 @@ export default function B2BLandingPage() {
               <div className="lg:sticky lg:top-24 order-2 lg:order-none">
                 <span className="text-xs font-semibold uppercase tracking-widest text-primary mb-3 block">Get Started</span>
                 <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground mb-5 leading-tight">
-                  Get Your Custom B2B Quote — Free, in Under 2 Hours.
+                  Get Your Custom B2B Quote — Free, Same Day.
                 </h2>
                 <p className="text-muted-foreground leading-relaxed mb-8">
-                  Tell us about your facility and what you need. Our B2B team will get back to you with a tailored quote, product recommendations, and bulk pricing — usually within 2 hours.
+                  Tell us about your facility and what you need. Our B2B team will get back to you with a tailored quote, product recommendations, and bulk pricing — same day.
                 </p>
                 <div className="space-y-4">
                   {[
-                    { icon: Clock, text: "Response within 2 hours (business hours)" },
+                    { icon: Clock, text: "Response same day (business hours)" },
                     { icon: BadgeIndianRupee, text: "Custom bulk pricing, no obligations" },
                     { icon: Headset, text: "Dedicated B2B support via WhatsApp" },
                     { icon: ShieldCheck, text: "No spam — only a quote tailored to you" },
@@ -687,7 +687,7 @@ export default function B2BLandingPage() {
                   >
                     <MessageCircle className="w-4 h-4" /> Chat with our OT specialist on WhatsApp
                   </a>
-                  <p className="text-xs text-amber-700/70 dark:text-amber-500/70 mt-1">Usually responds within 2 hours</p>
+                  <p className="text-xs text-amber-700/70 dark:text-amber-500/70 mt-1">Usually responds same day</p>
                 </div>
 
                 <a
@@ -712,7 +712,7 @@ export default function B2BLandingPage() {
                     </div>
                     <h3 className="text-xl font-bold text-foreground mb-2">Enquiry Received!</h3>
                     <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
-                      Thank you — our B2B team will review your request and send you a custom quote within 2 hours (during business hours).
+                      Thank you — our B2B team will review your request and send you a custom quote same day (during business hours).
                     </p>
                     <a
                       href="https://wa.me/917042180166?text=Hi%2C%20I%20just%20submitted%20a%20B2B%20enquiry%20on%20rehab.ableys.in%20and%20wanted%20to%20follow%20up."
@@ -752,7 +752,7 @@ export default function B2BLandingPage() {
                   <div data-testid="form-step-quick">
                     <h3 className="text-lg font-bold text-foreground mb-1">Get Your Free Quote</h3>
                     <p className="text-sm text-muted-foreground mb-6">
-                      Enter your WhatsApp number — we'll send your pricing within 2 hours.
+                      Enter your WhatsApp number — we'll send your pricing same day.
                     </p>
 
                     <div className="space-y-3">
@@ -829,7 +829,7 @@ export default function B2BLandingPage() {
                       <div className="flex items-start gap-2.5 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-xl px-4 py-3 mb-5">
                         <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
                         <div>
-                          <p className="text-sm font-semibold text-green-900 dark:text-green-300">Number saved — expect a quote within 2 hours</p>
+                          <p className="text-sm font-semibold text-green-900 dark:text-green-300">Number saved — expect a quote same day</p>
                           <p className="text-xs text-green-700/80 dark:text-green-400/80 mt-0.5">Share a few more details for a tailored quote (optional)</p>
                         </div>
                       </div>
@@ -1333,7 +1333,7 @@ export default function B2BLandingPage() {
                 >
                   <Download className="w-4 h-4" /> Get the Toolkit on WhatsApp — It's Free
                 </a>
-                <p className="text-xs text-muted-foreground mt-2">Delivered via WhatsApp · Sent within 2 hours</p>
+                <p className="text-xs text-muted-foreground mt-2">Delivered via WhatsApp · Sent same day</p>
               </div>
 
               {/* Right — template preview card */}
@@ -1418,7 +1418,7 @@ export default function B2BLandingPage() {
                 >
                   <MessageCircle className="w-4 h-4 text-green-600" /> Book on WhatsApp — It's Free
                 </a>
-                <p className="text-center text-xs text-white/40">Usually responds within 2 hours · Mon–Sat 9am–7pm</p>
+                <p className="text-center text-xs text-white/40">Usually responds same day · Mon–Sat 9am–7pm</p>
               </div>
             </div>
           </div>
@@ -1493,7 +1493,7 @@ export default function B2BLandingPage() {
               <span className="italic text-amber-300">Facility the Right Way?</span>
             </h2>
             <p className="text-lg text-white/75 mb-8 max-w-xl mx-auto leading-relaxed">
-              Register with your phone — we'll send you a custom quote within 2 hours, no commitment needed.
+              Register with your phone — we'll send you a custom quote same day, no commitment needed.
             </p>
 
             <div className="max-w-md mx-auto mb-6">

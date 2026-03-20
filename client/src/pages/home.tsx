@@ -66,7 +66,7 @@ function HowItWorks() {
       icon: FileText,
       step: "02",
       title: "Get a Custom Quote",
-      desc: "Submit your list and we'll send a detailed quote with bulk pricing and GST breakdown within 2 hours.",
+      desc: "Submit your list and we'll send a detailed quote with bulk pricing and GST breakdown same day.",
     },
     {
       icon: CheckCircle2,
