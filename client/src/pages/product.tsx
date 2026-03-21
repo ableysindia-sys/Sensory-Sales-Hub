@@ -1308,6 +1308,24 @@ export default function ProductPage() {
                   />
                 )}
 
+                {/* ── Trust strip — before CTAs, reduces friction at decision point ── */}
+                <div className="flex flex-wrap gap-x-5 gap-y-2 py-3 border-y border-border/30" data-testid="container-trust-strip">
+                  {[
+                    { icon: Truck, label: "Pan India Shipping", sub: "4–7 days" },
+                    { icon: RotateCcw, label: "Easy Exchange", sub: "T&C apply" },
+                    { icon: Lock, label: "Secure Checkout", sub: "Razorpay" },
+                    { icon: PhoneCall, label: "Expert Support", sub: "Mon–Sat" },
+                  ].map(({ icon: Icon, label, sub }) => (
+                    <div key={label} className="flex items-center gap-1.5">
+                      <Icon className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                      <div className="leading-none">
+                        <p className="text-[11px] font-semibold text-foreground">{label}</p>
+                        <p className="text-[10px] text-muted-foreground">{sub}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
                 {/* ── Quantity + CTAs ── */}
                 <div className="space-y-2.5">
                   {/* Compact quantity row */}
@@ -1349,20 +1367,12 @@ export default function ProductPage() {
                   </Button>
                 </div>
 
-                {/* ── Problem Statement — below CTAs so it doesn't interrupt price discovery ── */}
-                {_problemStatement && (
-                  <div className="p-3 rounded-xl bg-primary/5 border-l-4 border-primary/40" data-testid="container-problem-statement">
-                    <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-0.5">The Challenge</p>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{stripToText(_problemStatement)}</p>
-                  </div>
-                )}
-
-                {/* ── Recommended For — compact, 4 items max ── */}
+                {/* ── Recommended For — post-CTA discovery zone ── */}
                 {(_targetUsers.length > 0 || _bestUsedIn.length > 0) && (
                   <div data-testid="section-recommended-for">
                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Recommended for</p>
                     <div className="flex flex-wrap gap-1.5">
-                      {[..._targetUsers, ..._bestUsedIn].slice(0, 4).map((item, i) => (
+                      {[..._targetUsers, ..._bestUsedIn].slice(0, 6).map((item, i) => (
                         <span key={i} className="text-xs px-2.5 py-0.5 rounded-full bg-muted/60 text-foreground border border-border/50" data-testid={`tag-recommended-${i}`}>
                           {item}
                         </span>
@@ -1371,27 +1381,17 @@ export default function ProductPage() {
                   </div>
                 )}
 
-                {/* ── Trust strip — compact 4-icon grid ── */}
-                <div className="grid grid-cols-2 gap-x-3 gap-y-2 pt-3 border-t border-border/30" data-testid="container-trust-strip">
-                  {[
-                    { icon: Truck, label: "Pan India Shipping", sub: "4–7 days delivery" },
-                    { icon: RotateCcw, label: "Easy Exchange", sub: "T&C apply" },
-                    { icon: Lock, label: "Secure Checkout", sub: "Razorpay powered" },
-                    { icon: PhoneCall, label: "Expert Support", sub: "Mon–Sat, 10am–6pm" },
-                  ].map(({ icon: Icon, label, sub }) => (
-                    <div key={label} className="flex items-start gap-2">
-                      <Icon className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-xs font-semibold text-foreground">{label}</p>
-                        <p className="text-[10px] text-muted-foreground">{sub}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                {/* ── Problem Statement — reinforcement after decision ── */}
+                {_problemStatement && (
+                  <div className="p-3 rounded-xl bg-muted/40 border border-border/40" data-testid="container-problem-statement">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-0.5">Why this product</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{stripToText(_problemStatement)}</p>
+                  </div>
+                )}
 
                 {/* ── Warranty + shipping — de-emphasised fine print ── */}
                 {(_warranty || _shippingNotes) && (
-                  <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] text-muted-foreground pt-2 border-t border-border/30" data-testid="container-warranty-shipping">
+                  <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] text-muted-foreground" data-testid="container-warranty-shipping">
                     {_warranty && <span><span className="font-semibold text-foreground">Warranty:</span> {_warranty}</span>}
                     {_shippingNotes && <span><span className="font-semibold text-foreground">Shipping:</span> {_shippingNotes}</span>}
                   </div>
@@ -1404,11 +1404,6 @@ export default function ProductPage() {
                     {product.vendor && <span data-testid="text-product-vendor">By {product.vendor}</span>}
                   </div>
                 )}
-
-                {/* ── Phone signup ── */}
-                <div className="rounded-2xl border border-primary/15 bg-primary/5 p-4">
-                  <PhoneSignupInline variant="light" label="Get B2B pricing & stock alerts" sublabel="Register free — we notify you of deals and restock" containerId="recaptcha-product" />
-                </div>
 
               </div>{/* end right panel */}
             </div>
@@ -1560,6 +1555,18 @@ export default function ProductPage() {
             </section>
           );
         })()}
+
+        {/* ── B2B Signup — neutral, non-gating section ──────────── */}
+        <section className="py-10 border-b border-border/30" data-testid="section-b2b-signup">
+          <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-xl mx-auto text-center">
+              <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">For Institutions & Clinics</p>
+              <h2 className="text-lg font-bold text-foreground mb-1">Get B2B pricing &amp; restock alerts</h2>
+              <p className="text-sm text-muted-foreground mb-4">OT clinics, hospitals, and schools get priority quotes and bulk rates. No spam — only relevant updates.</p>
+              <PhoneSignupInline variant="light" label="" sublabel="" containerId="recaptcha-product" />
+            </div>
+          </div>
+        </section>
 
         {/* ── Reviews ──────────────────────────────────────────── */}
         <section
