@@ -89,13 +89,17 @@ function HowItWorks() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-10">
           {steps.map((s, i) => (
-            <div key={s.step} className="relative flex flex-col items-center text-center sm:items-start sm:text-left group">
-              {/* connector line — desktop only */}
+            <div key={s.step} className="relative flex flex-col items-start text-left group">
+              {/* connector line — desktop horizontal */}
               {i < steps.length - 1 && (
                 <div className="hidden sm:block absolute top-6 left-[calc(50%+2rem)] right-[-50%] h-px bg-gradient-to-r from-primary/30 to-transparent" />
               )}
+              {/* connector line — mobile vertical */}
+              {i < steps.length - 1 && (
+                <div className="sm:hidden absolute left-5 top-14 bottom-[-1.5rem] w-px bg-gradient-to-b from-primary/30 to-transparent" />
+              )}
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center ring-1 ring-primary/20 group-hover:bg-primary/15 transition-colors">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center ring-1 ring-primary/20 group-hover:bg-primary/15 transition-colors flex-shrink-0">
                   <s.icon className="w-5 h-5 text-primary" />
                 </div>
                 <span className="text-3xl font-bold text-primary/15 font-display select-none">{s.step}</span>
@@ -105,9 +109,25 @@ function HowItWorks() {
             </div>
           ))}
         </div>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-10">
+      </div>
+    </section>
+  );
+}
+
+function MidPageCTA() {
+  return (
+    <section className="bg-primary/5 border-y border-primary/15 py-8 sm:py-10" data-testid="section-mid-cta">
+      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-5">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-widest text-primary mb-1.5">Ready to Order?</p>
+          <h3 className="text-xl sm:text-2xl font-bold text-foreground font-display leading-snug">
+            Get your custom bulk quote — same day
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1">GST invoice · pan-India delivery · response within hours</p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0 w-full sm:w-auto">
           <Link href="/enquiry">
-            <Button className="rounded-full px-7 gap-2" data-testid="button-how-it-works-quote">
+            <Button size="lg" className="rounded-full px-7 gap-2 font-semibold w-full sm:w-auto" data-testid="button-mid-cta-enquiry">
               <Send className="w-4 h-4" /> Start My Enquiry
             </Button>
           </Link>
@@ -115,8 +135,8 @@ function HowItWorks() {
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-7 h-10 rounded-full border border-green-500/40 text-green-600 dark:text-green-400 text-sm font-semibold hover:bg-green-50 dark:hover:bg-green-950/30 transition-colors"
-            data-testid="link-how-it-works-whatsapp"
+            className="inline-flex items-center justify-center gap-2 px-7 h-12 rounded-full border border-green-500/40 text-green-600 dark:text-green-400 text-sm font-semibold hover:bg-green-50 dark:hover:bg-green-950/30 transition-colors"
+            data-testid="link-mid-cta-whatsapp"
           >
             <MessageCircle className="w-4 h-4" /> Chat on WhatsApp
           </a>
@@ -135,6 +155,8 @@ function WhoWeServe() {
       typical: "Typical order: 10–50 units",
       color: "text-blue-600 dark:text-blue-400",
       bg: "bg-blue-50 dark:bg-blue-950/30 ring-blue-200 dark:ring-blue-800/40",
+      cta: "Browse clinic products",
+      href: "/products",
     },
     {
       icon: GraduationCap,
@@ -143,6 +165,8 @@ function WhoWeServe() {
       typical: "Typical order: 20–100 units",
       color: "text-green-600 dark:text-green-400",
       bg: "bg-green-50 dark:bg-green-950/30 ring-green-200 dark:ring-green-800/40",
+      cta: "Browse school products",
+      href: "/products",
     },
     {
       icon: Building2,
@@ -151,6 +175,8 @@ function WhoWeServe() {
       typical: "Typical order: 30–200 units",
       color: "text-purple-600 dark:text-purple-400",
       bg: "bg-purple-50 dark:bg-purple-950/30 ring-purple-200 dark:ring-purple-800/40",
+      cta: "Request institutional quote",
+      href: "/enquiry",
     },
     {
       icon: HomeIcon,
@@ -159,6 +185,8 @@ function WhoWeServe() {
       typical: "Typical order: 50+ units",
       color: "text-amber-600 dark:text-amber-400",
       bg: "bg-amber-50 dark:bg-amber-950/30 ring-amber-200 dark:ring-amber-800/40",
+      cta: "Request CSR quote",
+      href: "/enquiry",
     },
   ];
 
@@ -167,13 +195,13 @@ function WhoWeServe() {
       <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-3 bg-primary/10 px-3 py-1.5 rounded-full">
-            Our Customers
+            Who We Serve
           </span>
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground font-display" data-testid="heading-who-we-serve">
             Built for Institutional Buyers
           </h2>
           <p className="text-sm text-muted-foreground mt-1.5 max-w-md mx-auto">
-            50+ clinics, schools and hospitals trust Abley's for their therapy equipment needs
+            Tell us who you are — we'll make sure you get the right equipment and pricing
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -183,14 +211,17 @@ function WhoWeServe() {
               className={`rounded-2xl p-5 ring-1 ${s.bg} flex flex-col gap-3`}
               data-testid={`card-segment-${s.label.toLowerCase().replace(/\s+/g, '-')}`}
             >
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-white dark:bg-background shadow-sm`}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white dark:bg-background shadow-sm">
                 <s.icon className={`w-5 h-5 ${s.color}`} />
               </div>
               <div>
                 <h3 className="text-sm font-bold text-foreground leading-snug mb-1">{s.label}</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">{s.detail}</p>
               </div>
-              <span className={`text-xs font-semibold ${s.color} mt-auto`}>{s.typical}</span>
+              <span className={`text-xs font-semibold ${s.color}`}>{s.typical}</span>
+              <Link href={s.href} className={`inline-flex items-center gap-1 text-xs font-bold ${s.color} hover:underline mt-auto`} data-testid={`link-segment-cta-${s.label.toLowerCase().replace(/\s+/g, '-')}`}>
+                {s.cta} <ArrowRight className="w-3 h-3" />
+              </Link>
             </div>
           ))}
         </div>
@@ -312,7 +343,7 @@ function ProductShowcase() {
           </div>
         </div>
 
-        <ProductCarousel products={active} hideHeader />
+        <ProductCarousel products={active} hideHeader mobileGrid />
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-10">
           <Link href="/products">
@@ -341,17 +372,17 @@ function StickyMobileBar() {
         href={WHATSAPP_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex-1 flex items-center justify-center gap-2 h-11 rounded-xl bg-green-500 hover:bg-green-600 text-white text-sm font-semibold transition-colors shadow-lg shadow-green-500/20"
+        className="flex items-center justify-center gap-2 h-11 px-5 rounded-xl border border-green-500/50 text-green-600 dark:text-green-400 text-sm font-semibold hover:bg-green-50 dark:hover:bg-green-950/30 transition-colors flex-shrink-0"
         data-testid="button-sticky-whatsapp"
       >
-        <MessageCircle className="w-4 h-4" /> WhatsApp Us
+        <MessageCircle className="w-4 h-4" /> WhatsApp
       </a>
       <Link href="/enquiry" className="flex-1">
         <Button
-          className="w-full h-11 rounded-xl text-sm font-semibold"
+          className="w-full h-11 rounded-xl text-sm font-bold gap-2"
           data-testid="button-sticky-quote"
         >
-          Get a Quote <Send className="w-3.5 h-3.5 ml-1" />
+          <Send className="w-3.5 h-3.5" /> Get a B2B Quote
         </Button>
       </Link>
     </div>
@@ -365,23 +396,23 @@ export default function Home() {
       <main id="main-content" className="pb-20 lg:pb-0">
         {/* 1. ARRIVE */}
         <Hero />
-        {/* 2. REASSURE — Compact trust bar in dark navy */}
+        {/* 2. IDENTIFY — Self-segmentation: who are you? */}
+        <WhoWeServe />
+        {/* 3. REASSURE — Compact trust bar in dark navy */}
         <QuickTrustBar />
-        {/* 3. SOCIAL PROOF — Client logo marquee */}
-        <ClientLogos />
         {/* 4. DISCOVER — Browse by setup type */}
         <CategoryGrid />
         {/* 5. PROCESS — 3-step clarity for B2B buyers */}
         <HowItWorks />
-        {/* 5. BROWSE — Handpicked best sellers & new arrivals */}
+        {/* 6. CONVERT (mid-page) — Catch high-intent buyers early */}
+        <MidPageCTA />
+        {/* 7. BROWSE — Handpicked best sellers & new arrivals */}
         <ProductShowcase />
-        {/* 6. TRY — Sample kit: hidden until further notice */}
-        {/* <SampleKitBanner /> */}
-        {/* 7. IDENTIFY — Who we work with (self-segmentation) */}
-        <WhoWeServe />
-        {/* 8. VALIDATE — Verified institutional reviews */}
+        {/* 8. SOCIAL PROOF — Client logo marquee + reviews */}
+        <ClientLogos />
+        {/* 9. VALIDATE — Verified institutional reviews */}
         <Testimonials />
-        {/* 9. CONVERT — Full bulk enquiry form */}
+        {/* 10. CONVERT — Full bulk enquiry form */}
         <BulkEnquiryForm />
       </main>
       <SiteFooter />

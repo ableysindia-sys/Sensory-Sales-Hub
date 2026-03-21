@@ -20,7 +20,7 @@ export function Hero() {
           data-testid="img-hero"
         />
         {/* Mobile: top-to-bottom dark curtain */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/82 to-black/92 sm:hidden" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black/88 sm:hidden" />
         {/* Desktop: left reading lane + bottom vignette */}
         <div className="absolute inset-0 hidden sm:block bg-gradient-to-r from-black/90 via-black/68 to-black/15" />
         <div className="absolute inset-0 hidden sm:block bg-gradient-to-t from-black/60 via-transparent to-black/10" />
@@ -39,7 +39,7 @@ export function Hero() {
             data-testid="text-hero-label"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-white/80 animate-pulse" />
-            India's Leading OT Equipment Supplier
+            Same-day Quote · GST Invoice · pan-India Delivery
           </div>
 
           {/* Headline */}

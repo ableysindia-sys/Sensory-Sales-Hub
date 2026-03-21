@@ -8,9 +8,10 @@ interface ProductCarouselProps {
   subtitle?: string;
   products: CatalogueProduct[];
   hideHeader?: boolean;
+  mobileGrid?: boolean;
 }
 
-export function ProductCarousel({ title, subtitle, products, hideHeader }: ProductCarouselProps) {
+export function ProductCarousel({ title, subtitle, products, hideHeader, mobileGrid }: ProductCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const sectionId = title ? title.toLowerCase().replace(/\s+/g, "-") : "products";
 
@@ -56,7 +57,16 @@ export function ProductCarousel({ title, subtitle, products, hideHeader }: Produ
         </div>
       )}
 
-      <div className="relative">
+      {/* Mobile 2-col grid — only when mobileGrid prop is set */}
+      {mobileGrid && (
+        <div className="sm:hidden grid grid-cols-2 gap-3 mb-2">
+          {products.slice(0, 6).map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      )}
+
+      <div className={mobileGrid ? "hidden sm:block relative" : "relative"}>
         {hideHeader && (
           <div className="absolute right-0 -top-12 flex gap-2 z-10">
             <button

@@ -33,7 +33,7 @@ export function Testimonials() {
         <div className="text-center mb-12">
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-amber-300 mb-4 bg-amber-400/15 px-3 py-1.5 rounded-full border border-amber-400/20">⭐ Verified Reviews</span>
           <h2 className="text-2xl sm:text-3xl font-bold !text-white font-display mb-2" data-testid="heading-testimonials">
-            Trusted by 500+ Institutions
+            Trusted by 50+ Institutions
           </h2>
           <p className="text-white/50 text-sm">OT clinics, schools, hospitals &amp; rehab centres across India</p>
         </div>
