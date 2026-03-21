@@ -871,7 +871,7 @@ export default function ProductPage() {
               </Link>
               <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
               <span className="text-foreground font-medium truncate min-w-0">
-                {product.name.split(/[|–—]/)[0].trim()}
+                {product.name}
               </span>
             </nav>
           </div>
@@ -1030,7 +1030,7 @@ export default function ProductPage() {
                     {category?.title}
                   </p>
                   <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight" data-testid="heading-product-name">
-                    {product.name.split(/[|–—]/)[0].trim()}
+                    {product.name}
                   </h1>
                   {product.shortDescription && (
                     <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-short-description">
