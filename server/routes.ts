@@ -340,6 +340,15 @@ export async function registerRoutes(
     } catch { res.status(500).json({ message: "Failed" }); }
   });
 
+  app.post("/api/admin/sync", requireAdmin, async (_req, res) => {
+    try {
+      const result = await syncShopifyProducts();
+      res.json({ message: "Sync complete", ...result });
+    } catch (err: any) {
+      res.status(500).json({ message: "Sync failed", error: err?.message });
+    }
+  });
+
   app.get("/api/admin/categories", requireAdmin, async (_req, res) => {
     try { res.json(await storage.getCategories()); } catch { res.status(500).json({ message: "Failed" }); }
   });

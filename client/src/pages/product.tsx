@@ -166,7 +166,7 @@ const SHARED_FAQS: FAQ[] = [
   },
   {
     q: "What is your return and exchange policy?",
-    a: "We offer a 7-day exchange window from the date of delivery. Items must be unused, in original condition, unwashed, undamaged, and in original packaging with all tags attached. Email info@ableys.in with your order number to initiate an exchange.",
+    a: "We offer Easy Exchange (T&C apply). Items must be unused, in original condition, unwashed, undamaged, and in original packaging with all tags attached. Email info@ableys.in with your order number to initiate an exchange.",
   },
   {
     q: "Are your products therapist-recommended?",
@@ -544,156 +544,23 @@ function SuitableForDisplay({ applications }: { applications: string[] }) {
 }
 
 
-/* ─── Virtual Customisation Options (for single-SKU products) ─────────────── */
-
-const COLOUR_PALETTE = [
-  { name: "Blue",   hex: "#3B82F6" },
-  { name: "Red",    hex: "#EF4444" },
-  { name: "Green",  hex: "#22C55E" },
-  { name: "Yellow", hex: "#EAB308" },
-  { name: "Purple", hex: "#A855F7" },
-  { name: "Orange", hex: "#F97316" },
-  { name: "Pink",   hex: "#EC4899" },
-  { name: "Teal",   hex: "#14B8A6" },
-];
-
-interface VirtualOptions {
-  colors?: typeof COLOUR_PALETTE;
-  sizes?: string[];
-}
-
-const CATEGORY_VIRTUAL_OPTIONS: Record<string, VirtualOptions> = {
-  swings: {
-    colors: COLOUR_PALETTE,
-    sizes: ["Small (up to 50 kg)", "Medium (up to 80 kg)", "Large (up to 120 kg)"],
-  },
-  mats: {
-    colors: COLOUR_PALETTE,
-    sizes: ["100 × 100 cm", "150 × 150 cm", "200 × 100 cm", "200 × 200 cm"],
-  },
-  ballpool: {
-    colors: COLOUR_PALETTE,
-    sizes: ["Small (100 cm)", "Medium (120 cm)", "Large (150 cm)"],
-  },
-  climbing: {
-    colors: COLOUR_PALETTE,
-  },
-  "movement-balance": {
-    colors: COLOUR_PALETTE,
-  },
-  "therapy-balls": {
-    sizes: ["45 cm", "55 cm", "65 cm", "75 cm"],
-  },
-  "deep-pressure": {
-    colors: COLOUR_PALETTE,
-  },
-  visual: {
-    colors: COLOUR_PALETTE,
-  },
-  "adl-kit": {
-    colors: COLOUR_PALETTE,
-  },
-};
-
 function CustomisationSection({
-  categorySlug,
-  selectedColor,
-  onColorChange,
-  selectedSize,
-  onSizeChange,
   note,
   onNoteChange,
 }: {
-  categorySlug: string;
-  selectedColor: string | undefined;
-  onColorChange: (c: string | undefined) => void;
-  selectedSize: string | undefined;
-  onSizeChange: (s: string | undefined) => void;
   note: string;
   onNoteChange: (n: string) => void;
 }) {
-  const opts = CATEGORY_VIRTUAL_OPTIONS[categorySlug] || { colors: COLOUR_PALETTE };
-  if (!opts.colors && !opts.sizes) return null;
-
   return (
     <div className="space-y-5 py-4 border-t border-border/40" data-testid="section-customisation">
       {/* Heading */}
       <div>
         <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-0.5">Customise</p>
-        <h4 className="text-sm font-semibold text-foreground">Colour &amp; Size Preferences</h4>
+        <h4 className="text-sm font-semibold text-foreground">Customisation Note</h4>
         <p className="text-xs text-muted-foreground mt-0.5">
-          Preferences are indicative — our team will confirm availability before dispatch.
+          Any specific requirements? Our team will confirm before dispatch.
         </p>
       </div>
-
-      {/* Colour swatches */}
-      {opts.colors && (
-        <div>
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">
-            Colour Preference
-            {selectedColor && (
-              <span className="normal-case text-foreground ml-1">— {selectedColor}</span>
-            )}
-          </label>
-          <div className="flex flex-wrap gap-2.5">
-            {opts.colors.map((c) => (
-              <button
-                key={c.name}
-                type="button"
-                onClick={() => onColorChange(selectedColor === c.name ? undefined : c.name)}
-                title={c.name}
-                className={`w-9 h-9 rounded-full border-2 transition-all ${
-                  selectedColor === c.name
-                    ? "border-primary scale-110 ring-2 ring-primary/20"
-                    : "border-border/60 hover:border-muted-foreground/40"
-                }`}
-                style={{ backgroundColor: c.hex }}
-                data-testid={`swatch-colour-${c.name.toLowerCase()}`}
-              />
-            ))}
-            {selectedColor && (
-              <button
-                type="button"
-                onClick={() => onColorChange(undefined)}
-                className="w-9 h-9 rounded-full border-2 border-dashed border-border/60 flex items-center justify-center text-muted-foreground hover:border-muted-foreground/50 text-xs font-medium transition-all"
-                title="Clear colour selection"
-                data-testid="swatch-colour-clear"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Size pills */}
-      {opts.sizes && (
-        <div>
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">
-            Size Preference
-            {selectedSize && (
-              <span className="normal-case text-foreground ml-1">— {selectedSize}</span>
-            )}
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {opts.sizes.map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => onSizeChange(selectedSize === s ? undefined : s)}
-                className={`px-4 py-2 rounded-xl border text-sm font-medium transition-all ${
-                  selectedSize === s
-                    ? "border-primary bg-primary/8 text-primary"
-                    : "border-border/50 bg-card hover:border-primary/30 text-foreground"
-                }`}
-                data-testid={`size-option-${s.toLowerCase().replace(/\s+/g, "-")}`}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Free-text note */}
       <div>
@@ -877,9 +744,7 @@ export default function ProductPage() {
     product.configOptions?.addons
   );
 
-  const hasVirtualOptions = !hasShopifyVariants && !hasLegacyConfig && !!(
-    CATEGORY_VIRTUAL_OPTIONS[product.categorySlug]
-  );
+  const hasVirtualOptions = !hasShopifyVariants && !hasLegacyConfig;
 
   const toggleAddon = (addonName: string) => {
     setSelectedAddons((prev) =>
@@ -1118,7 +983,7 @@ export default function ProductPage() {
                 <div className="hidden lg:flex items-center gap-4 pt-1">
                   {[
                     { icon: Truck, label: "Pan India Shipping" },
-                    { icon: RotateCcw, label: "7-Day Easy Exchange" },
+                    { icon: RotateCcw, label: "Easy Exchange (T&C)" },
                     { icon: Shield, label: "OT-Approved Products" },
                   ].map(({ icon: Icon, label }) => (
                     <div key={label} className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -1438,11 +1303,6 @@ export default function ProductPage() {
                 {/* ── Virtual customisation (single-SKU products) ── */}
                 {hasVirtualOptions && (
                   <CustomisationSection
-                    categorySlug={product.categorySlug}
-                    selectedColor={selectedColor}
-                    onColorChange={setSelectedColor}
-                    selectedSize={selectedSize}
-                    onSizeChange={setSelectedSize}
                     note={customizationNote}
                     onNoteChange={setCustomizationNote}
                   />
@@ -1515,7 +1375,7 @@ export default function ProductPage() {
                 <div className="grid grid-cols-2 gap-x-3 gap-y-2 pt-3 border-t border-border/30" data-testid="container-trust-strip">
                   {[
                     { icon: Truck, label: "Pan India Shipping", sub: "4–7 days delivery" },
-                    { icon: RotateCcw, label: "7-Day Exchange", sub: "Easy, hassle-free" },
+                    { icon: RotateCcw, label: "Easy Exchange", sub: "T&C apply" },
                     { icon: Lock, label: "Secure Checkout", sub: "Razorpay powered" },
                     { icon: PhoneCall, label: "Expert Support", sub: "Mon–Sat, 10am–6pm" },
                   ].map(({ icon: Icon, label, sub }) => (
