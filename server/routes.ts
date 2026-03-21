@@ -158,7 +158,7 @@ export async function registerRoutes(
 
   app.get("/api/catalog", (_req, res) => {
     try {
-      generateCatalogPDF(res);
+      res.redirect(301, "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/Sensory_Rooms_Catalog_compressed.pdf?v=1774096834");
     } catch (err) {
       res.status(500).json({ message: "Failed to generate catalogue PDF" });
     }
