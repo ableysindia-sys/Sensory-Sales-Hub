@@ -59,6 +59,7 @@ export interface CatalogueProduct {
   productType?: string;
   vendor?: string;
   sku?: string;
+  stock?: number | null;
 }
 
 export interface Category {

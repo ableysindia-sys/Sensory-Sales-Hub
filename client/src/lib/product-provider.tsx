@@ -38,6 +38,7 @@ export function dbProductToCatalogue(p: DbProduct): CatalogueProduct {
     productType: p.productType || undefined,
     vendor: p.vendor || undefined,
     sku: p.sku || undefined,
+    stock: p.stock ?? null,
   };
 }
 
