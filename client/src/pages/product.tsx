@@ -848,7 +848,7 @@ export default function ProductPage() {
       <main id="main-content" className="pb-28 lg:pb-0">
 
         {/* ── Breadcrumb ────────────────────────────────────────── */}
-        <section className="pt-24 sm:pt-28 lg:pt-36 pb-3">
+        <section className="pt-24 sm:pt-28 lg:pt-36 pb-3 bg-gradient-to-b from-primary/[0.05] to-transparent">
           <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <nav
               className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap min-w-0"
@@ -878,7 +878,7 @@ export default function ProductPage() {
         </section>
 
         {/* ── Hero: image + product panel ──────────────────────── */}
-        <section className="py-4 lg:py-12" data-testid="section-product-detail">
+        <section className="py-4 lg:py-12 bg-gradient-to-b from-primary/[0.04] via-transparent to-transparent" data-testid="section-product-detail">
           <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid lg:grid-cols-2 gap-6 lg:gap-16 items-start">
 
@@ -995,7 +995,7 @@ export default function ProductPage() {
               </div>{/* end gallery */}
 
               {/* ─ Right: Sticky product info ─ */}
-              <div className="lg:sticky lg:top-24 lg:self-start space-y-4">
+              <div className="bg-card border border-border/40 rounded-2xl p-5 space-y-4 lg:bg-transparent lg:border-0 lg:rounded-none lg:p-0 lg:sticky lg:top-24 lg:self-start">
 
                 {/* ── Badges ── */}
                 <div className="flex flex-wrap gap-1.5" data-testid="container-product-badges">
@@ -1428,7 +1428,7 @@ export default function ProductPage() {
             [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2`;
           const TAB_TRIGGER = "rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-5 py-3 text-sm font-semibold text-muted-foreground data-[state=active]:text-primary whitespace-nowrap flex-shrink-0";
           return (
-            <section className="py-12 border-b border-border/30" data-testid="section-product-tabs">
+            <section className="py-12 bg-muted/30 border-y border-border/30" data-testid="section-product-tabs">
               <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
                 <Tabs defaultValue="overview">
                   <div className="mb-8">
@@ -1556,13 +1556,13 @@ export default function ProductPage() {
           );
         })()}
 
-        {/* ── B2B Signup — neutral, non-gating section ──────────── */}
-        <section className="py-10 border-b border-border/30" data-testid="section-b2b-signup">
+        {/* ── B2B Signup — primary gradient section ─────────────── */}
+        <section className="py-12 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-y border-primary/10" data-testid="section-b2b-signup">
           <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-xl mx-auto text-center">
-              <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">For Institutions & Clinics</p>
-              <h2 className="text-lg font-bold text-foreground mb-1">Get B2B pricing &amp; restock alerts</h2>
-              <p className="text-sm text-muted-foreground mb-4">OT clinics, hospitals, and schools get priority quotes and bulk rates. No spam — only relevant updates.</p>
+              <p className="text-[10px] font-bold text-primary/70 uppercase tracking-widest mb-2">For Institutions & Clinics</p>
+              <h2 className="text-xl font-bold text-foreground mb-1.5">Get B2B pricing &amp; restock alerts</h2>
+              <p className="text-sm text-muted-foreground mb-5">OT clinics, hospitals, and schools get priority quotes and bulk rates. No spam — only relevant updates.</p>
               <PhoneSignupInline variant="light" label="" sublabel="" containerId="recaptcha-product" />
             </div>
           </div>
@@ -1694,7 +1694,7 @@ export default function ProductPage() {
 
         {/* ── Related Products ─────────────────────────────────── */}
         {relatedProducts.length > 0 && (
-          <section className="py-16" data-testid="section-related-products">
+          <section className="py-16 bg-muted/30" data-testid="section-related-products">
             <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between mb-8">
                 <div>
