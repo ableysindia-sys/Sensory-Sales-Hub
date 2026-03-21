@@ -34,7 +34,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import logoPath from "@assets/ableys_rehab_logo.png";
-import featuredSwingsImg from "@assets/generated_images/featured-swings-banner.png";
 import {
   CheckCircle2,
   Clock,
@@ -73,6 +72,8 @@ import {
   Lightbulb,
   ClipboardList,
 } from "lucide-react";
+
+const featuredSwingsImg = "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/wbedk.png?v=1774087637";
 
 const formSchema = api.leads.create.input.extend({
   name: z.string().min(2, "Please enter your full name"),

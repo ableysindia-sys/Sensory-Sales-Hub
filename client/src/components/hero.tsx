@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ShieldCheck, BadgeIndianRupee, Users, Send, MessageCircle } from "lucide-react";
 import { Link } from "wouter";
-import heroBannerImg from "@assets/generated_images/hero-banner.png";
 
+const HERO_IMG = "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/df.png?v=1774087669";
 const WHATSAPP_URL = "https://wa.me/917042180166?text=Hi%20Abley%27s%2C%20I%27m%20interested%20in%20bulk%20rehab%20equipment%20for%20my%20institution.";
 
 export function Hero() {
@@ -12,7 +12,7 @@ export function Hero() {
       {/* Background image */}
       <div className="absolute inset-0 z-0">
         <img
-          src={heroBannerImg}
+          src={HERO_IMG}
           alt=""
           aria-hidden="true"
           className="w-full h-full object-cover object-center"
