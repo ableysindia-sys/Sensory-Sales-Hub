@@ -491,51 +491,50 @@ function shopifyToDbProduct(sp: ShopifyProduct, metafields: MetafieldMap = {}) {
   };
 }
 
-async function fetchAllShopifyProducts(): Promise<ShopifyProduct[]> {
-  const storeDomain = process.env.SHOPIFY_STORE_DOMAIN;
-  const storefrontToken = process.env.SHOPIFY_STOREFRONT_TOKEN;
+// Only products published on "Ableys Headless" channel are synced to this app.
+const HEADLESS_PUBLICATION_GID = "gid://shopify/Publication/183329587459";
 
-  if (!storeDomain || !storefrontToken) {
-    console.log("[shopify-sync] Shopify not configured, skipping sync");
-    return [];
-  }
-
+async function fetchHeadlessProducts(): Promise<ShopifyProduct[]> {
   const allProducts: ShopifyProduct[] = [];
   let cursor: string | null = null;
   let hasNext = true;
+  let page = 0;
 
-  while (hasNext) {
+  while (hasNext && page < 20) {
+    page++;
     const afterClause = cursor ? `, after: "${cursor}"` : "";
     const query = `{
-      products(first: 50${afterClause}) {
-        pageInfo { hasNextPage }
-        edges {
-          cursor
-          node {
-            handle
-            title
-            vendor
-            productType
-            descriptionHtml
-            tags
-            availableForSale
-            collections(first: 10) {
-              edges { node { handle title } }
-            }
-            images(first: 20) {
-              edges { node { url altText } }
-            }
-            variants(first: 30) {
-              edges {
-                node {
-                  id
-                  title
-                  sku
-                  availableForSale
-                  price { amount currencyCode }
-                  compareAtPrice { amount currencyCode }
-                  selectedOptions { name value }
-                  image { url altText }
+      publication(id: "${HEADLESS_PUBLICATION_GID}") {
+        products(first: 50${afterClause}) {
+          pageInfo { hasNextPage }
+          edges {
+            cursor
+            node {
+              handle
+              title
+              vendor
+              productType
+              descriptionHtml
+              tags
+              status
+              collections(first: 10) {
+                edges { node { handle title } }
+              }
+              images(first: 20) {
+                edges { node { url altText } }
+              }
+              variants(first: 30) {
+                edges {
+                  node {
+                    id
+                    title
+                    sku
+                    availableForSale
+                    price
+                    compareAtPrice
+                    selectedOptions { name value }
+                    image { url altText }
+                  }
                 }
               }
             }
@@ -544,45 +543,69 @@ async function fetchAllShopifyProducts(): Promise<ShopifyProduct[]> {
       }
     }`;
 
-    const resp = await fetch(`https://${storeDomain}/api/2024-10/graphql.json`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": storefrontToken,
-      },
-      body: JSON.stringify({ query }),
-    });
+    try {
+      const data = await shopifyAdminGraphQL(query) as any;
+      const edges = data?.data?.publication?.products?.edges || [];
+      const pageInfo = data?.data?.publication?.products?.pageInfo;
 
-    if (!resp.ok) {
-      console.error("[shopify-sync] Shopify API error:", resp.status);
+      if (!data?.data?.publication) {
+        console.error("[shopify-sync] Publication not found or Admin API error:", JSON.stringify(data?.errors || data));
+        break;
+      }
+
+      for (const edge of edges) {
+        const node = edge.node as any;
+        // Normalise Admin API product to match the ShopifyProduct interface.
+        // Admin API: price is a Money scalar (string); Storefront API: price is {amount, currencyCode}.
+        // Admin API: no top-level availableForSale — derive from status + variant availability.
+        const anyVariantAvail = node.variants?.edges?.some((e: any) => e.node.availableForSale) ?? false;
+        const normalised: ShopifyProduct = {
+          handle: node.handle,
+          title: node.title,
+          vendor: node.vendor,
+          productType: node.productType,
+          descriptionHtml: node.descriptionHtml,
+          tags: node.tags ?? [],
+          availableForSale: node.status === "ACTIVE" && anyVariantAvail,
+          collections: node.collections,
+          images: node.images,
+          variants: {
+            edges: (node.variants?.edges ?? []).map((e: any) => ({
+              ...e,
+              node: {
+                ...e.node,
+                price: { amount: String(e.node.price ?? "0"), currencyCode: "INR" },
+                compareAtPrice: e.node.compareAtPrice
+                  ? { amount: String(e.node.compareAtPrice), currencyCode: "INR" }
+                  : null,
+              },
+            })),
+          },
+        };
+        allProducts.push(normalised);
+        cursor = edge.cursor as string;
+      }
+
+      hasNext = pageInfo?.hasNextPage || false;
+    } catch (err) {
+      console.error("[shopify-sync] Failed to fetch headless products:", err);
       break;
     }
-
-    const data = await resp.json() as any;
-    const edges = data?.data?.products?.edges || [];
-    const pageInfo = data?.data?.products?.pageInfo;
-
-    for (const edge of edges) {
-      allProducts.push(edge.node);
-      cursor = edge.cursor;
-    }
-
-    hasNext = pageInfo?.hasNextPage || false;
   }
 
   return allProducts;
 }
 
 export async function syncShopifyProducts(): Promise<{ added: number; updated: number; total: number }> {
-  console.log("[shopify-sync] Starting Shopify product sync...");
+  console.log("[shopify-sync] Starting Shopify product sync (Ableys Headless channel only)...");
 
-  const shopifyProducts = await fetchAllShopifyProducts();
+  const shopifyProducts = await fetchHeadlessProducts();
   if (shopifyProducts.length === 0) {
-    console.log("[shopify-sync] No products fetched from Shopify");
+    console.log("[shopify-sync] No products fetched from Ableys Headless channel");
     return { added: 0, updated: 0, total: 0 };
   }
 
-  console.log(`[shopify-sync] Fetched ${shopifyProducts.length} products from Shopify`);
+  console.log(`[shopify-sync] Fetched ${shopifyProducts.length} products from Ableys Headless channel`);
 
   // Fetch metafields via Admin API (Specifications, Key Features, Suitable For)
   let adminMetafields = new Map<string, MetafieldMap>();
@@ -672,28 +695,42 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
     .select({ slug: productsTable.slug, shopifyHandle: productsTable.shopifyHandle, isActive: productsTable.isActive, b2bPinned: productsTable.b2bPinned })
     .from(productsTable);
 
+  // Build the set of handles on the headless channel for deactivation checks.
+  const headlessHandles = new Set(shopifyProducts.map(sp => sp.handle));
+
   let deactivated = 0;
   for (const dbProd of allDbProducts) {
-    // Pinned products are managed manually — sync never overrides their visibility
+    const onHeadlessChannel = dbProd.shopifyHandle ? headlessHandles.has(dbProd.shopifyHandle) : false;
+
+    // Products no longer on the Headless channel are always deactivated and unpinned,
+    // regardless of their pinned status — the channel is the source of truth.
+    if (!onHeadlessChannel) {
+      if (dbProd.isActive || dbProd.b2bPinned) {
+        await db
+          .update(productsTable)
+          .set({ isActive: false, b2bPinned: false })
+          .where(eq(productsTable.slug, dbProd.slug));
+        deactivated++;
+        console.log(`[shopify-sync] Deactivated ${dbProd.slug}: not on Ableys Headless channel`);
+      }
+      continue;
+    }
+
+    // Product is on the headless channel.
+    // Pinned products: sync never overrides their visibility.
     if (dbProd.b2bPinned) continue;
 
-    const shopifyIsAvailable = dbProd.shopifyHandle ? shopifyAvailability.get(dbProd.shopifyHandle) : undefined;
-    // undefined = not in Shopify at all (unpublished or seeded product with no Shopify handle)
-    const shouldBeActive = shopifyIsAvailable === true;
-    const shouldBeInactive = shopifyIsAvailable === false || shopifyIsAvailable === undefined;
-
-    if (shouldBeInactive && dbProd.isActive) {
+    const shopifyIsAvailable = shopifyAvailability.get(dbProd.shopifyHandle!);
+    if (shopifyIsAvailable === false && dbProd.isActive) {
       await db
         .update(productsTable)
         .set({ isActive: false })
         .where(eq(productsTable.slug, dbProd.slug));
       deactivated++;
-      const reason = shopifyIsAvailable === false ? "out of stock on Shopify" : "not published on Shopify";
-      console.log(`[shopify-sync] Deactivated ${dbProd.slug}: ${reason}`);
+      console.log(`[shopify-sync] Deactivated ${dbProd.slug}: out of stock on Shopify`);
     }
     // Non-pinned products are never auto-reactivated by sync;
-    // team controls visibility manually via the admin panel or DB.
-    // New products from Shopify are inserted as active in the upsert loop above.
+    // team controls visibility manually. New products are inserted as active above.
   }
 
   const summary = `${added} added, ${updated} updated, ${deactivated} deactivated, ${shopifyProducts.length} total from Shopify`;
