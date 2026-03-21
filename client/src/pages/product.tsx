@@ -848,7 +848,7 @@ export default function ProductPage() {
       <main id="main-content" className="pb-28 lg:pb-0">
 
         {/* ── Breadcrumb ────────────────────────────────────────── */}
-        <section className="pt-36 pb-4">
+        <section className="pt-24 sm:pt-28 lg:pt-36 pb-3">
           <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
             <nav
               className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap min-w-0"
@@ -878,9 +878,9 @@ export default function ProductPage() {
         </section>
 
         {/* ── Hero: image + product panel ──────────────────────── */}
-        <section className="py-8 lg:py-12" data-testid="section-product-detail">
+        <section className="py-4 lg:py-12" data-testid="section-product-detail">
           <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+            <div className="grid lg:grid-cols-2 gap-6 lg:gap-16 items-start">
 
               {/* ─ Left: Image Gallery ─ */}
               <div className="space-y-3 min-w-0 w-full">
