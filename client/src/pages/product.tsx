@@ -1723,7 +1723,7 @@ export default function ProductPage() {
           </section>
         )}
 
-        {/* ── Sticky mobile CTA bar — hidden on desktop ── */}
+        {/* ── Sticky mobile CTA bar ── */}
         <div className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-background/95 backdrop-blur-sm border-t border-border/50 px-4 py-3 flex items-center gap-3" data-testid="sticky-mobile-cta">
           <div className="flex-1 min-w-0">
             <p className="text-xs text-muted-foreground">per unit · incl. GST</p>
@@ -1736,7 +1736,7 @@ export default function ProductPage() {
             onClick={() => addItem(product.id, product.name, category?.title || "")}
             data-testid="sticky-button-get-quote"
           >
-            {inEnquiryCart ? <><CheckCircle2 className="w-3.5 h-3.5" /> Added</> : <><MessageSquare className="w-3.5 h-3.5" /> Get Quote</>}
+            {inEnquiryCart ? <><CheckCircle2 className="w-3.5 h-3.5" /> Added</> : <><MessageSquare className="w-3.5 h-3.5" /> B2B Quote</>}
           </Button>
           <Button
             size="sm"
@@ -1748,6 +1748,24 @@ export default function ProductPage() {
             {checkoutLoading ? <div className="w-3.5 h-3.5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
             {checkoutLoading ? "Opening…" : "Buy Now"}
           </Button>
+        </div>
+
+        {/* ── Desktop floating B2B quote button ── */}
+        <div className="hidden lg:block fixed bottom-8 right-8 z-40" data-testid="sticky-desktop-b2b-cta">
+          <button
+            onClick={() => addItem(product.id, product.name, category?.title || "")}
+            data-testid="sticky-desktop-button-b2b-quote"
+            className={[
+              "flex items-center gap-2.5 h-12 px-6 rounded-full text-sm font-bold shadow-2xl transition-all duration-200",
+              inEnquiryCart
+                ? "bg-green-600 text-white shadow-green-700/30 hover:bg-green-700"
+                : "bg-primary text-primary-foreground shadow-primary/30 hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5",
+            ].join(" ")}
+          >
+            {inEnquiryCart
+              ? <><CheckCircle2 className="w-4 h-4" /> Added to Quote</>
+              : <><MessageSquare className="w-4 h-4" /> Get a B2B Quote</>}
+          </button>
         </div>
 
       </main>
