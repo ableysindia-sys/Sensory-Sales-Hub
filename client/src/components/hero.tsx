@@ -7,7 +7,7 @@ const WHATSAPP_URL = "https://wa.me/917042180166?text=Hi%20Abley%27s%2C%20I%27m%
 
 export function Hero() {
   return (
-    <section className="relative w-full" data-testid="section-hero">
+    <section className="relative w-full min-h-[620px] sm:min-h-[640px] lg:min-h-[700px]" data-testid="section-hero">
 
       {/* Background image */}
       <div className="absolute inset-0 z-0">
@@ -15,7 +15,7 @@ export function Hero() {
           src={HERO_IMG}
           alt=""
           aria-hidden="true"
-          className="w-full h-full object-cover object-center"
+          className="w-full h-full object-cover object-top sm:object-center"
           loading="eager"
           data-testid="img-hero"
         />
