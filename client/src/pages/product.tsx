@@ -1309,18 +1309,18 @@ export default function ProductPage() {
                 )}
 
                 {/* ── Trust strip — before CTAs, reduces friction at decision point ── */}
-                <div className="flex flex-wrap gap-x-5 gap-y-2 py-3 border-y border-border/30" data-testid="container-trust-strip">
+                <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 py-3 border-y border-border/30" data-testid="container-trust-strip">
                   {[
-                    { icon: Truck, label: "Pan India Shipping", sub: "4–7 days" },
+                    { icon: Truck, label: "Pan India Shipping", sub: "4–7 days delivery" },
                     { icon: RotateCcw, label: "Easy Exchange", sub: "T&C apply" },
-                    { icon: Lock, label: "Secure Checkout", sub: "Razorpay" },
-                    { icon: PhoneCall, label: "Expert Support", sub: "Mon–Sat" },
+                    { icon: Lock, label: "Secure Checkout", sub: "Razorpay powered" },
+                    { icon: PhoneCall, label: "Expert Support", sub: "Mon–Sat, 10am–6pm" },
                   ].map(({ icon: Icon, label, sub }) => (
-                    <div key={label} className="flex items-center gap-1.5">
-                      <Icon className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                    <div key={label} className="flex items-start gap-2">
+                      <Icon className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
                       <div className="leading-none">
                         <p className="text-[11px] font-semibold text-foreground">{label}</p>
-                        <p className="text-[10px] text-muted-foreground">{sub}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">{sub}</p>
                       </div>
                     </div>
                   ))}
