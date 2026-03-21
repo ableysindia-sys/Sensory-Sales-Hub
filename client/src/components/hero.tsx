@@ -56,7 +56,7 @@ export function Hero() {
             className="text-sm sm:text-[1.05rem] text-white/85 leading-relaxed mb-6 sm:mb-7 max-w-[440px]"
             data-testid="text-hero-desc"
           >
-            Premium OT &amp; sensory equipment with bulk pricing, GST invoices, and free pan-India delivery — for clinics, schools &amp; hospitals.
+            Premium OT &amp; sensory equipment with bulk pricing, GST invoices, and pan-India delivery — for clinics, schools &amp; hospitals.
           </p>
 
           {/* Dual CTAs */}

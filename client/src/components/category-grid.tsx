@@ -121,7 +121,7 @@ function SetupProductCard({ product, catTitle }: { product: CatalogueProduct; ca
               ₹{product.comparePrice!.toLocaleString("en-IN")}
             </p>
           )}
-          <span className="text-[10px] text-green-600 font-medium ml-auto">Free shipping</span>
+          <span className="text-[10px] text-green-600 font-medium ml-auto">Ships pan-India</span>
         </div>
 
         {/* B2B Quote button — primary */}

@@ -126,7 +126,7 @@ export function ProductCard({ product }: ProductCardProps) {
               {formatPrice(product.comparePrice)}
             </span>
           )}
-          <span className="text-[10px] text-green-600 font-medium ml-auto">Free shipping</span>
+          <span className="text-[10px] text-green-600 font-medium ml-auto">Ships pan-India</span>
         </div>
 
         {/* CTAs */}

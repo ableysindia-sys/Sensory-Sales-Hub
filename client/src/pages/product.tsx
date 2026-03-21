@@ -162,7 +162,7 @@ const REVIEWS_BY_CATEGORY: Record<string, Review[]> = {
 const SHARED_FAQS: FAQ[] = [
   {
     q: "What are your shipping timelines?",
-    a: "We process orders within 1–2 business days. Standard delivery takes 4–7 business days across India. Metro cities (Mumbai, Delhi, Bengaluru, Chennai, Hyderabad, Pune) typically receive orders in 3–5 days. Free shipping on all orders.",
+    a: "We process orders within 1–2 business days. Standard delivery takes 4–7 business days across India. Metro cities (Mumbai, Delhi, Bengaluru, Chennai, Hyderabad, Pune) typically receive orders in 3–5 days. We ship pan-India.",
   },
   {
     q: "What is your return and exchange policy?",
@@ -1117,7 +1117,7 @@ export default function ProductPage() {
                 {/* Compact trust strip below gallery — desktop only */}
                 <div className="hidden lg:flex items-center gap-4 pt-1">
                   {[
-                    { icon: Truck, label: "Free Pan India Shipping" },
+                    { icon: Truck, label: "Pan India Shipping" },
                     { icon: RotateCcw, label: "7-Day Easy Exchange" },
                     { icon: Shield, label: "OT-Approved Products" },
                   ].map(({ icon: Icon, label }) => (
@@ -1514,7 +1514,7 @@ export default function ProductPage() {
                 {/* ── Trust strip — compact 4-icon grid ── */}
                 <div className="grid grid-cols-2 gap-x-3 gap-y-2 pt-3 border-t border-border/30" data-testid="container-trust-strip">
                   {[
-                    { icon: Truck, label: "Free Shipping", sub: "Pan India, 4–7 days" },
+                    { icon: Truck, label: "Pan India Shipping", sub: "4–7 days delivery" },
                     { icon: RotateCcw, label: "7-Day Exchange", sub: "Easy, hassle-free" },
                     { icon: Lock, label: "Secure Checkout", sub: "Razorpay powered" },
                     { icon: PhoneCall, label: "Expert Support", sub: "Mon–Sat, 10am–6pm" },

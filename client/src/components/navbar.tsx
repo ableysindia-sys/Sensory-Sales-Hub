@@ -11,7 +11,7 @@ import logoPath from "@assets/ableys_rehab_logo.png";
 const ANNOUNCEMENTS = [
   "🏷️ GST Invoices Provided for All Institutional Orders",
   "📦 Bulk Pricing for OT Clinics, Schools & Hospitals — Get a Quote",
-  "🚚 Free Shipping Across India · Dispatch in 1–2 Business Days",
+  "🚚 Ships Across India · Dispatch in 1–2 Business Days",
   "⭐ Trusted by 500+ Institutions · Custom Setups Available",
 ];
 

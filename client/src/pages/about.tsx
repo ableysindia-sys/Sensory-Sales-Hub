@@ -19,7 +19,7 @@ import {
 const stats = [
   { value: "116+", label: "Curated Products" },
   { value: "500+", label: "OTs & Therapists" },
-  { value: "All India", label: "Free Shipping" },
+  { value: "All India", label: "Pan-India Delivery" },
   { value: "Noida", label: "Headquartered" },
 ];
 
@@ -41,7 +41,7 @@ const values = [
   {
     icon: Truck,
     title: "Accessible Across India",
-    desc: "Free shipping nationwide so that families in every city and town can access the tools they need.",
+    desc: "We ship nationwide so that families in every city and town can access the tools they need.",
   },
   {
     icon: Heart,

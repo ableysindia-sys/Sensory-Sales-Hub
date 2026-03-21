@@ -96,7 +96,7 @@ const SETUP_TYPES = [
 const BENEFITS = [
   { icon: BadgeIndianRupee, title: "Bulk Pricing", desc: "Significant discounts on volume orders. The more you order, the more you save — with transparent pricing tiers." },
   { icon: Receipt, title: "GST Invoices", desc: "All orders include proper GST-compliant tax invoices, ready for institutional accounting and reimbursement." },
-  { icon: Truck, title: "Free Pan-India Shipping", desc: "No shipping charges, anywhere in India — whether you're in Mumbai, Shillong, or a Tier-3 town." },
+  { icon: Truck, title: "Pan-India Shipping", desc: "We ship anywhere in India — whether you're in Mumbai, Shillong, or a Tier-3 town." },
   { icon: Award, title: "OT-Curated Selection", desc: "Every product is vetted by practicing occupational therapists for clinical efficacy and safety." },
   { icon: Headset, title: "Dedicated B2B Support", desc: "WhatsApp-first support for institutions. Get quotes, track orders, and resolve issues — fast." },
   { icon: ShieldCheck, title: "Quality Guaranteed", desc: "Durable, safe, and clinically appropriate. We stand behind every product we supply." },
@@ -243,7 +243,7 @@ export default function B2BLandingPage() {
 
   usePageMeta(
     "Bulk Sensory & OT Equipment for Clinics & Schools | Abley's Rehab B2B",
-    "India's most trusted B2B source for clinical-grade sensory tools, OT equipment & sensory room setups. Bulk pricing, GST invoices, free pan-India shipping. Trusted by 50+ occupational therapists."
+    "India's most trusted B2B source for clinical-grade sensory tools, OT equipment & sensory room setups. Bulk pricing, GST invoices, pan-India shipping. Trusted by 50+ occupational therapists."
   );
 
   const form = useForm<FormValues>({
@@ -331,7 +331,7 @@ export default function B2BLandingPage() {
 
       {/* ── Announcement Bar ── */}
       <div className="bg-primary text-white text-center text-xs font-medium py-2 px-4 tracking-wide">
-        🇮🇳 Free Shipping Pan India &nbsp;·&nbsp; GST Invoices Provided &nbsp;·&nbsp; Same Day Quotation &nbsp;·&nbsp; 50+ OTs Trust Abley's Rehab
+        🇮🇳 Ships Pan India &nbsp;·&nbsp; GST Invoices Provided &nbsp;·&nbsp; Same Day Quotation &nbsp;·&nbsp; 50+ OTs Trust Abley's Rehab
       </div>
 
       {/* ── Minimal Header ── */}
@@ -392,7 +392,7 @@ export default function B2BLandingPage() {
               </h1>
 
               <p className="!text-white/70 text-[1.05rem] leading-relaxed mb-8 max-w-[480px]">
-                Sensory rooms, therapy gyms, ADL kits and more — with bulk pricing, GST invoices, and free pan-India shipping.
+                Sensory rooms, therapy gyms, ADL kits and more — with bulk pricing, GST invoices, and pan-India shipping.
               </p>
 
               <div className="flex items-center gap-3 mb-10">
@@ -423,7 +423,7 @@ export default function B2BLandingPage() {
               <div className="flex flex-wrap gap-x-6 gap-y-2">
                 {[
                   { icon: ShieldCheck, text: "OT-curated catalogue" },
-                  { icon: Truck,       text: "Free shipping pan-India" },
+                  { icon: Truck,       text: "Ships pan-India" },
                   { icon: Receipt,     text: "GST invoices included" },
                 ].map(({ icon: Icon, text }) => (
                   <span key={text} className="flex items-center gap-1.5 text-xs text-white/55">
@@ -478,7 +478,7 @@ export default function B2BLandingPage() {
             </h1>
 
             <p className="text-sm text-white/70 leading-relaxed mb-6">
-              Bulk pricing · GST invoices · Free pan-India shipping · 32+ OT-curated products
+              Bulk pricing · GST invoices · Pan-India shipping · 32+ OT-curated products
             </p>
 
             <div className="flex flex-col gap-3 mb-6">
@@ -510,7 +510,7 @@ export default function B2BLandingPage() {
             <div className="grid grid-cols-3 gap-2 mb-0">
               {[
                 { icon: ShieldCheck, text: "OT-\ncurated" },
-                { icon: Truck,       text: "Free\nshipping" },
+                { icon: Truck,       text: "Ships\npan-India" },
                 { icon: Receipt,     text: "GST\ninvoices" },
               ].map(({ icon: Icon, text }) => (
                 <div key={text} className="flex flex-col items-center gap-1.5 bg-white/8 border border-white/12 rounded-xl px-3 py-3">
@@ -1501,7 +1501,7 @@ export default function B2BLandingPage() {
               <PhoneSignupInline
                 variant="dark"
                 label="Register for your free quote"
-                sublabel="Get bulk pricing, GST invoice, and free shipping info"
+                sublabel="Get bulk pricing, GST invoice, and shipping info"
                 containerId="recaptcha-lp-final"
               />
             </div>

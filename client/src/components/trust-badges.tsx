@@ -3,8 +3,8 @@ import { Truck, ShieldCheck, HeadphonesIcon } from "lucide-react";
 const badges = [
   {
     icon: Truck,
-    title: "Free Shipping & Returns",
-    description: "Enjoy free, reliable shipping anywhere in India. If it's not the right fit, our return process makes it easy.",
+    title: "Pan-India Shipping",
+    description: "Reliable shipping anywhere in India. If it's not the right fit, our return process makes it easy.",
   },
   {
     icon: ShieldCheck,
