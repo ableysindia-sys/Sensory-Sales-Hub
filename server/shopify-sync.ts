@@ -607,10 +607,10 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
 
     if (existing) {
       // Always update product data (name, price, images, etc.)
-      // Only update isActive when the product is NOT pinned — pinned products are team-curated
+      // Pinned products: preserve manually-set categorySlug — sync must not override admin curation
       const updateSet: Record<string, unknown> = {
         name: dbProduct.name,
-        categorySlug: dbProduct.categorySlug,
+        ...(existing.b2bPinned ? {} : { categorySlug: dbProduct.categorySlug }),
         shortDescription: dbProduct.shortDescription,
         longDescription: dbProduct.longDescription,
         basePrice: dbProduct.basePrice,
