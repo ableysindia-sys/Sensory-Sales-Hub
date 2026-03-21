@@ -1311,7 +1311,7 @@ export default function ProductPage() {
                 {/* ── Quantity + CTAs ── */}
                 <div className="space-y-2.5">
                   {/* Compact quantity row */}
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
                     <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Qty</span>
                     <div className="flex items-center border border-border/60 rounded-full overflow-hidden">
                       <Button variant="ghost" size="icon" className="rounded-none h-8 w-8 hover:bg-muted/50" onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={quantity <= 1} data-testid="button-qty-decrease">
