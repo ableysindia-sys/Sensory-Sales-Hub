@@ -299,6 +299,7 @@ export async function registerRoutes(
     shopifyHandle: z.string().nullable().optional(),
     shopifyUrl: z.string().nullable().optional(),
     isActive: z.boolean().optional(),
+    b2bPinned: z.boolean().optional(),
   });
 
   app.post("/api/admin/products", requireAdmin, async (req, res) => {
