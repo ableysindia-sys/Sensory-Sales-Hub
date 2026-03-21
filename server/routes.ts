@@ -212,7 +212,10 @@ export async function registerRoutes(
       if (
         topic === "products/create" ||
         topic === "products/update" ||
-        topic === "products/delete"
+        topic === "products/delete" ||
+        topic === "inventory_levels/update" ||
+        topic === "inventory_levels/connect" ||
+        topic === "inventory_items/update"
       ) {
         scheduleWebhookSync();
       }
