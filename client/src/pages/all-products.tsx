@@ -1,7 +1,10 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
-import { Search, X, ChevronDown, SlidersHorizontal, Grid3X3, LayoutGrid, Check } from "lucide-react";
+import {
+  Search, X, ChevronDown, SlidersHorizontal, Grid3X3, LayoutGrid,
+  Check, MessageCircle, Send, FileText, Package, List,
+} from "lucide-react";
 import { Navbar } from "@/components/navbar";
 import { SiteFooter } from "@/components/site-footer";
 import { FeaturesSection } from "@/components/features-section";
@@ -9,12 +12,14 @@ import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { useProducts } from "@/lib/product-provider";
 
+const WHATSAPP_URL = "https://wa.me/917042180166?text=Hi%20Abley%27s%2C%20I%27m%20interested%20in%20bulk%20rehab%20equipment%20for%20my%20institution.";
+
 const PRICE_RANGES = [
-  { label: "Under ₹5,000", min: 0, max: 5000 },
-  { label: "₹5,000 – ₹15,000", min: 5000, max: 15000 },
+  { label: "Under ₹5,000",      min: 0,     max: 5000 },
+  { label: "₹5,000 – ₹15,000",  min: 5000,  max: 15000 },
   { label: "₹15,000 – ₹30,000", min: 15000, max: 30000 },
   { label: "₹30,000 – ₹60,000", min: 30000, max: 60000 },
-  { label: "Over ₹60,000", min: 60000, max: Infinity },
+  { label: "Over ₹60,000",       min: 60000, max: Infinity },
 ];
 
 const SETUP_TYPE_FILTERS = [
@@ -25,28 +30,22 @@ const SETUP_TYPE_FILTERS = [
 ];
 
 const THERAPEUTIC_GOAL_FILTERS = [
-  { id: "vestibular",    label: "Vestibular & Balance",        tags: ["vestibular-therapy", "vestibular-input", "rotational-vestibular", "balance-training", "balance-development", "advanced-vestibular", "balance-obstacles"] },
-  { id: "calming",       label: "Calming & Deep Pressure",     tags: ["calming", "deep-pressure", "self-regulation", "deep-pressure-therapy", "seated-calming", "sleep-support", "anxiety-reduction", "sensory-processing"] },
-  { id: "motor",         label: "Motor Development",           tags: ["coordination", "motor-planning", "motor-coordination", "gait-training", "gross-motor", "motor-development", "bilateral-coordination", "postural-control", "energy-regulation"] },
-  { id: "proprioception",label: "Proprioception",              tags: ["proprioceptive-input", "body-awareness", "prone-extension"] },
-  { id: "strength",      label: "Strength & Core",             tags: ["core-strengthening", "grip-strength", "upper-body-strength", "core-stability", "stability-training", "strength-training", "strength-building", "strengthening", "core-exercises"] },
-  { id: "focus",         label: "Focus & Attention",           tags: ["focus-support", "sustained-attention", "focus-tool", "classroom-use", "desk-activities"] },
-  { id: "visual",        label: "Visual Stimulation",          tags: ["visual-stimulation", "visual-tracking", "visual-input", "visual-calming", "visual-exploration", "visual-timer", "cause-and-effect"] },
-  { id: "adl",           label: "Daily Living Skills",         tags: ["fine-motor", "self-care-skills", "daily-living", "independence-training", "comprehensive-adl", "comprehensive-training"] },
-  { id: "sensory-int",   label: "Sensory Integration",         tags: ["sensory-integration", "sensory-room", "sensory-therapy", "sensory-corner", "multi-sensory", "tactile-stimulation", "tactile-exploration", "tactile-input"] },
-  { id: "active-play",   label: "Active Play & Climbing",      tags: ["climbing", "climbing-therapy", "active-play", "active-movement", "jumping-therapy", "active-movement"] },
+  { id: "vestibular",     label: "Vestibular & Balance",    tags: ["vestibular-therapy", "vestibular-input", "rotational-vestibular", "balance-training", "balance-development", "advanced-vestibular", "balance-obstacles"] },
+  { id: "calming",        label: "Calming & Deep Pressure", tags: ["calming", "deep-pressure", "self-regulation", "deep-pressure-therapy", "seated-calming", "sleep-support", "anxiety-reduction", "sensory-processing"] },
+  { id: "motor",          label: "Motor Development",       tags: ["coordination", "motor-planning", "motor-coordination", "gait-training", "gross-motor", "motor-development", "bilateral-coordination", "postural-control", "energy-regulation"] },
+  { id: "proprioception", label: "Proprioception",          tags: ["proprioceptive-input", "body-awareness", "prone-extension"] },
+  { id: "strength",       label: "Strength & Core",         tags: ["core-strengthening", "grip-strength", "upper-body-strength", "core-stability", "stability-training", "strength-training", "strength-building", "strengthening", "core-exercises"] },
+  { id: "focus",          label: "Focus & Attention",       tags: ["focus-support", "sustained-attention", "focus-tool", "classroom-use", "desk-activities"] },
+  { id: "visual",         label: "Visual Stimulation",      tags: ["visual-stimulation", "visual-tracking", "visual-input", "visual-calming", "visual-exploration", "visual-timer", "cause-and-effect"] },
+  { id: "adl",            label: "Daily Living Skills",     tags: ["fine-motor", "self-care-skills", "daily-living", "independence-training", "comprehensive-adl", "comprehensive-training"] },
+  { id: "sensory-int",    label: "Sensory Integration",     tags: ["sensory-integration", "sensory-room", "sensory-therapy", "sensory-corner", "multi-sensory", "tactile-stimulation", "tactile-exploration", "tactile-input"] },
+  { id: "active-play",    label: "Active Play & Climbing",  tags: ["climbing", "climbing-therapy", "active-play", "active-movement", "jumping-therapy"] },
 ];
 
 function FilterAccordion({
-  title,
-  children,
-  defaultOpen = true,
-  testId,
+  title, children, defaultOpen = true, testId,
 }: {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-  testId: string;
+  title: string; children: React.ReactNode; defaultOpen?: boolean; testId: string;
 }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const panelId = `filter-panel-${testId}`;
@@ -60,9 +59,7 @@ function FilterAccordion({
         data-testid={`accordion-${testId}`}
       >
         <span className="text-sm font-semibold text-foreground">{title}</span>
-        <ChevronDown
-          className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-        />
+        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
       </button>
       <AnimatePresence initial={false}>
         {isOpen && (
@@ -85,17 +82,9 @@ function FilterAccordion({
 }
 
 function FilterCheckbox({
-  label,
-  count,
-  checked,
-  onChange,
-  testId,
+  label, count, checked, onChange, testId,
 }: {
-  label: string;
-  count: number;
-  checked: boolean;
-  onChange: () => void;
-  testId: string;
+  label: string; count: number; checked: boolean; onChange: () => void; testId: string;
 }) {
   return (
     <label
@@ -104,22 +93,13 @@ function FilterCheckbox({
     >
       <span
         className={`w-[18px] h-[18px] rounded border-[1.5px] flex items-center justify-center flex-shrink-0 transition-all ${
-          checked
-            ? "bg-primary border-primary"
-            : "border-muted-foreground/40 group-hover:border-muted-foreground/60"
+          checked ? "bg-primary border-primary" : "border-muted-foreground/40 group-hover:border-muted-foreground/60"
         }`}
       >
         {checked && <Check className="w-3 h-3 text-primary-foreground" />}
       </span>
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={onChange}
-        className="sr-only"
-      />
-      <span className="flex-1 text-sm text-foreground/80 group-hover:text-foreground transition-colors">
-        {label}
-      </span>
+      <input type="checkbox" checked={checked} onChange={onChange} className="sr-only" />
+      <span className="flex-1 text-sm text-foreground/80 group-hover:text-foreground transition-colors">{label}</span>
       <span className="text-xs text-muted-foreground/60 tabular-nums">{count}</span>
     </label>
   );
@@ -134,29 +114,15 @@ export default function AllProducts() {
   const [sortBy, setSortBy] = useState<string>("default");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [gridCols, setGridCols] = useState<3 | 4>(4);
+  const [mobileGridCols, setMobileGridCols] = useState<1 | 2>(2);
 
   const { categories, getAllProducts } = useProducts();
   const allProducts = useMemo(() => getAllProducts(), [getAllProducts]);
 
-  const toggleCategory = (slug: string) =>
-    setSelectedCategories((prev) =>
-      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]
-    );
-
-  const togglePriceRange = (index: number) =>
-    setSelectedPriceRanges((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
-    );
-
-  const toggleSetupType = (id: string) =>
-    setSelectedSetupTypes((prev) =>
-      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
-    );
-
-  const toggleGoal = (id: string) =>
-    setSelectedGoals((prev) =>
-      prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id]
-    );
+  const toggleCategory   = (slug: string) => setSelectedCategories((p) => p.includes(slug) ? p.filter((s) => s !== slug) : [...p, slug]);
+  const togglePriceRange = (i: number)    => setSelectedPriceRanges((p) => p.includes(i) ? p.filter((x) => x !== i) : [...p, i]);
+  const toggleSetupType  = (id: string)   => setSelectedSetupTypes((p) => p.includes(id) ? p.filter((s) => s !== id) : [...p, id]);
+  const toggleGoal       = (id: string)   => setSelectedGoals((p) => p.includes(id) ? p.filter((g) => g !== id) : [...p, id]);
 
   const clearAllFilters = () => {
     setSelectedCategories([]);
@@ -167,95 +133,69 @@ export default function AllProducts() {
   };
 
   const activeFilterCount =
-    selectedCategories.length +
-    selectedPriceRanges.length +
-    selectedSetupTypes.length +
-    selectedGoals.length;
+    selectedCategories.length + selectedPriceRanges.length +
+    selectedSetupTypes.length + selectedGoals.length;
 
   function applySetupType(products: typeof allProducts) {
     if (selectedSetupTypes.length === 0) return products;
     return products.filter((p) =>
-      selectedSetupTypes.some((id) => {
-        const setup = SETUP_TYPE_FILTERS.find((s) => s.id === id);
-        return setup?.categories.includes(p.categorySlug);
-      })
+      selectedSetupTypes.some((id) => SETUP_TYPE_FILTERS.find((s) => s.id === id)?.categories.includes(p.categorySlug))
     );
   }
-
   function applyGoals(products: typeof allProducts) {
     if (selectedGoals.length === 0) return products;
     return products.filter((p) =>
-      selectedGoals.some((id) => {
-        const goal = THERAPEUTIC_GOAL_FILTERS.find((g) => g.id === id);
-        return goal?.tags.some((tag) => p.applications.includes(tag));
-      })
+      selectedGoals.some((id) => THERAPEUTIC_GOAL_FILTERS.find((g) => g.id === id)?.tags.some((tag) => p.applications.includes(tag)))
     );
   }
-
   function applyCategories(products: typeof allProducts) {
     if (selectedCategories.length === 0) return products;
     return products.filter((p) => selectedCategories.includes(p.categorySlug));
   }
-
   function applyPriceRanges(products: typeof allProducts) {
     if (selectedPriceRanges.length === 0) return products;
     return products.filter((p) =>
-      selectedPriceRanges.some((idx) => {
-        const range = PRICE_RANGES[idx];
-        return p.basePrice >= range.min && p.basePrice < range.max;
-      })
+      selectedPriceRanges.some((idx) => p.basePrice >= PRICE_RANGES[idx].min && p.basePrice < PRICE_RANGES[idx].max)
     );
   }
-
   function applySearch(products: typeof allProducts) {
     if (!search.trim()) return products;
     const q = search.toLowerCase();
     return products.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.shortDescription.toLowerCase().includes(q) ||
-        p.categorySlug.toLowerCase().includes(q)
+      (p) => p.name.toLowerCase().includes(q) || p.shortDescription.toLowerCase().includes(q) || p.categorySlug.toLowerCase().includes(q)
     );
   }
 
   const filteredProducts = useMemo(() => {
-    let products = allProducts;
-    products = applyCategories(products);
-    products = applyPriceRanges(products);
-    products = applySetupType(products);
-    products = applyGoals(products);
-    products = applySearch(products);
-
-    if (sortBy === "price-low") products = [...products].sort((a, b) => a.basePrice - b.basePrice);
-    else if (sortBy === "price-high") products = [...products].sort((a, b) => b.basePrice - a.basePrice);
-    else if (sortBy === "name-az") products = [...products].sort((a, b) => a.name.localeCompare(b.name));
-    else if (sortBy === "name-za") products = [...products].sort((a, b) => b.name.localeCompare(a.name));
-
-    return products;
+    let p = allProducts;
+    p = applyCategories(p);
+    p = applyPriceRanges(p);
+    p = applySetupType(p);
+    p = applyGoals(p);
+    p = applySearch(p);
+    if (sortBy === "price-low")  p = [...p].sort((a, b) => a.basePrice - b.basePrice);
+    if (sortBy === "price-high") p = [...p].sort((a, b) => b.basePrice - a.basePrice);
+    if (sortBy === "name-az")    p = [...p].sort((a, b) => a.name.localeCompare(b.name));
+    if (sortBy === "name-za")    p = [...p].sort((a, b) => b.name.localeCompare(a.name));
+    return p;
   }, [allProducts, selectedCategories, selectedPriceRanges, selectedSetupTypes, selectedGoals, search, sortBy]);
 
   const categoryCounts = useMemo(() => {
     const base = applyPriceRanges(applySetupType(applyGoals(applySearch(allProducts))));
     const counts: Record<string, number> = {};
-    categories.forEach((cat) => {
-      counts[cat.slug] = base.filter((p) => p.categorySlug === cat.slug).length;
-    });
+    categories.forEach((cat) => { counts[cat.slug] = base.filter((p) => p.categorySlug === cat.slug).length; });
     return counts;
   }, [allProducts, selectedPriceRanges, selectedSetupTypes, selectedGoals, search]);
 
   const priceRangeCounts = useMemo(() => {
     const base = applyCategories(applySetupType(applyGoals(applySearch(allProducts))));
-    return PRICE_RANGES.map((range) =>
-      base.filter((p) => p.basePrice >= range.min && p.basePrice < range.max).length
-    );
+    return PRICE_RANGES.map((r) => base.filter((p) => p.basePrice >= r.min && p.basePrice < r.max).length);
   }, [allProducts, selectedCategories, selectedSetupTypes, selectedGoals, search]);
 
   const setupTypeCounts = useMemo(() => {
     const base = applyCategories(applyPriceRanges(applyGoals(applySearch(allProducts))));
     const counts: Record<string, number> = {};
-    SETUP_TYPE_FILTERS.forEach((s) => {
-      counts[s.id] = base.filter((p) => s.categories.includes(p.categorySlug)).length;
-    });
+    SETUP_TYPE_FILTERS.forEach((s) => { counts[s.id] = base.filter((p) => s.categories.includes(p.categorySlug)).length; });
     return counts;
   }, [allProducts, selectedCategories, selectedPriceRanges, selectedGoals, search]);
 
@@ -263,68 +203,53 @@ export default function AllProducts() {
     const base = applyCategories(applyPriceRanges(applySetupType(applySearch(allProducts))));
     const counts: Record<string, number> = {};
     THERAPEUTIC_GOAL_FILTERS.forEach((g) => {
-      counts[g.id] = base.filter((p) =>
-        g.tags.some((tag) => p.applications.includes(tag))
-      ).length;
+      counts[g.id] = base.filter((p) => g.tags.some((tag) => p.applications.includes(tag))).length;
     });
     return counts;
   }, [allProducts, selectedCategories, selectedPriceRanges, selectedSetupTypes, search]);
 
-  const filterSidebar = (
+  /* ── Shared filter sidebar content ── */
+  const filterSidebarContent = (
     <div className="space-y-0">
       <FilterAccordion title="Setup / Environment" defaultOpen={true} testId="setup-type">
         {SETUP_TYPE_FILTERS.map((s) => (
-          <FilterCheckbox
-            key={s.id}
-            label={s.label}
-            count={setupTypeCounts[s.id] || 0}
-            checked={selectedSetupTypes.includes(s.id)}
-            onChange={() => toggleSetupType(s.id)}
-            testId={`filter-setup-${s.id}`}
-          />
+          <FilterCheckbox key={s.id} label={s.label} count={setupTypeCounts[s.id] || 0}
+            checked={selectedSetupTypes.includes(s.id)} onChange={() => toggleSetupType(s.id)}
+            testId={`filter-setup-${s.id}`} />
         ))}
       </FilterAccordion>
-
       <FilterAccordion title="Therapeutic Goal" defaultOpen={true} testId="goal">
         {THERAPEUTIC_GOAL_FILTERS.map((g) => (
-          <FilterCheckbox
-            key={g.id}
-            label={g.label}
-            count={goalCounts[g.id] || 0}
-            checked={selectedGoals.includes(g.id)}
-            onChange={() => toggleGoal(g.id)}
-            testId={`filter-goal-${g.id}`}
-          />
+          <FilterCheckbox key={g.id} label={g.label} count={goalCounts[g.id] || 0}
+            checked={selectedGoals.includes(g.id)} onChange={() => toggleGoal(g.id)}
+            testId={`filter-goal-${g.id}`} />
         ))}
       </FilterAccordion>
-
       <FilterAccordion title="Product Type" defaultOpen={false} testId="product-type">
         {categories.map((cat) => (
-          <FilterCheckbox
-            key={cat.slug}
-            label={cat.title}
-            count={categoryCounts[cat.slug] || 0}
-            checked={selectedCategories.includes(cat.slug)}
-            onChange={() => toggleCategory(cat.slug)}
-            testId={`filter-category-${cat.slug}`}
-          />
+          <FilterCheckbox key={cat.slug} label={cat.title} count={categoryCounts[cat.slug] || 0}
+            checked={selectedCategories.includes(cat.slug)} onChange={() => toggleCategory(cat.slug)}
+            testId={`filter-category-${cat.slug}`} />
         ))}
       </FilterAccordion>
-
       <FilterAccordion title="Price" defaultOpen={false} testId="price">
         {PRICE_RANGES.map((range, i) => (
-          <FilterCheckbox
-            key={i}
-            label={range.label}
-            count={priceRangeCounts[i]}
-            checked={selectedPriceRanges.includes(i)}
-            onChange={() => togglePriceRange(i)}
-            testId={`filter-price-${i}`}
-          />
+          <FilterCheckbox key={i} label={range.label} count={priceRangeCounts[i]}
+            checked={selectedPriceRanges.includes(i)} onChange={() => togglePriceRange(i)}
+            testId={`filter-price-${i}`} />
         ))}
       </FilterAccordion>
     </div>
   );
+
+  /* ── Active filter chips (reused in desktop toolbar + mobile strip) ── */
+  const hasActiveFilters = activeFilterCount > 0;
+  const activeChips = [
+    ...selectedSetupTypes.map((id) => ({ key: `setup-${id}`, label: SETUP_TYPE_FILTERS.find((x) => x.id === id)?.label ?? id, onRemove: () => toggleSetupType(id), testId: `active-filter-setup-${id}` })),
+    ...selectedGoals.map((id) => ({ key: `goal-${id}`, label: THERAPEUTIC_GOAL_FILTERS.find((x) => x.id === id)?.label ?? id, onRemove: () => toggleGoal(id), testId: `active-filter-goal-${id}` })),
+    ...selectedCategories.map((slug) => ({ key: `cat-${slug}`, label: categories.find((c) => c.slug === slug)?.title ?? slug, onRemove: () => toggleCategory(slug), testId: `active-filter-${slug}` })),
+    ...selectedPriceRanges.map((idx) => ({ key: `price-${idx}`, label: PRICE_RANGES[idx].label, onRemove: () => togglePriceRange(idx), testId: `active-filter-price-${idx}` })),
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -333,152 +258,176 @@ export default function AllProducts() {
       <div id="main-content" className="pt-28 pb-16">
         <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6 sm:py-8">
-            <nav
-              className="flex items-center gap-2 text-sm text-muted-foreground mb-6"
-              data-testid="breadcrumb-products"
-            >
-              <Link href="/" className="hover:text-primary transition-colors">
-                Home
-              </Link>
-              <span>/</span>
-              <span className="text-foreground font-medium">All Products</span>
-            </nav>
 
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
-              <div>
-                <h1
-                  className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-1"
-                  data-testid="heading-all-products"
-                >
-                  All Products
-                </h1>
-                <p className="text-sm text-muted-foreground" data-testid="text-products-count">
-                  {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""}
-                </p>
-              </div>
+            {/* ── Page header ── */}
+            <div className="mb-8">
+              <nav
+                className="flex items-center gap-2 text-sm text-muted-foreground mb-5"
+                data-testid="breadcrumb-products"
+              >
+                <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+                <span>/</span>
+                <span className="text-foreground font-medium">All Products</span>
+              </nav>
 
-              <div className="relative max-w-xs w-full sm:w-auto">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  type="search"
-                  placeholder="Search products..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  aria-label="Search products"
-                  className="w-full pl-10 pr-10 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
-                  data-testid="input-search-products"
-                />
-                {search && (
-                  <button
-                    onClick={() => setSearch("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer touch-manipulation"
-                    data-testid="button-clear-search"
+              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5">
+                <div>
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-primary mb-2.5 bg-primary/10 px-3 py-1.5 rounded-full">
+                    {allProducts.length}+ products · B2B pricing available
+                  </span>
+                  <h1
+                    className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-1 font-display"
+                    data-testid="heading-all-products"
                   >
-                    <X className="w-4 h-4" />
-                  </button>
-                )}
+                    Rehab &amp; Sensory Equipment Catalogue
+                  </h1>
+                  <p className="text-sm text-muted-foreground" data-testid="text-products-count">
+                    {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""} · Bulk pricing · GST invoice · pan-India delivery
+                  </p>
+                </div>
+
+                {/* Search + Get Quote CTA */}
+                <div className="flex flex-col sm:items-end gap-2 w-full sm:w-auto">
+                  <div className="relative w-full sm:w-64">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <input
+                      type="search"
+                      placeholder="Search products..."
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      aria-label="Search products"
+                      className="w-full pl-10 pr-10 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
+                      data-testid="input-search-products"
+                    />
+                    {search && (
+                      <button
+                        onClick={() => setSearch("")}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer touch-manipulation"
+                        data-testid="button-clear-search"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                  <Link href="/enquiry" className="hidden sm:block" data-testid="link-header-quote">
+                    <Button size="sm" className="rounded-full gap-2 text-xs font-bold px-5" data-testid="button-header-quote">
+                      <FileText className="w-3.5 h-3.5" /> Get a B2B Quote
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </div>
 
             <div className="flex lg:gap-8">
+
+              {/* ── Desktop filter sidebar ── */}
               <aside className="hidden lg:block w-56 xl:w-64 flex-shrink-0" data-testid="filter-sidebar-desktop">
-                <div className="sticky top-28">
-                  <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                      Filter
-                    </h2>
-                    {activeFilterCount > 0 && (
-                      <button
-                        onClick={clearAllFilters}
-                        className="text-xs text-primary hover:underline cursor-pointer touch-manipulation"
-                        data-testid="button-clear-all-filters"
-                      >
-                        Clear all
-                      </button>
-                    )}
+                <div className="sticky top-28 space-y-5">
+
+                  {/* B2B quote card */}
+                  <div className="p-4 rounded-xl bg-primary/5 border border-primary/15">
+                    <p className="text-xs font-bold text-primary mb-1">B2B Bulk Pricing</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                      Ordering for a clinic, school, or hospital? Get custom pricing with GST invoice.
+                    </p>
+                    <Link href="/enquiry" className="block mb-2" data-testid="link-sidebar-quote">
+                      <Button size="sm" className="w-full rounded-lg gap-1.5 text-xs font-bold" data-testid="button-sidebar-quote">
+                        <FileText className="w-3.5 h-3.5" /> Request a Quote
+                      </Button>
+                    </Link>
+                    <a
+                      href={WHATSAPP_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-1.5 text-xs font-semibold text-green-600 dark:text-green-400 py-1.5 rounded-lg border border-green-500/30 hover:bg-green-50 dark:hover:bg-green-950/30 transition-colors"
+                      data-testid="link-sidebar-whatsapp"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" /> Chat on WhatsApp
+                    </a>
                   </div>
-                  {filterSidebar}
+
+                  {/* Filter heading + clear */}
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Filter</h2>
+                      {activeFilterCount > 0 && (
+                        <button
+                          onClick={clearAllFilters}
+                          className="text-xs text-primary hover:underline cursor-pointer touch-manipulation"
+                          data-testid="button-clear-all-filters"
+                        >
+                          Clear all
+                        </button>
+                      )}
+                    </div>
+                    {filterSidebarContent}
+                  </div>
                 </div>
               </aside>
 
+              {/* ── Main content ── */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-5 gap-3">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="lg:hidden gap-2 rounded-lg cursor-pointer touch-manipulation"
-                    onClick={() => setMobileFiltersOpen(true)}
-                    data-testid="button-open-mobile-filters"
-                  >
-                    <SlidersHorizontal className="w-4 h-4" />
-                    Filter
-                    {activeFilterCount > 0 && (
-                      <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
-                        {activeFilterCount}
-                      </span>
-                    )}
-                  </Button>
 
-                  {activeFilterCount > 0 && (
-                    <div className="hidden lg:flex items-center gap-2 flex-wrap flex-1 min-w-0">
-                      {selectedSetupTypes.map((id) => {
-                        const s = SETUP_TYPE_FILTERS.find((x) => x.id === id);
-                        return (
-                          <button
-                            key={id}
-                            onClick={() => toggleSetupType(id)}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer touch-manipulation"
-                            data-testid={`active-filter-setup-${id}`}
-                          >
-                            {s?.label}
-                            <X className="w-3 h-3" />
-                          </button>
-                        );
-                      })}
-                      {selectedGoals.map((id) => {
-                        const g = THERAPEUTIC_GOAL_FILTERS.find((x) => x.id === id);
-                        return (
-                          <button
-                            key={id}
-                            onClick={() => toggleGoal(id)}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer touch-manipulation"
-                            data-testid={`active-filter-goal-${id}`}
-                          >
-                            {g?.label}
-                            <X className="w-3 h-3" />
-                          </button>
-                        );
-                      })}
-                      {selectedCategories.map((slug) => {
-                        const cat = categories.find((c) => c.slug === slug);
-                        return (
-                          <button
-                            key={slug}
-                            onClick={() => toggleCategory(slug)}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer touch-manipulation"
-                            data-testid={`active-filter-${slug}`}
-                          >
-                            {cat?.title}
-                            <X className="w-3 h-3" />
-                          </button>
-                        );
-                      })}
-                      {selectedPriceRanges.map((idx) => (
-                        <button
-                          key={`price-${idx}`}
-                          onClick={() => togglePriceRange(idx)}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer touch-manipulation"
-                          data-testid={`active-filter-price-${idx}`}
-                        >
-                          {PRICE_RANGES[idx].label}
-                          <X className="w-3 h-3" />
-                        </button>
-                      ))}
+                {/* Toolbar */}
+                <div className="flex items-center justify-between mb-2 gap-3 flex-wrap" data-testid="toolbar-products">
+                  <div className="flex items-center gap-2">
+                    {/* Mobile: Filter drawer trigger */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="lg:hidden gap-2 rounded-lg cursor-pointer touch-manipulation"
+                      onClick={() => setMobileFiltersOpen(true)}
+                      data-testid="button-open-mobile-filters"
+                    >
+                      <SlidersHorizontal className="w-4 h-4" />
+                      Filter
+                      {activeFilterCount > 0 && (
+                        <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
+                          {activeFilterCount}
+                        </span>
+                      )}
+                    </Button>
+
+                    {/* Mobile: 1-col / 2-col toggle */}
+                    <div className="flex items-center gap-0.5 lg:hidden">
+                      <button
+                        onClick={() => setMobileGridCols(1)}
+                        aria-label="1-column list"
+                        className={`p-1.5 rounded transition-colors cursor-pointer touch-manipulation ${mobileGridCols === 1 ? "text-foreground bg-muted/60" : "text-muted-foreground/50 hover:text-muted-foreground"}`}
+                        data-testid="button-mobile-grid-1"
+                      >
+                        <List className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setMobileGridCols(2)}
+                        aria-label="2-column grid"
+                        className={`p-1.5 rounded transition-colors cursor-pointer touch-manipulation ${mobileGridCols === 2 ? "text-foreground bg-muted/60" : "text-muted-foreground/50 hover:text-muted-foreground"}`}
+                        data-testid="button-mobile-grid-2"
+                      >
+                        <Grid3X3 className="w-4 h-4" />
+                      </button>
                     </div>
-                  )}
+                  </div>
 
                   <div className="flex items-center gap-2 ml-auto">
-                    <div className="hidden sm:flex items-center gap-1 mr-2">
+                    {/* Desktop active filter chips */}
+                    {hasActiveFilters && (
+                      <div className="hidden lg:flex items-center gap-1.5 flex-wrap mr-2">
+                        {activeChips.map((chip) => (
+                          <button
+                            key={chip.key}
+                            onClick={chip.onRemove}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer touch-manipulation"
+                            data-testid={chip.testId}
+                          >
+                            {chip.label} <X className="w-3 h-3" />
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Desktop: 3/4-col toggle */}
+                    <div className="hidden sm:flex items-center gap-1 mr-1">
                       <button
                         onClick={() => setGridCols(3)}
                         aria-label="3-column grid"
@@ -504,36 +453,79 @@ export default function AllProducts() {
                       data-testid="select-sort"
                     >
                       <option value="default">Best selling</option>
-                      <option value="name-az">Alphabetically, A-Z</option>
-                      <option value="name-za">Alphabetically, Z-A</option>
-                      <option value="price-low">Price, low to high</option>
-                      <option value="price-high">Price, high to low</option>
+                      <option value="name-az">A–Z</option>
+                      <option value="name-za">Z–A</option>
+                      <option value="price-low">Price: low → high</option>
+                      <option value="price-high">Price: high → low</option>
                     </select>
                   </div>
                 </div>
 
-                {filteredProducts.length === 0 ? (
-                  <div className="text-center py-20" data-testid="empty-products">
-                    <p className="text-lg text-muted-foreground mb-2">No products found</p>
-                    <p className="text-sm text-muted-foreground/60 mb-6">
-                      Try adjusting your filters or search terms
-                    </p>
-                    <Button
-                      variant="outline"
+                {/* Mobile: scrollable active filter chip strip */}
+                {hasActiveFilters && (
+                  <div className="lg:hidden flex items-center gap-2 mb-3 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide" data-testid="mobile-active-filter-chips">
+                    <button
                       onClick={clearAllFilters}
-                      className="rounded-lg cursor-pointer touch-manipulation"
-                      data-testid="button-clear-filters"
+                      className="flex-shrink-0 text-xs text-primary font-semibold hover:underline cursor-pointer touch-manipulation px-1"
+                      data-testid="button-mobile-clear-all"
                     >
-                      Clear all filters
-                    </Button>
+                      Clear all
+                    </button>
+                    {activeChips.map((chip) => (
+                      <button
+                        key={chip.key}
+                        onClick={chip.onRemove}
+                        className="flex-shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer touch-manipulation whitespace-nowrap"
+                        data-testid={`mobile-${chip.testId}`}
+                      >
+                        {chip.label} <X className="w-3 h-3" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Product grid or empty state */}
+                {filteredProducts.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-20 text-center" data-testid="empty-products">
+                    <div className="w-16 h-16 rounded-2xl bg-muted/60 flex items-center justify-center mb-5">
+                      <Package className="w-7 h-7 text-muted-foreground/60" />
+                    </div>
+                    <h3 className="text-lg font-bold text-foreground mb-1.5">
+                      {search ? `No results for "${search}"` : "No products match your filters"}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-6 max-w-xs leading-relaxed">
+                      Try adjusting your filters — or ask us directly. We may have what you're looking for.
+                    </p>
+                    <div className="flex flex-col sm:flex-row items-center gap-3">
+                      <Button
+                        variant="outline"
+                        onClick={clearAllFilters}
+                        className="rounded-full px-6 cursor-pointer touch-manipulation"
+                        data-testid="button-clear-filters"
+                      >
+                        Clear all filters
+                      </Button>
+                      <a
+                        href={WHATSAPP_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-6 h-10 rounded-full border border-green-500/40 text-green-600 dark:text-green-400 text-sm font-semibold hover:bg-green-50 dark:hover:bg-green-950/30 transition-colors"
+                        data-testid="link-empty-whatsapp"
+                      >
+                        <MessageCircle className="w-4 h-4" /> Ask on WhatsApp
+                      </a>
+                    </div>
                   </div>
                 ) : (
                   <div
-                    className={`grid grid-cols-2 gap-3 sm:gap-4 ${
+                    className={`grid gap-3 sm:gap-4 ${
+                      mobileGridCols === 1 ? "grid-cols-1" : "grid-cols-2"
+                    } ${
                       gridCols === 3
                         ? "sm:grid-cols-2 lg:grid-cols-3"
                         : "sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                     }`}
+                    data-testid="product-grid"
                   >
                     {filteredProducts.map((product, i) => (
                       <motion.div
@@ -553,6 +545,7 @@ export default function AllProducts() {
         </div>
       </div>
 
+      {/* ── Mobile filter drawer ── */}
       <AnimatePresence>
         {mobileFiltersOpen && (
           <>
@@ -582,7 +575,7 @@ export default function AllProducts() {
                     <button
                       onClick={clearAllFilters}
                       className="text-xs text-primary hover:underline cursor-pointer touch-manipulation"
-                      data-testid="button-mobile-clear-all"
+                      data-testid="button-mobile-clear-all-drawer"
                     >
                       Clear all
                     </button>
@@ -597,7 +590,7 @@ export default function AllProducts() {
                   </button>
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto px-4 py-2">{filterSidebar}</div>
+              <div className="flex-1 overflow-y-auto px-4 py-2">{filterSidebarContent}</div>
               <div className="p-4 border-t border-border/50">
                 <Button
                   className="w-full rounded-lg cursor-pointer touch-manipulation"
@@ -611,6 +604,30 @@ export default function AllProducts() {
           </>
         )}
       </AnimatePresence>
+
+      {/* ── Sticky mobile CTA bar ── */}
+      <div
+        className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-background/95 backdrop-blur-sm border-t border-border/60 px-4 pt-3 pb-4 flex gap-3"
+        data-testid="bar-sticky-mobile-products"
+      >
+        <a
+          href={WHATSAPP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 h-11 px-5 rounded-xl border border-green-500/50 text-green-600 dark:text-green-400 text-sm font-semibold hover:bg-green-50 dark:hover:bg-green-950/30 transition-colors flex-shrink-0"
+          data-testid="button-sticky-whatsapp"
+        >
+          <MessageCircle className="w-4 h-4" /> WhatsApp
+        </a>
+        <Link href="/enquiry" className="flex-1">
+          <Button
+            className="w-full h-11 rounded-xl text-sm font-bold gap-2"
+            data-testid="button-sticky-quote"
+          >
+            <Send className="w-3.5 h-3.5" /> Get a B2B Quote
+          </Button>
+        </Link>
+      </div>
 
       <FeaturesSection />
       <SiteFooter />
