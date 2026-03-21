@@ -15,7 +15,7 @@ export function Hero() {
           src={HERO_IMG}
           alt=""
           aria-hidden="true"
-          className="w-full h-full object-cover object-top sm:object-center"
+          className="w-full h-full object-cover object-center sm:object-right"
           loading="eager"
           data-testid="img-hero"
         />
