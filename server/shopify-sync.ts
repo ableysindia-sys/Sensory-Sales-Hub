@@ -662,11 +662,10 @@ export async function syncShopifyProducts(): Promise<{ added: number; updated: n
         .where(eq(productsTable.slug, dbProduct.slug));
       updated++;
     } else {
-      // New products from Shopify are always activated and pinned automatically.
-      // isActive/b2bPinned are forced true so publishing on Shopify = instantly live on the B2B app.
-      // OOS products still render correctly with the "Out of Stock" badge via variant availableForSale.
-      await db.insert(productsTable).values({ ...dbProduct, isActive: true, b2bPinned: true });
-      console.log(`[shopify-sync] Auto-listed new product: ${dbProduct.slug}`);
+      // New products from the Headless channel are synced but NOT pinned or activated automatically.
+      // The team manually pins products via the admin panel to control what appears in the app.
+      await db.insert(productsTable).values({ ...dbProduct, isActive: false, b2bPinned: false });
+      console.log(`[shopify-sync] Imported (hidden) new product: ${dbProduct.slug}`);
       added++;
     }
   }
