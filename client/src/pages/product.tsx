@@ -1583,7 +1583,7 @@ export default function ProductPage() {
                       <TabsList className="h-auto bg-transparent p-0 gap-0 rounded-none flex-nowrap min-w-max px-4 sm:px-6 lg:px-8">
                         <TabsTrigger value="overview" className={TAB_TRIGGER} data-testid="tab-overview">Overview</TabsTrigger>
                         {hasKeyBenefits && (
-                          <TabsTrigger value="key-benefits" className={TAB_TRIGGER} data-testid="tab-key-benefits">Key Benefits</TabsTrigger>
+                          <TabsTrigger value="key-benefits" className={TAB_TRIGGER} data-testid="tab-key-benefits">Key Features</TabsTrigger>
                         )}
                         {hasUsageGuide && (
                           <TabsTrigger value="usage-guide" className={TAB_TRIGGER} data-testid="tab-usage-guide">Usage Guide</TabsTrigger>
@@ -1622,7 +1622,7 @@ export default function ProductPage() {
                       <div className="max-w-3xl">
                         <div className="mb-6">
                           <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mb-2">Why It Works</p>
-                          <h2 className="text-2xl font-bold text-foreground">Key Benefits</h2>
+                          <h2 className="text-2xl font-bold text-foreground">Key Features</h2>
                         </div>
                         <div className={PROSE} dangerouslySetInnerHTML={{ __html: _keyBenefits! }} />
                       </div>
