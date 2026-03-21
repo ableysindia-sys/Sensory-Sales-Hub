@@ -71,6 +71,8 @@ import {
   Download,
   Lightbulb,
   ClipboardList,
+  AlertCircle,
+  Zap,
 } from "lucide-react";
 
 const featuredSwingsImg = "https://cdn.shopify.com/s/files/1/0682/9221/5043/files/wbedk.png?v=1774087637";
@@ -136,12 +138,11 @@ const FAQS = [
 ];
 
 const STATS = [
-  { value: "50+", label: "OTs & Therapists Served" },
-  { value: "32+", label: "OT-Curated Products" },
-  { value: "50+", label: "Sensory Rooms Set Up" },
+  { value: "50+",    label: "OTs & Therapists Served" },
+  { value: "50+",    label: "Sensory Rooms Set Up" },
   { value: "< 2 hr", label: "Quote Response Time" },
+  { value: "48–72h", label: "Pan-India Dispatch" },
 ];
-
 
 const STAKEHOLDERS = [
   {
@@ -274,7 +275,9 @@ export default function B2BLandingPage() {
     },
     onSuccess: () => {
       setSubmitted(true);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => {
+        formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
     },
     onError: () => {
       toast({ title: "Something went wrong", description: "Please try WhatsApp or email us directly.", variant: "destructive" });
@@ -331,15 +334,20 @@ export default function B2BLandingPage() {
 
       {/* ── Announcement Bar ── */}
       <div className="bg-primary text-white text-center text-xs font-medium py-2 px-4 tracking-wide">
-        🇮🇳 Ships Pan India &nbsp;·&nbsp; GST Invoices Provided &nbsp;·&nbsp; Same Day Quotation &nbsp;·&nbsp; 50+ OTs Trust Abley's Rehab
+        Ships Pan-India &nbsp;·&nbsp; GST Invoices Provided &nbsp;·&nbsp; Same-Day Quotation &nbsp;·&nbsp; 50+ OTs Trust Abley's Rehab
       </div>
 
-      {/* ── Minimal Header ── */}
+      {/* ── Minimal Header — no outbound navigation for ad traffic ── */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/">
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="focus:outline-none"
+            aria-label="Back to top"
+            data-testid="button-logo-top"
+          >
             <img src={logoPath} alt="Abley's Rehab" className="h-16 object-contain" data-testid="img-logo-header" />
-          </Link>
+          </button>
           <div className="flex items-center gap-3">
             <a
               href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20bulk%20B2B%20pricing%20for%20my%20institution."
@@ -370,31 +378,25 @@ export default function B2BLandingPage() {
         {/* ── Hero ── */}
         <section className="relative overflow-hidden bg-[#070d2a] text-white" data-testid="section-b2b-hero">
 
-          {/* Background: brand radial glow + grid texture */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_70%_at_10%_50%,rgba(74,83,160,0.45),transparent)] pointer-events-none" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_40%_50%_at_90%_20%,rgba(251,191,36,0.07),transparent)] pointer-events-none" />
           <div className="absolute inset-0 opacity-[0.035] pointer-events-none" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.6) 1px,transparent 1px)", backgroundSize: "48px 48px" }} />
 
           {/* ── Desktop: split layout ── */}
           <div className="hidden lg:flex min-h-[680px]">
-
-            {/* Left text panel */}
             <div className="flex-1 flex flex-col justify-center pl-12 xl:pl-20 pr-10 py-24 max-w-[620px]">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white/90 text-[10px] font-semibold tracking-widest uppercase mb-7 border border-white/15 self-start">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
                 India's B2B OT Equipment Partner
               </div>
-
               <h1 className="!text-white text-[3rem] xl:text-[3.6rem] leading-[1.06] font-bold font-display mb-6">
                 Premium Sensory &amp; OT Equipment —{" "}
                 <span className="italic text-amber-300">Built</span>{" "}
                 for India's Institutions.
               </h1>
-
               <p className="!text-white/70 text-[1.05rem] leading-relaxed mb-8 max-w-[480px]">
                 Sensory rooms, therapy gyms, ADL kits and more — with bulk pricing, GST invoices, and pan-India shipping.
               </p>
-
               <div className="flex items-center gap-3 mb-10">
                 <Button
                   size="lg"
@@ -419,7 +421,6 @@ export default function B2BLandingPage() {
                   </Button>
                 </a>
               </div>
-
               <div className="flex flex-wrap gap-x-6 gap-y-2">
                 {[
                   { icon: ShieldCheck, text: "OT-curated catalogue" },
@@ -433,11 +434,8 @@ export default function B2BLandingPage() {
               </div>
             </div>
 
-            {/* Right image panel */}
             <div className="relative flex-1 overflow-hidden">
-              {/* left-edge fade into navy */}
               <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#070d2a] to-transparent z-10" />
-              {/* bottom fade */}
               <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#070d2a]/90 to-transparent z-10" />
               <img
                 src={featuredSwingsImg}
@@ -445,12 +443,10 @@ export default function B2BLandingPage() {
                 className="w-full h-full object-cover object-center"
                 loading="eager"
               />
-              {/* Floating product count badge */}
               <div className="absolute top-8 right-8 z-20 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-3 text-center">
-                <p className="text-2xl font-bold text-white font-display leading-none">32+</p>
-                <p className="text-[10px] text-white/65 mt-0.5 uppercase tracking-wider">OT-Curated Products</p>
+                <p className="text-2xl font-bold text-white font-display leading-none">50+</p>
+                <p className="text-[10px] text-white/65 mt-0.5 uppercase tracking-wider">Sensory Rooms Set Up</p>
               </div>
-              {/* Bottom catalogue CTA */}
               <div className="absolute bottom-6 right-8 z-20">
                 <a
                   href="/api/catalog"
@@ -470,38 +466,37 @@ export default function B2BLandingPage() {
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
               India's B2B OT Equipment Partner
             </div>
-
             <h1 className="!text-white text-[1.9rem] leading-[1.1] font-bold font-display mb-4">
               Premium OT Equipment —{" "}
               <span className="italic text-amber-300">Built</span>{" "}
               for Institutions.
             </h1>
-
             <p className="text-sm text-white/70 leading-relaxed mb-6">
               Bulk pricing · GST invoices · Pan-India shipping · 32+ OT-curated products
             </p>
 
-            <div className="flex flex-col gap-3 mb-6">
+            {/* Mobile CTAs: side-by-side */}
+            <div className="flex gap-2.5 mb-6">
               <Button
                 size="lg"
-                className="!bg-white !text-gray-900 hover:!bg-gray-50 rounded-full text-sm px-8 h-12 gap-2 font-semibold shadow-xl shadow-black/30 !border-0 w-full justify-center"
+                className="!bg-white !text-gray-900 hover:!bg-gray-50 rounded-full text-sm px-5 h-12 gap-2 font-semibold shadow-xl shadow-black/30 !border-0 flex-1 justify-center"
                 onClick={scrollToForm}
                 data-testid="button-get-quote-hero-mobile"
               >
-                Get a Bulk Quote <ArrowRight className="w-4 h-4" />
+                Get a Quote <ArrowRight className="w-4 h-4" />
               </Button>
               <a
                 href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20discuss%20bulk%20B2B%20pricing%20for%20my%20institution."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full"
+                className="flex-1"
               >
                 <Button
                   size="lg"
                   variant="ghost"
-                  className="!text-white/80 hover:!text-white hover:!bg-white/10 rounded-full text-sm px-6 h-12 font-medium !border border-white/20 w-full justify-center gap-2"
+                  className="!text-white/85 hover:!text-white hover:!bg-white/10 rounded-full text-sm px-4 h-12 font-medium !border border-white/25 w-full justify-center gap-1.5"
                 >
-                  <MessageCircle className="w-4 h-4" /> WhatsApp Us
+                  <MessageCircle className="w-4 h-4" /> WhatsApp
                 </Button>
               </a>
             </div>
@@ -598,53 +593,122 @@ export default function B2BLandingPage() {
           `}</style>
         </section>
 
-        {/* ── Social Proof / Testimonial Strip ── */}
+        {/* ── Pain Points — BEFORE form to activate undecided buyers ── */}
+        <section className="bg-gradient-to-br from-red-50/80 via-background to-orange-50/40 dark:from-red-950/20 dark:via-background dark:to-orange-950/10 border-b">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+            <div className="grid sm:grid-cols-2 gap-12 items-center">
+              <div>
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-red-600 dark:text-red-400 mb-4 bg-red-100 dark:bg-red-950/40 px-3 py-1.5 rounded-full">
+                  <AlertCircle className="w-3 h-3" /> Sound Familiar?
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground mb-6 leading-tight">
+                  Sourcing OT Equipment in India Has Always Been Painful.
+                </h2>
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  Importing from international brands takes 2–3 months, arrives at inflated prices, and comes with zero local support. Indian manufacturers often compromise on clinical quality.
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Meanwhile, your clients need intervention <em>today</em> — and your budget doesn't stretch to premium imports.
+                </p>
+              </div>
+              <div className="space-y-2.5">
+                {[
+                  "Overpriced imports with 3-month lead times",
+                  "No single vendor for a complete sensory room setup",
+                  "Products that aren't designed for Indian clinical settings",
+                  "No GST invoices — or complications with institutional billing",
+                  "Inconsistent quality with zero after-sale support",
+                  "Having to source from 5 different vendors for one setup",
+                ].map((pain) => (
+                  <div key={pain} className="flex items-center gap-3 p-3.5 rounded-xl bg-white dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 shadow-sm">
+                    <div className="w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center shrink-0">
+                      <span className="text-red-500 dark:text-red-400 text-xs font-bold leading-none">✕</span>
+                    </div>
+                    <p className="text-sm text-foreground/85 font-medium">{pain}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Testimonials ── */}
         <section className="bg-gradient-to-b from-muted/30 to-background border-b">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-16">
-          <div className="text-center mb-10">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-3 bg-primary/10 px-3 py-1.5 rounded-full">⭐ What Institutions Say</span>
-            <h2 className="text-2xl sm:text-3xl font-bold font-display text-foreground">Trusted by India's Leading OT Professionals</h2>
-          </div>
-          <div className="grid sm:grid-cols-3 gap-6">
-            {[
-              {
-                quote: "Abley's made it incredibly easy to stock our sensory room. The bulk pricing was fair and the GST invoice was ready within the hour.",
-                author: "Ruchika M.",
-                role: "Occupational Therapist, Mumbai",
-                avatar: "RM",
-              },
-              {
-                quote: "We set up our school's entire sensory corner through Abley's. Quick delivery, great quality — and they even recommended the right products for our budget.",
-                author: "Ananya K.",
-                role: "Special Educator, Bengaluru",
-                avatar: "AK",
-              },
-              {
-                quote: "Finally, a reliable Indian vendor for OT equipment that doesn't cut corners on quality. Our clinic swears by Abley's Rehab.",
-                author: "Dr. Suresh P.",
-                role: "Rehab Consultant, Delhi NCR",
-                avatar: "SP",
-              },
-            ].map(({ quote, author, role, avatar }) => (
-              <div key={author} className="rounded-2xl border border-border/60 bg-card p-6 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
-                <div className="flex gap-0.5 mb-4">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-                <p className="text-sm text-foreground/80 leading-relaxed mb-5 italic">"{quote}"</p>
-                <div className="flex items-center gap-3 pt-3 border-t border-border/40">
-                  <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center text-xs font-bold text-primary shrink-0">
-                    {avatar}
+            <div className="text-center mb-10">
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-3 bg-primary/10 px-3 py-1.5 rounded-full">
+                <Star className="w-3 h-3" /> What Institutions Say
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold font-display text-foreground">Trusted by India's Leading OT Professionals</h2>
+            </div>
+            <div className="grid sm:grid-cols-3 gap-6">
+              {[
+                {
+                  quote: "Ordered 6 platform swings and a crash pad for our sensory room — got a detailed GST quote within 2 hours and everything arrived in 4 days. Exactly as described, no surprises.",
+                  author: "Ruchika M.",
+                  role: "Occupational Therapist, Mumbai",
+                  avatar: "RM",
+                },
+                {
+                  quote: "We set up our school's sensory corner (₹28,000 worth of equipment) entirely through Abley's. They recommended the right products for our students' age group and it arrived before the term started.",
+                  author: "Ananya K.",
+                  role: "Special Educator, Bengaluru",
+                  avatar: "AK",
+                },
+                {
+                  quote: "Our hospital's purchase committee needed a formal PO-compatible quotation. Abley's sent a full GST quotation same day — our procurement team approved it immediately.",
+                  author: "Dr. Suresh P.",
+                  role: "Rehab Consultant, Delhi NCR",
+                  avatar: "SP",
+                },
+              ].map(({ quote, author, role, avatar }) => (
+                <div key={author} className="rounded-2xl border border-border/60 bg-card p-6 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+                  <div className="flex gap-0.5 mb-4">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    ))}
                   </div>
-                  <div>
-                    <p className="text-sm font-bold text-foreground">{author}</p>
-                    <p className="text-xs text-muted-foreground">{role}</p>
+                  <p className="text-sm text-foreground/80 leading-relaxed mb-5 italic">"{quote}"</p>
+                  <div className="flex items-center gap-3 pt-3 border-t border-border/40">
+                    <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center text-xs font-bold text-primary shrink-0">
+                      {avatar}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-foreground">{author}</p>
+                      <p className="text-xs text-muted-foreground">{role}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
+        </section>
+
+        {/* ── How It Works — BEFORE the form to reduce submission anxiety ── */}
+        <section className="relative overflow-hidden bg-gradient-to-br from-primary/8 via-primary/4 to-background border-b">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_60%_at_50%_0%,rgba(74,83,160,0.15),transparent)]" />
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-16">
+            <div className="text-center mb-12">
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-4 bg-primary/10 px-3 py-1.5 rounded-full">
+                <Zap className="w-3 h-3" /> The Process
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground leading-tight">
+                From Enquiry to Delivery in 3 Steps
+              </h2>
+              <p className="mt-3 text-muted-foreground text-sm max-w-lg mx-auto">Submit below — here's exactly what happens next.</p>
+            </div>
+            <div className="grid sm:grid-cols-3 gap-8 relative">
+              <div className="hidden sm:block absolute top-11 left-[calc(16.67%+2rem)] right-[calc(16.67%+2rem)] h-px border-t-2 border-dashed border-primary/30" />
+              {HOW_IT_WORKS.map(({ step, title, desc }) => (
+                <div key={step} className="text-center relative">
+                  <div className="w-22 h-22 rounded-full bg-primary shadow-lg shadow-primary/30 border-4 border-primary/20 flex items-center justify-center mx-auto mb-5" style={{ width: "5.5rem", height: "5.5rem" }}>
+                    <span className="text-3xl font-bold text-white font-display">{step}</span>
+                  </div>
+                  <h3 className="font-bold text-foreground text-lg mb-2">{title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -664,7 +728,7 @@ export default function B2BLandingPage() {
                 </p>
                 <div className="space-y-4">
                   {[
-                    { icon: Clock, text: "Response same day (business hours)" },
+                    { icon: Clock, text: "Response same day (Mon–Sat, 9am–7pm)" },
                     { icon: BadgeIndianRupee, text: "Custom bulk pricing, no obligations" },
                     { icon: Headset, text: "Dedicated B2B support via WhatsApp" },
                     { icon: ShieldCheck, text: "No spam — only a quote tailored to you" },
@@ -688,9 +752,8 @@ export default function B2BLandingPage() {
                   >
                     <MessageCircle className="w-4 h-4" /> Chat with our OT specialist on WhatsApp
                   </a>
-                  <p className="text-xs text-amber-700/70 dark:text-amber-500/70 mt-1">Usually responds same day</p>
+                  <p className="text-xs text-amber-700/70 dark:text-amber-500/70 mt-1">Usually responds same day · Mon–Sat 9am–7pm</p>
                 </div>
-
                 <a
                   href="/api/catalog"
                   target="_blank"
@@ -713,7 +776,7 @@ export default function B2BLandingPage() {
                     </div>
                     <h3 className="text-xl font-bold text-foreground mb-2">Enquiry Received!</h3>
                     <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
-                      Thank you — our B2B team will review your request and send you a custom quote same day (during business hours).
+                      Thank you — our B2B team will review your request and send you a custom quote same day (Mon–Sat, 9am–7pm).
                     </p>
                     <a
                       href="https://wa.me/917042180166?text=Hi%2C%20I%20just%20submitted%20a%20B2B%20enquiry%20on%20rehab.ableys.in%20and%20wanted%20to%20follow%20up."
@@ -728,7 +791,6 @@ export default function B2BLandingPage() {
                   </div>
 
                 ) : formStep === 0 ? (
-                  /* ── Step 0: OTP sign-in (optional, accessed via link) ── */
                   <div data-testid="form-step-signin">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg font-bold text-foreground">Sign In to Pre-fill</h3>
@@ -749,13 +811,11 @@ export default function B2BLandingPage() {
                   </div>
 
                 ) : formStep === 1 ? (
-                  /* ── Step 1: Quick capture — single phone field ── */
                   <div data-testid="form-step-quick">
                     <h3 className="text-lg font-bold text-foreground mb-1">Get Your Free Quote</h3>
                     <p className="text-sm text-muted-foreground mb-6">
                       Enter your WhatsApp number — we'll send your pricing same day.
                     </p>
-
                     <div className="space-y-3">
                       <div className="relative">
                         <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-muted-foreground select-none pointer-events-none">
@@ -791,13 +851,11 @@ export default function B2BLandingPage() {
                         )}
                       </Button>
                     </div>
-
                     <div className="my-5 flex items-center gap-3">
                       <div className="h-px flex-1 bg-border" />
                       <span className="text-xs text-muted-foreground shrink-0">or share more details now</span>
                       <div className="h-px flex-1 bg-border" />
                     </div>
-
                     <button
                       type="button"
                       onClick={() => setFormStep(2)}
@@ -806,7 +864,6 @@ export default function B2BLandingPage() {
                     >
                       Fill detailed enquiry form →
                     </button>
-
                     {!user && (
                       <button
                         type="button"
@@ -817,14 +874,12 @@ export default function B2BLandingPage() {
                         <Phone className="w-3 h-3" /> Sign in to pre-fill your details →
                       </button>
                     )}
-
                     <p className="text-xs text-muted-foreground text-center mt-4">
                       No spam. Used only to prepare your quote.
                     </p>
                   </div>
 
                 ) : (
-                  /* ── Step 2: Full detailed form ── */
                   <>
                     {quickCaptured && (
                       <div className="flex items-start gap-2.5 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-xl px-4 py-3 mb-5">
@@ -835,7 +890,6 @@ export default function B2BLandingPage() {
                         </div>
                       </div>
                     )}
-
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-base font-bold text-foreground">Complete Your Enquiry</h3>
                       <button
@@ -847,7 +901,6 @@ export default function B2BLandingPage() {
                         ← Back
                       </button>
                     </div>
-
                     <Form {...form}>
                       <form
                         onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
@@ -929,7 +982,7 @@ export default function B2BLandingPage() {
                             name="requirementType"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>I Need *</FormLabel>
+                                <FormLabel>Requirement Type *</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value ?? ""}>
                                   <FormControl>
                                     <SelectTrigger data-testid="select-requirement-type">
@@ -939,10 +992,11 @@ export default function B2BLandingPage() {
                                   <SelectContent>
                                     <SelectItem value="sensory-room-setup">Complete Sensory Room Setup</SelectItem>
                                     <SelectItem value="bulk-order">Bulk Order of Products</SelectItem>
-                                    <SelectItem value="clinic-equipment">Clinic / OT Equipment</SelectItem>
-                                    <SelectItem value="school-setup">School / Institutional Setup</SelectItem>
-                                    <SelectItem value="rehab-gym">Rehab Gym Equipment</SelectItem>
-                                    <SelectItem value="custom-quote">Custom / Other Quote</SelectItem>
+                                    <SelectItem value="single-product">Single Product Enquiry</SelectItem>
+                                    <SelectItem value="adl-kit">ADL / Life Skills Kit</SelectItem>
+                                    <SelectItem value="therapy-gym">Therapy Gym Setup</SelectItem>
+                                    <SelectItem value="school-classroom">School / Classroom Setup</SelectItem>
+                                    <SelectItem value="other">Other / Not Sure</SelectItem>
                                   </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -955,10 +1009,10 @@ export default function B2BLandingPage() {
                           name="message"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Tell Us More <span className="text-muted-foreground font-normal">(optional)</span></FormLabel>
+                              <FormLabel>Additional Details <span className="text-muted-foreground font-normal">(optional)</span></FormLabel>
                               <FormControl>
                                 <Textarea
-                                  placeholder="E.g. We need equipment for a 300 sq ft sensory room at our school in Pune. Budget approx ₹1.5L..."
+                                  placeholder="Tell us about your space, budget, or specific products you're interested in…"
                                   className="resize-none"
                                   rows={3}
                                   {...field}
@@ -970,31 +1024,20 @@ export default function B2BLandingPage() {
                             </FormItem>
                           )}
                         />
-
-                        {/* Urgency nudge */}
-                        <div className="flex items-center gap-2.5 py-1 text-xs text-muted-foreground">
-                          <div className="flex -space-x-1.5 shrink-0">
-                            {["RM", "AK", "SP"].map((i) => (
-                              <div key={i} className="w-5 h-5 rounded-full bg-primary/20 border-2 border-background text-[8px] font-bold text-primary flex items-center justify-center">{i}</div>
-                            ))}
-                          </div>
-                          <span>12+ institutions got quotes this week</span>
-                        </div>
-
                         <Button
                           type="submit"
-                          className="w-full rounded-xl h-12 text-base font-semibold"
+                          className="w-full h-12 text-base font-semibold rounded-xl gap-2"
                           disabled={mutation.isPending}
                           data-testid="button-submit-enquiry"
                         >
                           {mutation.isPending ? (
-                            <><Loader2 className="mr-2 w-4 h-4 animate-spin" /> Submitting…</>
+                            <><Loader2 className="w-4 h-4 animate-spin" /> Submitting…</>
                           ) : (
-                            <><Send className="mr-2 w-4 h-4" /> Submit Enquiry — Get My Quote</>
+                            <><Send className="w-4 h-4" /> Submit Enquiry — Get Quote Same Day</>
                           )}
                         </Button>
                         <p className="text-xs text-muted-foreground text-center">
-                          No spam. Your details are only used to prepare your quote.
+                          No spam · Used only to prepare your quote · Mon–Sat 9am–7pm
                         </p>
                       </form>
                     </Form>
@@ -1005,12 +1048,12 @@ export default function B2BLandingPage() {
           </div>
         </section>
 
-        {/* ── Institutional Guarantee Stack ── */}
-        <section className="relative overflow-hidden border-b bg-[#070d2a] text-white" data-testid="section-institutional-guarantees">
-          {/* Subtle grid overlay */}
-          <div className="absolute pointer-events-none inset-0 opacity-[0.03]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.8) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.8) 1px,transparent 1px)", backgroundSize: "40px 40px" }} />
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
-            <div className="text-center mb-10">
+        {/* ── Institutional Guarantees ── */}
+        <section className="relative overflow-hidden bg-[#070d2a] text-white border-b" data-testid="section-institutional-guarantees">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_60%_at_50%_100%,rgba(74,83,160,0.35),transparent)]" />
+          <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1) 1px,transparent 1px)", backgroundSize: "32px 32px" }} />
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+            <div className="text-center mb-12">
               <span className="text-xs font-semibold uppercase tracking-widest text-amber-400 mb-3 block">Built for Institutions</span>
               <h2 className="text-2xl sm:text-3xl font-bold font-display text-white">
                 We've Solved Every Institutional Procurement Pain Point
@@ -1036,48 +1079,13 @@ export default function B2BLandingPage() {
           </div>
         </section>
 
-        {/* ── Pain Points ── */}
-        <section className="bg-gradient-to-br from-red-50/80 via-background to-orange-50/40 dark:from-red-950/20 dark:via-background dark:to-orange-950/10 border-b">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
-          <div className="grid sm:grid-cols-2 gap-12 items-center">
-            <div>
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-red-600 dark:text-red-400 mb-4 bg-red-100 dark:bg-red-950/40 px-3 py-1.5 rounded-full">😓 Sound Familiar?</span>
-              <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground mb-6 leading-tight">
-                Sourcing OT Equipment in India Has Always Been Painful.
-              </h2>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                Importing from international brands takes 2–3 months, arrives at inflated prices, and comes with zero local support. Indian manufacturers often compromise on clinical quality.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                Meanwhile, your clients need intervention <em>today</em> — and your budget doesn't stretch to premium imports.
-              </p>
-            </div>
-            <div className="space-y-2.5">
-              {[
-                "Overpriced imports with 3-month lead times",
-                "No single vendor for a complete sensory room setup",
-                "Products that aren't designed for Indian clinical settings",
-                "No GST invoices — or complications with institutional billing",
-                "Inconsistent quality with zero after-sale support",
-                "Having to source from 5 different vendors for one setup",
-              ].map((pain) => (
-                <div key={pain} className="flex items-center gap-3 p-3.5 rounded-xl bg-white dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 shadow-sm">
-                  <div className="w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center shrink-0">
-                    <span className="text-red-500 dark:text-red-400 text-xs font-bold leading-none">✕</span>
-                  </div>
-                  <p className="text-sm text-foreground/85 font-medium">{pain}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          </div>
-        </section>
-
         {/* ── Stakeholder Navigator ── */}
         <section className="bg-gradient-to-b from-slate-50 via-blue-50/30 to-background dark:from-slate-900/60 dark:via-blue-950/20 dark:to-background border-y" data-testid="section-stakeholder-navigator">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
             <div className="text-center mb-12">
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-4 bg-primary/10 px-3 py-1.5 rounded-full">🎯 Who This Is For</span>
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-4 bg-primary/10 px-3 py-1.5 rounded-full">
+                <Users className="w-3 h-3" /> Who This Is For
+              </span>
               <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground leading-tight">
                 We Understand Your Specific Buying Situation.
               </h2>
@@ -1140,75 +1148,74 @@ export default function B2BLandingPage() {
         {/* ── Setup Types ── */}
         <section className="bg-gradient-to-b from-background to-primary/3 border-b">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
-          <div className="text-center mb-12">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-4 bg-primary/10 px-3 py-1.5 rounded-full">📦 Our Catalogue</span>
-            <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground leading-tight">
-              Equipment for Every Setup Type
-            </h2>
-            <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
-              Tell us your setup type and we'll recommend the exact products you need — no guesswork.
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {SETUP_TYPES.map(({ id, label, icon: Icon, desc, count, browseHref }, idx) => {
-              const accents = [
-                { card: "from-blue-500/15 to-blue-500/5 border-blue-200 dark:border-blue-800", icon: "text-blue-600 dark:text-blue-400", iconBg: "bg-blue-100 dark:bg-blue-950/60", divider: "border-blue-200/60 dark:border-blue-800/60" },
-                { card: "from-violet-500/15 to-violet-500/5 border-violet-200 dark:border-violet-800", icon: "text-violet-600 dark:text-violet-400", iconBg: "bg-violet-100 dark:bg-violet-950/60", divider: "border-violet-200/60 dark:border-violet-800/60" },
-                { card: "from-green-500/15 to-green-500/5 border-green-200 dark:border-green-800", icon: "text-green-600 dark:text-green-400", iconBg: "bg-green-100 dark:bg-green-950/60", divider: "border-green-200/60 dark:border-green-800/60" },
-                { card: "from-amber-500/15 to-amber-500/5 border-amber-200 dark:border-amber-800", icon: "text-amber-600 dark:text-amber-400", iconBg: "bg-amber-100 dark:bg-amber-950/60", divider: "border-amber-200/60 dark:border-amber-800/60" },
-                { card: "from-rose-500/15 to-rose-500/5 border-rose-200 dark:border-rose-800", icon: "text-rose-600 dark:text-rose-400", iconBg: "bg-rose-100 dark:bg-rose-950/60", divider: "border-rose-200/60 dark:border-rose-800/60" },
-                { card: "from-teal-500/15 to-teal-500/5 border-teal-200 dark:border-teal-800", icon: "text-teal-600 dark:text-teal-400", iconBg: "bg-teal-100 dark:bg-teal-950/60", divider: "border-teal-200/60 dark:border-teal-800/60" },
-              ];
-              const a = accents[idx % accents.length];
-              return (
-                <div
-                  key={id}
-                  className={`group rounded-2xl border bg-gradient-to-br ${a.card} p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col`}
-                  data-testid={`card-setup-${id}`}
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className={`w-11 h-11 rounded-xl ${a.iconBg} flex items-center justify-center`}>
-                      <Icon className={`w-5 h-5 ${a.icon}`} />
-                    </div>
-                    <Link href={browseHref}>
-                      <span className={`text-xs font-semibold ${a.icon} ${a.iconBg} px-2.5 py-1 rounded-full cursor-pointer hover:underline`} data-testid={`badge-count-${id}`}>
-                        {count}
-                      </span>
-                    </Link>
-                  </div>
-                  <h3 className="font-bold text-foreground mb-2">{label}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1">{desc}</p>
-                  <div className={`flex items-center justify-between pt-4 border-t ${a.divider}`}>
-                    <Link href={browseHref} data-testid={`link-browse-${id}`}>
-                      <span className={`text-xs font-semibold ${a.icon} flex items-center gap-1 group-hover:gap-2 transition-all cursor-pointer`}>
-                        Browse products <ArrowRight className="w-3 h-3" />
-                      </span>
-                    </Link>
-                    <button
-                      onClick={scrollToForm}
-                      className="text-xs font-medium text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
-                      data-testid={`button-enquire-${id}`}
-                    >
-                      Get a quote
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-            {/* Browse all CTA card */}
-            <div
-              className="rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 p-6 flex flex-col items-center justify-center text-center hover:border-primary/70 hover:bg-primary/8 transition-colors cursor-pointer"
-              onClick={scrollToForm}
-              data-testid="card-setup-custom"
-            >
-              <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center mb-3">
-                <Package className="w-6 h-6 text-primary" />
-              </div>
-              <p className="font-bold text-foreground mb-1">Have a Custom Need?</p>
-              <p className="text-sm text-muted-foreground mb-3">Describe your requirement and we'll sort it out.</p>
-              <span className="text-xs font-bold text-primary uppercase tracking-wide flex items-center gap-1">Tell us more <ArrowRight className="w-3 h-3" /></span>
+            <div className="text-center mb-12">
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-4 bg-primary/10 px-3 py-1.5 rounded-full">
+                <Package className="w-3 h-3" /> Our Catalogue
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground leading-tight">
+                Equipment for Every Setup Type
+              </h2>
+              <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
+                Tell us your setup type and we'll recommend the exact products you need — no guesswork.
+              </p>
             </div>
-          </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {SETUP_TYPES.map(({ id, label, icon: Icon, desc, count, browseHref }, idx) => {
+                const accents = [
+                  { card: "from-blue-500/15 to-blue-500/5 border-blue-200 dark:border-blue-800", icon: "text-blue-600 dark:text-blue-400", iconBg: "bg-blue-100 dark:bg-blue-950/60", divider: "border-blue-200/60 dark:border-blue-800/60" },
+                  { card: "from-violet-500/15 to-violet-500/5 border-violet-200 dark:border-violet-800", icon: "text-violet-600 dark:text-violet-400", iconBg: "bg-violet-100 dark:bg-violet-950/60", divider: "border-violet-200/60 dark:border-violet-800/60" },
+                  { card: "from-green-500/15 to-green-500/5 border-green-200 dark:border-green-800", icon: "text-green-600 dark:text-green-400", iconBg: "bg-green-100 dark:bg-green-950/60", divider: "border-green-200/60 dark:border-green-800/60" },
+                  { card: "from-amber-500/15 to-amber-500/5 border-amber-200 dark:border-amber-800", icon: "text-amber-600 dark:text-amber-400", iconBg: "bg-amber-100 dark:bg-amber-950/60", divider: "border-amber-200/60 dark:border-amber-800/60" },
+                ];
+                const a = accents[idx % accents.length];
+                return (
+                  <div
+                    key={id}
+                    className={`group rounded-2xl border bg-gradient-to-br ${a.card} p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col`}
+                    data-testid={`card-setup-${id}`}
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className={`w-11 h-11 rounded-xl ${a.iconBg} flex items-center justify-center`}>
+                        <Icon className={`w-5 h-5 ${a.icon}`} />
+                      </div>
+                      <Link href={browseHref}>
+                        <span className={`text-xs font-semibold ${a.icon} ${a.iconBg} px-2.5 py-1 rounded-full cursor-pointer hover:underline`} data-testid={`badge-count-${id}`}>
+                          {count}
+                        </span>
+                      </Link>
+                    </div>
+                    <h3 className="font-bold text-foreground mb-2">{label}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1">{desc}</p>
+                    <div className={`flex items-center justify-between pt-4 border-t ${a.divider}`}>
+                      <Link href={browseHref} data-testid={`link-browse-${id}`}>
+                        <span className={`text-xs font-semibold ${a.icon} flex items-center gap-1 group-hover:gap-2 transition-all cursor-pointer`}>
+                          Browse products <ArrowRight className="w-3 h-3" />
+                        </span>
+                      </Link>
+                      <button
+                        onClick={scrollToForm}
+                        className="text-xs font-medium text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+                        data-testid={`button-enquire-${id}`}
+                      >
+                        Get a quote
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+              <div
+                className="rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 p-6 flex flex-col items-center justify-center text-center hover:border-primary/70 hover:bg-primary/8 transition-colors cursor-pointer"
+                onClick={scrollToForm}
+                data-testid="card-setup-custom"
+              >
+                <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center mb-3">
+                  <Package className="w-6 h-6 text-primary" />
+                </div>
+                <p className="font-bold text-foreground mb-1">Have a Custom Need?</p>
+                <p className="text-sm text-muted-foreground mb-3">Describe your requirement and we'll sort it out.</p>
+                <span className="text-xs font-bold text-primary uppercase tracking-wide flex items-center gap-1">Tell us more <ArrowRight className="w-3 h-3" /></span>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -1237,36 +1244,16 @@ export default function B2BLandingPage() {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-
-        {/* ── How It Works ── */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-primary/8 via-primary/4 to-background border-b">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_60%_at_50%_0%,rgba(74,83,160,0.15),transparent)]" />
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
-          <div className="text-center mb-14">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-primary mb-4 bg-primary/10 px-3 py-1.5 rounded-full">⚡ The Process</span>
-            <h2 className="text-3xl sm:text-4xl font-bold font-display text-foreground leading-tight">
-              From Enquiry to Delivery in 3 Steps
-            </h2>
-          </div>
-          <div className="grid sm:grid-cols-3 gap-8 relative">
-            <div className="hidden sm:block absolute top-11 left-[calc(16.67%+2rem)] right-[calc(16.67%+2rem)] h-px border-t-2 border-dashed border-primary/30" />
-            {HOW_IT_WORKS.map(({ step, title, desc }) => (
-              <div key={step} className="text-center relative">
-                <div className="w-22 h-22 rounded-full bg-primary shadow-lg shadow-primary/30 border-4 border-primary/20 flex items-center justify-center mx-auto mb-5" style={{ width: "5.5rem", height: "5.5rem" }}>
-                  <span className="text-3xl font-bold text-white font-display">{step}</span>
-                </div>
-                <h3 className="font-bold text-foreground text-lg mb-2">{title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-          <div className="text-center mt-12">
-            <Button size="lg" className="rounded-full px-10 shadow-lg shadow-primary/25" onClick={scrollToForm} data-testid="button-start-enquiry">
-              Start Your Enquiry <ArrowRight className="ml-2 w-4 h-4" />
-            </Button>
-          </div>
+            <div className="text-center mt-12">
+              <Button
+                size="lg"
+                className="!bg-white !text-gray-900 hover:!bg-amber-50 rounded-full px-10 shadow-lg !border-0"
+                onClick={scrollToForm}
+                data-testid="button-start-enquiry"
+              >
+                Start Your Enquiry <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </section>
 
@@ -1274,7 +1261,6 @@ export default function B2BLandingPage() {
         <section id="grant-toolkit" className="bg-gradient-to-br from-green-50/60 via-background to-background dark:from-green-950/20 dark:via-background dark:to-background border-b" data-testid="section-grant-toolkit">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
             <div className="grid lg:grid-cols-2 gap-12 items-start">
-
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold uppercase tracking-widest mb-5">
                   <BookOpen className="w-3.5 h-3.5" /> School Grant Toolkit
@@ -1285,7 +1271,6 @@ export default function B2BLandingPage() {
                 <p className="text-muted-foreground leading-relaxed mb-6">
                   Getting school budget approved for sensory equipment is the hardest part. We've done the work for you — our grant toolkit includes a pre-filled letter your principal or administrator can sign off on in minutes.
                 </p>
-
                 <div className="grid sm:grid-cols-2 gap-4 mb-6">
                   {[
                     { icon: Users, stat: "7.3M+", label: "Indian students who benefit from sensory tools", color: "text-green-600" },
@@ -1304,7 +1289,6 @@ export default function B2BLandingPage() {
                     </div>
                   ))}
                 </div>
-
                 <div className="mb-6">
                   <p className="text-xs font-bold text-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
                     <ClipboardList className="w-3.5 h-3.5 text-primary" /> What's in the toolkit
@@ -1324,7 +1308,6 @@ export default function B2BLandingPage() {
                     ))}
                   </ul>
                 </div>
-
                 <a
                   href="https://wa.me/917042180166?text=Hi%2C%20I%27m%20a%20school%20OT%20and%20I%27d%20like%20to%20request%20the%20Abley%27s%20School%20Grant%20Toolkit%20%28pre-filled%20grant%20letter%20%2B%20ROI%20sheet%29."
                   target="_blank"
@@ -1337,7 +1320,6 @@ export default function B2BLandingPage() {
                 <p className="text-xs text-muted-foreground mt-2">Delivered via WhatsApp · Sent same day</p>
               </div>
 
-              {/* Right — template preview card */}
               <div className="relative">
                 <div className="absolute -top-3 -right-3 z-10 bg-green-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
                   Free Template
@@ -1382,7 +1364,6 @@ export default function B2BLandingPage() {
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </section>
@@ -1496,7 +1477,6 @@ export default function B2BLandingPage() {
             <p className="text-lg text-white/75 mb-8 max-w-xl mx-auto leading-relaxed">
               Register with your phone — we'll send you a custom quote same day, no commitment needed.
             </p>
-
             <div className="max-w-md mx-auto mb-6">
               <PhoneSignupInline
                 variant="dark"
@@ -1505,9 +1485,7 @@ export default function B2BLandingPage() {
                 containerId="recaptcha-lp-final"
               />
             </div>
-
             <div className="flex flex-wrap gap-4 justify-center">
-              {/* Sample Kit CTA — hidden until further notice */}
               <button
                 onClick={scrollToForm}
                 className="text-white/65 hover:text-white text-sm font-medium underline underline-offset-2 transition-colors"
@@ -1551,24 +1529,24 @@ export default function B2BLandingPage() {
         </div>
       </footer>
 
-      {/* ── Mobile Sticky CTA Bar ── */}
+      {/* ── Mobile Sticky CTA Bar — Quote dominant, WhatsApp secondary ── */}
       {!submitted && (
         <div className="fixed bottom-0 inset-x-0 z-[60] lg:hidden bg-background/95 backdrop-blur-md border-t border-border px-4 pt-3 pb-4 flex gap-3">
           <a
             href="https://wa.me/917042180166?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20bulk%20B2B%20pricing%20for%20my%20institution."
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 h-11 rounded-xl bg-green-500 hover:bg-green-600 text-white text-sm font-semibold transition-colors shadow-lg shadow-green-500/20"
+            className="flex items-center justify-center gap-2 h-11 px-5 rounded-xl border border-green-500/50 text-green-600 dark:text-green-400 text-sm font-semibold hover:bg-green-50 dark:hover:bg-green-950/30 transition-colors flex-shrink-0"
             data-testid="button-sticky-whatsapp"
           >
-            <MessageCircle className="w-4 h-4" /> WhatsApp Us
+            <MessageCircle className="w-4 h-4" /> WhatsApp
           </a>
           <Button
             onClick={scrollToForm}
-            className="flex-1 h-11 rounded-xl text-sm font-semibold gap-1.5"
+            className="flex-1 h-11 rounded-xl text-sm font-bold gap-1.5"
             data-testid="button-sticky-get-quote"
           >
-            <Send className="w-4 h-4" /> Get a Quote
+            <Send className="w-3.5 h-3.5" /> Get a B2B Quote
           </Button>
         </div>
       )}
