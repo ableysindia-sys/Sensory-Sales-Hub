@@ -164,6 +164,65 @@ export async function registerRoutes(
     }
   });
 
+  // ── Shopify Webhooks ────────────────────────────────────────────────────────
+  // Shopify pushes product create/update/delete events here in real time.
+  // We verify the HMAC signature, then trigger a debounced full sync so the
+  // app reflects Shopify changes within seconds of them happening.
+  let webhookSyncTimer: ReturnType<typeof setTimeout> | null = null;
+  function scheduleWebhookSync() {
+    if (webhookSyncTimer) clearTimeout(webhookSyncTimer);
+    webhookSyncTimer = setTimeout(() => {
+      webhookSyncTimer = null;
+      syncShopifyProducts()
+        .then(() => {
+          invalidateCheckoutCache();
+          console.log("[webhook] Sync triggered by Shopify webhook complete ✓");
+        })
+        .catch(err => console.error("[webhook] Webhook-triggered sync failed:", err));
+    }, 2000); // 2 s debounce — coalesces burst of related webhooks
+  }
+
+  app.post("/api/webhooks/shopify", (req, res) => {
+    try {
+      const hmacHeader = req.headers["x-shopify-hmac-sha256"] as string | undefined;
+      const topic = req.headers["x-shopify-topic"] as string | undefined;
+      const rawBody = (req as any).rawBody as Buffer | undefined;
+
+      if (!hmacHeader || !rawBody) {
+        console.warn("[webhook] Missing HMAC or body");
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const secret = process.env.SHOPIFY_CLIENT_SECRET;
+      if (secret) {
+        const expected = crypto
+          .createHmac("sha256", secret)
+          .update(rawBody)
+          .digest("base64");
+        if (expected !== hmacHeader) {
+          console.warn("[webhook] HMAC mismatch — ignoring");
+          return res.status(401).json({ message: "Unauthorized" });
+        }
+      }
+
+      // Acknowledge immediately (Shopify requires < 5 s response)
+      res.status(200).json({ received: true });
+
+      console.log(`[webhook] Received: ${topic}`);
+      if (
+        topic === "products/create" ||
+        topic === "products/update" ||
+        topic === "products/delete"
+      ) {
+        scheduleWebhookSync();
+      }
+    } catch (err) {
+      console.error("[webhook] Error handling webhook:", err);
+      res.status(500).json({ message: "Internal error" });
+    }
+  });
+  // ── End Shopify Webhooks ────────────────────────────────────────────────────
+
   app.get("/api/products", async (_req, res) => {
     try {
       const products = await storage.getActiveProducts();
@@ -904,7 +963,7 @@ export async function registerRoutes(
   // ── End Shopify Admin API Routes ─────────────────────────────────────────────
 
   initShopifyAdmin();
-  startPeriodicSync(undefined, invalidateCheckoutCache);
+  startPeriodicSync(5 * 60 * 1000, invalidateCheckoutCache); // 5 min fallback; webhooks handle real-time
 
   return httpServer;
 }
