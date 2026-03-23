@@ -61,6 +61,8 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 - `products`: id (serial), slug (unique), name, categorySlug, shortDescription, longDescription, basePrice (int), comparePrice (int nullable), stock (int nullable = unlimited), images (JSON text), specifications (JSON text), features (JSON text), applications (JSON text), configOptions (JSON text), shopifyHandle, shopifyUrl, shopifyVariants (JSON text), defaultVariantId, productType, vendor, sku, shopifyGid, shopifyUpdatedAt, isActive, b2bPinned, createdAt
 - `leads`: id (serial), name, email, interest, organisation, phone, city, category, requirementType, message, cartItems, status (new/contacted/converted/closed), createdAt
 - `pages`: id (serial), slug (unique), title, content, isPublished, createdAt, updatedAt
+- `collections`: id (serial), title, slug (unique), description, imageUrl, isActive, createdAt
+- `collection_products`: id (serial), collectionId (FK→collections), productId (FK→products) — many-to-many pivot
 
 ## API Endpoints
 ### Public
@@ -111,6 +113,12 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 - `POST /api/admin/pages` - Create page
 - `PATCH /api/admin/pages/:id` - Update page
 - `DELETE /api/admin/pages/:id` - Delete page
+- `GET /api/admin/collections` - List all collections (with product counts)
+- `POST /api/admin/collections` - Create collection
+- `PUT /api/admin/collections/:id` - Update collection
+- `DELETE /api/admin/collections/:id` - Delete collection (cascades product mappings)
+- `GET /api/admin/collections/:id/products` - Get mapped product IDs
+- `POST /api/admin/collections/:id/products` - Bulk-set product mappings (replaces old)
 
 ## Admin Panel Features
 - Password-protected login (ADMIN_PASSWORD env secret)

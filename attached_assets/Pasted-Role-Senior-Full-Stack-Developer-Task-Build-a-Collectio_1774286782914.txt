@@ -1,0 +1,44 @@
+Role: Senior Full-Stack Developer
+Task: Build a "Collection Management & Product Mapping" module for our custom Admin Dashboard. We need the ability to create new collections (categories) and map our existing synced products to them. This must integrate smoothly with our existing database and UI architecture.
+
+Please implement the following requirements:
+
+1. Database & Schema Logic
+
+Utilize the existing product schema.
+
+Ensure there is a Collections table (Fields: ID, Title, Handle/Slug, Description, Image_URL, Active_Status).
+
+Ensure there is a relational mapping mechanism (e.g., a pivot table Collection_Products mapping collection_id to product_id, or an array field depending on our DB setup) to establish a Many-to-Many relationship between products and collections.
+
+2. Admin UI: Integration with Existing Dashboard
+
+Add a new "Collections" tab to our existing dashboard navigation menu (alongside the current tabs: Leads, Products, Pages, Setup Guide).
+
+List View (Default Tab State): A clean data table displaying existing collections, the total product count in each, and Edit/Delete action buttons.
+
+Create/Edit View: A form interface within this tab to input the Collection Title, Description, and Handle.
+
+3. The Product Mapping Interface (Crucial)
+
+Inside the Edit Collection view, build a "Mapped Products" section.
+
+The Selector: Implement a searchable, paginated multi-select interface (like a dual-listbox or transfer list).
+
+Functionality: >   * Admin can search existing synced products by Title or SKU.
+
+Admin can check/uncheck products to assign or remove them from the current collection.
+
+Display a thumbnail image, Title, and SKU for each product in the list to make identification easy.
+
+4. API Endpoints & State Management
+
+Create the necessary backend routes:
+
+POST /api/collections (Create new)
+
+PUT /api/collections/:id (Update details)
+
+POST /api/collections/:id/products (Accepts an array of product_ids to bulk-update the mappings for that collection, replacing the old mappings).
+
+Ensure the UI handles loading states gracefully while the database attaches/detaches products, without requiring a full page reload.

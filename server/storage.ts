@@ -1,14 +1,16 @@
 import {
   leads, categories as categoriesTable, products as productsTable, pages as pagesTable,
   sampleRequests as sampleRequestsTable,
+  collections as collectionsTable, collectionProducts as collectionProductsTable,
   type Lead, type InsertLead,
   type Category, type InsertCategory,
   type Product, type InsertProduct,
   type Page, type InsertPage,
+  type Collection, type InsertCollection,
   type SampleRequest, type InsertSampleRequest,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, count, asc } from "drizzle-orm";
+import { eq, desc, count, asc, inArray } from "drizzle-orm";
 
 export interface IStorage {
   createLead(lead: InsertLead): Promise<Lead>;
@@ -42,6 +44,15 @@ export interface IStorage {
   createPage(page: InsertPage): Promise<Page>;
   updatePage(id: number, data: Partial<InsertPage>): Promise<Page | undefined>;
   deletePage(id: number): Promise<boolean>;
+
+  getCollections(): Promise<Collection[]>;
+  getCollection(id: number): Promise<Collection | undefined>;
+  createCollection(col: InsertCollection): Promise<Collection>;
+  updateCollection(id: number, data: Partial<InsertCollection>): Promise<Collection | undefined>;
+  deleteCollection(id: number): Promise<boolean>;
+  getCollectionProductIds(collectionId: number): Promise<number[]>;
+  setCollectionProducts(collectionId: number, productIds: number[]): Promise<void>;
+  getCollectionProductCounts(): Promise<Record<number, number>>;
 
   createSampleRequest(req: InsertSampleRequest): Promise<SampleRequest>;
   getSampleRequests(): Promise<SampleRequest[]>;
@@ -170,6 +181,53 @@ export class DatabaseStorage implements IStorage {
   async deletePage(id: number): Promise<boolean> {
     const result = await db.delete(pagesTable).where(eq(pagesTable.id, id)).returning();
     return result.length > 0;
+  }
+
+  async getCollections(): Promise<Collection[]> {
+    return db.select().from(collectionsTable).orderBy(desc(collectionsTable.createdAt));
+  }
+  async getCollection(id: number): Promise<Collection | undefined> {
+    const [col] = await db.select().from(collectionsTable).where(eq(collectionsTable.id, id));
+    return col;
+  }
+  async createCollection(col: InsertCollection): Promise<Collection> {
+    const [created] = await db.insert(collectionsTable).values(col).returning();
+    return created;
+  }
+  async updateCollection(id: number, data: Partial<InsertCollection>): Promise<Collection | undefined> {
+    const [updated] = await db.update(collectionsTable).set(data).where(eq(collectionsTable.id, id)).returning();
+    return updated;
+  }
+  async deleteCollection(id: number): Promise<boolean> {
+    await db.delete(collectionProductsTable).where(eq(collectionProductsTable.collectionId, id));
+    const result = await db.delete(collectionsTable).where(eq(collectionsTable.id, id)).returning();
+    return result.length > 0;
+  }
+  async getCollectionProductIds(collectionId: number): Promise<number[]> {
+    const rows = await db.select({ productId: collectionProductsTable.productId })
+      .from(collectionProductsTable)
+      .where(eq(collectionProductsTable.collectionId, collectionId));
+    return rows.map(r => r.productId);
+  }
+  async setCollectionProducts(collectionId: number, productIds: number[]): Promise<void> {
+    const unique = [...new Set(productIds.filter(id => Number.isFinite(id) && id > 0))];
+    await db.transaction(async (tx) => {
+      await tx.delete(collectionProductsTable).where(eq(collectionProductsTable.collectionId, collectionId));
+      if (unique.length > 0) {
+        await tx.insert(collectionProductsTable).values(
+          unique.map(productId => ({ collectionId, productId }))
+        );
+      }
+    });
+  }
+  async getCollectionProductCounts(): Promise<Record<number, number>> {
+    const rows = await db
+      .select({ collectionId: collectionProductsTable.collectionId, count: count() })
+      .from(collectionProductsTable)
+      .groupBy(collectionProductsTable.collectionId);
+    const result: Record<number, number> = {};
+    for (const r of rows) result[r.collectionId] = Number(r.count);
+    return result;
   }
 
   async createSampleRequest(req: InsertSampleRequest): Promise<SampleRequest> {

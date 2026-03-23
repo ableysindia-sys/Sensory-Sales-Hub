@@ -717,6 +717,73 @@ export async function registerRoutes(
     }
   });
 
+  // ── Collection routes ──────────────────────────────────────────────────
+  app.get("/api/admin/collections", requireAdmin, async (_req, res) => {
+    try {
+      const cols = await storage.getCollections();
+      const counts = await storage.getCollectionProductCounts();
+      res.json(cols.map(c => ({ ...c, productCount: counts[c.id] || 0 })));
+    } catch { res.status(500).json({ message: "Failed to fetch collections" }); }
+  });
+
+  app.post("/api/admin/collections", requireAdmin, async (req, res) => {
+    try {
+      const { title, slug, description, imageUrl, isActive } = req.body;
+      if (!title || !slug) return res.status(400).json({ message: "Title and slug are required" });
+      const col = await storage.createCollection({ title, slug, description: description || null, imageUrl: imageUrl || null, isActive: isActive ?? true });
+      res.json(col);
+    } catch (err: any) {
+      if (err?.code === "23505") return res.status(409).json({ message: "A collection with this slug already exists" });
+      res.status(500).json({ message: "Failed to create collection" });
+    }
+  });
+
+  app.put("/api/admin/collections/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid collection ID" });
+      const { title, slug, description, imageUrl, isActive } = req.body;
+      const updated = await storage.updateCollection(id, { title, slug, description, imageUrl, isActive });
+      if (!updated) return res.status(404).json({ message: "Collection not found" });
+      res.json(updated);
+    } catch (err: any) {
+      if (err?.code === "23505") return res.status(409).json({ message: "A collection with this slug already exists" });
+      res.status(500).json({ message: "Failed to update collection" });
+    }
+  });
+
+  app.delete("/api/admin/collections/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid collection ID" });
+      const deleted = await storage.deleteCollection(id);
+      if (!deleted) return res.status(404).json({ message: "Collection not found" });
+      res.json({ message: "Collection deleted" });
+    } catch { res.status(500).json({ message: "Failed to delete collection" }); }
+  });
+
+  app.get("/api/admin/collections/:id/products", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid collection ID" });
+      const productIds = await storage.getCollectionProductIds(id);
+      res.json({ productIds });
+    } catch { res.status(500).json({ message: "Failed to fetch collection products" }); }
+  });
+
+  app.post("/api/admin/collections/:id/products", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid collection ID" });
+      const { productIds } = req.body;
+      if (!Array.isArray(productIds) || !productIds.every(id => typeof id === "number" && Number.isFinite(id) && id > 0)) {
+        return res.status(400).json({ message: "productIds must be an array of positive integers" });
+      }
+      await storage.setCollectionProducts(id, productIds);
+      res.json({ message: "Products updated", count: productIds.length });
+    } catch { res.status(500).json({ message: "Failed to update collection products" }); }
+  });
+
   // ── Sample Request routes ──────────────────────────────────────────────
   const sampleRequestSchema = z.object({
     name: z.string().min(2),

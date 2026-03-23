@@ -87,6 +87,24 @@ export const sampleRequests = pgTable("sample_requests", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const collections = pgTable("collections", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  description: text("description"),
+  imageUrl: text("image_url"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const collectionProducts = pgTable("collection_products", {
+  id: serial("id").primaryKey(),
+  collectionId: integer("collection_id").notNull(),
+  productId: integer("product_id").notNull(),
+});
+
+export const insertCollectionSchema = createInsertSchema(collections).omit({ id: true, createdAt: true });
+
 export const insertCategorySchema = createInsertSchema(categories).omit({ id: true });
 export const insertProductSchema = createInsertSchema(products).omit({ id: true, createdAt: true });
 export const insertLeadSchema = createInsertSchema(leads).omit({ id: true, status: true, createdAt: true });
@@ -103,5 +121,8 @@ export type Lead = typeof leads.$inferSelect;
 export type InsertLead = z.infer<typeof insertLeadSchema>;
 export type Page = typeof pages.$inferSelect;
 export type InsertPage = z.infer<typeof insertPageSchema>;
+export type Collection = typeof collections.$inferSelect;
+export type InsertCollection = z.infer<typeof insertCollectionSchema>;
+export type CollectionProduct = typeof collectionProducts.$inferSelect;
 export type SampleRequest = typeof sampleRequests.$inferSelect;
 export type InsertSampleRequest = z.infer<typeof insertSampleRequestSchema>;

@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Lead, Product, Category, Page } from "@shared/schema";
+import CollectionsView from "./admin-collections";
 import { formatPrice } from "@/lib/product-provider";
 import {
   LayoutDashboard,
@@ -47,6 +48,7 @@ import {
   BookOpen,
   Copy,
   ExternalLink,
+  FolderOpen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1378,7 +1380,7 @@ function SetupGuideView() {
   );
 }
 
-type AdminTab = "dashboard" | "leads" | "products" | "pages" | "setup-guide";
+type AdminTab = "dashboard" | "leads" | "products" | "collections" | "pages" | "setup-guide";
 
 export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState(!!getToken());
@@ -1414,6 +1416,7 @@ export default function AdminPage() {
     { id: "dashboard" as AdminTab, label: "Dashboard", icon: LayoutDashboard },
     { id: "leads" as AdminTab, label: "Leads", icon: Users },
     { id: "products" as AdminTab, label: "Products", icon: Package },
+    { id: "collections" as AdminTab, label: "Collections", icon: FolderOpen },
     { id: "pages" as AdminTab, label: "Pages", icon: FileText },
     { id: "setup-guide" as AdminTab, label: "Setup Guide", icon: BookOpen },
   ];
@@ -1506,6 +1509,7 @@ export default function AdminPage() {
           {activeTab === "dashboard" && <DashboardView />}
           {activeTab === "leads" && <LeadsView />}
           {activeTab === "products" && <ProductsView />}
+          {activeTab === "collections" && <CollectionsView />}
           {activeTab === "pages" && <PagesView />}
           {activeTab === "setup-guide" && <SetupGuideView />}
         </main>
