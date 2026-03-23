@@ -58,7 +58,7 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 
 ## Database Schema
 - `categories`: id (serial), slug (unique), title, description, color, image, displayOrder, isActive
-- `products`: id (serial), slug (unique), name, categorySlug, shortDescription, longDescription, basePrice (int), comparePrice (int nullable), stock (int nullable = unlimited), images (JSON text), specifications (JSON text), features (JSON text), applications (JSON text), configOptions (JSON text), shopifyHandle, shopifyUrl, isActive, createdAt
+- `products`: id (serial), slug (unique), name, categorySlug, shortDescription, longDescription, basePrice (int), comparePrice (int nullable), stock (int nullable = unlimited), images (JSON text), specifications (JSON text), features (JSON text), applications (JSON text), configOptions (JSON text), shopifyHandle, shopifyUrl, shopifyVariants (JSON text), defaultVariantId, productType, vendor, sku, shopifyGid, shopifyUpdatedAt, isActive, b2bPinned, createdAt
 - `leads`: id (serial), name, email, interest, organisation, phone, city, category, requirementType, message, cartItems, status (new/contacted/converted/closed), createdAt
 - `pages`: id (serial), slug (unique), title, content, isPublished, createdAt, updatedAt
 
@@ -76,10 +76,15 @@ Premium B2B/B2C hybrid e-commerce platform for Abley's Rehab, a professional the
 - Store domain: `2feec0-4.myshopify.com` (env: SHOPIFY_STORE_DOMAIN)
 - Storefront API token: env secret SHOPIFY_STOREFRONT_TOKEN
 - API version: 2024-10
-- **Auto-sync**: `server/shopify-sync.ts` syncs all Shopify products to DB on startup and every 30 minutes
-  - `syncShopifyProducts()` fetches all products via Storefront API (paginated), upserts to DB with collection→category mapping
-  - `startPeriodicSync()` called in `routes.ts` at server startup
-  - Admin manual trigger: `POST /api/admin/shopify-sync`
+- **Auto-sync**: `server/shopify-sync.ts` syncs products from the Ableys Headless publication channel only (GID: gid://shopify/Publication/183329587459)
+  - `syncShopifyProducts()` fetches products via Admin API (publication-scoped, paginated), upserts to DB with collection→category mapping
+  - Sync lock prevents concurrent sync runs; queued syncs run after current one finishes
+  - `startPeriodicSync()` called in `routes.ts` at server startup (5 min interval)
+  - Reconciliation runs every 6 hours (compares `shopifyUpdatedAt` timestamps to detect stale/missing products)
+  - Admin manual triggers: `POST /api/admin/shopify-sync` (sync), `POST /api/admin/reconcile` (reconciliation)
+  - Metafields fetched only for headless-channel products (no data leak from other channels)
+  - Webhooks: HMAC validation is strict (rejects if SHOPIFY_CLIENT_SECRET is missing), logs product GID from payload
+  - Category resolution: collection handle → tag → title pattern → fallback "adl-kit"; pinned products preserve their DB category
 - Products have `shopifyHandle`, `shopifyUrl`, `shopifyVariants` (JSON), `productType`, `vendor`, `sku` fields in DB (set by sync)
 - `shopifyVariants` stores all variant data: id, title, sku, price, compareAtPrice, options, image (null for single-variant products)
 - Client uses `product.shopifyHandle` from DB data (no more hardcoded slug→handle map)

@@ -5,7 +5,7 @@ import { api } from "@shared/routes";
 import { z } from "zod";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import crypto from "crypto";
-import { syncShopifyProducts, startPeriodicSync } from "./shopify-sync";
+import { syncShopifyProducts, startPeriodicSync, reconcileProducts } from "./shopify-sync";
 import { generateCatalogPDF } from "./catalog-pdf";
 import { initShopifyAdmin, shopifyAdminFetch, shopifyAdminGraphQL } from "./shopify-admin";
 
@@ -165,21 +165,19 @@ export async function registerRoutes(
   });
 
   // ── Shopify Webhooks ────────────────────────────────────────────────────────
-  // Shopify pushes product create/update/delete events here in real time.
-  // We verify the HMAC signature, then trigger a debounced full sync so the
-  // app reflects Shopify changes within seconds of them happening.
   let webhookSyncTimer: ReturnType<typeof setTimeout> | null = null;
-  function scheduleWebhookSync() {
+  function scheduleWebhookSync(topic: string, productInfo: string) {
+    console.log(`[webhook] Queuing sync for ${topic} → ${productInfo}`);
     if (webhookSyncTimer) clearTimeout(webhookSyncTimer);
     webhookSyncTimer = setTimeout(() => {
       webhookSyncTimer = null;
       syncShopifyProducts()
         .then(() => {
           invalidateCheckoutCache();
-          console.log("[webhook] Sync triggered by Shopify webhook complete ✓");
+          console.log("[webhook] Sync triggered by Shopify webhook complete");
         })
         .catch(err => console.error("[webhook] Webhook-triggered sync failed:", err));
-    }, 2000); // 2 s debounce — coalesces burst of related webhooks
+    }, 2000);
   }
 
   app.post("/api/webhooks/shopify", (req, res) => {
@@ -189,39 +187,47 @@ export async function registerRoutes(
       const rawBody = (req as any).rawBody as Buffer | undefined;
 
       if (!hmacHeader || !rawBody) {
-        console.warn("[webhook] Missing HMAC or body");
+        console.warn("[webhook] Missing HMAC or body — rejecting");
         return res.status(401).json({ message: "Unauthorized" });
       }
 
       const secret = process.env.SHOPIFY_CLIENT_SECRET;
-      if (secret) {
-        const expected = crypto
-          .createHmac("sha256", secret)
-          .update(rawBody)
-          .digest("base64");
-        if (expected !== hmacHeader) {
-          console.warn("[webhook] HMAC mismatch — ignoring");
-          return res.status(401).json({ message: "Unauthorized" });
-        }
+      if (!secret) {
+        console.error("[webhook] SHOPIFY_CLIENT_SECRET not set — cannot verify HMAC, rejecting");
+        return res.status(500).json({ message: "Server misconfigured" });
       }
 
-      // Acknowledge immediately (Shopify requires < 5 s response)
+      const expected = crypto
+        .createHmac("sha256", secret)
+        .update(rawBody)
+        .digest("base64");
+      if (expected !== hmacHeader) {
+        console.warn("[webhook] HMAC mismatch — rejecting");
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
       res.status(200).json({ received: true });
 
-      console.log(`[webhook] Received: ${topic}`);
-      if (
-        topic === "products/create" ||
-        topic === "products/update" ||
-        topic === "products/delete" ||
-        topic === "inventory_levels/update" ||
-        topic === "inventory_levels/connect" ||
-        topic === "inventory_items/update"
-      ) {
-        scheduleWebhookSync();
+      let productInfo = "unknown";
+      try {
+        const body = JSON.parse(rawBody.toString());
+        const adminGid = body.admin_graphql_api_id;
+        const handle = body.handle;
+        productInfo = adminGid || handle || `id:${body.id}`;
+      } catch {}
+
+      console.log(`[webhook] Received: ${topic} for ${productInfo}`);
+
+      const SYNC_TOPICS = new Set([
+        "products/create", "products/update", "products/delete",
+        "inventory_levels/update", "inventory_levels/connect", "inventory_items/update",
+      ]);
+      if (topic && SYNC_TOPICS.has(topic)) {
+        scheduleWebhookSync(topic, productInfo);
       }
     } catch (err) {
       console.error("[webhook] Error handling webhook:", err);
-      res.status(500).json({ message: "Internal error" });
+      if (!res.headersSent) res.status(500).json({ message: "Internal error" });
     }
   });
   // ── End Shopify Webhooks ────────────────────────────────────────────────────
@@ -692,11 +698,22 @@ export async function registerRoutes(
   app.post("/api/admin/shopify-sync", requireAdmin, async (_req, res) => {
     try {
       const result = await syncShopifyProducts();
-      invalidateCheckoutCache(); // new products are immediately available for checkout
+      invalidateCheckoutCache();
       res.json(result);
     } catch (err) {
       console.error("Shopify sync error:", err);
       res.status(500).json({ message: "Sync failed" });
+    }
+  });
+
+  app.post("/api/admin/reconcile", requireAdmin, async (_req, res) => {
+    try {
+      const result = await reconcileProducts();
+      invalidateCheckoutCache();
+      res.json(result);
+    } catch (err) {
+      console.error("Reconciliation error:", err);
+      res.status(500).json({ message: "Reconciliation failed" });
     }
   });
 

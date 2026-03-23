@@ -1,0 +1,33 @@
+Role: Senior Data Engineer & Headless E-commerce Expert
+Task: Audit and refactor the data synchronization pipeline between our main e-commerce backend (Storefront/Admin API) and our B2B headless app channel.
+
+The Architecture & The Problem:
+Products are added to the main store but are set to publish only on the headless app channel. We are using Admin APIs for initial fetching and Webhooks for live data sync. Currently, there are data discrepancies—specifically, products are failing to sync correctly within particular categories/collections, or state mismatches are occurring between the main store and the headless database.
+
+Please review the codebase and implement/suggest fixes for the following 4 architectural pillars:
+
+1. Strict App Channel Filtering (The Source of Truth)
+
+Audit the API fetch logic. Ensure the GraphQL/REST query explicitly filters by our specific App ID or Publication Channel.
+
+The query must strictly reject products published to the main storefront and only pull items tagged for the headless B2B channel.
+
+2. Category/Collection Mapping Logic
+
+Review how categories are mapped during the sync. If the main store uses tags or collection IDs, ensure the headless database correctly parses and normalizes this array.
+
+Fix any issues where a product is synced before its category assignment is fully registered. (Implement a check for nested category nodes in the payload).
+
+3. Webhook Integrity & Race Conditions
+
+Audit the product/create, product/update, and product/delete webhook handlers.
+
+Implement a queue or debounce mechanism if multiple webhooks fire simultaneously for the same product ID to prevent database write locks or out-of-order updates.
+
+Ensure HMAC validation is in place so we don't process malformed payloads.
+
+4. State Reconciliation (The Failsafe)
+
+Live webhooks drop packets sometimes. Draft a lightweight "Reconciliation Cron Job" script that runs nightly.
+
+This script should fetch the total IDs and updated_at timestamps from the main store's Admin API for the headless channel, compare them against our headless database, and force a hard-sync for any missing or outdated SKUs.

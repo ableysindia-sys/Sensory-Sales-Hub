@@ -35,6 +35,8 @@ export const products = pgTable("products", {
   productType: text("product_type"),
   vendor: text("vendor"),
   sku: text("sku"),
+  shopifyGid: text("shopify_gid"),
+  shopifyUpdatedAt: text("shopify_updated_at"),
   isActive: boolean("is_active").notNull().default(true),
   b2bPinned: boolean("b2b_pinned").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
