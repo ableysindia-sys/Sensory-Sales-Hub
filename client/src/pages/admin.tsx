@@ -49,6 +49,7 @@ import {
   Copy,
   ExternalLink,
   FolderOpen,
+  Menu,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -543,23 +544,37 @@ function LeadsView() {
           </div>
           <div className="divide-y divide-border/30">
             {filtered.map((lead) => (
-              <div key={lead.id} className="px-5 py-4 hover:bg-muted/20 transition-colors cursor-pointer group" onClick={() => setSelectedLead(lead)} data-testid={`lead-row-${lead.id}`}>
-                <div className="lg:grid lg:grid-cols-[2fr_2fr_1fr_1.2fr_1fr_80px] lg:gap-4 lg:items-center">
-                  <div className="mb-1 lg:mb-0">
+              <div key={lead.id} className="hover:bg-muted/20 transition-colors cursor-pointer group" onClick={() => setSelectedLead(lead)} data-testid={`lead-row-${lead.id}`}>
+                {/* Desktop row */}
+                <div className="hidden lg:grid grid-cols-[2fr_2fr_1fr_1.2fr_1fr_80px] gap-4 items-center px-5 py-4">
+                  <div>
                     <p className="text-sm font-medium text-foreground truncate" data-testid={`text-lead-name-${lead.id}`}>{lead.name}</p>
                     {lead.organisation && <p className="text-xs text-muted-foreground truncate">{lead.organisation}</p>}
                   </div>
-                  <div className="mb-1 lg:mb-0">
+                  <div>
                     <p className="text-sm text-muted-foreground truncate">{lead.email}</p>
                     {lead.phone && <p className="text-xs text-muted-foreground truncate">{lead.phone}</p>}
                   </div>
-                  <div className="mb-1 lg:mb-0"><p className="text-xs text-muted-foreground truncate">{lead.requirementType || lead.interest || "—"}</p></div>
-                  <div className="mb-2 lg:mb-0"><p className="text-xs text-muted-foreground">{formatDate(lead.createdAt)}</p></div>
-                  <div className="flex items-center justify-between lg:justify-start"><StatusBadge status={lead.status} /></div>
-                  <div className="hidden lg:flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div><p className="text-xs text-muted-foreground truncate">{lead.requirementType || lead.interest || "—"}</p></div>
+                  <div><p className="text-xs text-muted-foreground">{formatDate(lead.createdAt)}</p></div>
+                  <div><StatusBadge status={lead.status} /></div>
+                  <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button onClick={(e) => { e.stopPropagation(); setSelectedLead(lead); }} className="p-1.5 rounded-md hover:bg-muted/50 text-muted-foreground hover:text-foreground cursor-pointer" data-testid={`button-view-lead-${lead.id}`}><Eye className="w-4 h-4" /></button>
                     <button onClick={(e) => { e.stopPropagation(); if (confirm("Delete this lead?")) deleteLead.mutate(lead.id); }} className="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 text-muted-foreground hover:text-red-600 cursor-pointer" data-testid={`button-delete-lead-${lead.id}`}><Trash2 className="w-4 h-4" /></button>
                   </div>
+                </div>
+
+                {/* Mobile card */}
+                <div className="lg:hidden px-4 py-3">
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate" data-testid={`text-lead-name-mobile-${lead.id}`}>{lead.name}</p>
+                      {lead.organisation && <p className="text-xs text-muted-foreground truncate">{lead.organisation}</p>}
+                    </div>
+                    <div className="flex-shrink-0 mt-0.5"><StatusBadge status={lead.status} /></div>
+                  </div>
+                  <p className="text-xs text-muted-foreground truncate">{lead.email}{lead.phone ? ` · ${lead.phone}` : ""}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{formatDate(lead.createdAt)}</p>
                 </div>
               </div>
             ))}
@@ -773,7 +788,7 @@ function ProductForm({ product, categories, onSave, onCancel }: {
             <h3 className="text-base font-semibold text-foreground">Specifications</h3>
             {specKeys.map((spec, i) => (
               <div key={i} className="flex gap-2 items-center">
-                <Input placeholder="Key" value={spec.key} onChange={(e) => { const n = [...specKeys]; n[i].key = e.target.value; setSpecKeys(n); }} className="w-40" />
+                <Input placeholder="Key" value={spec.key} onChange={(e) => { const n = [...specKeys]; n[i].key = e.target.value; setSpecKeys(n); }} className="w-28 sm:w-40 flex-shrink-0" />
                 <Input placeholder="Value" value={spec.value} onChange={(e) => { const n = [...specKeys]; n[i].value = e.target.value; setSpecKeys(n); }} className="flex-1" />
                 <button type="button" onClick={() => setSpecKeys(specKeys.filter((_, j) => j !== i))} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded cursor-pointer"><X className="w-4 h-4" /></button>
               </div>
@@ -944,27 +959,26 @@ function ProductsView() {
               const firstImage = images[0] && !images[0].startsWith("__generated__:") ? images[0] : null;
               const cat = categories.find(c => c.slug === product.categorySlug);
               return (
-                <div key={product.id} className="px-5 py-4 hover:bg-muted/20 transition-colors group" data-testid={`product-row-${product.id}`}>
-                  <div className="lg:grid lg:grid-cols-[60px_2fr_1fr_1fr_80px_80px_100px] lg:gap-4 lg:items-center">
-                    <div className="hidden lg:block">
+                <div key={product.id} className="hover:bg-muted/20 transition-colors group" data-testid={`product-row-${product.id}`}>
+                  {/* Desktop row */}
+                  <div className="hidden lg:grid lg:grid-cols-[60px_2fr_1fr_1fr_80px_80px_100px] lg:gap-4 lg:items-center px-5 py-4">
+                    <div>
                       {firstImage ? (
                         <img src={firstImage} alt="" className="w-12 h-12 rounded-lg object-cover border border-border/30" />
                       ) : (
                         <div className="w-12 h-12 rounded-lg bg-muted/40 flex items-center justify-center"><Box className="w-5 h-5 text-muted-foreground/40" /></div>
                       )}
                     </div>
-                    <div className="mb-1 lg:mb-0">
+                    <div>
                       <p className="text-sm font-medium text-foreground truncate">{product.name}</p>
                       <p className="text-xs text-muted-foreground truncate">{product.slug}</p>
                     </div>
-                    <div className="mb-1 lg:mb-0">
-                      <span className="text-xs px-2 py-0.5 bg-muted/50 rounded-full">{cat?.title || product.categorySlug}</span>
-                    </div>
-                    <div className="mb-1 lg:mb-0">
+                    <div><span className="text-xs px-2 py-0.5 bg-muted/50 rounded-full">{cat?.title || product.categorySlug}</span></div>
+                    <div>
                       <p className="text-sm font-medium">{formatPrice(product.basePrice)}</p>
                       {product.comparePrice && <p className="text-xs text-muted-foreground line-through">{formatPrice(product.comparePrice)}</p>}
                     </div>
-                    <div className="mb-1 lg:mb-0">
+                    <div>
                       {product.stock === null ? (
                         <span className="text-xs text-muted-foreground">∞</span>
                       ) : product.stock <= 0 ? (
@@ -975,14 +989,38 @@ function ProductsView() {
                         <span className="text-xs text-green-600">{product.stock}</span>
                       )}
                     </div>
-                    <div className="mb-2 lg:mb-0">
+                    <div>
                       <button onClick={() => toggleActive.mutate({ id: product.id, isActive: !product.isActive })} className="cursor-pointer touch-manipulation" data-testid={`toggle-active-${product.id}`}>
                         {product.isActive ? <ToggleRight className="w-6 h-6 text-green-600" /> : <ToggleLeft className="w-6 h-6 text-gray-400" />}
                       </button>
                     </div>
-                    <div className="flex items-center gap-1 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button onClick={() => setEditProduct(product)} className="p-1.5 rounded-md hover:bg-muted/50 text-muted-foreground hover:text-foreground cursor-pointer" data-testid={`button-edit-product-${product.id}`}><Pencil className="w-4 h-4" /></button>
                       <button onClick={() => { if (confirm("Delete this product?")) deleteMutation.mutate(product.id); }} className="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 text-muted-foreground hover:text-red-600 cursor-pointer" data-testid={`button-delete-product-${product.id}`}><Trash2 className="w-4 h-4" /></button>
+                    </div>
+                  </div>
+
+                  {/* Mobile card */}
+                  <div className="lg:hidden px-4 py-3 flex items-center gap-3">
+                    <div className="flex-shrink-0">
+                      {firstImage ? (
+                        <img src={firstImage} alt="" className="w-12 h-12 rounded-lg object-cover border border-border/30" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-lg bg-muted/40 flex items-center justify-center"><Box className="w-5 h-5 text-muted-foreground/40" /></div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-foreground truncate leading-snug">{product.name}</p>
+                      <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                        <span className="text-xs px-1.5 py-0.5 bg-muted/60 rounded-full text-muted-foreground">{cat?.title || product.categorySlug}</span>
+                        <span className="text-xs font-semibold text-foreground">{formatPrice(product.basePrice)}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <button onClick={() => toggleActive.mutate({ id: product.id, isActive: !product.isActive })} className="cursor-pointer touch-manipulation" data-testid={`toggle-active-mobile-${product.id}`}>
+                        {product.isActive ? <ToggleRight className="w-6 h-6 text-green-600" /> : <ToggleLeft className="w-6 h-6 text-gray-400" />}
+                      </button>
+                      <button onClick={() => setEditProduct(product)} className="p-1.5 rounded-md text-muted-foreground cursor-pointer" data-testid={`button-edit-product-mobile-${product.id}`}><Pencil className="w-4 h-4" /></button>
                     </div>
                   </div>
                 </div>
@@ -1432,7 +1470,10 @@ export default function AdminPage() {
               aria-label="Toggle menu"
               data-testid="button-admin-mobile-menu"
             >
-              <LayoutDashboard className="w-5 h-5 text-muted-foreground" />
+              {mobileMenuOpen
+                ? <X className="w-5 h-5 text-muted-foreground" />
+                : <Menu className="w-5 h-5 text-muted-foreground" />
+              }
             </button>
             <img src={logoPath} alt="Abley's Rehab" className="h-7" />
             <span className="text-sm font-semibold text-muted-foreground hidden sm:inline">Admin</span>
@@ -1505,7 +1546,7 @@ export default function AdminPage() {
           )}
         </AnimatePresence>
 
-        <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8" data-testid="admin-main-content">
+        <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 pb-20 lg:pb-8" data-testid="admin-main-content">
           {activeTab === "dashboard" && <DashboardView />}
           {activeTab === "leads" && <LeadsView />}
           {activeTab === "products" && <ProductsView />}
@@ -1514,6 +1555,31 @@ export default function AdminPage() {
           {activeTab === "setup-guide" && <SetupGuideView />}
         </main>
       </div>
+
+      {/* Mobile bottom navigation bar */}
+      <nav
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border/50 shadow-[0_-2px_12px_rgba(0,0,0,0.06)] flex items-stretch"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+        data-testid="admin-bottom-nav"
+      >
+        {navItems.slice(0, 5).map((item) => (
+          <button
+            key={item.id}
+            onClick={() => { setActiveTab(item.id); setMobileMenuOpen(false); }}
+            className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 min-w-0 transition-colors cursor-pointer touch-manipulation ${
+              activeTab === item.id
+                ? "text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+            data-testid={`bottom-nav-${item.id}`}
+          >
+            <item.icon className={`w-5 h-5 flex-shrink-0 ${activeTab === item.id ? "stroke-[2.5]" : ""}`} />
+            <span className="text-[10px] leading-tight truncate max-w-full px-0.5 font-medium">
+              {item.label}
+            </span>
+          </button>
+        ))}
+      </nav>
     </div>
   );
 }
