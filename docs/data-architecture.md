@@ -251,11 +251,11 @@ The frontend uses REST — no GraphQL on the client side.
 |---|---|---|
 | `GET /api/products` | `ProductsProvider` — all catalogue pages | Public |
 | `GET /api/categories` | `ProductsProvider` — navigation | Public |
-| `GET /api/products/:slug` | Product detail page | Public, requires `b2b_pinned = true` |
+| `GET /api/products/:slug` | Product detail page | Public, requires `is_active = true` |
 | `GET /api/admin/*` | Admin dashboard | Requires `x-admin-token` header |
 | `POST /api/shopify/checkout` | Cart → checkout redirect | Public, rate-limited |
 
-The public `/api/products` endpoint calls `storage.getActiveProducts()` which queries `WHERE is_active = true`. No client-side Shopify state is consulted — the DB is the single source.
+The public `/api/products` endpoint calls `storage.getActiveProducts()` which queries `WHERE is_active = true`. No client-side Shopify state is consulted — the DB is the single source. The `b2bPinned` flag is **not** a visibility gate — it only protects the `category_slug` field from being overwritten by the next Shopify sync.
 
 ### 4.2 Caching Strategy
 

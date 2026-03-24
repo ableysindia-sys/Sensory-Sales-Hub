@@ -1,0 +1,34 @@
+Role: Lead Debugger & Full-Stack Architect
+Task: We have a persistent "Black Hole" bug with new Shopify products syncing to our headless storefront (rehab.ableys.in).
+
+The Exact Bug:
+
+A new product is added to Shopify.
+
+It syncs to our local DB and defaults to the adl-kit category (the sync fallback) and is_active: false.
+
+The admin toggles it to is_active: true in the dashboard.
+
+The product still does not appear anywhere on the frontend storefront.
+
+Execute these 3 immediate fixes to unblock the UI:
+
+1. Fix the "ADL-Kit" Category Exclusion (Frontend & DB)
+
+Check the categories table. Does slug: 'adl-kit' actually exist, and is is_active set to true?
+
+Check the frontend navigation/category grid rendering. If a product has category_slug: 'adl-kit', but the UI does not render an "ADL Kits" category button on the homepage, the user cannot see the product. Ensure the frontend gracefully renders all active categories returned by GET /api/categories.
+
+2. Enforce the Manual Category Override (Admin UI - CRITICAL)
+
+Currently, products are stuck in adl-kit. You MUST implement a dropdown in the Admin Product Edit modal that allows the admin to change the product's category_slug to a different, valid category (e.g., swings, visual).
+
+When the admin changes this category and saves, the backend (PUT /api/admin/products/:id) MUST update the category_slug AND set b2b_pinned = true in the local PostgreSQL database so the next Shopify webhook does not force it back to adl-kit.
+
+3. Add Explicit Debug Logging to getActiveProducts
+
+Go to the backend function storage.getActiveProducts() (or the GET /api/products handler).
+
+Add a console.log right before it returns the data: console.log("Total active products returned to frontend:", products.length).
+
+Check if the query is strictly filtering via an INNER JOIN with the categories table that might be dropping products with unmatched category slugs. If it is doing a strict join, change it to a LEFT JOIN or ensure the fallback category exists.
