@@ -590,10 +590,11 @@ function LeadsView() {
   );
 }
 
-function ProductForm({ product, categories, allCollections, onSave, onCancel }: {
+function ProductForm({ product, categories, allCollections, collectionsLoading, onSave, onCancel }: {
   product?: Product | null;
   categories: Category[];
   allCollections: Collection[];
+  collectionsLoading?: boolean;
   onSave: (data: any) => void;
   onCancel: () => void;
 }) {
@@ -929,6 +930,10 @@ function ProductForm({ product, categories, allCollections, onSave, onCancel }: 
               <p className="text-sm text-muted-foreground bg-muted/30 rounded-lg px-3 py-2">
                 Save this product first, then re-open it to assign collections.
               </p>
+            ) : collectionsLoading ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin" /> Loading collections…
+              </div>
             ) : allCollections.length === 0 ? (
               <p className="text-sm text-muted-foreground bg-muted/30 rounded-lg px-3 py-2">
                 No custom collections exist yet — create one in the Collections tab first.
@@ -991,11 +996,13 @@ function ProductsView() {
     queryFn: () => adminFetch("/api/admin/categories"),
   });
 
-  const { data: allCollections = [] } = useQuery<Collection[]>({
+  const { data: allCollections = [], isLoading: collectionsLoading } = useQuery<Collection[]>({
     queryKey: ["/api/admin/collections"],
     queryFn: () => adminFetch("/api/admin/collections"),
     staleTime: 0,
+    gcTime: 0,
     refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 
   const saveMutation = useMutation({
@@ -1051,6 +1058,7 @@ function ProductsView() {
         product={editProduct === "new" ? null : editProduct}
         categories={categories}
         allCollections={allCollections}
+        collectionsLoading={collectionsLoading}
         onCancel={() => setEditProduct(null)}
         onSave={(data) => {
           if (editProduct !== "new") {
