@@ -706,6 +706,13 @@ function ProductForm({ product, categories, allCollections, collectionsLoading, 
     const specs: Record<string, string> = {};
     specKeys.forEach(s => { if (s.key.trim()) specs[s.key.trim()] = s.value; });
 
+    // Re-assert collection assignments as part of every product save.
+    // Guards against any race between the per-toggle auto-save and the category save.
+    // Only fires if collections have actually been initialised (prevents accidental blank-wipe).
+    if (isEdit && product?.id && collectionsInitializedRef.current) {
+      collectionsMutation.mutate(selectedCollectionIds);
+    }
+
     onSave({
       ...data,
       comparePrice: data.comparePrice || null,
@@ -963,7 +970,7 @@ function ProductForm({ product, categories, allCollections, collectionsLoading, 
                   })}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Each click saves immediately. A product can belong to multiple collections.
+                  Selections are saved when you click <strong>Save Product</strong>. Each toggle also auto-saves immediately as a backup.
                 </p>
               </>
             )}
