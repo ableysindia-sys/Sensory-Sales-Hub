@@ -731,17 +731,8 @@ async function _doSync(): Promise<{ added: number; updated: number; total: numbe
       continue;
     }
 
-    if (dbProd.b2bPinned) continue;
-
-    const shopifyIsAvailable = shopifyAvailability.get(dbProd.shopifyHandle!);
-    if (shopifyIsAvailable === false && dbProd.isActive) {
-      await db
-        .update(productsTable)
-        .set({ isActive: false })
-        .where(eq(productsTable.slug, dbProd.slug));
-      deactivated++;
-      console.log(`[shopify-sync] Deactivated ${dbProd.slug}: out of stock on Shopify`);
-    }
+    // Products still on the headless channel keep their admin-set isActive status.
+    // Only products fully removed from the headless channel are deactivated (handled above).
   }
 
   const summary = `${added} added, ${updated} updated, ${deactivated} deactivated, ${shopifyProducts.length} total from Shopify`;

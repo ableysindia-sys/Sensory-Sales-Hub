@@ -1,11 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Lead, Product, Category, Page } from "@shared/schema";
+import type { Lead, Product, Category, Page, Collection } from "@shared/schema";
 import CollectionsView from "./admin-collections";
 import { formatPrice } from "@/lib/product-provider";
 import {
@@ -612,6 +612,48 @@ function ProductForm({ product, categories, onSave, onCancel }: {
   const [newFeature, setNewFeature] = useState("");
   const [newApplication, setNewApplication] = useState("");
 
+  const { data: allCollections = [] } = useQuery<Collection[]>({
+    queryKey: ["/api/admin/collections"],
+    queryFn: () => adminFetch("/api/admin/collections"),
+    staleTime: 0,
+  });
+
+  const { data: productCollections } = useQuery<{ collectionIds: number[] }>({
+    queryKey: ["/api/admin/products", product?.id, "collections"],
+    queryFn: () => adminFetch(`/api/admin/products/${product!.id}/collections`),
+    enabled: isEdit && !!product?.id,
+    staleTime: 0,
+  });
+
+  const [selectedCollectionIds, setSelectedCollectionIds] = useState<number[]>([]);
+  const collectionsInitializedRef = useRef(false);
+
+  useEffect(() => {
+    if (productCollections && !collectionsInitializedRef.current) {
+      collectionsInitializedRef.current = true;
+      setSelectedCollectionIds(productCollections.collectionIds);
+    }
+  }, [productCollections]);
+
+  const collectionsMutation = useMutation({
+    mutationFn: (collectionIds: number[]) =>
+      apiRequest("POST", `/api/admin/products/${product!.id}/collections`, { collectionIds }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products", product?.id, "collections"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/collections"] });
+    },
+  });
+
+  const toggleCollection = (collId: number) => {
+    const next = selectedCollectionIds.includes(collId)
+      ? selectedCollectionIds.filter(id => id !== collId)
+      : [...selectedCollectionIds, collId];
+    setSelectedCollectionIds(next);
+    if (isEdit && product?.id) {
+      collectionsMutation.mutate(next);
+    }
+  };
+
   const schema = z.object({
     name: z.string().min(1, "Name is required"),
     slug: z.string().min(1, "Slug is required"),
@@ -833,6 +875,43 @@ function ProductForm({ product, categories, onSave, onCancel }: {
               </div>
             )}
           </div>
+
+          {allCollections.length > 0 && (
+            <div className="bg-card rounded-xl border border-border/50 p-6 space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-base font-semibold text-foreground">Collections</h3>
+                {!isEdit && <span className="text-xs text-muted-foreground">Save product first to assign collections</span>}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {allCollections.map(col => {
+                  const active = selectedCollectionIds.includes(col.id);
+                  return (
+                    <button
+                      key={col.id}
+                      type="button"
+                      disabled={!isEdit}
+                      onClick={() => toggleCollection(col.id)}
+                      data-testid={`toggle-collection-${col.id}`}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-colors cursor-pointer touch-manipulation disabled:opacity-40 disabled:cursor-not-allowed ${
+                        active
+                          ? "bg-primary/10 border-primary text-primary"
+                          : "bg-muted/30 border-border text-muted-foreground hover:border-primary/50"
+                      }`}
+                    >
+                      <FolderOpen className="w-3.5 h-3.5" />
+                      {col.name}
+                      {collectionsMutation.isPending && selectedCollectionIds.includes(col.id) !== active && (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+              {isEdit && (
+                <p className="text-xs text-muted-foreground">Click to add or remove this product from a collection.</p>
+              )}
+            </div>
+          )}
 
           <div className="flex justify-end gap-3">
             <Button type="button" variant="outline" onClick={onCancel} className="cursor-pointer touch-manipulation" data-testid="button-cancel-product">Cancel</Button>
@@ -1546,13 +1625,15 @@ export default function AdminPage() {
           )}
         </AnimatePresence>
 
-        <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 pb-20 lg:pb-8" data-testid="admin-main-content">
-          {activeTab === "dashboard" && <DashboardView />}
-          {activeTab === "leads" && <LeadsView />}
-          {activeTab === "products" && <ProductsView />}
-          {activeTab === "collections" && <CollectionsView />}
-          {activeTab === "pages" && <PagesView />}
-          {activeTab === "setup-guide" && <SetupGuideView />}
+        <main className="flex-1 min-w-0 overflow-x-hidden p-4 sm:p-6 lg:p-8 pb-20 lg:pb-8" data-testid="admin-main-content">
+          <div className="max-w-screen-2xl mx-auto w-full">
+            {activeTab === "dashboard" && <DashboardView />}
+            {activeTab === "leads" && <LeadsView />}
+            {activeTab === "products" && <ProductsView />}
+            {activeTab === "collections" && <CollectionsView />}
+            {activeTab === "pages" && <PagesView />}
+            {activeTab === "setup-guide" && <SetupGuideView />}
+          </div>
         </main>
       </div>
 

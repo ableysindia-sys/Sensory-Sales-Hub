@@ -1,0 +1,35 @@
+Role: Senior Full-Stack Developer & Headless E-commerce Expert
+Task: Debug and resolve critical state management bugs between our custom Admin Dashboard and the Headless Frontend, and overhaul the dashboard's CSS to ensure flawless responsiveness across all screen resolutions.
+
+Current Architecture & Bug Context:
+Products sync successfully from Shopify to our local database, but state and UI issues occur post-sync:
+
+Products default to "Inactive." Toggling them to "Active" saves in the dashboard UI, but the product fails to render on the frontend storefront.
+
+Existing synced collections populate correctly, but when a new local collection is created in the dashboard, it fails to appear in the dropdown/selection menu when adding or editing a product.
+
+The dashboard UI breaks or scales poorly on high-resolution displays (specifically 1920x1200 and ultra-wide monitors).
+
+Please audit the codebase and implement fixes across these 4 specific areas:
+
+1. Product Status & Frontend Visibility (The Override Logic)
+
+Backend Audit: Review the status toggle endpoint (e.g., PUT /api/products/:id). Ensure the local database updates and persists this boolean state without being overwritten by subsequent Shopify webhooks.
+
+Frontend Query & Cache Fix: The frontend catalog fetch must evaluate the local database's active_status to determine visibility, not the Shopify published_status. Implement on-demand cache invalidation (or state refetching) so the storefront updates instantly when an admin toggles a product.
+
+2. The Collection Dropdown Bug (State Sticking)
+
+Endpoint Audit: Ensure the GET /api/collections endpoint used by the Product Edit form queries all collections (both Shopify-synced and locally created).
+
+UI State Fix: If the UI uses cached state (React Query, SWR, Redux), add logic to invalidate and refetch the collections list immediately after a new collection is created so it populates the dropdown dynamically.
+
+Relational Binding: Ensure the database permits binding products to locally generated IDs for new collections without strictly validating against Shopify's native collection ID format.
+
+3. Global Dashboard Responsiveness (The 1920x1200 Fix)
+
+Fluid Layouts: Audit the global CSS/Tailwind configuration for the admin dashboard. Replace hardcoded pixel widths with fluid percentages, vw/vh, or flexible grid tracks (e.g., grid-cols-auto-fit, minmax()).
+
+High-Resolution Scaling: Specifically test and fix the layout for 1920x1200 and ultra-wide resolutions. Ensure main content containers have an appropriate max-w-screen-2xl (or equivalent max-width limit) so tables and forms don't stretch unreadably across massive screens.
+
+Responsive Tables: Ensure all data tables have horizontal overflow scrolling (overflow-x-auto) so they don't break the layout on smaller laptop screens or tablets.

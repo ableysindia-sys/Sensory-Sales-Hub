@@ -408,6 +408,45 @@ export async function registerRoutes(
     } catch { res.status(500).json({ message: "Failed" }); }
   });
 
+  app.get("/api/admin/products/:id/collections", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid ID" });
+      const collectionIds = await storage.getProductCollectionIds(id);
+      res.json({ collectionIds });
+    } catch { res.status(500).json({ message: "Failed to fetch product collections" }); }
+  });
+
+  app.post("/api/admin/products/:id/collections", requireAdmin, async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      if (isNaN(productId)) return res.status(400).json({ message: "Invalid ID" });
+      const { collectionIds } = req.body;
+      if (!Array.isArray(collectionIds) || !collectionIds.every(id => typeof id === "number" && Number.isFinite(id) && id > 0)) {
+        return res.status(400).json({ message: "collectionIds must be an array of positive integers" });
+      }
+      const allCollections = await storage.getCollections();
+      const validIds = new Set(allCollections.map(c => c.id));
+      const invalid = collectionIds.filter(id => !validIds.has(id));
+      if (invalid.length > 0) return res.status(400).json({ message: `Invalid collection IDs: ${invalid.join(", ")}` });
+
+      const currentIds = await storage.getProductCollectionIds(productId);
+      const toAdd = collectionIds.filter(id => !currentIds.includes(id));
+      const toRemove = currentIds.filter(id => !collectionIds.includes(id));
+      for (const collId of toRemove) {
+        const existingIds = await storage.getCollectionProductIds(collId);
+        await storage.setCollectionProducts(collId, existingIds.filter(id => id !== productId));
+      }
+      for (const collId of toAdd) {
+        const existingIds = await storage.getCollectionProductIds(collId);
+        if (!existingIds.includes(productId)) {
+          await storage.setCollectionProducts(collId, [...existingIds, productId]);
+        }
+      }
+      res.json({ message: "Collections updated", collectionIds });
+    } catch { res.status(500).json({ message: "Failed to update product collections" }); }
+  });
+
   app.post("/api/admin/sync", requireAdmin, async (_req, res) => {
     try {
       const result = await syncShopifyProducts();

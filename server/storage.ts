@@ -203,6 +203,12 @@ export class DatabaseStorage implements IStorage {
     const result = await db.delete(collectionsTable).where(eq(collectionsTable.id, id)).returning();
     return result.length > 0;
   }
+  async getProductCollectionIds(productId: number): Promise<number[]> {
+    const rows = await db.select({ collectionId: collectionProductsTable.collectionId })
+      .from(collectionProductsTable)
+      .where(eq(collectionProductsTable.productId, productId));
+    return rows.map(r => r.collectionId);
+  }
   async getCollectionProductIds(collectionId: number): Promise<number[]> {
     const rows = await db.select({ productId: collectionProductsTable.productId })
       .from(collectionProductsTable)
