@@ -1,0 +1,26 @@
+Role: Senior Full-Stack Developer & React/TanStack Expert
+Task: Fix specific data-sync, caching, and relational bugs in our B2B headless e-commerce platform (rehab.ableys.in) based on our known architecture.
+
+Context: > Our stack is Express, Drizzle ORM, Postgres, and React + TanStack Query. I have identified three critical flaws in how the data pipeline interacts with the frontend cache and category resolution.
+
+Please implement the following 3 surgical fixes:
+
+1. Fix the "Category Ghosting" Issue (Backend/Admin UI)
+
+The Problem: Products are syncing with category_slugs that do not exist in the 9 fixed items in our categories table. The frontend hides them even if is_active = true.
+
+The Fix (Admin UI): In the Admin Dashboard's Product Edit view, add a visible warning banner if a product's current category_slug does not match any slug in the categories table.
+
+The Fix (Backend): Allow admins to manually override and assign a valid category from a dropdown in the UI. When saved, this must set b2b_pinned = true in the DB so the Shopify sync (syncShopifyProducts()) never overwrites it again (as per our architecture rules).
+
+2. Fix the Collections Dropdown State (Admin UI)
+
+The Problem: When a new collection is created (POST /api/admin/collections), it does not appear in the Product Edit modal's dropdown without a hard refresh.
+
+The Fix: Audit the useMutation hook for collection creation. Ensure that on onSuccess, queryClient.invalidateQueries({ queryKey: ["/api/admin/collections"] }) is strictly enforced. Verify that the Product Edit modal is consuming this exact same query key so it triggers a background refetch immediately.
+
+3. Fix the Stale Storefront Cache (Frontend & Webhooks)
+
+The Problem: The background periodic sync and Shopify webhooks update the database, but do not invalidate the TanStack Query cache on the frontend, leaving B2B buyers looking at stale prices/stock.
+
+The Fix: In the webhook handler (POST /api/webhooks/shopify) and the periodic sync function, after a successful database upsert that alters base_price, stock, or images, implement a mechanism to notify the frontend to invalidate ["/api/products"]. If using a standard REST setup without WebSockets, adjust the ProductsProvider in the frontend to have a more aggressive staleTime (e.g., 2 minutes) or utilize refetchOnWindowFocus: true so the catalog stays relatively fresh without needing an admin to manually hit "Save".
