@@ -648,7 +648,7 @@ function ProductForm({ product, categories, allCollections, collectionsLoading, 
       toast({
         title: collectionIds.length > 0 ? "Collections saved" : "Removed from all collections",
         description: collectionIds.length > 0
-          ? `Mapped to ${collectionIds.length} collection${collectionIds.length > 1 ? "s" : ""}.`
+          ? `Mapped to ${collectionIds.length} collection${collectionIds.length > 1 ? "s" : ""}. Category pinned — sync-safe.`
           : "This product is no longer in any collection.",
       });
     },

@@ -444,6 +444,14 @@ export async function registerRoutes(
 
       // Single atomic transaction: DELETE all product→collection rows, then INSERT new set
       await storage.setProductCollections(productId, coerced);
+
+      // Auto-pin the product when assigned to any collection so Shopify sync
+      // never overwrites its category_slug back to the "adl-kit" fallback.
+      if (coerced.length > 0) {
+        await storage.updateProduct(productId, { b2bPinned: true });
+        console.log(`[collections] Product ${productId} auto-pinned (b2bPinned=true) after collection assignment`);
+      }
+
       console.log(`[collections] Product ${productId} mapped to collections: [${coerced.join(", ") || "none"}]`);
       res.json({ message: "Collections updated", collectionIds: coerced });
     } catch (err) {
