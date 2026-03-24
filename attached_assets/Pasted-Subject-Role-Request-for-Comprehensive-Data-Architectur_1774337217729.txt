@@ -1,0 +1,49 @@
+Subject/Role: Request for Comprehensive Data Architecture & Flow Documentation for rehab.ableys.in
+
+Task: We need a granular, end-to-end breakdown of the current data architecture, database schema, and synchronization pipeline powering the B2B headless subdomain (rehab.ableys.in). The goal of this document is to map the entire state flow to identify root causes of data desyncs, missing collections, and frontend visibility bugs.
+
+Please provide a detailed technical breakdown covering the following 5 areas:
+
+1. Database Infrastructure & Schema
+
+List all databases and tables specifically created to run this headless subdomain (e.g., PostgreSQL, MongoDB, etc.).
+
+Provide the exact schema for the core tables: Products, Collections, and the relational mapping between them (e.g., pivot tables or array structures).
+
+Which specific fields are synced directly from Shopify, and which fields are strictly local to the headless database (e.g., local active_status, custom B2B pricing tiers)?
+
+2. The Shopify Synchronization Pipeline (Data Ingestion)
+
+Initial Sync: How is the initial catalog fetched? Are there pagination limits in the Admin API query? Is it filtering strictly by the B2B publication channel?
+
+Webhook Event Mapping: Detail the exact server-side actions implemented when the following events occur on the main Shopify store:
+
+Product Created: Does it auto-publish locally or default to draft?
+
+Product Edited: Which exact fields are overwritten locally? Does it overwrite local visibility toggles?
+
+Product Deleted: Does it hard-delete in the local DB, or soft-delete? How does it handle orphaned data in local collections?
+
+Inventory Updated: Is this handled synchronously or asynchronously?
+
+Queueing & Timeouts: How does the server handle webhook race conditions or Shopify's 5-second timeout rule? Are we using a message queue (like Redis/Bull) or processing synchronously?
+
+3. Local State Management & Overrides (The Source of Truth)
+
+Explain the logic governing product visibility on the frontend. If a product is "Active" in Shopify but "Inactive" in the local B2B dashboard, which state wins?
+
+Detail the CRUD (Create, Read, Update, Delete) flow for Local Collections. How are products mapped to these local collections without conflicting with Shopify's native collection IDs?
+
+4. Frontend Data Consumption & Caching
+
+How does the frontend (rehab.ableys.in) query the database (REST, GraphQL)?
+
+Detail the caching strategy in place (e.g., ISR, SSR, Redis caching).
+
+Cache Invalidation: Exactly what triggers the frontend to clear its cache and show new data when an admin updates a product or collection in the local dashboard?
+
+5. Error Handling, Logging, & Known Vulnerabilities
+
+Where are webhook failures, API rate limits, or database constraint errors currently logged?
+
+Based on the current setup, what are the known architectural bottlenecks or potential points of failure that could cause a product to exist in the database but not render on the frontend?
