@@ -50,6 +50,7 @@ import {
   ExternalLink,
   FolderOpen,
   Menu,
+  LayoutGrid,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1574,7 +1575,317 @@ function SetupGuideView() {
   );
 }
 
-type AdminTab = "dashboard" | "leads" | "products" | "collections" | "pages" | "setup-guide";
+// ─── Categories Admin View ────────────────────────────────────────────────────
+
+const GRADIENT_PRESETS = [
+  "from-blue-600 to-indigo-700",
+  "from-pink-500 to-rose-600",
+  "from-green-600 to-emerald-700",
+  "from-amber-500 to-orange-600",
+  "from-red-600 to-rose-700",
+  "from-teal-500 to-cyan-600",
+  "from-violet-500 to-purple-600",
+  "from-indigo-500 to-blue-700",
+  "from-cyan-500 to-blue-600",
+  "from-lime-500 to-green-600",
+  "from-yellow-500 to-amber-600",
+  "from-slate-600 to-gray-700",
+];
+
+function CategoryForm({ category, allProducts, onSave, onCancel }: {
+  category?: Category | null;
+  allProducts: Product[];
+  onSave: (data: any) => void;
+  onCancel: () => void;
+}) {
+  const isEdit = !!category;
+  const { toast } = useToast();
+  const [selectedColor, setSelectedColor] = useState(category?.color || GRADIENT_PRESETS[0]);
+  const autoSlug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+  const form = useForm({
+    defaultValues: {
+      title: category?.title || "",
+      slug: category?.slug || "",
+      description: category?.description || "",
+      image: category?.image || "",
+      displayOrder: category?.displayOrder ?? 99,
+      isActive: category?.isActive ?? true,
+    },
+  });
+
+  const productCount = allProducts.filter(p => p.categorySlug === category?.slug).length;
+
+  const handleSubmit = (data: any) => {
+    if (!data.slug) { toast({ title: "Slug is required", variant: "destructive" }); return; }
+    onSave({ ...data, color: selectedColor });
+  };
+
+  return (
+    <div className="space-y-6" data-testid="section-category-form">
+      <div className="flex items-center gap-3">
+        <button type="button" onClick={onCancel} className="p-2 rounded-lg hover:bg-muted/50 text-muted-foreground cursor-pointer" data-testid="button-back-category">
+          <ArrowLeft className="w-4 h-4" />
+        </button>
+        <div>
+          <h2 className="text-xl font-semibold text-foreground">{isEdit ? `Edit: ${category!.title}` : "New Category"}</h2>
+          {isEdit && <p className="text-sm text-muted-foreground">{productCount} product{productCount !== 1 ? "s" : ""} in this category</p>}
+        </div>
+      </div>
+
+      {!isEdit && (
+        <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-700 rounded-xl p-4 text-sm text-amber-800 dark:text-amber-300 flex gap-2">
+          <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+          <div>
+            <strong>Products won't auto-populate.</strong> The Shopify sync only maps products to the original 9 categories. After creating this category, go to <strong>Products → Edit Product</strong> and manually change the Category field for each product you want here. That will also pin the product so sync can't revert it.
+          </div>
+        </div>
+      )}
+
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
+        <div className="bg-card rounded-xl border border-border/50 p-6 space-y-4">
+          <h3 className="text-base font-semibold">Identity</h3>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Title <span className="text-destructive">*</span></label>
+              <Input
+                {...form.register("title", { required: true })}
+                placeholder="e.g. Fidgets & Oral Tools"
+                data-testid="input-category-title"
+                onChange={e => {
+                  form.setValue("title", e.target.value);
+                  if (!isEdit) form.setValue("slug", autoSlug(e.target.value));
+                }}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Slug <span className="text-destructive">*</span> {isEdit && <span className="text-xs text-muted-foreground font-normal">(changing this breaks existing URLs)</span>}</label>
+              <Input {...form.register("slug", { required: true })} placeholder="e.g. fidgets-oral" data-testid="input-category-slug" />
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium">Description</label>
+            <Textarea {...form.register("description")} rows={2} placeholder="Shown on the category page header" data-testid="input-category-description" />
+          </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Image URL <span className="text-xs text-muted-foreground font-normal">(optional — leave blank to use auto-generated)</span></label>
+              <Input {...form.register("image")} placeholder="https://…" data-testid="input-category-image" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Display Order</label>
+              <Input type="number" {...form.register("displayOrder", { valueAsNumber: true })} data-testid="input-category-order" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-card rounded-xl border border-border/50 p-6 space-y-4">
+          <h3 className="text-base font-semibold">Card Colour</h3>
+          <div className="grid grid-cols-6 gap-2">
+            {GRADIENT_PRESETS.map(g => (
+              <button
+                key={g}
+                type="button"
+                onClick={() => setSelectedColor(g)}
+                data-testid={`button-color-${g.replace(/\s/g, "-")}`}
+                className={`h-10 rounded-lg bg-gradient-to-br ${g} transition-all ${selectedColor === g ? "ring-2 ring-offset-2 ring-primary scale-105" : "opacity-70 hover:opacity-100"}`}
+              />
+            ))}
+          </div>
+          <div className="flex items-center gap-3">
+            <div className={`h-10 w-32 rounded-lg bg-gradient-to-br ${selectedColor}`} />
+            <span className="text-xs text-muted-foreground font-mono">{selectedColor}</span>
+          </div>
+        </div>
+
+        <div className="bg-card rounded-xl border border-border/50 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium text-sm">Active on Storefront</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Inactive categories are hidden from navigation and category pages</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => form.setValue("isActive", !form.watch("isActive"))}
+              data-testid="toggle-category-active"
+              className="cursor-pointer"
+            >
+              {form.watch("isActive")
+                ? <ToggleRight className="w-8 h-8 text-primary" />
+                : <ToggleLeft className="w-8 h-8 text-muted-foreground" />}
+            </button>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3">
+          <Button type="button" variant="outline" onClick={onCancel} data-testid="button-cancel-category" className="cursor-pointer">Cancel</Button>
+          <Button type="submit" data-testid="button-save-category" className="cursor-pointer">
+            <Save className="w-4 h-4 mr-2" /> {isEdit ? "Update Category" : "Create Category"}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+function CategoriesView() {
+  const { toast } = useToast();
+  const [editCategory, setEditCategory] = useState<Category | null | "new">(null);
+
+  const { data: categories = [], isLoading } = useQuery<Category[]>({
+    queryKey: ["/api/admin/categories"],
+    queryFn: () => adminFetch("/api/admin/categories"),
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: "always",
+  });
+
+  const { data: allProducts = [] } = useQuery<Product[]>({
+    queryKey: ["/api/admin/products"],
+    queryFn: () => adminFetch("/api/admin/products"),
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: async (data: any) => {
+      if (data._id) {
+        const id = data._id; delete data._id;
+        return adminFetch(`/api/admin/categories/${id}`, { method: "PATCH", body: JSON.stringify(data) });
+      }
+      return adminFetch("/api/admin/categories", { method: "POST", body: JSON.stringify(data) });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/categories"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      setEditCategory(null);
+      toast({ title: "Category saved" });
+    },
+    onError: (err: Error) => toast({ title: "Error", description: err.message, variant: "destructive" }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => adminFetch(`/api/admin/categories/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/categories"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      toast({ title: "Category deleted" });
+    },
+    onError: (err: Error) => toast({ title: "Error", description: err.message, variant: "destructive" }),
+  });
+
+  const toggleActive = useMutation({
+    mutationFn: ({ id, isActive }: { id: number; isActive: boolean }) =>
+      adminFetch(`/api/admin/categories/${id}`, { method: "PATCH", body: JSON.stringify({ isActive }) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/categories"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+    },
+  });
+
+  const sorted = useMemo(() => [...categories].sort((a, b) => a.displayOrder - b.displayOrder), [categories]);
+
+  if (editCategory) {
+    return (
+      <CategoryForm
+        key={editCategory === "new" ? "new" : (editCategory as Category).id}
+        category={editCategory === "new" ? null : editCategory}
+        allProducts={allProducts}
+        onCancel={() => setEditCategory(null)}
+        onSave={(data) => {
+          if (editCategory !== "new") saveMutation.mutate({ ...data, _id: (editCategory as Category).id });
+          else saveMutation.mutate(data);
+        }}
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-5" data-testid="section-categories">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <h2 className="text-xl font-semibold">Categories</h2>
+          <p className="text-sm text-muted-foreground mt-0.5">{categories.length} categories · storefront navigation &amp; product pages</p>
+        </div>
+        <Button onClick={() => setEditCategory("new")} data-testid="button-add-category" className="cursor-pointer">
+          <Plus className="w-4 h-4 mr-2" /> New Category
+        </Button>
+      </div>
+
+      <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-700 rounded-xl p-4 text-sm text-amber-800 dark:text-amber-300 flex gap-2">
+        <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+        <span>The Shopify sync only maps products to the original 9 categories. To populate a new category, go to <strong>Products</strong>, open each product, change its Category, and save (this auto-pins the product to prevent sync reverting it).</span>
+      </div>
+
+      {isLoading ? (
+        <div className="flex items-center gap-2 text-muted-foreground py-8">
+          <Loader2 className="w-4 h-4 animate-spin" /> Loading categories…
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {sorted.map(cat => {
+            const count = allProducts.filter(p => p.categorySlug === cat.slug).length;
+            const activeCount = allProducts.filter(p => p.categorySlug === cat.slug && p.isActive).length;
+            return (
+              <div key={cat.id} className="bg-card rounded-xl border border-border/50 p-4 flex items-center gap-4" data-testid={`row-category-${cat.id}`}>
+                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${cat.color} flex-shrink-0`} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-medium text-sm truncate">{cat.title}</span>
+                    <span className="text-xs font-mono text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded">{cat.slug}</span>
+                    {!cat.isActive && <span className="text-xs bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-full">Hidden</span>}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {count} product{count !== 1 ? "s" : ""} total · {activeCount} active
+                    {count > 0 && (
+                      <a href={`/category/${cat.slug}`} target="_blank" rel="noreferrer" className="ml-2 inline-flex items-center gap-0.5 text-primary hover:underline">
+                        View <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    )}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => toggleActive.mutate({ id: cat.id, isActive: !cat.isActive })}
+                    data-testid={`toggle-active-category-${cat.id}`}
+                    className="p-1.5 rounded-md hover:bg-muted/50 cursor-pointer"
+                    title={cat.isActive ? "Hide from storefront" : "Show on storefront"}
+                  >
+                    {cat.isActive
+                      ? <ToggleRight className="w-5 h-5 text-primary" />
+                      : <ToggleLeft className="w-5 h-5 text-muted-foreground" />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditCategory(cat)}
+                    data-testid={`button-edit-category-${cat.id}`}
+                    className="p-1.5 rounded-md hover:bg-muted/50 text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (count > 0) {
+                        if (!confirm(`This category has ${count} products. They will become uncategorised on the storefront. Delete anyway?`)) return;
+                      }
+                      deleteMutation.mutate(cat.id);
+                    }}
+                    data-testid={`button-delete-category-${cat.id}`}
+                    className="p-1.5 rounded-md hover:bg-muted/50 text-muted-foreground hover:text-red-500 cursor-pointer"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+type AdminTab = "dashboard" | "leads" | "products" | "collections" | "categories" | "pages" | "setup-guide";
 
 export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState(!!getToken());
@@ -1611,6 +1922,7 @@ export default function AdminPage() {
     { id: "leads" as AdminTab, label: "Leads", icon: Users },
     { id: "products" as AdminTab, label: "Products", icon: Package },
     { id: "collections" as AdminTab, label: "Collections", icon: FolderOpen },
+    { id: "categories" as AdminTab, label: "Categories", icon: LayoutGrid },
     { id: "pages" as AdminTab, label: "Pages", icon: FileText },
     { id: "setup-guide" as AdminTab, label: "Setup Guide", icon: BookOpen },
   ];
@@ -1708,6 +2020,7 @@ export default function AdminPage() {
             {activeTab === "leads" && <LeadsView />}
             {activeTab === "products" && <ProductsView />}
             {activeTab === "collections" && <CollectionsView />}
+            {activeTab === "categories" && <CategoriesView />}
             {activeTab === "pages" && <PagesView />}
             {activeTab === "setup-guide" && <SetupGuideView />}
           </div>
