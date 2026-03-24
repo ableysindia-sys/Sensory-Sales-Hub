@@ -82,12 +82,14 @@ const ProductContext = createContext<ProductContextValue | null>(null);
 export function ProductsProvider({ children }: { children: React.ReactNode }) {
   const { data: dbProducts = [], isLoading: productsLoading } = useQuery<DbProduct[]>({
     queryKey: ["/api/products"],
-    staleTime: 60000,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: true,
   });
 
   const { data: dbCategories = [], isLoading: catsLoading } = useQuery<DbCategory[]>({
     queryKey: ["/api/categories"],
-    staleTime: 60000,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: true,
   });
 
   const products = useMemo(() => dbProducts.map(dbProductToCatalogue), [dbProducts]);

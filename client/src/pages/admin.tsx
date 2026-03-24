@@ -597,6 +597,10 @@ function ProductForm({ product, categories, onSave, onCancel }: {
   onCancel: () => void;
 }) {
   const isEdit = !!product;
+  const [categoryManuallyChanged, setCategoryManuallyChanged] = useState(false);
+
+  const validCategorySlugs = useMemo(() => new Set(categories.map(c => c.slug)), [categories]);
+  const originalCategoryIsInvalid = isEdit && !!product?.categorySlug && !validCategorySlugs.has(product.categorySlug);
 
   const parseJsonSafe = (val: string | null, fallback: any) => {
     if (!val) return fallback;
@@ -618,6 +622,7 @@ function ProductForm({ product, categories, onSave, onCancel }: {
     queryKey: ["/api/admin/collections"],
     queryFn: () => adminFetch("/api/admin/collections"),
     staleTime: 0,
+    refetchOnMount: "always",
   });
 
   const { data: productCollections } = useQuery<{ collectionIds: number[] }>({
@@ -700,6 +705,7 @@ function ProductForm({ product, categories, onSave, onCancel }: {
       applications: JSON.stringify(applications),
       specifications: JSON.stringify(specs),
       configOptions: product?.configOptions || null,
+      ...(categoryManuallyChanged ? { b2bPinned: true } : {}),
     });
   };
 
@@ -732,10 +738,19 @@ function ProductForm({ product, categories, onSave, onCancel }: {
                 </FormItem>
               )} />
             </div>
+            {originalCategoryIsInvalid && (
+              <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 rounded-lg p-3 flex items-start gap-2 text-sm text-amber-800 dark:text-amber-300" data-testid="banner-invalid-category">
+                <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <div>
+                  <span className="font-semibold">Category mismatch — product may be hidden.</span>{" "}
+                  The current category <code className="bg-amber-100 dark:bg-amber-900/60 px-1 rounded font-mono text-xs">{product?.categorySlug}</code> is not in the valid category list. Select a valid category below to restore storefront visibility — it will be pinned to prevent future sync overrides.
+                </div>
+              </div>
+            )}
             <FormField control={form.control} name="categorySlug" render={({ field }) => (
               <FormItem>
-                <FormLabel>Category</FormLabel>
-                <Select value={field.value} onValueChange={field.onChange}>
+                <FormLabel>Category {product?.b2bPinned && <span className="text-xs font-normal text-muted-foreground ml-1">(pinned — sync-safe)</span>}</FormLabel>
+                <Select value={field.value} onValueChange={(val) => { field.onChange(val); setCategoryManuallyChanged(true); }}>
                   <FormControl>
                     <SelectTrigger data-testid="select-product-category"><SelectValue placeholder="Select category" /></SelectTrigger>
                   </FormControl>
@@ -743,6 +758,11 @@ function ProductForm({ product, categories, onSave, onCancel }: {
                     {categories.map(c => <SelectItem key={c.id} value={c.slug}>{c.title}</SelectItem>)}
                   </SelectContent>
                 </Select>
+                {categoryManuallyChanged && (
+                  <p className="text-xs text-blue-600 dark:text-blue-400 flex items-center gap-1 mt-1">
+                    <CheckCircle className="w-3 h-3" /> Category will be pinned on save — protected from Shopify sync.
+                  </p>
+                )}
                 <FormMessage />
               </FormItem>
             )} />
