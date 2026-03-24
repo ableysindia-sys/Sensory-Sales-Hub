@@ -539,10 +539,11 @@ function LeadsView() {
         </div>
       ) : (
         <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
-          <div className="hidden lg:grid grid-cols-[2fr_2fr_1fr_1.2fr_1fr_80px] gap-4 px-5 py-3 bg-muted/30 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/30">
+          <div className="overflow-x-auto">
+          <div className="hidden lg:grid grid-cols-[2fr_2fr_1fr_1.2fr_1fr_80px] gap-4 px-5 py-3 bg-muted/30 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/30" style={{minWidth: "680px"}}>
             <span>Name</span><span>Email / Phone</span><span>Type</span><span>Date</span><span>Status</span><span></span>
           </div>
-          <div className="divide-y divide-border/30">
+          <div className="divide-y divide-border/30" style={{minWidth: "680px"}}>
             {filtered.map((lead) => (
               <div key={lead.id} className="hover:bg-muted/20 transition-colors cursor-pointer group" onClick={() => setSelectedLead(lead)} data-testid={`lead-row-${lead.id}`}>
                 {/* Desktop row */}
@@ -578,6 +579,7 @@ function LeadsView() {
                 </div>
               </div>
             ))}
+          </div>
           </div>
           <div className="px-5 py-3 bg-muted/20 border-t border-border/30">
             <p className="text-xs text-muted-foreground" data-testid="text-leads-count">{filtered.length} lead{filtered.length !== 1 ? "s" : ""}</p>
@@ -1029,10 +1031,11 @@ function ProductsView() {
         </div>
       ) : (
         <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
-          <div className="hidden lg:grid grid-cols-[60px_2fr_1fr_1fr_80px_80px_100px] gap-4 px-5 py-3 bg-muted/30 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/30">
+          <div className="overflow-x-auto">
+          <div className="hidden lg:grid grid-cols-[60px_2fr_1fr_1fr_80px_80px_100px] gap-4 px-5 py-3 bg-muted/30 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/30" style={{minWidth: "720px"}}>
             <span></span><span>Product</span><span>Category</span><span>Price</span><span>Stock</span><span>Status</span><span></span>
           </div>
-          <div className="divide-y divide-border/30">
+          <div className="divide-y divide-border/30" style={{minWidth: "720px"}}>
             {filtered.map((product) => {
               const images: string[] = (() => { try { return JSON.parse(product.images || "[]"); } catch { return []; } })();
               const firstImage = images[0] && !images[0].startsWith("__generated__:") ? images[0] : null;
@@ -1105,6 +1108,7 @@ function ProductsView() {
                 </div>
               );
             })}
+          </div>
           </div>
           <div className="px-5 py-3 bg-muted/20 border-t border-border/30">
             <p className="text-xs text-muted-foreground">{filtered.length} product{filtered.length !== 1 ? "s" : ""}</p>

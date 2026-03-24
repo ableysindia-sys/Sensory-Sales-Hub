@@ -1,0 +1,32 @@
+Role: Lead System Architect & QA Engineer
+Task: Conduct a comprehensive, end-to-end audit of the headless B2B e-commerce platform codebase (integrating Shopify via Admin API/Webhooks to a custom backend and frontend).
+
+Review the entire repository against the following 4 architectural pillars. If any checks fail, provide the refactored code to patch the vulnerability.
+
+1. Data Synchronization & Webhook Resilience
+
+Pagination: Audit the initial Shopify Admin API fetch script. Does it utilize cursor-based pagination to ensure the entire catalog is pulled, circumventing the default 50/250 item limit?
+
+Webhook Handlers: Review the product/create, product/update, and inventory_levels/update routes. Do they instantly return a 200 OK to Shopify before processing the database write asynchronously to prevent timeout retries and race conditions?
+
+Validation: Is HMAC validation properly implemented on all webhook endpoints to reject unauthorized payloads?
+
+2. State Management & Relational Integrity
+
+The Override Rule: Verify the product update logic. If a Shopify webhook fires, ensure it never overwrites our local active_status boolean or local collection mappings. The B2B dashboard must remain the source of truth for visibility.
+
+Orphaned Data Handling: Audit the database logic for product/delete webhooks. Does the system gracefully detach the deleted product from our local Collection_Products pivot table without throwing SQL constraint errors?
+
+3. Admin Dashboard & UI Responsiveness
+
+Navigation Completeness: Verify the dashboard contains all required routes and tabs: Leads, Products, Pages, Setup Guide, and the newly added Collections.
+
+Mapping UI: Inspect the Edit Collection view. Does the searchable, multi-select UI successfully bulk-update the POST /api/collections/:id/products endpoint?
+
+1920x1200 Responsiveness: Audit the global CSS/Tailwind wrapper. Are maximum widths (max-w-screen-2xl), fluid percentages, and table overflow rules (overflow-x-auto) correctly applied so the layout does not stretch or break on ultra-wide or 16:10 high-resolution monitors?
+
+4. Frontend Querying & Cache Invalidation
+
+Visibility Logic: Review the frontend catalog fetch query. Does it strictly filter products based on the local database's active_status = true rather than the raw Shopify published state?
+
+Cache Busting: When an admin creates a new collection or toggles a product's active status in the dashboard, is there an explicit trigger to invalidate the frontend cache (or UI state) so changes appear instantly on the storefront?
