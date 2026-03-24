@@ -1,0 +1,42 @@
+Role: Senior Full-Stack Developer & React Expert
+Task: Fix the broken Custom Collections mapping logic in the Admin Dashboard. Admins are currently unable to reliably assign products to locally created collections, and/or the UI is not reflecting these mappings correctly.
+
+Context (From Architecture):
+
+Collections are 100% local (collections table).
+
+The mapping is handled via the collection_products pivot table.
+
+The relevant endpoints are GET /api/admin/products/:id/collections and POST /api/admin/products/:id/collections.
+
+Please execute the following 3 strict fixes:
+
+1. Fix the Backend Pivot Table Transaction
+
+Audit the POST /api/admin/products/:id/collections endpoint.
+
+Requirement: It must execute an atomic transaction:
+
+DELETE all existing rows in collection_products where product_id = :id.
+
+INSERT the new array of collection_ids sent from the frontend.
+
+Add explicit console.error logging here so if the INSERT fails (e.g., due to a data type mismatch), we see exactly why in the server logs.
+
+2. Fix the UI Component (Hydration & Submission)
+
+Open the Product Edit Modal / Form component.
+
+Hydration: On mount, it must call GET /api/admin/products/:id/collections to fetch the array of currently assigned collection IDs, and pre-populate the multi-select dropdown accordingly.
+
+Dropdown Options: The dropdown options MUST be populated by a live call to GET /api/admin/collections (do not rely on a stale or hardcoded list).
+
+Submission: When the admin clicks "Save", ensure the selected collection IDs are mapped into a clean array of integers (e.g., [1, 4, 7]) and sent in the body of the POST request.
+
+3. Add UI Error Handling (Stop Silent Failures)
+
+Currently, if the collection mapping fails, it fails silently.
+
+Implement a success/error toast notification in the UI when the POST request resolves or rejects, so the admin knows immediately if the "Sensory Kit" was successfully built.
+
+Ensure queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] }) and ["/api/admin/collections"] are called on success so the tables update instantly.

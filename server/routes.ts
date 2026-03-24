@@ -418,33 +418,38 @@ export async function registerRoutes(
   });
 
   app.post("/api/admin/products/:id/collections", requireAdmin, async (req, res) => {
+    const productId = parseInt(req.params.id);
     try {
-      const productId = parseInt(req.params.id);
-      if (isNaN(productId)) return res.status(400).json({ message: "Invalid ID" });
+      if (isNaN(productId)) return res.status(400).json({ message: "Invalid product ID" });
       const { collectionIds } = req.body;
-      if (!Array.isArray(collectionIds) || !collectionIds.every(id => typeof id === "number" && Number.isFinite(id) && id > 0)) {
-        return res.status(400).json({ message: "collectionIds must be an array of positive integers" });
-      }
-      const allCollections = await storage.getCollections();
-      const validIds = new Set(allCollections.map(c => c.id));
-      const invalid = collectionIds.filter(id => !validIds.has(id));
-      if (invalid.length > 0) return res.status(400).json({ message: `Invalid collection IDs: ${invalid.join(", ")}` });
 
-      const currentIds = await storage.getProductCollectionIds(productId);
-      const toAdd = collectionIds.filter(id => !currentIds.includes(id));
-      const toRemove = currentIds.filter(id => !collectionIds.includes(id));
-      for (const collId of toRemove) {
-        const existingIds = await storage.getCollectionProductIds(collId);
-        await storage.setCollectionProducts(collId, existingIds.filter(id => id !== productId));
+      // Accept empty array (removes all mappings) or array of positive integers
+      if (!Array.isArray(collectionIds)) {
+        return res.status(400).json({ message: "collectionIds must be an array" });
       }
-      for (const collId of toAdd) {
-        const existingIds = await storage.getCollectionProductIds(collId);
-        if (!existingIds.includes(productId)) {
-          await storage.setCollectionProducts(collId, [...existingIds, productId]);
+      const coerced = collectionIds.map((id: unknown) => Number(id));
+      if (coerced.some(id => !Number.isFinite(id) || id <= 0)) {
+        return res.status(400).json({ message: "collectionIds must be positive integers" });
+      }
+
+      // Validate every submitted ID actually exists in the collections table
+      if (coerced.length > 0) {
+        const allCollections = await storage.getCollections();
+        const validIds = new Set(allCollections.map(c => c.id));
+        const invalid = coerced.filter(id => !validIds.has(id));
+        if (invalid.length > 0) {
+          return res.status(400).json({ message: `Unknown collection IDs: ${invalid.join(", ")}` });
         }
       }
-      res.json({ message: "Collections updated", collectionIds });
-    } catch { res.status(500).json({ message: "Failed to update product collections" }); }
+
+      // Single atomic transaction: DELETE all product→collection rows, then INSERT new set
+      await storage.setProductCollections(productId, coerced);
+      console.log(`[collections] Product ${productId} mapped to collections: [${coerced.join(", ") || "none"}]`);
+      res.json({ message: "Collections updated", collectionIds: coerced });
+    } catch (err) {
+      console.error(`[collections] Failed to update collections for product ${productId}:`, err);
+      res.status(500).json({ message: "Failed to update product collections" });
+    }
   });
 
   app.post("/api/admin/sync", requireAdmin, async (_req, res) => {

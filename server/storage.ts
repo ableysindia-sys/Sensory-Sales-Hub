@@ -212,6 +212,17 @@ export class DatabaseStorage implements IStorage {
       .where(eq(collectionProductsTable.productId, productId));
     return rows.map(r => r.collectionId);
   }
+  async setProductCollections(productId: number, collectionIds: number[]): Promise<void> {
+    const unique = [...new Set(collectionIds.filter(id => Number.isFinite(id) && id > 0))];
+    await db.transaction(async (tx) => {
+      await tx.delete(collectionProductsTable).where(eq(collectionProductsTable.productId, productId));
+      if (unique.length > 0) {
+        await tx.insert(collectionProductsTable).values(
+          unique.map(collectionId => ({ collectionId, productId }))
+        );
+      }
+    });
+  }
   async getCollectionProductIds(collectionId: number): Promise<number[]> {
     const rows = await db.select({ productId: collectionProductsTable.productId })
       .from(collectionProductsTable)

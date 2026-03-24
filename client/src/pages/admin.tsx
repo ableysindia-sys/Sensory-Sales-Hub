@@ -597,6 +597,7 @@ function ProductForm({ product, categories, onSave, onCancel }: {
   onCancel: () => void;
 }) {
   const isEdit = !!product;
+  const { toast } = useToast();
   const [categoryManuallyChanged, setCategoryManuallyChanged] = useState(false);
 
   const validCategorySlugs = useMemo(() => new Set(categories.map(c => c.slug)), [categories]);
@@ -645,9 +646,23 @@ function ProductForm({ product, categories, onSave, onCancel }: {
   const collectionsMutation = useMutation({
     mutationFn: (collectionIds: number[]) =>
       apiRequest("POST", `/api/admin/products/${product!.id}/collections`, { collectionIds }),
-    onSuccess: () => {
+    onSuccess: (_data, collectionIds) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/products", product?.id, "collections"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/collections"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      toast({
+        title: collectionIds.length > 0 ? "Collections saved" : "Removed from all collections",
+        description: collectionIds.length > 0
+          ? `Mapped to ${collectionIds.length} collection${collectionIds.length > 1 ? "s" : ""}.`
+          : "This product is no longer in any collection.",
+      });
+    },
+    onError: (err: Error) => {
+      toast({
+        title: "Collection mapping failed",
+        description: err.message || "Could not update collections. Check the server logs.",
+        variant: "destructive",
+      });
     },
   });
 
