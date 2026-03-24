@@ -590,9 +590,10 @@ function LeadsView() {
   );
 }
 
-function ProductForm({ product, categories, onSave, onCancel }: {
+function ProductForm({ product, categories, allCollections, onSave, onCancel }: {
   product?: Product | null;
   categories: Category[];
+  allCollections: Collection[];
   onSave: (data: any) => void;
   onCancel: () => void;
 }) {
@@ -618,13 +619,6 @@ function ProductForm({ product, categories, onSave, onCancel }: {
   const [newImageUrl, setNewImageUrl] = useState("");
   const [newFeature, setNewFeature] = useState("");
   const [newApplication, setNewApplication] = useState("");
-
-  const { data: allCollections = [] } = useQuery<Collection[]>({
-    queryKey: ["/api/admin/collections"],
-    queryFn: () => adminFetch("/api/admin/collections"),
-    staleTime: 0,
-    refetchOnMount: "always",
-  });
 
   const { data: productCollections } = useQuery<{ collectionIds: number[] }>({
     queryKey: ["/api/admin/products", product?.id, "collections"],
@@ -997,6 +991,13 @@ function ProductsView() {
     queryFn: () => adminFetch("/api/admin/categories"),
   });
 
+  const { data: allCollections = [] } = useQuery<Collection[]>({
+    queryKey: ["/api/admin/collections"],
+    queryFn: () => adminFetch("/api/admin/collections"),
+    staleTime: 0,
+    refetchOnMount: "always",
+  });
+
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
       if (data._id) {
@@ -1046,8 +1047,10 @@ function ProductsView() {
   if (editProduct) {
     return (
       <ProductForm
+        key={editProduct === "new" ? "new" : (editProduct as Product).id}
         product={editProduct === "new" ? null : editProduct}
         categories={categories}
+        allCollections={allCollections}
         onCancel={() => setEditProduct(null)}
         onSave={(data) => {
           if (editProduct !== "new") {
