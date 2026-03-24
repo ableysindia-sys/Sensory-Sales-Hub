@@ -913,42 +913,62 @@ function ProductForm({ product, categories, onSave, onCancel }: {
             )}
           </div>
 
-          {allCollections.length > 0 && (
-            <div className="bg-card rounded-xl border border-border/50 p-6 space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-base font-semibold text-foreground">Collections</h3>
-                {!isEdit && <span className="text-xs text-muted-foreground">Save product first to assign collections</span>}
+          <div className="bg-card rounded-xl border border-border/50 p-6 space-y-3">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-2">
+                <FolderOpen className="w-4 h-4 text-muted-foreground" />
+                <h3 className="text-base font-semibold text-foreground">Custom Collections</h3>
+                {selectedCollectionIds.length > 0 && (
+                  <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+                    {selectedCollectionIds.length} assigned
+                  </span>
+                )}
               </div>
-              <div className="flex flex-wrap gap-2">
-                {allCollections.map(col => {
-                  const active = selectedCollectionIds.includes(col.id);
-                  return (
-                    <button
-                      key={col.id}
-                      type="button"
-                      disabled={!isEdit}
-                      onClick={() => toggleCollection(col.id)}
-                      data-testid={`toggle-collection-${col.id}`}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-colors cursor-pointer touch-manipulation disabled:opacity-40 disabled:cursor-not-allowed ${
-                        active
-                          ? "bg-primary/10 border-primary text-primary"
-                          : "bg-muted/30 border-border text-muted-foreground hover:border-primary/50"
-                      }`}
-                    >
-                      <FolderOpen className="w-3.5 h-3.5" />
-                      {col.name}
-                      {collectionsMutation.isPending && selectedCollectionIds.includes(col.id) !== active && (
-                        <Loader2 className="w-3 h-3 animate-spin" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-              {isEdit && (
-                <p className="text-xs text-muted-foreground">Click to add or remove this product from a collection.</p>
+              {collectionsMutation.isPending && (
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Loader2 className="w-3 h-3 animate-spin" /> Saving…
+                </span>
               )}
             </div>
-          )}
+
+            {!isEdit ? (
+              <p className="text-sm text-muted-foreground bg-muted/30 rounded-lg px-3 py-2">
+                Save this product first, then re-open it to assign collections.
+              </p>
+            ) : allCollections.length === 0 ? (
+              <p className="text-sm text-muted-foreground bg-muted/30 rounded-lg px-3 py-2">
+                No custom collections exist yet — create one in the Collections tab first.
+              </p>
+            ) : (
+              <>
+                <div className="flex flex-wrap gap-2" data-testid="collection-pills">
+                  {allCollections.map(col => {
+                    const active = selectedCollectionIds.includes(col.id);
+                    return (
+                      <button
+                        key={col.id}
+                        type="button"
+                        onClick={() => toggleCollection(col.id)}
+                        data-testid={`toggle-collection-${col.id}`}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-all duration-150 cursor-pointer touch-manipulation ${
+                          active
+                            ? "bg-primary/10 border-primary text-primary shadow-sm"
+                            : "bg-muted/30 border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                        }`}
+                      >
+                        <FolderOpen className="w-3.5 h-3.5 flex-shrink-0" />
+                        {col.title}
+                        {active && <CheckCircle className="w-3 h-3 flex-shrink-0" />}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Each click saves immediately. A product can belong to multiple collections.
+                </p>
+              </>
+            )}
+          </div>
 
           <div className="flex justify-end gap-3">
             <Button type="button" variant="outline" onClick={onCancel} className="cursor-pointer touch-manipulation" data-testid="button-cancel-product">Cancel</Button>
