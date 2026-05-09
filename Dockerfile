@@ -1,5 +1,5 @@
 # Use Node 20 as specified in your stack
-FROM node:20-slim
+FROM node:24-slim
 
 # Enable pnpm
 ENV PNPM_HOME="/pnpm"
