@@ -1,4 +1,4 @@
-# Use Node 20 as specified in your stack
+# Use Node 24 as specified in your stack
 FROM node:24-slim
 
 # Enable pnpm
