@@ -1,26 +1,29 @@
-# Use Node 24 as specified in your stack
-FROM node:24-slim
-
-# Enable pnpm
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+# ── Stage 1: Build ────────────────────────────────────────────────────────────
+FROM node:24-slim AS builder
 
 WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
 COPY . .
+RUN npm run build
 
-# Trick the preinstall bouncer 
-ENV npm_config_user_agent="pnpm/9.0.0"
+# ── Stage 2: Runtime ──────────────────────────────────────────────────────────
+FROM node:24-slim AS runner
 
-# Install dependencies
-RUN pnpm install
+WORKDIR /app
 
-# Build both the Vite client and the Express server
-RUN pnpm --filter @workspace/ableys-rehab run build
+# Only production dependencies
+COPY package*.json ./
+RUN npm ci --omit=dev
 
-# Cloud Run expects traffic on 8080
-EXPOSE 8080
+# Copy compiled server + built frontend (fallback static serving)
+COPY --from=builder /app/dist ./dist
+
 ENV PORT=8080
+ENV NODE_ENV=production
 
-# Start the compiled Express server
-CMD ["node", "artifacts/ableys-rehab/dist/index.cjs"]
+EXPOSE 8080
+
+CMD ["node", "dist/index.cjs"]
