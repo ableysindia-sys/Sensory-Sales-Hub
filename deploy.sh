@@ -14,7 +14,7 @@
 set -euo pipefail
 
 # ── Configuration ──────────────────────────────────────────────────────────────
-PROJECT_ID="${GCP_PROJECT_ID:-}"
+PROJECT_ID="${GCP_PROJECT_ID:-rehab-ba713}"
 REGION="asia-south1"
 SERVICE="sensory-sales-hub"
 REPO="sensory-sales-hub"
@@ -30,7 +30,7 @@ warn()    { echo -e "${YELLOW}[warn]${NC}   $*"; }
 die()     { echo -e "${RED}[error]${NC}  $*" >&2; exit 1; }
 
 # ── Pre-flight ──────────────────────────────────────────────────────────────────
-[[ -z "$PROJECT_ID" ]] && die "Set GCP_PROJECT_ID env var before running this script."
+# PROJECT_ID defaults to rehab-ba713 (the existing Firebase project)
 command -v gcloud      &>/dev/null || die "gcloud CLI not found. Install from https://cloud.google.com/sdk"
 command -v firebase    &>/dev/null || die "firebase CLI not found. Run: npm install -g firebase-tools"
 command -v docker      &>/dev/null || die "docker not found."
